@@ -1,0 +1,40 @@
+{
+    "name": "@eng-dibo/dibo",
+    "description": "A monorepo for multiple projects",
+    "version": "0.0.1",
+    "scripts": {},
+    "private": false,
+    "keywords": [
+      "nodejs",
+      "front-end",
+      "back-end",
+      "database",
+      "angular",
+      "react",
+      "vue"
+    ],
+    "dependencies": {},
+    "devDependencies": {},
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/eng-dibo/dibo.git"
+    },
+    "homepage": "https://github.com/eng-dibo/dibo#readme",
+    "bugs": {
+      "url": "https://github.com/eng-dibo/dibo/issues",
+      "email": "sh.eldeeb.2010+github@gmail.com"
+    },
+    "license": "MIT",
+    "author": "Sherif Eldeeb <sh.eldeeb.2010+github@gmail.com> (https://github.com/eng-dibo)",
+    "contributors": [],
+    "funding": [
+      {
+        "type": "paypal",
+        "url": "https://paypal.me/group99001"
+      },
+      {
+        "type": "patreon",
+        "url": "https://www.patreon.com/GoogleDev"
+      }
+    ]
+  }

@@ -1,0 +1,21 @@
+{
+    "prettier.arrowParens": "avoid",
+    "editor.defaultFormatter": "ms-vscode.vscode-typescript-tslint-plugin",
+    "editor.formatOnSave": true,
+    "files.autoSave": "off",
+    "editor.fastScrollSensitivity": 3,
+    "editor.mouseWheelZoom": true,
+    "editor.showFoldingControls": "always",
+    "editor.stablePeek": true,
+    "editor.fontSize": 16,
+    "diffEditor.codeLens": true,
+    "diffEditor.renderSideBySide": false,
+    "window.title": "${dirty}${rootName} ${activeEditorShort}",
+    "explorer.confirmDelete": false,
+    "explorer.decorations.badges": false,
+    "git.allowForcePush": true,
+    "tslint.jsEnable": true,
+    "editor.codeActionsOnSave": {
+        "source.fixAll.tslint": true
+    }
+}

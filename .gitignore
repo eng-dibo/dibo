@@ -1,0 +1,45 @@
+# help.github.com/ignore-files
+# if you modified this file, also update .dockerignore
+
+node_modules
+/dist
+/out-tsc
+/tmp
+/bazel-out
+*.log
+*.cache
+*.tmp
+
+# any folder or file ends with '!!', ex: notes!!
+*!!
+*!!.*
+
+# profiling files
+chrome-profiler-events*.json
+speed-measure-plugin*.json
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/*
+
+# misc
+/.sass-cache
+/connect.lock
+/coverage
+/typings
+
+# System Files
+.DS_Store
+Thumbs.db

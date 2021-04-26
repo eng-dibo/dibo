@@ -1,0 +1,35 @@
+# .dockerignor follows Go filePath.Mach(), in addition to glob '**'
+
+# from .gitignore
+node_modules
+/dist
+/out-tsc
+/tmp
+/bazel-out
+*.log
+*.cache
+*.tmp
+*!!
+*!!.*
+# profiling files
+chrome-profiler-events*.json
+speed-measure-plugin*.json
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/*
+/.sass-cache
+/connect.lock
+/coverage
+/typings
+.DS_Store
+Thumbs.db
