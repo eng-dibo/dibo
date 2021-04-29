@@ -59,7 +59,7 @@ improving docs, in the scope: CMS
 `docs(CMS): correct spelling of CHANGELOG`
 
 ## code style
-We use linters such as ESLint and prettier to format the code base.
+We use linters such as [ESLint](https://eslint.org/) and [Prettier](https://prettier.io/) to format the code base.
 
 run the script `npm run lint` to check and auto fix format issues.
 
@@ -67,7 +67,7 @@ each scope has it's own lint script, and the root workspace has a general lint s
 
 it is recommended to set up your IDE to format the changed file on each file save, 
 
-we provide a project-level settings for VScode that enables this feature for you.
+we provide a project-level settings for VScode that enables this feature for you, but you need to install IDE extensions for these linters.
 
 if the source code is not properly formatted, or the CI couldn't auto fix all issues, it will fail and the PR cannot be merged.
 
