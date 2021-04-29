@@ -8,6 +8,8 @@ you are welcome to contribute with us.
 
 you can host your own open-source project to gain benefits from our tools for maintenance and contributing.
 
+you are wlcome to contribute and join our community, read the [contributing guide](/CONTRIBUTING.md)
+
 ## workspace structure
 - **packages:**
 
