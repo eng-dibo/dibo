@@ -17,4 +17,21 @@ Before you submit your Pull Request (PR) consider the following guidelines:
 
 - submit your PR in a new [git branch](https://git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging)  
 
+## Commit Message Format
+we follow [conventional commits](https://conventionalcommits.org/) style, which is used in mega projects like Angular and gatsbyjs.
 
+- commit message consists of a header, an optional body and an optional footer, with a double blank line between them.
+- the header includes a summary title, the action type and an optional scope
+- the body including extra description.
+- the footer includes the issue this commit fixes (ex: fixes #22) and may start with `BREAKING CHANGE` note.
+- the scope is a project or a package or a sub-workspace.
+
+```
+type(scope): title
+
+body
+
+footer
+```
+
+**types**
