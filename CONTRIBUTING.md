@@ -25,6 +25,7 @@ we follow [conventional commits](https://conventionalcommits.org/) style, which 
 - the body including extra description.
 - the footer includes the issue this commit fixes (ex: fixes #22) and may start with `BREAKING CHANGE` note.
 - the scope is a project or a package or a sub-workspace.
+- commit types dovetails with [SemVer](https://semver.org/)
 
 ```
 type(scope): title
@@ -34,4 +35,13 @@ body
 footer
 ```
 
-**types**
+**types:**
+- fix: a commit that fixes a bug, correlates with PATCH in SemVer.
+- feat: introduces a new feature, correlates with MINOR in SemVer.
+- BREAKING CHANGE: introduces a breaking API change, correlating with MAJOR in SemVer.
+- docs
+- lint
+- test
+
+
+
