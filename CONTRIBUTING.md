@@ -43,7 +43,7 @@ footer
 - lint
 - test
 
-if the commit introduces a BREAKING CHANGE, add '!', `type(scope)!: title`
+if the commit introduces a BREAKING CHANGE, add '!', i.e: `type(scope)!: title`, and describe what your commit breaks.
 
 **examples:**
 
