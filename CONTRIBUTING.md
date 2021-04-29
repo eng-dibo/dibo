@@ -65,7 +65,12 @@ run the script `npm run lint` to check and auto fix format issues.
 
 each scope has it's own lint script, and the root workspace has a general lint script that affects all scopes inside it.
 
+it is recommended to set up your IDE to format the changed file on each file save, 
+
+we provide a project-level settings for VScode that enables this feature for you.
+
 if the source code is not properly formatted, or the CI couldn't auto fix all issues, it will fail and the PR cannot be merged.
+
 
 
 
