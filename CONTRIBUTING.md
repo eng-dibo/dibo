@@ -76,10 +76,17 @@ we provide a project-level settings for VScode that enables this feature for you
 
 if the source code is not properly formatted, or the CI couldn't auto fix all issues, it will fail and the PR cannot be merged.
 
+## contributors disscussion and live meeting
 
+We organize live meeting together with all contributors time to time, to discuss and manage our planning.
 
+you are welcome to attend our meetings.
 
+also, you can use various channels to meet our developers and contributing, including social media accounts.
 
+[linkedin Group](https://linkedin.com/groups/9050700)
+
+other channels will be added if requested.
 
 
 
