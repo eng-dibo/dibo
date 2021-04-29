@@ -6,6 +6,11 @@ you can help us improve the code base, or the docs, fix bugs, or spread the word
 
 [3 reasons to contribute to open source](https://opensource.com/article/20/6/why-contribute-open-source)
 
+start by star and fork this repository.
+
+![image](https://user-images.githubusercontent.com/57308531/116622568-34e20f80-a945-11eb-8e7a-f6eb30ae2095.png)
+
+
 ## Submitting a Pull Request (PR)
 Before you submit your Pull Request (PR) consider the following guidelines:
 
