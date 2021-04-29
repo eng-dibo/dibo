@@ -13,7 +13,8 @@ Before you submit your Pull Request (PR) consider the following guidelines:
 
 - add a clear describtion to the problem you're fixing.
 
-- add test cases to any new feaature you add, run the full test suite to ensure that all tests pass.
+- any new feaature you add must be unit tested and well documented, run the full test suite to ensure that all tests pass.
 
 - submit your PR in a new [git branch](https://git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging)  
+
 
