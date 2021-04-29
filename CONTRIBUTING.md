@@ -58,6 +58,16 @@ introducing a BREAKING CHANGE:
 improving docs, in the scope: CMS
 `docs(CMS): correct spelling of CHANGELOG`
 
+## code style
+We use linters such as ESLint and prettier to format the code base.
+
+run the script `npm run lint` to check and auto fix format issues.
+
+each scope has it's own lint script, and the root workspace has a general lint script that affects all scopes inside it.
+
+
+
+
 
 
 
