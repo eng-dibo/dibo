@@ -45,6 +45,22 @@ footer
 
 if the commit introduces a BREAKING CHANGE, add '!', `type(scope)!: title`
 
+**examples:**
+
+adding a new feature:
+
+`feat: allow provided config object to extend other configs`
+
+introducing a BREAKING CHANGE:
+
+`refactor!: drop support for Node 6`
+
+improving docs, in the scope: CMS
+`docs(CMS): correct spelling of CHANGELOG`
+
+
+
+
 
 
 
