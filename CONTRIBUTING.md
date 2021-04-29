@@ -64,7 +64,7 @@ improving docs, in the scope: CMS
 `docs(CMS): correct spelling of CHANGELOG`
 
 ## code style
-We use linters such as [ESLint](https://eslint.org/) and [Prettier](https://prettier.io/) to format the code base.
+We use linters such as [ESLint](https://eslint.org/) and [Prettier](https://prettier.io/) to format the code base, following [Google style Guides](https://google.github.io/styleguide/)..
 
 run the script `npm run lint` to check and auto fix format issues.
 
