@@ -10,6 +10,8 @@ you can host your own open-source project to gain benefits from our tools for ma
 
 you are wlcome to contribute and join our community, read the [contributing guide](/CONTRIBUTING.md)
 
+to follow what we are doing, what we achieved and what we are planning to do, check our [project plan](../../projects).
+
 ## workspace structure
 - **packages:**
 
