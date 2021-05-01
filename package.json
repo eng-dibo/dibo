@@ -3,7 +3,7 @@
   "description": "A monorepo for multiple projects",
   "version": "0.0.1",
   "scripts": {
-    "lint": "eslint --fix --config .eslintrc.js --ext .js,.ts"
+    "lint": "prettier --write . && eslint --fix --config .eslintrc.js --ext .js,.ts"
   },
   "private": false,
   "keywords": [
@@ -24,7 +24,8 @@
     "eslint": "^7.25.0",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-jsdoc": "^33.0.0",
-    "eslint-plugin-prefer-arrow": "^1.2.3"
+    "eslint-plugin-prefer-arrow": "^1.2.3",
+    "prettier": "^2.2.1"
   },
   "repository": {
     "type": "git",
