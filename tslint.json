@@ -1,6 +1,5 @@
 {
     "extends": "tslint:recommended", 
-    "rulesDirectory": ["codelyzer"],
     "rules": {
       "align": [true, "arguments","elements","members","parameters","statements"],
       "array-type": false,
