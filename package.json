@@ -6,15 +6,22 @@
     "lint": "prettier --write . && eslint --fix --config .eslintrc.js --ext .js,.ts",
     "prepare": "husky install"
   },
+  "lint-staged": {
+    "*": "npm run lint"
+  },
+  "engines": {
+    "node": "12",
+    "npm": "7"
+  },
+  "os": [
+    "linux"
+  ],
+  "cpu": [
+    "x64"
+  ],
   "private": false,
-  "keywords": [
-    "nodejs",
-    "front-end",
-    "back-end",
-    "database",
-    "angular",
-    "react",
-    "vue"
+  "globalDefaults": [
+    "@angular/cli@11.2.11"
   ],
   "devDependencies": {
     "@angular-eslint/eslint-plugin": "^4.2.0",
@@ -30,6 +37,15 @@
     "lint-staged": "^10.5.4",
     "prettier": "^2.2.1"
   },
+  "keywords": [
+    "nodejs",
+    "front-end",
+    "back-end",
+    "database",
+    "angular",
+    "react",
+    "vue"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/eng-dibo/dibo.git"
@@ -51,8 +67,5 @@
       "type": "patreon",
       "url": "https://www.patreon.com/GoogleDev"
     }
-  ],
-  "lint-staged": {
-    "*": "npm run lint"
-  }
+  ]
 }
