@@ -53,6 +53,6 @@
     }
   ],
   "lint-staged": {
-    "*": ""
+    "*": "npm run lint"
   }
 }
