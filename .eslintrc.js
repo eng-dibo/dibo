@@ -14,14 +14,14 @@ module.exports = {
     sourceType: "module",
   },
   /* to solve the error: The file does not match your project config:
-     this issue occures when formatting a file not included in parserOptions.project (i.e: tsconfig.json)
+     this issue occurs when formatting a file not included in parserOptions.project (i.e: tsconfig.json)
      
      solutions:
        - ignore this file by .eslintignore or ignorePatterns[]
        - add it to tsconfig.json
        https://stackoverflow.com/a/61959593/12577650
    */
-  ignorePatterns: ["/*.*"],
+  ignorePatterns: ["**/*.*"],
   plugins: [
     "eslint-plugin-import",
     "eslint-plugin-jsdoc",
