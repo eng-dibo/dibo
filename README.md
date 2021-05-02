@@ -13,6 +13,7 @@ you are wlcome to contribute and join our community, read the [contributing guid
 to follow what we are doing, what we achieved and what we are planning to do, check our [project plan](../../projects).
 
 ## workspace structure
+
 - **packages:**
 
   contains independent packages, libraries and plugins.
@@ -22,7 +23,7 @@ to follow what we are doing, what we achieved and what we are planning to do, ch
   contains projects and sub-workspaces.
 
 - **dist:**
- 
+
   the distributable output of all scopes, and contains the same main structure as the workspace.
 
 - **resouces:**
@@ -30,9 +31,5 @@ to follow what we are doing, what we achieved and what we are planning to do, ch
   shared resources between all scopes.
 
   ### structure notes:
+
   - every scope has its own README.md and configuration, but all configurations are extend the workspace's config, such as tsconfig and webpack config.
-
-
-
-
-

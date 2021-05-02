@@ -1,63 +1,63 @@
 {
-    "compileOnSave": false,
-    "compilerOptions": {
-      "baseUrl": "./",
-      "outDir": "./dist/out-tsc",
-      "strict": true,
-      "forceConsistentCasingInFileNames": true,      
-      "noImplicitReturns": true,
-      "noFallthroughCasesInSwitch": true,
-      "sourceMap": true,
-      "declaration": false,
-      "downlevelIteration": true,
-      "experimentalDecorators": true,
-      "moduleResolution": "node",
-      "importHelpers": true,
-      "target": "es2015",
-      "module": "es2020",
-      "lib": ["es2018", "dom"],
-      "types": ["node"],
-      "typeRoots": ["node_modules/@types"],
-      "removeComments": true,
-      "noEmit": false,
-      "noEmitOnError": false,
-      "noImplicitAny": true,
-      "noUnusedLocals": false,
-      "noUnusedParameters": false,
-      "preserveSymlinks": true,
-      "sourceRoot": "",
-      "mapRoot": "",
-      "emitDecoratorMetadata": true,
-      "locale": "en",
-      "watch": false,
-      "resolveJsonModule": true,    
-      "paths": {
-        "~~*": ["./*"],
-        "@engineers/*": ["./packages/*"],
-        "*": ["node_modules/*", "types/*"]
-      },
-      "allowSyntheticDefaultImports": true,
-      "esModuleInterop": true,
-      /* todo: enable this option https://stackoverflow.com/a/50241920/12577650 */
-      "strictPropertyInitialization": false
+  "compileOnSave": false,
+  "compilerOptions": {
+    "baseUrl": "./",
+    "outDir": "./dist/out-tsc",
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "sourceMap": true,
+    "declaration": false,
+    "downlevelIteration": true,
+    "experimentalDecorators": true,
+    "moduleResolution": "node",
+    "importHelpers": true,
+    "target": "es2015",
+    "module": "es2020",
+    "lib": ["es2018", "dom"],
+    "types": ["node"],
+    "typeRoots": ["node_modules/@types"],
+    "removeComments": true,
+    "noEmit": false,
+    "noEmitOnError": false,
+    "noImplicitAny": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "preserveSymlinks": true,
+    "sourceRoot": "",
+    "mapRoot": "",
+    "emitDecoratorMetadata": true,
+    "locale": "en",
+    "watch": false,
+    "resolveJsonModule": true,
+    "paths": {
+      "~~*": ["./*"],
+      "@engineers/*": ["./packages/*"],
+      "*": ["node_modules/*", "types/*"]
     },
-    "exclude": ["node_modules", "dist", "**/*.spec.ts", "**/e2e"],
-     "angularCompilerOptions": {
-      "enableIvy": true,
-      "strictTemplates": true,
-  
-      /* override some of 'strictTemplates' strictness */
-      "strictInjectionParameters": true,
-      "strictInputTypes": true,
-      "strictInputAccessModifiers": true,
-      "strictNullInputTypes": true,      
-      "strictSafeNavigationTypes": true,
-      "strictDomLocalRefTypes": true,
-      "strictOutputEventTypes": true,
-      "strictDomEventTypes": true,
-      "strictContextGenerics": true,
-      "strictLiteralTypes": true,
-      /* todo: enable, it causes error in angular components (html files) ex: <span dir="auto"> */
-      "strictAttributeTypes": false
-    }
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    /* todo: enable this option https://stackoverflow.com/a/50241920/12577650 */
+    "strictPropertyInitialization": false
+  },
+  "exclude": ["node_modules", "dist", "**/*.spec.ts", "**/e2e"],
+  "angularCompilerOptions": {
+    "enableIvy": true,
+    "strictTemplates": true,
+
+    /* override some of 'strictTemplates' strictness */
+    "strictInjectionParameters": true,
+    "strictInputTypes": true,
+    "strictInputAccessModifiers": true,
+    "strictNullInputTypes": true,
+    "strictSafeNavigationTypes": true,
+    "strictDomLocalRefTypes": true,
+    "strictOutputEventTypes": true,
+    "strictDomEventTypes": true,
+    "strictContextGenerics": true,
+    "strictLiteralTypes": true,
+    /* todo: enable, it causes error in angular components (html files) ex: <span dir="auto"> */
+    "strictAttributeTypes": false
   }
+}
