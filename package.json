@@ -20,7 +20,7 @@
     "x64"
   ],
   "private": false,
-  "globalDefaults": [
+  "globalDependencies": [
     "@angular/cli@11.2.11"
   ],
   "devDependencies": {
