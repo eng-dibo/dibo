@@ -1,0 +1,34 @@
+{
+  "name": "@engineers/tmpl",
+  "version": "0.0.1",
+  "description": "generate files from templates using ejs engine",
+  "scripts": {},
+  "private": false,
+  "keywords": [
+    "ejs",
+    "template engine"
+  ],
+  "peerDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eng-dibo/dibo.git"
+  },
+  "homepage": "https://github.com/eng-dibo/dibo#readme",
+  "bugs": {
+    "url": "https://github.com/eng-dibo/dibo/issues",
+    "email": ""
+  },
+  "license": "MIT",
+  "author": "Sherif Eldeeb <sh.eldeeb.2010+dibo@gmail.com> (https://github.com/eng-dibo)",
+  "contributors": [],
+  "funding": [
+    {
+      "type": "paypal",
+      "url": "https://paypal.me/group99001"
+    },
+    {
+      "type": "patreon",
+      "url": "https://www.patreon.com/GoogleDev"
+    }
+  ]
+}
