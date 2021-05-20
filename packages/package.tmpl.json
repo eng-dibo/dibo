@@ -1,0 +1,22 @@
+{
+  "name": "@{{scope}}/{{packageName}}",
+  "version": "0.0.1",
+  "description": "javascript utils",
+  "scripts": {},
+  "private": false,
+  "keywords": [],
+  "peerDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "{{repo}}.git"
+  },
+  "homepage": "{{repo}}#readme",
+  "bugs": {
+    "url": "{{repo}}/issues",
+    "email": "{{email}}"
+  },
+  "license": "MIT",
+  "author": "{{author}} <{{email}}> ({{repo}})",
+  "contributors": [],
+  "funding": "{{funding}}"
+}
