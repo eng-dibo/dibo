@@ -1,5 +1,4 @@
-//merge this values with tmpl.values.js in workspace's root
+// merge this values with tmpl.values.js in workspace's root and packages' root
 export default {
-  packageName: "js",
   description: "javascript utils",
 };
