@@ -24,7 +24,7 @@
             "index": "browser/index.html",
             "main": "browser/main.ts",
             "polyfills": "browser/polyfills.ts",
-            "tsConfig": "tsconfig.app.json",
+            "tsConfig": "tsconfig.json",
             "aot": true,
             "assets": ["browser/favicon.ico", "browser/assets"],
             "styles": ["browser/styles.scss"],
@@ -93,7 +93,7 @@
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": [
-              "tsconfig.app.json",
+              "tsconfig.json",
               "tsconfig.spec.json",
               "e2e/tsconfig.json"
             ],

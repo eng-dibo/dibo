@@ -2,7 +2,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "./out-tsc/spec",
+    "outDir": "../../dist/ngx-cms/spec",
     "types": ["jasmine"]
   },
   "files": ["browser/test.ts", "browser/polyfills.ts"],
