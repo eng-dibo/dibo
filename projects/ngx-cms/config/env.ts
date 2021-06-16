@@ -1,7 +1,7 @@
 // this file will be replaced with other files (ex: prod.ts) with `ng build --prod`
 // angular.json -> fileReplacements
 export default {
-  mode: 'dev',
+  mode: 'development',
 };
 
 /*
