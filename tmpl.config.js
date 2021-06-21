@@ -30,6 +30,9 @@ export default function (tmplPath, config) {
           url: "https://www.patreon.com/GoogleDev",
         },
       ],
+      scripts: {
+        test: "jest",
+      },
     },
   };
 }
