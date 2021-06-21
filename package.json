@@ -4,7 +4,8 @@
   "version": "0.0.1",
   "scripts": {
     "lint": "prettier --write . && eslint --fix --config .eslintrc.js --ext .js,.ts",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "test": "jest"
   },
   "lint-staged": {
     "*": "npm run lint"
