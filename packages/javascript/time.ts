@@ -28,3 +28,15 @@ export function timer(label = 'default', end = false): number {
   }
   return diff;
 }
+
+/**
+ * to pause a function make it async and use await sleep(duration);
+ * or use sleep() as a promise
+ * @method sleep
+ * @param  seconds
+ * @return
+ * @examples async function test(){console.log(1); await sleep(2); console.log(1);}
+ */
+export function sleep(seconds?: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, (seconds || 0) * 1000));
+}
