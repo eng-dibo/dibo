@@ -1,7 +1,6 @@
 import { test, expect, describe, jest } from '@jest/globals';
 import {
   objectType,
-  merge,
   includes,
   isIterable,
   isPromise,
@@ -37,53 +36,6 @@ describe('objectType', () => {
     test(el.type, () => {
       expect(objectType(el.value)).toEqual(el.type);
     });
-  });
-});
-
-describe('merge', () => {
-  test('merge array with other types', () => {
-    let elements = [
-        ['a', 'b'],
-        ['c', 'd'],
-        'e',
-        1,
-        null,
-        undefined,
-        true,
-        { x: 1 },
-      ],
-      result = ['a', 'b', 'c', 'd', 'e', 1, null, undefined, true, { x: 1 }];
-    expect(merge(...elements)).toEqual(result);
-  });
-
-  test('merge objects', () => {
-    expect(merge({ x: 1, y: 2 }, { y: 3, z: 4 })).toEqual({
-      x: 1,
-      y: 3,
-      z: 4,
-    });
-  });
-
-  test('merge object with string', () => {
-    expect(merge({ x: 1, y: 2 }, 'z')).toEqual({ x: 1, y: 2, z: undefined });
-  });
-
-  test('merge objects with numbers', () => {
-    expect(() => merge({ x: 1 }, 2)).toThrow('cannot merge object with number');
-  });
-
-  test('merge strings with numbers and arrays', () => {
-    expect(merge('a', 'b', ['c', 'd'], 1)).toEqual('abcd1');
-  });
-
-  test('merge a string with function', () => {
-    expect(() => merge('x', () => {})).toThrow(
-      'cannot merge string with function'
-    );
-  });
-
-  test('merge a number with other elements', () => {
-    expect(() => merge(1, 2)).toThrow('cannot merge number with number');
   });
 });
 

@@ -27,65 +27,6 @@ export function objectType(object: any): string {
     .replace(']', '')
     .toLowerCase();
 }
-
-/**
- * merges or concatenates arrays, strings and objects.
- * @param elements the elements that will be merged
- * @returns the final merged object
- *
- * @example
- *  merge([1,2], [3,4]) => [1,2,3,4]
- *  merge({x:1, y:2}, {y:3, z:4}) => {x:1, y:3, z:4}
- *  merge("x", "y") => "xy"
- */
-export function merge(...elements: any[]): any {
-  // don't use "arguments" in an arrow functions,
-  // also don't use 'this' inside a normal function,
-  let _arg = arguments,
-    target = elements.shift(),
-    targetType = objectType(target);
-
-  elements.forEach((el) => {
-    let elementType = objectType(el),
-      error = `cannot merge ${targetType} with ${elementType}`;
-    if (targetType === 'array') {
-      // if any element is not an array, it will be added to the target element
-      // ex: merge([1,2], [3,4], 5) => [1,2,3,4,5]
-      target = target.concat(el);
-    } else if (targetType === 'object') {
-      if (elementType === 'string') {
-        // ex: merge({x:1}, "y") => {x:1, y:undefined}
-        target[el] = undefined;
-      } else if (elementType === 'object') {
-        // ex: merge({x:1, y:2}, {y:3, z:4}) => {x:1, y:3, z:4}
-        target = Object.assign(target, el);
-      } else {
-        throw new Error(error);
-      }
-    } else if (targetType === 'string') {
-      if (['string', 'number'].includes(elementType)) {
-        // ex: merge("x","y") => "xy"
-        target += el;
-      } else if (elementType === 'array') {
-        // ex: merge("x", ["y","z"]) => "xyz"
-        el.forEach((item: any) => {
-          target = merge(target, item);
-        });
-      } else {
-        throw new Error(error);
-      }
-    } else if (targetType === 'class') {
-      // todo: add or override target's methods & properties
-    } else if (isIterable(target)) {
-      // todo: merge elements to the iterable target
-    } else {
-      throw new Error(error);
-    }
-  });
-
-  return target;
-}
-
 export interface IncludesOptions {
   // for string elements, default: false
   caseSensitive?: boolean;
@@ -120,7 +61,7 @@ export function includes(
     find: 'key',
     elementAsItem: true,
   };
-  options = merge(defaultOptions, options || {});
+  options = Object.assign(defaultOptions, options || {});
 
   // if element is Array, check if the container includes any of element[] items
   // todo: options.all=true, to check if the container includes *all* of them
