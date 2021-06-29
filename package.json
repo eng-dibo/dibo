@@ -5,7 +5,8 @@
   "scripts": {
     "lint": "prettier --write . && eslint --fix --config .eslintrc.js --ext .js,.ts",
     "prepare": "husky install",
-    "test": "jest"
+    "test": "jest",
+    "test:all": "jest --coverage --only-changed=false"
   },
   "lint-staged": {
     "*": "npm run lint"
