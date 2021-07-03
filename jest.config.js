@@ -1,14 +1,14 @@
 // https://jestjs.io/docs/cli
 
 let { pathsToModuleNameMapper } = require("ts-jest/utils");
+let stripJsonComments = require("strip-json-comments");
 
 const fs = require("fs");
 // todo: use `import { read } from "@engineers/nodejs/fs-sync.read()"`
 function readJson(path) {
-  let data = fs.readFileSync(path).toString();
+  let content = fs.readFileSync(path).toString();
   // strip comments from json file
-  data = data.replace(/(\/\/|#).*|\/\*(.|\n)*\*\//g, "");
-  return JSON.parse(data);
+  return JSON.parse(stripJsonComments(content));
 }
 
 let tsConfig = readJson("./tsconfig.json");
