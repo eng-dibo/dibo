@@ -1,0 +1,12 @@
+// this file is created to test reading .json files
+
+{
+  /* it should remove all comments */
+  /* even this 
+       multi-line comment 
+    */
+  // also this comment
+
+  "x": 1,
+  "hello": "ok"
+}
