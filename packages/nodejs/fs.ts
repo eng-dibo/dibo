@@ -179,10 +179,10 @@ export function read(
       encoding: opts.encoding,
       flag: opts.flag,
     })
-    .then((data) => data.toString())
+    .then((data) => (opts.mode === 'buffer' ? data : data.toString()))
     .then((data) =>
       opts.mode === 'json' || path.toString().trim().slice(-5) === '.json'
-        ? JSON.parse(stripJsonComments(data))
+        ? JSON.parse(stripJsonComments(data as string))
         : data
     );
 }

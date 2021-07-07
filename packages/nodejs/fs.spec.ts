@@ -23,8 +23,8 @@ let dir = resolve(__dirname, './test/fs'),
   file2 = `${dir}/file2.txt`,
   file3 = `${dir}/file3.txt`,
   file4 = `${dir}/file4.txt`,
-  fileJson = `${dir}/file.json`,
-  fileJsonComments = `${dir}/file-comments.json`,
+  fileJson = `${dir}/file-json.json`,
+  fileJsonComments = `${dir}/file-json-comments.json`,
   fileArray = `${dir}/file-array.json`;
 
 test('mkdir', () => {

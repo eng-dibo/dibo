@@ -223,7 +223,7 @@ export function write(
 }
 
 export interface ReadOptions {
-  mode?: 'json' | 'txt';
+  mode?: 'json' | 'txt' | 'buffer';
   encoding?: BufferEncoding | null;
   flag?:
     | 'a'
@@ -263,9 +263,13 @@ export function read(
   let data = readFileSync(path, {
     encoding: opts.encoding,
     flag: opts.flag,
-  }).toString();
+  });
+
+  if (opts.mode !== 'buffer') {
+    data = data.toString();
+  }
   return opts.mode === 'json' || path.toString().trim().slice(-5) === '.json'
-    ? JSON.parse(stripJsonComments(data))
+    ? JSON.parse(stripJsonComments(data as string))
     : data;
 }
 
