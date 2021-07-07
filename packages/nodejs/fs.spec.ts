@@ -18,7 +18,7 @@ import {
 import { existsSync } from 'fs';
 import { objectType } from '@engineers/javascript/objects';
 
-let dir = resolve(__dirname, './test/fs'),
+let dir = resolve(__dirname, './test!!/fs'),
   file1 = `${dir}/file1.txt`,
   file2 = `${dir}/file2.txt`,
   file3 = `${dir}/file3.txt`,
