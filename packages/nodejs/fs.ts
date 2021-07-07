@@ -154,8 +154,12 @@ export function write(
 
 export function read(
   path: PathLike,
-  options?: ReadOptions
+  options?: ReadOptions | BufferEncoding
 ): string | Array<any> | Obj {
+  if (typeof options === 'string') {
+    options = { encoding: options } as ReadOptions;
+  }
+
   let defaultOptions: ReadOptions = {
     mode: 'txt',
     encoding: null,
