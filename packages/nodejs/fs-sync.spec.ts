@@ -116,12 +116,6 @@ test('move', () => {
   expect(existsSync(file3)).toBeTruthy();
 });
 
-test('remove', () => {
-  remove([file3, file4]);
-  expect(existsSync(file3)).toBeFalsy();
-  expect(existsSync(file4)).toBeFalsy();
-});
-
 test('read', () => {
   let txt = read(file1),
     json = read(fileJson),
@@ -139,6 +133,8 @@ test('read', () => {
   expect(arr).toEqual([1, 2, 3]);
 });
 
+// remove all testing dir to clean the repo
+// always make this test case at the end
 test('remove dir', () => {
   expect(existsSync(file1)).toBeTruthy();
   expect(existsSync(dir)).toBeTruthy();

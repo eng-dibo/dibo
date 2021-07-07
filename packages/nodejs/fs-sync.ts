@@ -10,7 +10,7 @@ import {
   basename,
   extname,
 } from 'path';
-import { objectType } from '@engineers/javascript/objects';
+import { objectType, Obj } from '@engineers/javascript/objects';
 
 import {
   existsSync,
@@ -28,8 +28,7 @@ import {
   WriteFileOptions,
   readFileSync,
 } from 'fs';
-
-import { Obj } from '@engineers/javascript/objects';
+import stripJsonComments from 'strip-json-comments';
 
 /**
  * resolves path segments into an absolute path
@@ -107,7 +106,7 @@ export function mkdir(
 ): void {
   if (path instanceof Array) {
     return path.forEach((p: PathLike) => {
-      mkdir(p);
+      mkdir(p, mode);
     });
   }
 
@@ -209,18 +208,18 @@ export function remove(
 // todo: fix Cannot find module '@engineers/javascript/objects' from 'packages/nodejs/fs-sync.ts'
 // https://stackoverflow.com/questions/68185573/ts-jest-cannot-resolve-tsconfig-aliases
 export function write(
-  file: PathLike,
+  path: PathLike,
   data: any,
   options?: WriteFileOptions
 ): void {
-  file = resolve(file);
-  mkdir(basename(file));
+  path = resolve(path);
+  mkdir(basename(path));
   let dataString = ['array', 'object'].includes(objectType(data))
     ? JSON.stringify(data)
     : data;
   // todo: if(JSON.stringify error)->throw error
 
-  return writeFileSync(file, dataString, options);
+  return writeFileSync(path, dataString, options);
 }
 
 export interface ReadOptions {
@@ -247,7 +246,7 @@ export interface ReadOptions {
  * @param options
  */
 export function read(
-  file: PathLike,
+  path: PathLike,
   options?: ReadOptions
 ): string | Array<any> | Obj {
   let defaultOptions: ReadOptions = {
@@ -257,14 +256,13 @@ export function read(
   };
   let opts: ReadOptions = Object.assign({}, defaultOptions, options);
 
-  let data = readFileSync(file, {
+  let data = readFileSync(path, {
     encoding: opts.encoding,
     flag: opts.flag,
   }).toString();
-  if (opts.mode === 'json' || file.toString().trim().slice(-5) === '.json') {
-    return JSON.parse(stripComments(data));
-  }
-  return data;
+  return opts.mode === 'json' || path.toString().trim().slice(-5) === '.json'
+    ? JSON.parse(stripJsonComments(data))
+    : data;
 }
 
 /**
