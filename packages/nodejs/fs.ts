@@ -155,7 +155,7 @@ export function write(
 export function read(
   path: PathLike,
   options?: ReadOptions | BufferEncoding
-): string | Array<any> | Obj {
+): Promise<string | Array<any> | Obj> {
   if (typeof options === 'string') {
     options = { encoding: options } as ReadOptions;
   }
