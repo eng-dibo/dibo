@@ -18,8 +18,8 @@ import {
 import { existsSync } from 'fs';
 import { objectType } from '@engineers/javascript/objects';
 
-let dir = resolve(__dirname, './test'),
-  file1 = `${dir}/file.txt`,
+let dir = resolve(__dirname, './test/fs'),
+  file1 = `${dir}/file1.txt`,
   file2 = `${dir}/file2.txt`,
   file3 = `${dir}/file3.txt`,
   file4 = `${dir}/file4.txt`,
@@ -66,6 +66,11 @@ test('write', () => {
   });
 });
 
+test('write to non-existing dir', () => {
+  let _file = `${dir}/non-existing/file-write.txt`;
+  return write(_file, 'ok').then(() => expect(existsSync(_file)).toBeTruthy());
+});
+
 test('getSize', () =>
   Promise.all([getSize(file1), getSize(dir)]).then((value) =>
     expect(value).toEqual([37, 4096])
@@ -108,6 +113,11 @@ test('read', () =>
     expect(jsonWithComments).toEqual({ x: 1, hello: 'ok' });
     expect(arr).toEqual([1, 2, 3]);
   }));
+
+test('remove non-exists path', () => {
+  let file = `${dir}/non-existing/file-remove.txt`;
+  return remove(file).then(() => expect(existsSync(file)).toBeFalsy());
+});
 
 test('remove dir', () => {
   expect(existsSync(file1)).toBeTruthy();

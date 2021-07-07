@@ -213,7 +213,7 @@ export function write(
   options?: WriteFileOptions
 ): void {
   path = resolve(path);
-  mkdir(basename(path));
+  mkdir(dirname(path));
   let dataString = ['array', 'object'].includes(objectType(data))
     ? JSON.stringify(data)
     : data;

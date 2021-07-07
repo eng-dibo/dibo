@@ -18,7 +18,7 @@ import {
   ReadOptions,
   stripComments,
 } from './fs-sync';
-import { basename } from 'path';
+import { dirname } from 'path';
 import { objectType, Obj } from '@engineers/javascript/objects';
 import stripJsonComments from 'strip-json-comments';
 // todo: import { lstat } from 'fs/promises';
@@ -109,27 +109,34 @@ export function remove(
 
   let _path = resolve(path);
   let opts = Object.assign({}, { keepDir: false }, options);
-  isDir(_path).then(() => isDir(_path));
 
-  return fsp
-    .access(_path, constants.R_OK)
-    .then(() => isDir(_path))
-    .then((_isDir: boolean) => {
-      return !_isDir
-        ? fsp.unlink(_path)
-        : fsp
-            .readdir(_path)
-            .then((files: any[]) =>
-              Promise.all(
-                files.map((file) => {
-                  return remove(`${_path}/${file}`, opts);
-                })
+  return (
+    fsp
+      .access(_path, constants.R_OK)
+      .then(() => isDir(_path))
+      .then((_isDir: boolean) =>
+        !_isDir
+          ? fsp.unlink(_path)
+          : fsp
+              .readdir(_path)
+              .then((files: any[]) =>
+                Promise.all(
+                  files.map((file) => {
+                    return remove(`${_path}/${file}`, opts);
+                  })
+                )
               )
-            )
-            .then(() => (!opts.keepDir ? fsp.rmdir(_path) : Promise.resolve()));
-    })
+              .then(() =>
+                !opts.keepDir ? fsp.rmdir(_path) : Promise.resolve()
+              )
+      )
+      // if the file doesn't exist, skip
+      .catch((err) => {})
+      .finally(() => {
+        /* void */
+      })
+  );
 
-    .then(() => {});
   // todo: or {file: boolean}
   // .then(() => true)
   // .catch(() => false)
@@ -142,7 +149,7 @@ export function write(
   options?: WriteFileOptions & Abortable
 ): Promise<void> {
   path = resolve(path);
-  return mkdir(basename(path))
+  return mkdir(dirname(path))
     .then(() =>
       ['array', 'object'].includes(objectType(data))
         ? JSON.stringify(data)

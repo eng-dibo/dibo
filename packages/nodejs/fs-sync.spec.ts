@@ -14,15 +14,15 @@ import {
 } from './fs-sync';
 import { objectType } from '@engineers/javascript/objects';
 
-import { existsSync, writeFileSync } from 'fs';
+import { exists, existsSync, writeFileSync } from 'fs';
 
-let dir = resolve(__dirname, './test-sync'),
-  file1 = `${dir}/file.txt`,
+let dir = resolve(__dirname, './test/fs-sync'),
+  file1 = `${dir}/file1.txt`,
   file2 = `${dir}/file2.txt`,
   file3 = `${dir}/file3.txt`,
   file4 = `${dir}/file4.txt`,
-  fileJson = `${dir}/file.json`,
-  fileJsonComments = `${dir}/file-comments.json`,
+  fileJson = `${dir}/file-json.json`,
+  fileJsonComments = `${dir}/file-json-comments.json`,
   fileArray = `${dir}/file-array.json`;
 
 test('mkdir', () => {
@@ -62,6 +62,12 @@ test('write', () => {
   expect(existsSync(file1)).toBeTruthy();
   expect(existsSync(fileJson)).toBeTruthy();
   expect(existsSync(fileArray)).toBeTruthy();
+});
+
+test('write to non-existing dir', () => {
+  let file = `${dir}/non-existing/file-write.txt`;
+  write(file, 'ok');
+  expect(existsSync(file)).toBeTruthy();
 });
 
 test('resolve', () => {
@@ -131,6 +137,12 @@ test('read', () => {
   expect(json).toEqual({ x: 1, y: 2 });
   expect(jsonWithComments).toEqual({ x: 1, hello: 'ok' });
   expect(arr).toEqual([1, 2, 3]);
+});
+
+test('remove non-exists path', () => {
+  let file = `${dir}/non-existing/file-remove.txt`;
+  remove(file);
+  expect(existsSync(file)).toBeFalsy();
 });
 
 // remove all testing dir to clean the repo
