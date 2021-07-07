@@ -1,2 +1,0 @@
-this file is created to test fs functions
-don't modify it's content otherwise some tests will fail, such as getSize()

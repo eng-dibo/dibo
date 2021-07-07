@@ -149,6 +149,7 @@ export function move(
   newPath: PathLike,
   options?: MoveOptions
 ): void {
+  // todo: mkdir(path) then renameSync()
   return renameSync(path, newPath);
 }
 

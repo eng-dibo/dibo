@@ -10,17 +10,59 @@ import {
   move,
   remove,
   read,
+  write,
 } from './fs-sync';
 import { objectType } from '@engineers/javascript/objects';
 
 import { existsSync, writeFileSync } from 'fs';
 
-let file = resolve(__dirname, './test/test.txt'),
-  dir = resolve(__dirname, './test'),
-  subdir = `${dir}/subdir/xx`,
-  myfile = `${dir}/myfile.txt`,
-  myfile2 = `${dir}/myfile2.txt`,
-  myfile3 = `${dir}/myfile3.txt`;
+let dir = resolve(__dirname, './test-sync'),
+  file1 = `${dir}/file.txt`,
+  file2 = `${dir}/file2.txt`,
+  file3 = `${dir}/file3.txt`,
+  file4 = `${dir}/file4.txt`,
+  fileJson = `${dir}/file.json`,
+  fileJsonComments = `${dir}/file-comments.json`,
+  fileArray = `${dir}/file-array.json`;
+
+test('mkdir', () => {
+  expect(existsSync(dir)).toBeFalsy();
+  mkdir(dir);
+  expect(existsSync(dir)).toBeTruthy();
+});
+
+test('write', () => {
+  expect(existsSync(file1)).toBeFalsy();
+  expect(existsSync(fileJson)).toBeFalsy();
+  expect(existsSync(fileArray)).toBeFalsy();
+
+  write(file1, 'this file is generated during testing');
+  write(file2, 'this file is generated during testing');
+  write(file4, 'this file is generated during testing');
+  write(fileJson, { x: 1, y: 2 });
+  write(fileArray, [1, 2, 3]);
+  write(
+    fileJsonComments,
+    `// this file is created to test reading .json files that contains comments
+     // to test stripComments()
+
+  {
+    /* it should remove all comments */
+    /* even this 
+         multi-line comment 
+      */
+    // also this comment
+
+    "x": 1,
+    "hello": "ok"
+  }
+  `
+  );
+
+  expect(existsSync(file1)).toBeTruthy();
+  expect(existsSync(fileJson)).toBeTruthy();
+  expect(existsSync(fileArray)).toBeTruthy();
+});
 
 test('resolve', () => {
   expect(resolve('/path', 'to/file.js')).toEqual('/path/to/file.js');
@@ -49,17 +91,17 @@ test('size units', () => {
 });
 
 test('getSize', () => {
-  expect(getSize(file)).toEqual(117);
+  expect(getSize(file1)).toEqual(37);
   expect(getSize(dir)).toBeGreaterThan(4000);
 });
 
 test('isDir', () => {
-  expect(isDir(file)).toEqual(false);
+  expect(isDir(file1)).toEqual(false);
   expect(isDir(dir)).toEqual(true);
 });
 
 test('getModifiedTime', () => {
-  expect(Math.floor(getModifiedTime(file))).toBeGreaterThanOrEqual(
+  expect(Math.floor(getModifiedTime(file1))).toBeGreaterThanOrEqual(
     1624906832178
   );
   expect(Math.floor(getModifiedTime(dir))).toBeGreaterThanOrEqual(
@@ -67,49 +109,40 @@ test('getModifiedTime', () => {
   );
 });
 
-writeFileSync(myfile, 'this file is generated during testing');
-writeFileSync(myfile3, 'this file is generated during testing');
-
-test('mkdir', () => {
-  remove(subdir);
-  expect(existsSync(subdir)).toBeFalsy();
-  mkdir(subdir);
-  expect(existsSync(subdir)).toBeTruthy();
-});
-
 test('move', () => {
-  expect(existsSync(myfile)).toBeTruthy();
-  move(myfile, myfile2);
-  expect(existsSync(myfile)).toBeFalsy();
-  expect(existsSync(myfile2)).toBeTruthy();
+  expect(existsSync(file2)).toBeTruthy();
+  move(file2, file3);
+  expect(existsSync(file2)).toBeFalsy();
+  expect(existsSync(file3)).toBeTruthy();
 });
 
 test('remove', () => {
-  remove([myfile2, myfile3]);
-  expect(existsSync(myfile2)).toBeFalsy();
-  expect(existsSync(myfile3)).toBeFalsy();
-});
-
-test('remove dir', () => {
-  mkdir(subdir);
-  writeFileSync(`${subdir}/file1.txt`, '');
-  writeFileSync(`${subdir}/file2.txt`, '');
-  expect(existsSync(`${subdir}/file1.txt`)).toBeTruthy();
-  expect(existsSync(subdir)).toBeTruthy();
-  remove(subdir);
-  expect(existsSync(subdir)).toBeFalsy();
+  remove([file3, file4]);
+  expect(existsSync(file3)).toBeFalsy();
+  expect(existsSync(file4)).toBeFalsy();
 });
 
 test('read', () => {
-  let txt = read(`${dir}/test.txt`),
-    obj = read(`${dir}/test.json`),
-    arr = read(`${dir}/test-array.json`);
+  let txt = read(file1),
+    json = read(fileJson),
+    jsonWithComments = read(fileJsonComments),
+    arr = read(fileArray);
 
-  expect(txt.length).toEqual(117);
-  expect(txt).toContain('this file is created to test fs functions');
+  expect(txt.length).toEqual(37);
+  expect(txt).toContain('this file is generated during testing');
   expect(objectType(txt)).toEqual('string');
-  expect(objectType(obj)).toEqual('object');
+  expect(objectType(json)).toEqual('object');
+  expect(objectType(jsonWithComments)).toEqual('object');
   expect(objectType(arr)).toEqual('array');
-  expect(obj).toEqual({ x: 1, hello: 'ok' });
+  expect(json).toEqual({ x: 1, y: 2 });
+  expect(jsonWithComments).toEqual({ x: 1, hello: 'ok' });
   expect(arr).toEqual([1, 2, 3]);
+});
+
+test('remove dir', () => {
+  expect(existsSync(file1)).toBeTruthy();
+  expect(existsSync(dir)).toBeTruthy();
+  remove([dir]);
+  expect(existsSync(file1)).toBeFalsy();
+  expect(existsSync(dir)).toBeFalsy();
 });
