@@ -1,12 +1,13 @@
 {
   "name": "@eng-dibo/dibo",
   "description": "A monorepo for multiple projects",
-  "version": "0.0.1",
+  "version": "0.0.0-development",
   "scripts": {
     "lint": "prettier --write . && eslint --fix --config .eslintrc.js --ext .js,.ts",
     "prepare": "husky install",
     "test": "jest",
-    "test:all": "jest --coverage --only-changed=false"
+    "test:all": "jest --coverage --only-changed=false",
+    "semantic-release": "semantic-release"
   },
   "lint-staged": {
     "*": "npm run lint"
@@ -70,6 +71,7 @@
     "lint-staged": "^10.5.4",
     "prettier": "^2.2.1",
     "protractor": "~7.0.0",
+    "semantic-release": "^17.4.4",
     "strip-json-comments": "^3.1.1",
     "ts-jest": "^27.0.3",
     "ts-node": "~8.3.0",
