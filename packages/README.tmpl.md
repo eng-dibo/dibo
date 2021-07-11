@@ -1,6 +1,6 @@
 # {{name}}
 
-{{description}}
+{{ intro || description}}
 
 ## install
 
