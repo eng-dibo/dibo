@@ -1,0 +1,152 @@
+import { test, expect, afterAll } from '@jest/globals';
+import {
+  connect,
+  Uri,
+  model,
+  mongoose,
+  query,
+  listDatabases,
+  listCollections,
+  backup,
+  BackupData,
+  restore,
+  getConnection,
+} from './index';
+import shortId from 'shortid';
+
+// todo: get uri from user.env!!.json
+// https://cloud.mongodb.com/v2/5bc831c29ccf64e6ceb8d15b#metrics/replicaSet/60f01cd09f632f7e383aff79/explorer
+let uri: Uri = {
+  host: process.env.db_host || 'cluster0.v3unb.mongodb.net',
+  username: process.env.db_username || 'admin',
+  password: process.env.db_password || 'Testing@xx',
+  srv: true,
+  dbName: 'spec',
+};
+
+// only run tests if credentials provided
+
+uri = Object.assign({ host: '127.0.0.1', dbName: 'spec' }, uri);
+
+let booksSchema = { name: 'string', serial: 'number' },
+  options = { shortId: true },
+  booksModel = model('books', booksSchema, options),
+  backupData: BackupData;
+
+afterAll(() =>
+  // drop all databases used for testing and close the connection after finishing testing
+  // to avoid open handlers
+  Promise.all(
+    ['spec', 'spec2']
+      .map((db) => mongoose.connection.useDb(db))
+      .map((con) => {
+        con.db.dropDatabase().then(() => con.close());
+      })
+  )
+);
+
+test('connect -> wrong auth', () => {
+  let uri2 = Object.assign({}, uri, { password: 'wrong' });
+  return expect(connect(uri2)).rejects.toThrow('bad auth');
+  // or: return connect(uri2).catch((err) => {expect(err.toString()).toMatch('bad auth');});
+});
+
+test('connect -> wrong host', () => {
+  let uri2 = Object.assign({}, uri, { host: 'wrong.gbdqa.gcp.mongodb.net' });
+  return expect(connect(uri2)).rejects.toThrow('ENOTFOUND');
+});
+
+test('connect', () => {
+  return connect(uri).then((cn) => {
+    expect(cn).toBeInstanceOf(mongoose.Mongoose);
+  });
+});
+
+test('connect to an existing connection', () => {
+  return connect(uri).then((cn) => {
+    expect(cn).toBeInstanceOf(mongoose.Mongoose);
+  });
+});
+
+test('model', () => {
+  expect(booksModel.prototype).toBeInstanceOf(mongoose.Model);
+  expect(booksModel.schema.obj).toHaveProperty('name', 'string');
+  expect(booksModel.schema.obj).toHaveProperty('serial', 'number');
+  expect(booksModel.schema.path('_id')).toBeInstanceOf(
+    mongoose.SchemaTypes.String
+  );
+  expect(booksModel.schema.path('_id')).toHaveProperty(
+    'defaultValue',
+    shortId.generate
+  );
+});
+
+test('query', () => {
+  return booksModel
+    .create({ name: 'book#1' }, { name: 'book#2' })
+    .then(() => query('find', 'books'))
+    .then((books) => {
+      expect(books).toBeInstanceOf(Array);
+      expect(books.length).toEqual(2);
+      expect(books[0].name).toEqual('book#1');
+    });
+});
+
+test('listDatabases', () => {
+  return listDatabases().then((dbs: any[]) => {
+    // check that there is a database called 'spec'
+    let db = dbs.filter((el) => el.name === 'spec');
+    expect(db).toBeInstanceOf(Array);
+    expect(db.length).toEqual(1);
+  });
+});
+
+test('listCollections', () => {
+  return listCollections('spec').then((collections: any[]) => {
+    let collection = collections.filter((el) => el.name === 'books');
+    expect(collection).toBeInstanceOf(Array);
+    expect(collection.length).toEqual(1);
+  });
+});
+
+test('backup', () => {
+  return backup().then((_backup: BackupData) => {
+    let spec = _backup.spec,
+      books = spec.books;
+
+    expect(books.info.name).toEqual('books');
+    expect(books.data.length).toEqual(2);
+    expect(books.data[0].name).toEqual('book#1');
+
+    // for the next text 'restore'
+    backupData = _backup;
+  });
+});
+test('restore', () => {
+  backupData = { spec2: backupData.spec };
+  return restore(backupData)
+    .then(() => listCollections('spec2'))
+    .then((collections) => {
+      expect(collections[0].name).toEqual('books');
+    })
+    .then(() =>
+      query(
+        'find',
+        // todo: use empty schema, i.e: model('books',{},...)
+        model('books', { name: 'string' }, { strict: false }, 'spec'),
+        [{} /*, { rawResult: true }*/]
+      )
+    )
+    .then((data: any) => {
+      /* 
+        // for testing using empty schema
+        console.log({
+          data,
+          el: data[0],
+          name: data[0].name,
+          createdAt: data[0].createdAt,
+          v: data[0].__v,
+        });*/
+      expect(data[0].name).toEqual('book#1');
+    });
+});
