@@ -27,20 +27,29 @@ export default function (options: InitOptions | string): void {
   if (!opts.credential) {
     if (opts.serviceAccount) {
       opts.credential = credential.cert(opts.serviceAccount);
-    }
-
-    if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+    } else if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
       opts.credential = credential.applicationDefault();
     }
 
-    // todo: throw error: no credentials provided
+    // todo: else throw error: no credentials provided
   }
 
-  if (!opts.projectId && opts.serviceAccount) {
-    if (typeof opts.serviceAccount === 'string') {
-      opts.serviceAccount = require(opts.serviceAccount);
+  // get projectId from credentials or serviceAccount
+  if (!opts.projectId) {
+    // @ts-ignore: projectId' does not exist on type 'Credential'
+    if (opts.credential!.projectId) {
+      // @ts-ignore
+      opts.projectId = opts.credential.projectId;
+    } else if (opts.serviceAccount) {
+      if (typeof opts.serviceAccount === 'string') {
+        opts.serviceAccount = require(opts.serviceAccount);
+      }
+      console.log({ xx: opts.serviceAccount });
+      opts.serviceAccount = opts.serviceAccount as ServiceAccount;
+      opts.projectId =
+        // @ts-ignore: 'project_id' does not exist on type 'ServiceAccount'
+        opts.serviceAccount.projectId || opts.serviceAccount.project_id;
     }
-    opts.projectId = (opts!.serviceAccount as ServiceAccount).projectId;
   }
 
   delete opts.serviceAccount;
@@ -60,6 +69,5 @@ export default function (options: InitOptions | string): void {
       opts.authDomain = `${opts.projectId}.firebaseapp.com`;
     }*/
   }
-
   initializeApp(opts, opts.name);
 }
