@@ -21,7 +21,11 @@ module.exports = {
        - add it to tsconfig.json
        https://stackoverflow.com/a/61959593/12577650
    */
-  ignorePatterns: ["**/*.*"],
+
+  // ignoring any non-standard file extensions
+  // including files without extensions such as `Dockerfile`
+  // to solve: he extension for the file () is non-standard
+  ignorePatterns: ["**/*.*", "**/*"],
   plugins: [
     "eslint-plugin-import",
     "eslint-plugin-jsdoc",
