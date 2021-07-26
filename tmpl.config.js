@@ -13,7 +13,10 @@ export default function (tmplPath, config) {
   return {
     // todo: merge with the existing config.values{}
     values: {
+      // npm organization scope i.e: @scope/package-name
       scope: "engineers",
+      // google cloud project id
+      gcloud: "dibo-cloud",
       packageName,
       repo: "https://github.com/eng-dibo/dibo",
       npm: "https://www.npmjs.com/org/engineers",
