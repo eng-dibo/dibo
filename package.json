@@ -7,7 +7,8 @@
     "prepare": "husky install",
     "test": "jest",
     "test:all": "jest --coverage --only-changed=false",
-    "semantic-release": "semantic-release"
+    "semantic-release": "semantic-release",
+    "vscode": "export project=$PWD && npm run docker:stop --prefix=projects/vscode && npm run docker:run --prefix=projects/vscode"
   },
   "lint-staged": {
     "*": "npm run lint"
