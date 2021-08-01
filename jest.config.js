@@ -1,5 +1,8 @@
 // https://jestjs.io/docs/cli
 
+// run 'ngcc' https://thymikee.github.io/jest-preset-angular/docs/guides/angular-ivy/
+require("jest-preset-angular/ngcc-jest-processor");
+
 let { pathsToModuleNameMapper } = require("ts-jest/utils");
 let stripJsonComments = require("strip-json-comments");
 
@@ -15,9 +18,10 @@ let tsConfig = readJson("./tsconfig.json");
 let { compilerOptions } = tsConfig;
 
 module.exports = {
-  // use ts-jest to compile test files written in typescript
-  // alternatively, run `tsc` to compile .ts files first.
-  preset: "ts-jest",
+  // use 'ts-jest' to enable type checking while testing
+  // use 'jest-preset-angular' for angular projects (built in top of ts-jest)
+  // 'jest-preset-angular' requires tsconfig.spec.json file
+  preset: "jest-preset-angular",
   testEnvironment: "node",
   // don't inject jest methods (test,describe,...) to the global scope
   // you must import them from '@jest/globals
@@ -52,4 +56,30 @@ module.exports = {
     // https://github.com/kulshekhar/ts-jest/issues/2718
     // "(.*)": "<rootDir>/node_modules/$1",
   },
+
+  // jest setups for each testing file,
+  // for example: preparing the testing environment
+  setupFilesAfterEnv: ["<rootDir>/jest-setup.ts"],
+
+  // todo: causes error: AggregatedResult must be present after test run is complete
+  // watch: true,
 };
+
+/*
+ // to change 'ts-jest' options
+
+  // get the default ts-jest options of 'jest-preset-angular' to override them
+ const tsJestPreset = require('jest-preset-angular/jest-preset').globals['ts-jest'];
+ {
+   globals:{
+    'ts-jest': {
+      // default options
+      ...tsJestPreset,
+      // your options
+      tsConfig: 'tsconfig.spec.json'
+    }
+  }
+}
+ }
+
+*/
