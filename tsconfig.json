@@ -39,7 +39,10 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     /* todo: enable this option https://stackoverflow.com/a/50241920/12577650 */
-    "strictPropertyInitialization": false
+    "strictPropertyInitialization": false,
+    // fixes ngcc failed to run on ngx-sharebuttons
+    // https://github.com/MurhafSousli/ngx-sharebuttons/issues/474#issuecomment-715603754
+    "skipLibCheck": true
   },
   "exclude": ["node_modules", "dist", "**/*.spec.ts", "**/e2e"],
   "angularCompilerOptions": {
