@@ -1,0 +1,98 @@
+// todo: use @use instead of @import https://sass-lang.com/documentation/at-rules/import
+// not supported by sass-loader, use dart-loader https://github.com/webpack-contrib/sass-loader#getting-started
+// todo: '~' is deprecated https://github.com/webpack-contrib/sass-loader#resolving-import-at-rules
+@import "~@ngx-share/button/themes/default/default-theme";
+@import "~quill/dist/quill.core.css";
+@import "~quill/dist/quill.snow.css";
+
+mat-card-title h1,
+h3 {
+  font-size: unset;
+  margin: 0;
+}
+
+// by default image is stretched to be full width, we give it it's original width
+.mat-card-image {
+  display: block;
+  margin: auto;
+  //width: unset;
+}
+
+.masonry {
+  column-count: 4;
+  column-gap: 1em;
+}
+.masonry .masonry-item {
+  display: inline-block;
+  margin: 0 0 1em;
+  width: 100%;
+}
+@media (max-width: 1000px) {
+  .masonry {
+    column-count: 3;
+  }
+}
+
+@media (max-width: 800px) {
+  .masonry {
+    column-count: 2;
+  }
+}
+
+@media (max-width: 550px) {
+  .masonry {
+    column-count: 1;
+  }
+}
+
+mat-card {
+  margin: 15px auto;
+  padding: 10px;
+  border: solid thin #c9c1c1;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+mat-card div[mat-card-avatar] {
+  overflow: hidden;
+  border: solid medium gray;
+}
+mat-card-img {
+  margin: 16px auto;
+}
+
+// todo: mat-card-header{display:flex} prevents this
+mat-card-title {
+  text-align: center;
+}
+
+mat-card-title a {
+  text-decoration: none;
+  color: inherit;
+  font-weight: bold;
+}
+
+/* to display title beside the avater*/
+mat-card-title a h1 {
+  display: inline;
+}
+
+/* todo: css direction dosen't have the value 'auto' */
+mat-card-title,
+mat-card-subtitle,
+mat-card-content,
+dir-auto {
+  direction: auto;
+}
+
+mat-card-subtitle {
+  padding: 15px 0;
+}
+
+mat-card-subtitle span {
+  margin: 10px;
+}
+/* remove text-align:left because it prevent dir="auto" */
+.ql-editor {
+  text-align: inherit !important;
+}

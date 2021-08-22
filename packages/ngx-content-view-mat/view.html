@@ -1,0 +1,69 @@
+<!--
+todo:
+- adjust pipes by the data providor
+  i.e: instead of using "title | length:200", data.title must be provided correctly,
+  or use options to adjust it.
+-  as of angular 9 @ngx-share/buttons has an issue: Cannot read property 'shareButton' of undefined
+  https://github.com/MurhafSousli/ngx-sharebuttons/issues/429#issuecomment-583906237
+  so we temporary stopped <share-buttons>
+ -->
+<ng-container *ngIf="data; else loading">
+  <!-- *ngTemplateOutlet="!data===null?noContent:type==.." -->
+  <ng-container
+    *ngTemplateOutlet="type=='item'?itemBlock:options.layout=='list'?listBlock:gridBlock; context:{data:data}"
+  ></ng-container>
+</ng-container>
+
+<ng-template let-item="data" #itemBlock>
+  <ngx-content-article
+    [data]="item"
+    type="item"
+    [options]="options"
+  ></ngx-content-article>
+</ng-template>
+
+<ng-template #gridBlock let-data="data">
+  <!-- tmp: *cdkVirtualFor not work-->
+  <div class="masonry">
+    <div class="masonry-item" *ngFor="let item of data">
+      <ngx-content-article
+        [data]="item"
+        type="list"
+        [options]="options"
+      ></ngx-content-article>
+    </div>
+  </div>
+
+  <!-- todo: *cdkVirtualFor not work, temporary remove cdk scroll
+    <!-- todo: use the same scroll bar for cdk/scrolling and the browser scrollbar--
+    <cdk-virtual-scroll-viewport itemSize="5" style="height:500vh">
+      <div class="masonry">
+        <div class="masonry-item" *cdkVirtualFor="let item of data">
+          <ngx-content-article [data]="item" type="list"></ngx-content-article>
+        </div>
+      </div>
+    </cdk-virtual-scroll-viewport>
+    -->
+</ng-template>
+
+<ng-template #listBlock let-data="data">
+  <mat-list>
+    <mat-list-item *ngFor="let item of data">
+      <h4 mat-line dir="auto">
+        <a href="{{item.link || '#'}}">{{item.title | length:200}}</a>
+      </h4>
+      <h6 mat-line dir="auto">{{item.subtitle | length:200}}</h6>
+      <div mat-line [innerHtml]="item.content | summary" dir="auto"></div>
+      <!-- todo: add cancel btn -->
+    </mat-list-item>
+  </mat-list>
+</ng-template>
+
+<ng-template #noContent
+  >{{options.noContent || 'No content!'}} <br />
+  <a href="{{options.back || '/'}}">Back</a>
+</ng-template>
+
+<ng-template #loading>
+  <ngx-loading [show]="true"></ngx-loading>
+</ng-template>

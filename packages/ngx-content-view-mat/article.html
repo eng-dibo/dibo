@@ -1,0 +1,97 @@
+<mat-card>
+  <mat-card-header>
+    <div *ngIf="data.author && data.author.image" mat-card-avatar>
+      <img src="{{data.author.image}}" alt="{{data.author.name}}" />
+    </div>
+    <mat-card-title dir="auto">
+      <a href="{{data.link || '#'}}">
+        <!--todo: options.titleLength -->
+        <!--todo: dynamic element (html tag) ex: <{{options.titleTag || 'h1'}}> -->
+        <h1 *ngIf="type=='item'">{{data.title | length:200}}</h1>
+        <h3 *ngIf="type!='item'">{{data.title | length:200}}</h3>
+      </a></mat-card-title
+    >
+    <mat-card-subtitle *ngIf="data.author">
+      <span dir="auto"
+        ><a *ngIf="data.author.link" href="{{data.author.link}}"
+          >{{data.author.name}}</a
+        >
+        <span *ngIf="!data.author.link">{{data.author.name}}</span>
+      </span>
+      <!--todo: a pipe to convert timestamp or Date to string -->
+      <span>{{data.createdAt || data.updatedAt }}</span>
+    </mat-card-subtitle>
+  </mat-card-header>
+
+  <!--
+      notes:
+        - use attr.width instead of width to remove this attribute if data.cover.width
+          has no value (i.e: null)
+          https://stackoverflow.com/a/62048326/12577650
+    -->
+  <mat-card-content dir="auto">
+    <!-- todo:
+       - <img  [debug]="options.dev"
+            [errorImage]="siteLogo or placeholder?text=siteName"
+            [scrollTarget]="$cdk-virtual-scroll-viewport"
+            (onStateChange)="onStateChange($event)" />
+       - if(!data.cover.lazy) remove attribute lazyLoad
+       - ng-lazyload-image hooks
+      -->
+
+    <img
+      *ngIf="data.cover"
+      mat-card-image
+      [attr.width]="data.cover.width"
+      [attr.height]="data.cover.height"
+      lazyLoad="{{data.cover.lazy? data.cover.srcset || data.cover.src || '' : null}}"
+      defaultImage="{{data.cover.lazy? data.cover.placeholder || '//via.placeholder.com/'+(data.cover.width||'500')+'x'+(data.cover.height||'250')+'.webp?text=loading...':null}}"
+      [useSrcset]="data.cover.lazy && !!data.cover.srcset"
+      src="{{data.cover.src || null}}"
+      srcset="{{data.cover.srcset || null}}"
+      sizes="{{data.cover.sizes || null}}"
+      alt="{{data.cover.alt || data.title}}"
+    />
+
+    <!--
+      in item mode, use <quill-view> to render the contet that was generated via <quill-editor>
+        https://www.npmjs.com/package/ngx-quill#quillviewcomponent---using-quilljs-to-render-content
+       todo:
+       if(quillView)use <quill-view>
+       else use <div *ngIf="type=='list'" class="content" [innerHtml]="data.content"></div>
+      -->
+    <quill-view-html
+      #quillView
+      [content]="data.content"
+      theme="snow"
+    ></quill-view-html>
+  </mat-card-content>
+  <!-- todo: use content[] to add content segments, ex: for jobs we need to add: expiration alert -> content -> contacts -->
+  <mat-card-actions>
+    <!-- todo:
+      <share-buttons show="5"></share-buttons>
+    -->
+  </mat-card-actions>
+
+  <mat-chip-list aria-label="keywords" *ngIf="data.keywords">
+    <mat-chip
+      *ngFor="let item of data.keywords"
+      matBadge="{{item.count}}"
+      matBadgeOverlap="true"
+    >
+      <a *ngIf="item.link" href="{{item.link}}" target="{{item.tagret}}"
+        >{{item.text}}</a
+      >
+      <span *ngIf="!item.link">{{item.text}}</span>
+    </mat-chip>
+  </mat-chip-list>
+</mat-card>
+
+<!-- <mat-card-actions>
+    <button mat-flat-button color="primary">
+      <mat-icon>like</mat-icon> Like
+    </button>
+    <button mat-flat-button color="accent">
+      <mat-icon>share</mat-icon> SHARE
+    </button>
+  </mat-card-actions> -->
