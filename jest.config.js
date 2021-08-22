@@ -31,21 +31,32 @@ module.exports = {
   // output the coverage report (--coverage in cli)
   collectCoverage: false,
   moduleDirectories: ["node_modules", "types"],
-  moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
+  moduleFileExtensions: [
+    "ts",
+    "tsx",
+    "js",
+    "jsx",
+    "json",
+    "node",
+    "html",
+    "scss",
+    "css",
+  ],
   transform: {
-    "^.+\\.(t|j)sx?$": "ts-jest",
+    // transform non-js files with 'jest-preset-angular' to let jest understand their syntax
+    // so it can compile angular component's template and style files
+    // https://thymikee.github.io/jest-preset-angular/docs/getting-started/options/#exposed-configuration
+    // https://github.com/thymikee/jest-preset-angular/issues/992?notification_referrer_id=MDE4Ok5vdGlmaWNhdGlvblRocmVhZDIzMTMyODI4NTE6NTczMDg1MzE%3D#issuecomment-902427868
+    "^.+\\.(ts|js|html)$": "jest-preset-angular",
   },
-  /* todo:
+  /*
    pathsToModuleNameMapper generates moduleNameMapper from tsconfig.compilerOptions.paths
    https://huafu.github.io/ts-jest/user/config/#paths-mapping
-   todo: fix: Could not locate module source-map-support
-   https://github.com/kulshekhar/ts-jest/issues/1968#issuecomment-871522777
-   fix by mapping to `<rootDir>/packages/$1`,
-   but pathsToModuleNameMapper is mapping to `<rootDir>/./packages/$1`
+   // fixed: pathsToModuleNameMapper is mapping to `<rootDir>/./packages/$1`
    https://github.com/kulshekhar/ts-jest/issues/2709
-   const moduleNameMapper = require("tsconfig-paths-jest")(tsConfig); didn't help
+   */
 
-  moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, {
+  /* moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, {
     prefix: "<rootDir>",
   }),*/
 
