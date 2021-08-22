@@ -15,6 +15,12 @@ export function escape(value: string): string {
  * @param  value
  * @return
  */
-export function toRegExp(value: string | RegExp): RegExp {
-  return typeof value === 'string' ? new RegExp(escape(value)) : value;
+export function toRegExp(
+  value: string | RegExp,
+  flags?: string,
+  escapeString = true
+): RegExp {
+  return typeof value === 'string'
+    ? new RegExp(escapeString ? escape(value) : value, flags)
+    : value;
 }
