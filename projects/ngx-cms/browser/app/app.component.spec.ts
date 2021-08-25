@@ -1,33 +1,39 @@
-import { TestBed } from '@angular/core/testing';
+/**
+ * @jest-environment jsdom
+ */
+
+import { test, expect, beforeAll, beforeEach, describe } from '@jest/globals';
+
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from './app.component';
 
-describe('AppComponent', () => {
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [RouterTestingModule],
-      declarations: [AppComponent],
-    }).compileComponents();
-  });
+let fixture: ComponentFixture<AppComponent>,
+  app: AppComponent,
+  template: HTMLElement;
 
-  it('should create the app', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
-  });
+beforeAll(() => {
+  TestBed.configureTestingModule({
+    imports: [RouterTestingModule],
+    declarations: [AppComponent],
+  }).compileComponents();
 
-  it(`should have as title 'ngx-cms'`, () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app.title).toEqual('ngx-cms');
-  });
+  fixture = TestBed.createComponent(AppComponent);
+  app = fixture.componentInstance;
+  template = fixture.nativeElement;
+  fixture.detectChanges();
+});
 
-  it('should render title', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement;
-    expect(compiled.querySelector('.content span').textContent).toContain(
-      'ngx-cms app is running!'
-    );
-  });
+test('should create the app', () => {
+  expect(app).toBeTruthy();
+});
+
+test(`should have as title 'ngx-cms'`, () => {
+  expect(app.title).toEqual('ngx-cms');
+});
+
+test('should render title', () => {
+  expect(template.querySelector('.content span')!.textContent).toContain(
+    'ngx-cms app is running!'
+  );
 });
