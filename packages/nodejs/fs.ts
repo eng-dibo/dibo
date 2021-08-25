@@ -10,6 +10,7 @@ import {
   MakeDirectoryOptions,
   WriteFileOptions,
   Abortable,
+  lstatSync,
 } from 'fs';
 import {
   MoveOptions,
@@ -18,7 +19,7 @@ import {
   ReadOptions,
   stripComments,
 } from './fs-sync';
-import { dirname } from 'path';
+import { dirname, join } from 'path';
 import { objectType, Obj } from '@engineers/javascript/objects';
 import stripJsonComments from 'strip-json-comments';
 // todo: import { lstat } from 'fs/promises';
@@ -185,4 +186,53 @@ export function read(
         ? JSON.parse(stripJsonComments(data as string))
         : data
     );
+}
+
+// todo: getEntriesGenerator() : uses nodejs.generator or rxjs.observable
+// to provide results sequentially, better for big directors
+// todo: don't use `await` to prevent blocking the execution,
+// i.e: execute operations in parallel
+// todo: use concurrency(operation,pool=10,...args)
+export async function getEntries(
+  dir = '.',
+  filter?: ((entry: string) => boolean) | RegExp | 'files' | 'dirs' | '*',
+  depth?: number
+): Promise<Array<string>> {
+  let _filter: ((entry: string) => boolean) | undefined;
+
+  if (filter === 'files') {
+    _filter = (entry: string) => lstatSync(entry).isFile();
+  } else if (filter === 'dirs') {
+    _filter = (entry: string) => lstatSync(entry).isDirectory();
+  } else if (filter === '*') {
+    _filter = undefined;
+  } else if (filter instanceof RegExp) {
+    _filter = (entry: string) => (filter as RegExp).test(entry);
+  } else if (typeof filter === 'function') {
+    _filter = filter;
+  }
+  let entries = await fsp.readdir(dir);
+  let result: Array<string> = [];
+
+  for (let entry of entries) {
+    let fullPath = join(dir, entry);
+    if (!_filter || (_filter as (entry: string) => boolean)(fullPath)) {
+      result.push(fullPath);
+    }
+
+    if (
+      (depth === undefined || depth > 0) &&
+      lstatSync(fullPath).isDirectory()
+    ) {
+      let subEntries = await getEntries(
+        fullPath,
+        filter,
+        depth !== undefined ? depth - 1 : undefined
+      );
+      result = result.concat(subEntries);
+    }
+  }
+
+  // same as Promise.resolve(result) because the function in async
+  return result;
 }

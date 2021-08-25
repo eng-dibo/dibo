@@ -1,4 +1,11 @@
-import { test, expect, beforeEach, afterEach, describe } from '@jest/globals';
+import {
+  test,
+  expect,
+  beforeEach,
+  beforeAll,
+  afterEach,
+  describe,
+} from '@jest/globals';
 import {
   resolve,
   parsePath,
@@ -11,6 +18,7 @@ import {
   remove,
   read,
   write,
+  getEntries,
 } from './fs-sync';
 import { objectType } from '@engineers/javascript/objects';
 
@@ -51,10 +59,6 @@ describe('clean state', () => {
 describe('auto create files and clean test dir', () => {
   beforeEach(() => {
     write(file, 'ok');
-  });
-
-  afterEach(() => {
-    remove(dir);
   });
 
   test('write to non-existing dir', () => {
@@ -172,5 +176,105 @@ describe('auto create files and clean test dir', () => {
     let file2 = `${dir}/non-existing/file.txt`;
     remove(file2);
     expect(existsSync(file2)).toBeFalsy();
+  });
+});
+
+describe('getEntries', () => {
+  let entries = ['file.txt', 'file.js'];
+  beforeEach(() => {
+    entries.forEach((el) => {
+      write(`${dir}/${el}`, '');
+      write(`${dir}/subdir/${el}`, '');
+    });
+  });
+
+  test('list all entries recursively', () => {
+    expect(getEntries(dir).sort()).toEqual(
+      // all files in dir with full path
+      entries
+        .map((el) => `${dir}/${el}`)
+        // all files in subdir
+        .concat(entries.map((el) => `${dir}/subdir/${el}`))
+        // also include subdir itself
+        .concat([dir + '/subdir'])
+        .sort()
+    );
+  });
+
+  test('filter by function', () => {
+    // list all js files only
+    expect(getEntries(dir, (el) => el.indexOf('.js') > -1)).toEqual([
+      dir + '/file.js',
+      dir + '/subdir/file.js',
+    ]);
+  });
+
+  test('filter by regex', () => {
+    expect(getEntries(dir, /subdir/).sort()).toEqual(
+      entries
+        .map((el) => `${dir}/subdir/${el}`)
+        .concat([`${dir}/subdir`])
+        .sort()
+    );
+  });
+
+  test('filter by type: files', () => {
+    expect(getEntries(dir, 'files').sort()).toEqual(
+      entries
+        .map((el) => `${dir}/${el}`)
+        .concat(entries.map((el) => `${dir}/subdir/${el}`))
+        .sort()
+    );
+  });
+  test('filter by type: dirs', () => {
+    expect(getEntries(dir, 'dirs')).toEqual([dir + '/subdir']);
+  });
+
+  test('depth=0', () => {
+    entries.forEach((el) => {
+      write(`${dir}/subdir/extra/${el}`, '');
+    });
+
+    expect(getEntries(dir, undefined, 0).sort()).toEqual(
+      entries
+        .map((el) => `${dir}/${el}`)
+        .concat([dir + '/subdir'])
+        .sort()
+    );
+  });
+
+  test('depth=1', () => {
+    entries.forEach((el) => {
+      write(`${dir}/subdir/extra/${el}`, '');
+    });
+
+    expect(getEntries(dir, undefined, 1).sort()).toEqual(
+      entries
+        .map((el) => `${dir}/${el}`)
+        .concat([dir + '/subdir', dir + '/subdir/extra'])
+        .concat(entries.map((el) => `${dir}/subdir/${el}`))
+        .sort()
+    );
+  });
+
+  test('depth=2', () => {
+    entries.forEach((el) => {
+      write(`${dir}/subdir/extra/${el}`, '');
+    });
+
+    expect(getEntries(dir, undefined, 2).sort()).toEqual(
+      entries
+        .map((el) => `${dir}/${el}`)
+        .concat([dir + '/subdir', dir + '/subdir/extra'])
+        .concat(entries.map((el) => `${dir}/subdir/${el}`))
+        .concat(entries.map((el) => `${dir}/subdir/extra/${el}`))
+        .sort()
+    );
+  });
+
+  test('non existing dir', () => {
+    expect(() => getEntries(dir + '/non-existing')).toThrow(
+      'no such file or directory'
+    );
   });
 });

@@ -301,3 +301,58 @@ export function stripComments(content: string): string {
   // (.|\n)*: matches any character including newline
   return content.replace(/(\/\/|#).*|\/\*(.|\n)*\*\//g, '');
 }
+
+/**
+ * get entries (files and directories) recursively.
+ * @param dir the root path to start search from.
+ * @param filter filters the entries by a function or regex pattern
+ * or entry type (file or directory)
+ * @param depth if provided, the search will stop at the specified depth
+ * @returns promise that resolves to the filtered entries.
+ */
+
+export function getEntries(
+  dir = '.',
+  filter?: ((entry: string) => boolean) | RegExp | 'files' | 'dirs' | '*',
+  depth?: number
+): Array<string> {
+  let _filter: ((entry: string) => boolean) | undefined;
+
+  if (filter === 'files') {
+    _filter = (entry: string) => lstatSync(entry).isFile();
+  } else if (filter === 'dirs') {
+    _filter = (entry: string) => lstatSync(entry).isDirectory();
+  } else if (filter === '*') {
+    _filter = undefined;
+  } else if (filter instanceof RegExp) {
+    _filter = (entry: string) => (filter as RegExp).test(entry);
+  } else if (typeof filter === 'function') {
+    _filter = filter;
+  }
+  // todo: else if(typeof entry === 'string'){/* glob pattern */}
+
+  let entries = readdirSync(dir);
+  let result: Array<string> = [];
+
+  entries.forEach((entry) => {
+    let fullPath = join(dir, entry);
+    if (!_filter || (_filter as (entry: string) => boolean)(fullPath)) {
+      result.push(fullPath);
+    }
+
+    // also add entries of subdirectories
+    if (
+      (depth === undefined || depth > 0) &&
+      lstatSync(fullPath).isDirectory()
+    ) {
+      let subEntries = getEntries(
+        fullPath,
+        filter,
+        depth !== undefined ? depth - 1 : undefined
+      );
+      result = result.concat(subEntries);
+    }
+  });
+
+  return result;
+}

@@ -14,6 +14,7 @@ import {
   move,
   read,
   remove,
+  getEntries,
 } from './fs';
 import { existsSync } from 'fs';
 import { objectType } from '@engineers/javascript/objects';
@@ -22,7 +23,7 @@ let dir = resolve(__dirname, './test!!/fs'),
   file = dir + '/file.txt';
 
 afterEach(() => {
-  remove(dir);
+  return remove(dir);
 });
 
 describe('clean state', () => {
@@ -52,10 +53,6 @@ describe('clean state', () => {
 describe('auto create files and clean test dir', () => {
   beforeEach(() => {
     return write(file, 'ok');
-  });
-
-  afterEach(() => {
-    return remove(dir);
   });
 
   test('getSize', () =>
@@ -138,5 +135,122 @@ describe('auto create files and clean test dir', () => {
   test('remove non-exists path', () => {
     let file2 = `${dir}/non-existing/file.txt`;
     return remove(file2).then(() => expect(existsSync(file2)).toBeFalsy());
+  });
+});
+
+describe.only('getEntries', () => {
+  let entries = ['file.txt', 'file.js'];
+  beforeEach(() => {
+    return Promise.all(
+      entries.map((el) => {
+        return write(`${dir}/${el}`, '').then(() =>
+          write(`${dir}/subdir/${el}`, '')
+        );
+      })
+    );
+  });
+
+  test('list all entries recursively', () => {
+    return getEntries(dir).then((result) => {
+      expect(result.sort()).toEqual(
+        // all files in dir with full path
+        entries
+          .map((el) => `${dir}/${el}`)
+          // all files in subdir
+          .concat(entries.map((el) => `${dir}/subdir/${el}`))
+          // also include subdir itself
+          .concat([dir + '/subdir'])
+          .sort()
+      );
+    });
+  });
+
+  test('filter by function', () => {
+    return getEntries(dir, (el) => el.indexOf('.js') > -1).then((result) => {
+      expect(result).toEqual([dir + '/file.js', dir + '/subdir/file.js']);
+    });
+  });
+
+  test('filter by regex', () => {
+    return getEntries(dir, /subdir/).then((result) => {
+      expect(result.sort()).toEqual(
+        entries
+          .map((el) => `${dir}/subdir/${el}`)
+          .concat([`${dir}/subdir`])
+          .sort()
+      );
+    });
+  });
+
+  test('filter by type: files', () => {
+    return getEntries(dir, 'files').then((result) => {
+      expect(result.sort()).toEqual(
+        entries
+          .map((el) => `${dir}/${el}`)
+          .concat(entries.map((el) => `${dir}/subdir/${el}`))
+          .sort()
+      );
+    });
+  });
+
+  test('filter by type: dirs', () => {
+    getEntries(dir, 'dirs').then((result) => {
+      expect(result).toEqual([dir + '/subdir']);
+    });
+  });
+
+  test('depth=0', async () => {
+    for (let el of entries) {
+      await write(`${dir}/subdir/extra/${el}`, '');
+    }
+
+    return getEntries(dir, undefined, 0).then((result) => {
+      expect(result.sort()).toEqual(
+        entries
+          .map((el) => `${dir}/${el}`)
+          .concat([dir + '/subdir'])
+          .sort()
+      );
+    });
+  });
+
+  test('depth=1', async () => {
+    for (let el of entries) {
+      await write(`${dir}/subdir/extra/${el}`, '');
+    }
+
+    return getEntries(dir, undefined, 1).then((result) => {
+      expect(result.sort()).toEqual(
+        entries
+          .map((el) => `${dir}/${el}`)
+          .concat([dir + '/subdir', dir + '/subdir/extra'])
+          .concat(entries.map((el) => `${dir}/subdir/${el}`))
+          .sort()
+      );
+    });
+  });
+
+  test('depth=2', async () => {
+    for (let el of entries) {
+      await write(`${dir}/subdir/extra/${el}`, '');
+    }
+
+    getEntries(dir, undefined, 2).then((result) => {
+      expect(result.sort()).toEqual(
+        entries
+          .map((el) => `${dir}/${el}`)
+          .concat([dir + '/subdir', dir + '/subdir/extra'])
+          .concat(entries.map((el) => `${dir}/subdir/${el}`))
+          .concat(entries.map((el) => `${dir}/subdir/extra/${el}`))
+          .sort()
+      );
+    });
+  });
+
+  test('non existing dir', () => {
+    expect.hasAssertions();
+    return expect(getEntries(dir + '/non-existing')).rejects.toThrow(
+      Error(`ENOENT: no such file or directory, scandir '${dir}/non-existing'`)
+    );
   });
 });
