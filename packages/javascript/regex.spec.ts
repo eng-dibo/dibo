@@ -1,5 +1,5 @@
 import { test, expect, describe, jest } from '@jest/globals';
-import { escape, toRegExp } from './regex';
+import { escape, toRegExp, toFilter } from './regex';
 
 test('escape', () => {
   expect(escape('a[bc{d}[e]f')).toEqual('a\\[bc\\{d\\}\\[e\\]f');
@@ -8,4 +8,23 @@ test('escape', () => {
 test('toRegExp', () => {
   expect(toRegExp('x')).toEqual(/x/);
   expect(toRegExp('x[y]')).toEqual(/x\[y\]/);
+  expect(toRegExp(['x', 'y'])).toEqual(/x|y/);
+});
+
+test('toFilter: string', () => {
+  expect(toFilter('x')).toEqual(expect.any(Function));
+  expect(toFilter('x')('x')).toEqual(true);
+  expect(toFilter('x')('y')).toEqual(false);
+});
+
+test('toFilter: regex', () => {
+  expect(toFilter(/x/)).toEqual(expect.any(Function));
+  expect(toFilter(/x/)('x')).toEqual(true);
+  expect(toFilter(/x/)('y')).toEqual(false);
+});
+test('toFilter: Array<string>', () => {
+  expect(toFilter(['x', 'y'])).toEqual(expect.any(Function));
+  expect(toFilter(['x', 'y'])('x')).toEqual(true);
+  expect(toFilter(['x', 'y'])('y')).toEqual(true);
+  expect(toFilter(['x', 'y'])('z')).toEqual(false);
 });
