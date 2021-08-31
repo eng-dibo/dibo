@@ -1,0 +1,10 @@
+{
+  "name": "@engineers/webpack",
+  "version": "1.0.0",
+  "private": false,
+  "description": "webpack utils and plugins",
+  "peerDependencies": {
+    "webpack": "",
+    "@engineers/javascript": ""
+  }
+}
