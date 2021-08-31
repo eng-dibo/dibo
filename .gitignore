@@ -10,9 +10,12 @@ node_modules
 *.cache
 *.tmp
 
-# any folder or file ends with '!!', ex: notes!!
+# any folder or file ends with '!!' or '~~', 
+# examples: notes!!, notes!!.md
 *!!
 *!!.*
+*~~
+*~~.*
 
 # test coverage
 coverage
