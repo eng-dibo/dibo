@@ -1,4 +1,4 @@
-export type Pattern = string | RegExp | Array<string>;
+export type Pattern = string | RegExp | Array<string | RegExp>;
 export type Filter = (value: any) => boolean;
 
 /**
@@ -28,7 +28,15 @@ export function toRegExp(
   if (typeof value === 'string') {
     value = escapeString ? escape(value) : value;
   } else if (value instanceof Array) {
-    value = value.map((el) => (escapeString ? escape(el) : el)).join('|');
+    value = value
+      .map((el) => {
+        if (el instanceof RegExp) {
+          // we don't need to escape a RegExp pattern, only escape strings
+          return el.source;
+        }
+        return escapeString ? escape(el) : el;
+      })
+      .join('|');
   }
   return typeof value === 'string' ? new RegExp(value, flags) : value;
 }
