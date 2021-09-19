@@ -7,6 +7,8 @@ import {
   isEmpty,
   chunk,
   cleanObject,
+  filterObjectByKeys,
+  stringToObject,
 } from './objects';
 
 let types = [
@@ -139,4 +141,16 @@ describe('cleanObject', () => {
     expect(() => cleanObject('not object')).toThrow();
   });
   // todo: test an object that has circular references
+});
+
+test('filterObjectByKeys', () => {
+  let object = { a: 1, b: 2, c: 3, d: 4 },
+    keys = ['a', 'c'];
+  expect(filterObjectByKeys(object, keys)).toEqual({ a: 1, c: 3 });
+});
+
+test('stringToObject', () => {
+  let obj = stringToObject('a.b.c', 'value');
+  expect(obj).toEqual({ a: { b: { c: 'value' } } });
+  expect(obj.a.b.c).toEqual('value');
 });

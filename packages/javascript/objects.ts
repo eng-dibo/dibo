@@ -194,3 +194,50 @@ export function cleanObject(object: Obj): Obj {
 
   return object;
 }
+
+/**
+ * filter objects by keys
+ * @example
+ *   object = {a:1, b:2, c:3, d: 4}
+ *   keys = ['a', 'b']
+ *   filterObjectByKeys(object, keys) -> {a:1, b:2}
+ * @param object
+ * @param keys
+ * @returns
+ */
+export function filterObjectByKeys(object: Obj, keys: Array<string>): Obj {
+  // https://stackoverflow.com/a/47443227/12577650
+  return keys.reduce((obj, key) => ({ ...obj, [key]: object[key] }), {});
+
+  // or: https://stackoverflow.com/a/54976713/12577650
+  // return Object.assign({}, ...keys.map((key) => ({ [key]: keys[key] })));
+}
+
+/**
+ * converts string with dot notation into an object key
+ * @example 'a.b.c' -> {a: {b:{ c: value}}}
+ */
+export function stringToObject(keys: string | Array<string>, value?: any): Obj {
+  let obj: Obj = {};
+  if (typeof keys === 'string') {
+    keys = keys.split('.');
+  }
+
+  let tmp = obj;
+
+  for (let i = 0; i < keys.length - 1; i++) {
+    let key = keys[i];
+
+    if (!(key in tmp)) {
+      tmp[key] = {};
+    }
+
+    tmp = tmp[key];
+  }
+
+  // last element
+  let key = keys[keys.length - 1];
+  tmp[key] = value;
+
+  return obj;
+}
