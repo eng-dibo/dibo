@@ -1,13 +1,13 @@
-# vscode
+# @engineers/ngx-universal-express
 
-a cloud based visual studio code
+convert Angular projects into universal apps using `expressjs`
 
 ## install
 
 install the package and it's peer dependencies:
 
 ```
-npm i vscode
+npm i @engineers/ngx-universal-express
 ```
 
 you can build this package and any of our packages yourself from [source](https://github.com/eng-dibo/dibo/tree/main/packages)

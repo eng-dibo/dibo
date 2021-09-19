@@ -1,13 +1,13 @@
-# vscode
+# @engineers/ngx-content-view-mat
 
-a cloud based visual studio code
+renders an object into a content using `material design`, built on top of `ngx-content-core`
 
 ## install
 
 install the package and it's peer dependencies:
 
 ```
-npm i vscode
+npm i @engineers/ngx-content-view-mat
 ```
 
 you can build this package and any of our packages yourself from [source](https://github.com/eng-dibo/dibo/tree/main/packages)

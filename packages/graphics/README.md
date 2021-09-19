@@ -1,13 +1,13 @@
-# vscode
+# @engineers/graphics
 
-a cloud based visual studio code
+create and modify images via sharp
 
 ## install
 
 install the package and it's peer dependencies:
 
 ```
-npm i vscode
+npm i @engineers/graphics
 ```
 
 you can build this package and any of our packages yourself from [source](https://github.com/eng-dibo/dibo/tree/main/packages)

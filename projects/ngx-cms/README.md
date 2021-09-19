@@ -1,27 +1,41 @@
-# NgxCms
+# ngx-cms
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 11.2.11.
+## install
 
-## Development server
+install the package and it's peer dependencies:
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+```
+npm i ngx-cms
+```
 
-## Code scaffolding
+you can build this package and any of our packages yourself from [source](https://github.com/eng-dibo/dibo/tree/main/packages)
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+## contributing
 
-## Build
+contributing with us are very welcome.
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+read our [contributing guide](https://github.com/eng-dibo/dibo/blob/main/CONTRIBUTING.md)
 
-## Running unit tests
+## support us
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+- [paypal](https://paypal.me/group99001)
 
-## Running end-to-end tests
+- [patreon](https://www.patreon.com/GoogleDev)
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+## useful packages by `@engineers`
 
-## Further help
+- check out these useful packages that created by [@engineers organization](https://www.npmjs.com/org/engineers)
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+  - [dibo-system](https://github.com/eng-dibo/dibo/tree/main/packages/dibo-system)
+  - [firebase-admin](https://github.com/eng-dibo/dibo/tree/main/packages/firebase-admin)
+  - [graphics](https://github.com/eng-dibo/dibo/tree/main/packages/graphics)
+  - [javascript](https://github.com/eng-dibo/dibo/tree/main/packages/javascript)
+  - [mongoose](https://github.com/eng-dibo/dibo/tree/main/packages/mongoose)
+  - [ngx-content-core](https://github.com/eng-dibo/dibo/tree/main/packages/ngx-content-core)
+  - [ngx-content-view-mat](https://github.com/eng-dibo/dibo/tree/main/packages/ngx-content-view-mat)
+  - [ngx-universal-express](https://github.com/eng-dibo/dibo/tree/main/packages/ngx-universal-express)
+  - [ngx-utils](https://github.com/eng-dibo/dibo/tree/main/packages/ngx-utils)
+  - [nodejs](https://github.com/eng-dibo/dibo/tree/main/packages/nodejs)
+  - [rxjs](https://github.com/eng-dibo/dibo/tree/main/packages/rxjs)
+  - [tmpl](https://github.com/eng-dibo/dibo/tree/main/packages/tmpl)
+  - [webpack](https://github.com/eng-dibo/dibo/tree/main/packages/webpack)

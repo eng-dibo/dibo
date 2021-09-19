@@ -1,13 +1,17 @@
-# vscode
+# @engineers/firebase-admin
 
-a cloud based visual studio code
+tools for firebase-admin SDK
+
+- initializes a new firebase app.
+- uploads & downloads files to firebase storage buckets.
+- converts your `express` app into a `firebase cloud function`.
 
 ## install
 
 install the package and it's peer dependencies:
 
 ```
-npm i vscode
+npm i @engineers/firebase-admin
 ```
 
 you can build this package and any of our packages yourself from [source](https://github.com/eng-dibo/dibo/tree/main/packages)

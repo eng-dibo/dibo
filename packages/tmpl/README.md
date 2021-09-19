@@ -7,17 +7,10 @@ generate files from templates using ejs engine
 install the package and it's peer dependencies:
 
 ```
-npm i @engineers/tmpl ejs
+npm i @engineers/tmpl
 ```
 
-you can build this package and any of our packages yourself from [source](https://github.com/eng-dibo/ngx/tree/master/packages)
-
-## useful packages by `engineers`
-
-- check out these useful packages that created by engineers
-
-  https://www.npmjs.com/org/engineers?tab=packages
-  https://github.com/eng-dibo/dibo
+you can build this package and any of our packages yourself from [source](https://github.com/eng-dibo/dibo/tree/main/packages)
 
 ## contributing
 
@@ -28,4 +21,23 @@ read our [contributing guide](https://github.com/eng-dibo/dibo/blob/main/CONTRIB
 ## support us
 
 - [paypal](https://paypal.me/group99001)
+
 - [patreon](https://www.patreon.com/GoogleDev)
+
+## useful packages by `@engineers`
+
+- check out these useful packages that created by [@engineers organization](https://www.npmjs.com/org/engineers)
+
+  - [dibo-system](https://github.com/eng-dibo/dibo/tree/main/packages/dibo-system)
+  - [firebase-admin](https://github.com/eng-dibo/dibo/tree/main/packages/firebase-admin)
+  - [graphics](https://github.com/eng-dibo/dibo/tree/main/packages/graphics)
+  - [javascript](https://github.com/eng-dibo/dibo/tree/main/packages/javascript)
+  - [mongoose](https://github.com/eng-dibo/dibo/tree/main/packages/mongoose)
+  - [ngx-content-core](https://github.com/eng-dibo/dibo/tree/main/packages/ngx-content-core)
+  - [ngx-content-view-mat](https://github.com/eng-dibo/dibo/tree/main/packages/ngx-content-view-mat)
+  - [ngx-universal-express](https://github.com/eng-dibo/dibo/tree/main/packages/ngx-universal-express)
+  - [ngx-utils](https://github.com/eng-dibo/dibo/tree/main/packages/ngx-utils)
+  - [nodejs](https://github.com/eng-dibo/dibo/tree/main/packages/nodejs)
+  - [rxjs](https://github.com/eng-dibo/dibo/tree/main/packages/rxjs)
+  - [tmpl](https://github.com/eng-dibo/dibo/tree/main/packages/tmpl)
+  - [webpack](https://github.com/eng-dibo/dibo/tree/main/packages/webpack)

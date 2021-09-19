@@ -1,13 +1,19 @@
-# vscode
+# @engineers/ngx-utils
 
-a cloud based visual studio code
+tools for Angular
+
+- dynamically injects a component into the DOM.
+- dynamically loads resources (js, css, images, ...).
+- manages meta tags.
+- manages routes.
+- rxjs.
 
 ## install
 
 install the package and it's peer dependencies:
 
 ```
-npm i vscode
+npm i @engineers/ngx-utils
 ```
 
 you can build this package and any of our packages yourself from [source](https://github.com/eng-dibo/dibo/tree/main/packages)

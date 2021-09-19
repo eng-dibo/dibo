@@ -1,13 +1,13 @@
-# vscode
+# @engineers/rxjs
 
-a cloud based visual studio code
+rxjs
 
 ## install
 
 install the package and it's peer dependencies:
 
 ```
-npm i vscode
+npm i @engineers/rxjs
 ```
 
 you can build this package and any of our packages yourself from [source](https://github.com/eng-dibo/dibo/tree/main/packages)

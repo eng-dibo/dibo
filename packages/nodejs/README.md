@@ -1,13 +1,13 @@
-# vscode
+# @engineers/nodejs
 
-a cloud based visual studio code
+nodejs utils
 
 ## install
 
 install the package and it's peer dependencies:
 
 ```
-npm i vscode
+npm i @engineers/nodejs
 ```
 
 you can build this package and any of our packages yourself from [source](https://github.com/eng-dibo/dibo/tree/main/packages)

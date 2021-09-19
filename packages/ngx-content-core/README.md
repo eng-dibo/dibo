@@ -1,13 +1,13 @@
-# vscode
+# @engineers/ngx-content-core
 
-a cloud based visual studio code
+tools for managing the content in Angular.
 
 ## install
 
 install the package and it's peer dependencies:
 
 ```
-npm i vscode
+npm i @engineers/ngx-content-core
 ```
 
 you can build this package and any of our packages yourself from [source](https://github.com/eng-dibo/dibo/tree/main/packages)

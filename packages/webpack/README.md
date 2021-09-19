@@ -1,13 +1,13 @@
-# vscode
+# @engineers/webpack
 
-a cloud based visual studio code
+webpack utils and plugins
 
 ## install
 
 install the package and it's peer dependencies:
 
 ```
-npm i vscode
+npm i @engineers/webpack
 ```
 
 you can build this package and any of our packages yourself from [source](https://github.com/eng-dibo/dibo/tree/main/packages)

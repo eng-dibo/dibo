@@ -1,13 +1,18 @@
-# vscode
+# @engineers/mongoose
 
-a cloud based visual studio code
+automates most of mongoose work
+
+[mongoose](https://www.npmjs.com/package/mongoose) is a [MongoDB](https://www.mongodb.org/) object modeling tool designed to work in an asynchronous environment. Mongoose supports both promises and callbacks.
+
+this package automates most of mongoose work.
+also it supports full backup and restore functionality.
 
 ## install
 
 install the package and it's peer dependencies:
 
 ```
-npm i vscode
+npm i @engineers/mongoose
 ```
 
 you can build this package and any of our packages yourself from [source](https://github.com/eng-dibo/dibo/tree/main/packages)
