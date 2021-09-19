@@ -11,7 +11,8 @@
     "vscode": "export project=$PWD && npm run docker:stop --prefix=projects/vscode && npm run docker:run --prefix=projects/vscode",
     "task": "ts-node  -r tsconfig-paths/register ./tasks/index.ts",
     "tasks:build": "webpack --entry=./tasks/index.ts  --output-path=./tasks/tasks~~.js",
-    "update": "ng update @angular/core@latest @angular/cli@latest --force &&  @angular/material --force && ng update --force --allow-dirty"
+    "ng:update": "ng update --force --allow-dirty",
+    "update": "npm run ng:update @angular/core@latest @angular/cli@latest && npm run ng:update @angular/material && npm run ng:update"
   },
   "lint-staged": {
     "*": "npm run lint"

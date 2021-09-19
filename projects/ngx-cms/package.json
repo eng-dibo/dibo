@@ -8,7 +8,7 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "update": "npm run update --prefex=../.. && ng update --force --allow-dirty"
+    "update": "npm run update --prefix=../.. && ng update --force --allow-dirty"
   },
   "private": false,
   "dependencies": {},
