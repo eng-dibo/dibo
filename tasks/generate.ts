@@ -10,6 +10,7 @@ const rootPath = resolve('..');
  */
 export default function generate(): Promise<void> {
   return generatePackages();
+  // todo: then generateReadMe()
 }
 
 /**
