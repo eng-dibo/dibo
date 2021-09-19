@@ -6,6 +6,7 @@ import {
   stringToObject,
   objectType,
 } from '@engineers/javascript/objects';
+import { toNumber } from '@engineers/javascript/string';
 
 export interface Argv {
   // list of commands (i.e: non-options)
@@ -33,6 +34,16 @@ export function parseArgv(args?: string | Array<string>): Argv {
   let argsObj: Argv = { cmd: [], options: {}, external: '' };
 
   let setOption = (key: string, value: any) => {
+    if (typeof value === 'string') {
+      if (value === 'true') {
+        value = true;
+      } else if (value === 'false') {
+        value = false;
+      } else {
+        // convert to a number if possible
+        value = toNumber(value);
+      }
+    }
     if (argsObj.options[key]) {
       if (!(argsObj.options[key] instanceof Array)) {
         argsObj.options[key] = [argsObj.options[key]];
@@ -60,7 +71,12 @@ export function parseArgv(args?: string | Array<string>): Argv {
   }
 
   for (let i = 0; i < args.length; i++) {
-    let arg = args[i];
+    let arg = args[i].trim();
+
+    // remove extra spaces between args
+    if (arg === '') {
+      continue;
+    }
     // `--no-key` -> {key: false}
     if (/^--no-.+/.test(arg)) {
       let match = arg.match(/^--no-(.+)/),
@@ -179,7 +195,7 @@ export function toArgv(argsObj: Argv): string {
     argv += el + ' ';
   });
 
-  // todo: dash options (ex: -a)
+  // consumer has to convert dash options, ex: convert `--a` to `-a`
   for (let key in argsObj.options) {
     if (argsObj.options.hasOwnProperty(key)) {
       let value = argsObj.options[key];
@@ -188,17 +204,21 @@ export function toArgv(argsObj: Argv): string {
           argv += `--${key}=${el} `;
         });
       } else if (objectType(value) === 'object') {
-        for (let i = 0; i < value.length; i++) {
-          // todo:
-          argv += '--OBJ';
-        }
+        // todo: convert objects to a string with dot notation
+        // {a: {b: 1}} -> 'a.b=1'
+        argv += '--OBJ';
       } else {
         argv += `--${key}=${value} `;
       }
     }
   }
 
-  argv += argsObj.external;
+  if (argsObj.external) {
+    let external = argsObj.external.trim();
+    if (external !== '') {
+      argv += `-- ${argsObj.external}`;
+    }
+  }
 
   return argv;
 }
