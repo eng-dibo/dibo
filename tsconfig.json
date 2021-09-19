@@ -62,5 +62,45 @@
     "strictLiteralTypes": true,
     /* todo: enable, it causes error in angular components (html files) ex: <span dir="auto"> */
     "strictAttributeTypes": false
+  },
+  /*
+  tsconfig for `ts-node` only, it requires `module` to be `commonjs, otherwise it will throw the error
+  cannot use import outside a module
+  https://webpack.js.org/configuration/configuration-languages/#typescript
+  https://typestrong.org/ts-node/docs/imports#commonjs
+
+  webpack uses `ts-node` to compile `webpack.config.ts` 
+
+  we can add 'ts-node' property to tsconfig.json to override the existing configs
+  or create a tsconfig file that extends the main tsconfig and override configs for ts-node
+  then use `TS_NODE_PROJECT` to change the tsconfig file.
+  example: in package.json/scripts:
+  cross-env TS_NODE_PROJECT=\"tsconfig.webpack.json\" webpack --config webpack.config.ts
+
+  you can override 'module' value for certain files by `moduleTypes` option
+  https://typestrong.org/ts-node/docs/module-type-overrides
+  */
+  "ts-node": {
+    "compilerOptions": {
+      "sourceMap": false,
+      "module": "commonjs"
+    },
+    // enable ts-node to use tsconfig.compilerOptions.path:
+    // - in runtime, example: `node dist/transpiled-file.js`
+    // - to compile webpack config file in typescript, example: `webpack --config webpack.config.ts`
+    // npm i -D tsconfig-paths
+    // https://typestrong.org/ts-node/docs/paths
+    // https://webpack.js.org/configuration/configuration-languages/#typescript
+    // todo: causes error: require() of ES modules is not supported.
+    // https://github.com/webpack/webpack/issues/14157#issuecomment-914223400
+    // todo: causes error: _jestWorker(...).Worker is not a constructor with `jest`
+    // https://github.com/dividab/tsconfig-paths/issues/178
+    "require": ["tsconfig-paths/register"],
+    "transpileOnly": true,
+    "moduleTypes": {
+      // compile `webpack.config.ts` as commonjs
+      "**/webpack.config.ts": "cjs",
+      "**/webpack.config.*.ts": "cjs"
+    }
   }
 }
