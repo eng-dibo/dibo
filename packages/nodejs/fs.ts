@@ -215,17 +215,16 @@ export async function getEntries(
   let result: Array<string> = [];
 
   for (let entry of entries) {
-    let fullPath = join(dir, entry);
-    if (!_filter || (_filter as (entry: string) => boolean)(fullPath)) {
-      result.push(fullPath);
+    let path = join(dir, entry),
+      fullPath = resolve(dir, entry);
+
+    if (!_filter || (_filter as (entry: string) => boolean)(path)) {
+      result.push(path);
     }
 
-    if (
-      (depth === undefined || depth > 0) &&
-      lstatSync(fullPath).isDirectory()
-    ) {
+    if ((depth === undefined || depth > 0) && lstatSync(path).isDirectory()) {
       let subEntries = await getEntries(
-        fullPath,
+        path,
         filter,
         depth !== undefined ? depth - 1 : undefined
       );
