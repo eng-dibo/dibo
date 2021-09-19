@@ -1,0 +1,5 @@
+{
+  "version": "0.0.1",
+  "private": false,
+  "description": "adds lifecycle to any project and manages projects lifecycle, allows using hooks and third party plugins"
+}
