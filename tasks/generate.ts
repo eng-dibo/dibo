@@ -1,7 +1,9 @@
 import { getEntries, read, write } from '@engineers/nodejs/fs';
 import { read as readSync } from '@engineers/nodejs/fs-sync';
 import { filterObjectByKeys, Obj } from '@engineers/javascript/objects';
-import { resolve } from 'path';
+import { basename, dirname, resolve } from 'path';
+import { existsSync } from 'fs';
+import ejs from 'ejs';
 
 const rootPath = resolve('..');
 
@@ -9,8 +11,7 @@ const rootPath = resolve('..');
  * generates build files such as package.json, readme.md, etc.
  */
 export default function generate(): Promise<void> {
-  return generatePackages();
-  // todo: then generateReadMe()
+  return generatePackages().then(() => generateReadMe());
 }
 
 /**
@@ -40,13 +41,54 @@ function generatePackages(): Promise<void> {
         entries.map((entry: string) => {
           return (
             read(entry)
-              .then((content) => Object.assign(content, rootData))
-              // todo: lint
+              .then((content) =>
+                Object.assign(
+                  { name: '@engineers/' + basename(dirname(entry)) },
+                  content,
+                  rootData
+                )
+              )
+              // file will be linted on commit
               .then((content) => write(entry, content))
           );
         })
       )
     )
+    .then();
+}
 
+function generateReadMe(): Promise<void> {
+  return Promise.all(
+    ['./packages', './projects'].map((dir) => getEntries(dir, 'dirs', 0))
+  )
+    .then((entries: Array<Array<string>>) => entries[0].concat(entries[1]))
+    .then((entries: Array<string>) =>
+      Promise.all(
+        entries.map((entry: string) => {
+          read(`${entry}/package.json`)
+            .then((pkg) => {
+              pkg = pkg as Obj;
+
+              let about;
+              if (existsSync(`${entry}/about.md`)) {
+                about = readSync(`${entry}/about.md`);
+              } else {
+                about = '';
+              }
+
+              // todo: use `{{ .. }}` instead of `<% .. %>
+              // https://stackoverflow.com/questions/33973388/ejs-2-custom-delimiter/33974027
+              let content = ejs.renderFile('./tasks/README.tmpl.md', {
+                about,
+                pkg,
+                entries,
+              });
+
+              return content;
+            })
+            .then((content) => write(`${entry}/README.md`, content));
+        })
+      )
+    )
     .then();
 }
