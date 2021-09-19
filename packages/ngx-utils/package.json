@@ -1,4 +1,5 @@
 {
+  "name": "@engineers/ngx-utils",
   "description": "tools for Angular",
   "keywords": [
     "angular",

@@ -1,4 +1,5 @@
 {
+  "name": "@engineers/mongoose",
   "description": "automates most of mongoose work",
   "keywords": [
     "mongoose",

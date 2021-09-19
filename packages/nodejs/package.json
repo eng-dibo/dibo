@@ -1,4 +1,5 @@
 {
+  "name": "@engineers/nodejs",
   "description": "nodejs utils",
   "keywords": [
     "nodejs",

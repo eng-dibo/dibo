@@ -1,4 +1,5 @@
 {
+  "name": "@engineers/ngx-content-view-mat",
   "description": "renders an object into a content using `material design`, built on top of `ngx-content-core`",
   "keywords": [
     "angular",

@@ -1,4 +1,5 @@
 {
+  "name": "@engineers/ngx-content-core",
   "description": "tools for managing the content in Angular.",
   "keywords": [
     "angular",

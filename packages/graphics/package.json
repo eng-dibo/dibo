@@ -1,4 +1,5 @@
 {
+  "name": "@engineers/graphics",
   "description": "create and modify images via sharp",
   "keywords": [
     "images",

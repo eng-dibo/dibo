@@ -1,4 +1,5 @@
 {
+  "name": "@engineers/firebase-admin",
   "description": "tools for firebase-admin SDK",
   "keywords": [
     "firebase",

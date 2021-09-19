@@ -1,4 +1,5 @@
 {
+  "name": "@engineers/ngx-universal-express",
   "description": "convert Angular projects into universal apps using `expressjs`",
   "dependencies": {
     "@nguniversal/express-engine": "",
