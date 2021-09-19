@@ -60,7 +60,7 @@ let config: Config.InitialOptions = {
   /* moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, {
     prefix: "<rootDir>",
   }),*/
-
+  // todo: use pathsToModuleNameMapper
   moduleNameMapper: {
     '~~(.*)': '<rootDir>/$1',
     '@engineers/(.*)': '<rootDir>/packages/$1',
