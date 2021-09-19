@@ -1,17 +1,13 @@
 {
-  "name": "ngx-cms",
-  "version": "0.0.1",
-  "scripts": {
-    "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "test": "ng test",
-    "lint": "ng lint",
-    "e2e": "ng e2e"
+  "description": "nodejs utils",
+  "keywords": [
+    "nodejs",
+    "javascript",
+    "js"
+  ],
+  "peerDependencies": {
+    "strip-json-comments": "^3.1.1"
   },
-  "private": false,
-  "dependencies": {},
-  "devDependencies": {},
   "repository": {
     "type": "git",
     "url": "https://github.com/eng-dibo/dibo.git"

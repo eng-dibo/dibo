@@ -1,17 +1,18 @@
 {
-  "name": "ngx-cms",
-  "version": "0.0.1",
-  "scripts": {
-    "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "test": "ng test",
-    "lint": "ng lint",
-    "e2e": "ng e2e"
+  "description": "tools for firebase-admin SDK",
+  "keywords": [
+    "firebase",
+    "GCP",
+    "back-end",
+    "hosting",
+    "google cloud",
+    "cloud hosting",
+    "firebase-admin SDK"
+  ],
+  "peerDependencies": {
+    "firebase-admin": "^9.4.1",
+    "firebase-functions": "^3.11.0"
   },
-  "private": false,
-  "dependencies": {},
-  "devDependencies": {},
   "repository": {
     "type": "git",
     "url": "https://github.com/eng-dibo/dibo.git"

@@ -1,0 +1,43 @@
+{
+  "description": "renders an object into a content using `material design`, built on top of `ngx-content-core`",
+  "keywords": [
+    "angular",
+    "cms",
+    "content management system",
+    "ngx",
+    "material design"
+  ],
+  "peerDependencies": {
+    "@angular/material": "^12.2.1",
+    "ng-lazyload-image": "^9.1.0",
+    "ngx-highlightjs": "^4.1.4",
+    "ngx-quill": "^14.2.0",
+    "ngx-sharebuttons": "^8.0.5",
+    "@fortawesome/angular-fontawesome": "^0.9.0",
+    "@fortawesome/fontawesome-svg-core": "^1.2.28",
+    "@fortawesome/free-brands-svg-icons": "^5.15.4",
+    "@fortawesome/free-solid-svg-icons": "^5.15.4",
+    "ngx-loading": "^8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eng-dibo/dibo.git"
+  },
+  "homepage": "https://github.com/eng-dibo/dibo#readme",
+  "bugs": {
+    "url": "https://github.com/eng-dibo/dibo/issues",
+    "email": "sh.eldeeb.2010+github@gmail.com"
+  },
+  "license": "MIT",
+  "author": "Sherif Eldeeb <sh.eldeeb.2010+github@gmail.com> (https://github.com/eng-dibo)",
+  "funding": [
+    {
+      "type": "paypal",
+      "url": "https://paypal.me/group99001"
+    },
+    {
+      "type": "patreon",
+      "url": "https://www.patreon.com/GoogleDev"
+    }
+  ]
+}

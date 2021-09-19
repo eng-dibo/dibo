@@ -1,5 +1,26 @@
 {
   "version": "0.0.1",
   "private": false,
-  "description": "adds lifecycle to any project and manages projects lifecycle, allows using hooks and third party plugins"
+  "description": "adds lifecycle to any project and manages projects lifecycle, allows using hooks and third party plugins",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eng-dibo/dibo.git"
+  },
+  "homepage": "https://github.com/eng-dibo/dibo#readme",
+  "bugs": {
+    "url": "https://github.com/eng-dibo/dibo/issues",
+    "email": "sh.eldeeb.2010+github@gmail.com"
+  },
+  "license": "MIT",
+  "author": "Sherif Eldeeb <sh.eldeeb.2010+github@gmail.com> (https://github.com/eng-dibo)",
+  "funding": [
+    {
+      "type": "paypal",
+      "url": "https://paypal.me/group99001"
+    },
+    {
+      "type": "patreon",
+      "url": "https://www.patreon.com/GoogleDev"
+    }
+  ]
 }

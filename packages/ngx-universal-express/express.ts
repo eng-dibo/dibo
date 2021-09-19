@@ -18,6 +18,8 @@ import { ServerModule } from "@angular/platform-server";
 
 // imports for server()
 import 'zone.js/dist/zone-node';
+// use a version compilable with @angular/common
+// ex: for @angular/common@11.x.x -> install @nguniversal/express-engine@^11
 import { ngExpressEngine } from '@nguniversal/express-engine';
 import express, { Express } from 'express';
 import { APP_BASE_HREF } from '@angular/common';

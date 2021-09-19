@@ -1,0 +1,5 @@
+- dynamically injects a component into the DOM.
+- dynamically loads resources (js, css, images, ...).
+- manages meta tags.
+- manages routes.
+- rxjs.

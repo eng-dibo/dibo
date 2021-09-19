@@ -1,17 +1,10 @@
 {
-  "name": "ngx-cms",
-  "version": "0.0.1",
-  "scripts": {
-    "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "test": "ng test",
-    "lint": "ng lint",
-    "e2e": "ng e2e"
-  },
-  "private": false,
-  "dependencies": {},
-  "devDependencies": {},
+  "description": "tools for Angular",
+  "keywords": [
+    "angular",
+    "ngx",
+    "front end"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/eng-dibo/dibo.git"
