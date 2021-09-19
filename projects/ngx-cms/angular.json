@@ -27,7 +27,10 @@
             "tsConfig": "tsconfig.json",
             "aot": true,
             "assets": ["browser/favicon.ico", "browser/assets"],
-            "styles": ["browser/styles.scss"],
+            "styles": [
+              "./node_modules/@angular/material/prebuilt-themes/deeppurple-amber.css",
+              "browser/styles.scss"
+            ],
             "scripts": []
           },
           "configurations": {
@@ -85,7 +88,10 @@
             "tsConfig": "tsconfig.spec.json",
             "karmaConfig": "karma.conf.js",
             "assets": ["browser/favicon.ico", "browser/assets"],
-            "styles": ["browser/styles.scss"],
+            "styles": [
+              "./node_modules/@angular/material/prebuilt-themes/deeppurple-amber.css",
+              "browser/styles.scss"
+            ],
             "scripts": []
           }
         },
