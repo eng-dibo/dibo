@@ -59,9 +59,9 @@ export function mkdir(
   mode: number | string = 0o777
 ): Promise<void> {
   if (path instanceof Array) {
-    return Promise.all(
-      path.map((p) => ({ [p]: mkdir(p, mode) }))
-    ).then(() => {});
+    return Promise.all(path.map((p) => ({ [p]: mkdir(p, mode) }))).then(
+      () => {}
+    );
   }
 
   let options: MakeDirectoryOptions = { mode, recursive: true };

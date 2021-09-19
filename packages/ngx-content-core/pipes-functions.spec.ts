@@ -81,9 +81,8 @@ describe('keepHtml()', () => {
       // https://stackoverflow.com/a/39438086/12577650
     }).compileComponents();
 
-    let fixture: ComponentFixture<AppComponent> = TestBed.createComponent(
-      AppComponent
-    );
+    let fixture: ComponentFixture<AppComponent> =
+      TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     let sanitizer = fixture.componentInstance.sanitizer;
     let value = '<div>trusted html code</div>';

@@ -78,9 +78,8 @@ export default function (
 
   for (let filePath of files) {
     if (existsSync(filePath)) {
-      filesInfo[filePath as keyof typeof filesInfo] = getModifiedTimeSync(
-        filePath
-      );
+      filesInfo[filePath as keyof typeof filesInfo] =
+        getModifiedTimeSync(filePath);
 
       if (
         age === 0 ||

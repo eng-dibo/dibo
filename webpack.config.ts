@@ -12,7 +12,8 @@ class FilterErrors extends BasePlugin {
       lifecycle: 'afterCompile',
       name: 'filterErrors',
       hook: (compilation: any) => {
-        let pattern = /export '.+?'( \(reexported as '.+?'\))?? was not found in/i;
+        let pattern =
+          /export '.+?'( \(reexported as '.+?'\))?? was not found in/i;
         compilation.errors = compilation.errors.filter(
           (el: any) => !pattern.test(el.message)
         );
