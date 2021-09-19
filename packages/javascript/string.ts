@@ -1,5 +1,4 @@
 import { timer } from './time';
-import { objectType } from './objects';
 
 const dev = process.env.NODE_ENV === 'development',
   logger = console;
@@ -109,6 +108,30 @@ export function replaceAsync(
       return result.join('');
     });
   }
+}
+
+/**
+ * converts a string to a number if possible
+ * useful if the value always been passed as a string,
+ * for example when it received from `cli` or asa url parameter
+ * https://github.com/substack/minimist/blob/aeb3e27dae0412de5c0494e9563a5f10c82cc7a9/index.js#L240
+ * @param value
+ * @returns a number if it could e converted, or the original value
+ */
+export function toNumber(value: string | number): number | string {
+  if (typeof value === 'number') {
+    return value;
+  }
+  if (
+    // hexadecimal numbers, example: 0xFF
+    /^0x[0-9a-f]+$/i.test(value) ||
+    // example: +1.2e-5
+    /^[-+]?(?:\d+(?:\.\d*)??)(?:e[-+]?\d+)??$/.test(value)
+  ) {
+    return Number(value);
+  }
+
+  return value;
 }
 
 /* todo:

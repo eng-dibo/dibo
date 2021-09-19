@@ -1,5 +1,5 @@
 import { test, expect, describe, jest } from '@jest/globals';
-import { replaceAll, replaceAsync } from './string';
+import { replaceAll, replaceAsync, toNumber } from './string';
 
 describe('replaceAll', () => {
   test('string', () => {
@@ -32,4 +32,13 @@ describe('replaceAsync', () => {
       expect(result).toEqual('axbxcxd')
     );
   });
+});
+
+test('toNumber()', () => {
+  expect(toNumber(1)).toEqual(1);
+  expect(toNumber('1')).toEqual(1);
+  expect(toNumber('-1.5')).toEqual(-1.5);
+  expect(toNumber('+1.5e-5')).toEqual(1.5e-5);
+  expect(toNumber('0xFF')).toEqual(0xff);
+  expect(toNumber('0XFF')).toEqual(0xff);
 });
