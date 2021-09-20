@@ -95,7 +95,7 @@ export function server(options: AppOptions): Express {
 
   let appOptions: AppOptions = Object.assign({}, defaultOptions, options);
 
-  // Universal express-engine
+  // render html templates using @nguniversal/express-engine
   // https://github.com/angular/universal/tree/master/modules/express-engine
   // https://expressjs.com/en/api.html#app.engine
   app.engine(
