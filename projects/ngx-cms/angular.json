@@ -20,7 +20,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/ngx-cms",
+            "outputPath": "dist/ngx-cms/browser",
             "index": "browser/index.html",
             "main": "browser/main.ts",
             "polyfills": "browser/polyfills.ts",
@@ -117,6 +117,60 @@
               "devServerTarget": "ngx-cms:serve:production"
             }
           }
+        },
+        "server": {
+          "builder": "@angular-devkit/build-angular:server",
+          "options": {
+            "outputPath": "dist/ngx-cms/server",
+            "main": "server.ts",
+            "tsConfig": "tsconfig.server.json"
+          },
+          "configurations": {
+            "production": {
+              "outputHashing": "media",
+              "fileReplacements": [
+                {
+                  "replace": "./config/env.ts",
+                  "with": "./config/env.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "sourceMap": false,
+              "extractLicenses": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve-ssr": {
+          "builder": "@nguniversal/builders:ssr-dev-server",
+          "configurations": {
+            "development": {
+              "browserTarget": "ngx-cms:build:development",
+              "serverTarget": "ngx-cms:server:development"
+            },
+            "production": {
+              "browserTarget": "ngx-cms:build:production",
+              "serverTarget": "ngx-cms:server:production"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "prerender": {
+          "builder": "@nguniversal/builders:prerender",
+          "options": {
+            "routes": ["/"]
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "ngx-cms:build:production",
+              "serverTarget": "ngx-cms:server:production"
+            },
+            "development": {
+              "browserTarget": "ngx-cms:build:development",
+              "serverTarget": "ngx-cms:server:development"
+            }
+          },
+          "defaultConfiguration": "production"
         }
       }
     }

@@ -15,5 +15,6 @@
   "explorer.decorations.badges": false,
   "git.allowForcePush": true,
   "tslint.jsEnable": true,
-  "editor.codeActionsOnSave": ["source.formatDocument", "source.fixAll.eslint"]
+  "editor.codeActionsOnSave": ["source.formatDocument", "source.fixAll.eslint"],
+  "angular.enable-strict-mode-prompt": false
 }

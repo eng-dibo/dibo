@@ -8,11 +8,23 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "update": "npm run update --prefix=../.. && ng update --force --allow-dirty"
+    "update": "npm run update --prefix=../.. && ng update --force --allow-dirty",
+    "dev:ssr": "ng run ngx-cms:serve-ssr",
+    "serve:ssr": "node dist/ngx-cms/server/main.js",
+    "build:ssr": "ng build && ng run ngx-cms:server",
+    "prerender": "ng run ngx-cms:prerender"
   },
   "private": false,
-  "dependencies": {},
-  "devDependencies": {},
+  "dependencies": {
+    "@angular/core": "~12.2.6",
+    "@angular/platform-server": "~12.2.6",
+    "@nguniversal/express-engine": "^12.1.0-next.0",
+    "express": "^4.15.2"
+  },
+  "devDependencies": {
+    "@nguniversal/builders": "^12.1.0-next.0",
+    "@types/express": "^4.17.0"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/eng-dibo/dibo.git"
