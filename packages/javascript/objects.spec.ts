@@ -9,6 +9,7 @@ import {
   cleanObject,
   filterObjectByKeys,
   stringToObject,
+  flatten,
 } from './objects';
 
 let types = [
@@ -153,4 +154,9 @@ test('stringToObject', () => {
   let obj = stringToObject('a.b.c', 'value');
   expect(obj).toEqual({ a: { b: { c: 'value' } } });
   expect(obj.a.b.c).toEqual('value');
+});
+test('flatten', () => {
+  let obj = { a: 1, b: { x: 2, y: { m1: 1, m2: 2 } } };
+  let flattened = { a: 1, 'b.x': 2, 'b.y.m1': 1, 'b.y.m2': 2 };
+  expect(flatten(obj)).toEqual(flattened);
 });

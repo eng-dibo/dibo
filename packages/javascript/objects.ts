@@ -241,3 +241,30 @@ export function stringToObject(keys: string | Array<string>, value?: any): Obj {
 
   return obj;
 }
+
+/**
+ * flatten the nested objects into the top-level as a dot-notation string
+ * use case: sending the object to a plain-text environment such as cli or as a url parameter.
+ * https://stackoverflow.com/a/69246829/12577650
+ * @example {a:{b:1, {x:{y:2}}}} -> {a.b:1, a.x.y:2 }
+ */
+export function flatten(value: Obj, delimiter = '.'): Obj {
+  function walk(obj: Obj, parent = ''): Obj {
+    parent = parent.trim();
+    let result: Obj = {};
+    Object.entries(obj).forEach(([key, val]) => {
+      let prefix = parent !== '' ? `${parent}${delimiter}${key}` : key;
+
+      if (objectType(val) === 'object') {
+        let flattened = walk(val, prefix);
+        // todo: remove keys from flattened
+        Object.assign(result, flattened);
+      } else {
+        result[prefix] = val;
+      }
+    });
+    return result;
+  }
+
+  return walk(value);
+}
