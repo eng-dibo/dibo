@@ -5,6 +5,7 @@ import {
   chunk,
   stringToObject,
   objectType,
+  flatten,
 } from '@engineers/javascript/objects';
 import { toNumber } from '@engineers/javascript/string';
 
@@ -195,20 +196,30 @@ export function toArgv(argsObj: Argv): string {
     argv += el + ' ';
   });
 
+  let setOption = function (key: string, value: any): string {
+    let argv = '';
+    if (value instanceof Array) {
+      value.forEach((el) => {
+        argv += `--${key}=${el} `;
+      });
+    } else {
+      argv += `--${key}=${value} `;
+    }
+    return argv;
+  };
+
   // consumer has to convert dash options, ex: convert `--a` to `-a`
   for (let key in argsObj.options) {
     if (argsObj.options.hasOwnProperty(key)) {
       let value = argsObj.options[key];
-      if (value instanceof Array) {
-        value.forEach((el) => {
-          argv += `--${key}=${el} `;
-        });
-      } else if (objectType(value) === 'object') {
-        // todo: convert objects to a string with dot notation
+      if (objectType(value) === 'object') {
+        // convert objects to a string with dot notation
         // {a: {b: 1}} -> 'a.b=1'
-        argv += '--OBJ';
+        Object.entries(flatten({ [key]: value })).forEach(([k, v]) => {
+          argv += setOption(k, v);
+        });
       } else {
-        argv += `--${key}=${value} `;
+        argv += setOption(key, value);
       }
     }
   }
