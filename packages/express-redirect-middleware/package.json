@@ -1,0 +1,10 @@
+{
+  "description": "an express middleware to redirect the request, add https, www. to improve SEO",
+  "keywords": [
+    "express",
+    "SEO"
+  ],
+  "peerDependencies": {
+    "parse-domain": "^4.1.0"
+  }
+}
