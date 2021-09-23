@@ -1,0 +1,5 @@
+# expose ports for gitpod.io
+# https://www.gitpod.io/docs/config-ports
+ports:
+  - port: 8080
+    onOpen: open-browser
