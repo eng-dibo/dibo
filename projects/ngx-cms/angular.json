@@ -20,7 +20,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "../../dist/ngx-cms/browser",
+            "outputPath": "../../dist/ngx-cms/core/browser",
             "index": "browser/index.html",
             "main": "browser/main.ts",
             "polyfills": "browser/polyfills.ts",
@@ -121,8 +121,8 @@
         "server": {
           "builder": "@angular-devkit/build-angular:server",
           "options": {
-            "outputPath": "../../dist/ngx-cms/server",
-            "main": "server/main.ts",
+            "outputPath": "../../dist/ngx-cms/core/server",
+            "main": "server/express.ts",
             "tsConfig": "server/tsconfig.json"
           },
           "configurations": {

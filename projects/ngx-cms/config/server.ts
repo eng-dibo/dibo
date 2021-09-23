@@ -10,7 +10,7 @@
 import { join } from 'path';
 
 export const prod = process.env.NODE_ENV === 'production';
-export const DIST = join(__dirname, '../../..');
+export const DIST = join(__dirname, '../../../ngx-cms');
 // todo: use system.temp
 export const TEMP = join(DIST, './temp');
 

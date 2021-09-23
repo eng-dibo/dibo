@@ -38,7 +38,7 @@ export function server(): ReturnType<typeof expressServer> {
         next();
       });
 
-      app.use(redirect);
+      app.use(redirect());
       app.use(jsonParser());
       app.use(urlParser({ extended: true }));
 
@@ -51,6 +51,15 @@ export function server(): ReturnType<typeof expressServer> {
   });
 }
 
+// Start up the Node server
+//firebase starts the server automatically, so we don't need to start it again (error)
+//todo: onError, try port++
+if (process.argv[2] == '--start') {
+  run(server());
+}
+
+/* 
+// by @nguniversal/express-engine:
 // Webpack will replace 'require' with '__webpack_require__'
 // '__non_webpack_require__' is a proxy to Node 'require'
 // The below code is to ensure that the server is run only when not requiring the bundle.
@@ -60,3 +69,4 @@ let moduleFilename = (mainModule && mainModule.filename) || '';
 if (moduleFilename === __filename || moduleFilename.includes('iisnode')) {
   run(server());
 }
+*/
