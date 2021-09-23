@@ -1,0 +1,29 @@
+{
+  "recommendations": [
+    "mikael.angular-beastcode",
+    "jakethashi.vscode-angular2-emmet",
+    "uvbrain.angular2",
+    "onixie.angular-component-extension",
+    "angular.ng-template",
+    "hardikpthv.angularmaterial",
+    "cyrilletuzi.angular-schematics",
+    "bloodysky96.vscode-angular2-file-generator",
+    "infinity1207.angular2-switcher",
+    "streetsidesoftware.code-spell-checker",
+    "anseki.vscode-color",
+    "hookyqr.jsdoctagcomplete",
+    "dbaeumer.vscode-eslint",
+    "donjayamanne.git-extension-pack",
+    "donjayamanne.githistory",
+    "codezombiech.gitignore",
+    "cmstead.jsrefactor",
+    "tuxtina.json2yaml",
+    "alanwalk.markdown-toc",
+    "esbenp.prettier-vscode",
+    "alefragnani.project-manager",
+    "aljazsim.tsce",
+    "dskwrk.vscode-generate-getter-setter",
+    "cybai.yaml-key-viewer",
+    "ms-azuretools.vscode-docker"
+  ]
+}
