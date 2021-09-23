@@ -121,9 +121,9 @@
         "server": {
           "builder": "@angular-devkit/build-angular:server",
           "options": {
-            "outputPath": "dist/ngx-cms/server",
-            "main": "server.ts",
-            "tsConfig": "tsconfig.server.json"
+            "outputPath": "../../dist/ngx-cms/server",
+            "main": "server/main.ts",
+            "tsConfig": "server/tsconfig.json"
           },
           "configurations": {
             "production": {

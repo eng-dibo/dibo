@@ -10,7 +10,7 @@
     "e2e": "ng e2e",
     "update": "npm run update --prefix=../.. && ng update --force --allow-dirty",
     "dev:ssr": "ng run ngx-cms:serve-ssr",
-    "serve:ssr": "node dist/ngx-cms/server/main.js",
+    "serve:ssr": "node ../../dist/ngx-cms/server/main.js",
     "build:ssr": "ng build && ng run ngx-cms:server",
     "prerender": "ng run ngx-cms:prerender"
   },
