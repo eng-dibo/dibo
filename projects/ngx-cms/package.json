@@ -11,7 +11,9 @@
     "update": "npm run update --prefix=../.. && ng update --force --allow-dirty"
   },
   "private": false,
-  "dependencies": {},
+  "dependencies": {
+    "@angular/material": "^12.2.6"
+  },
   "devDependencies": {},
   "repository": {
     "type": "git",
