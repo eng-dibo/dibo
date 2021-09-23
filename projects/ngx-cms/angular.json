@@ -20,7 +20,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/ngx-cms/browser",
+            "outputPath": "../../dist/ngx-cms/browser",
             "index": "browser/index.html",
             "main": "browser/main.ts",
             "polyfills": "browser/polyfills.ts",

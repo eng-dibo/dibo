@@ -1,6 +1,6 @@
 # now we use `codercom/code-server` image, so we don't need to build this image anymore
 
-FROM node-slim
+FROM node:slim
 
 # install code-server using the script
 RUN curl -fsSL https://code-server.dev/install.sh | sh
