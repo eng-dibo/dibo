@@ -13,7 +13,7 @@
     "build:dev": "npx cross-env NODE_ENV=development npm run build:all:dev",
     "serve": "node ../../dist/ngx-cms/core/server/main.js --start",
     "serve:ng": "ng serve -o",
-    "serve:inspect": "node ../../dist/ngx-cms/core/server/main.js --start",
+    "serve:inspect": "node --inspect ../../dist/ngx-cms/core/server/main.js --start",
     "serve:dev": "nodemon ../../dist/ngx-cms/core/server/main.js --start",
     "serve:ssr:dev": "ng run ngx-cms:serve-ssr",
     "start": "npm run build && npm run serve",
