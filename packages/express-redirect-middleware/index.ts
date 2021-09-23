@@ -16,6 +16,7 @@ export interface Options {
 export default function (options?: Options): any {
   return (req: any, res: any, next: any) => {
     let parts: ParseResultListed = parseDomain(
+      // or req.get('host')
       req.hostname
     ) as ParseResultListed;
     // ex: www.example.com.eg ->{subDomains:[www], domain:google, topLevelDomains:[com]};
@@ -24,7 +25,7 @@ export default function (options?: Options): any {
 
     if (parts && !['localhost', '127.0.0.1'].includes(parts.hostname)) {
       let defaultOptions = {
-        protocol: req.secure ? 'https' : 'http',
+        protocol: 'https',
         subdomain: 'www',
       };
 
@@ -37,10 +38,12 @@ export default function (options?: Options): any {
 
       let url = `${opts.protocol}://${parts.subDomains.join('.')}.${
         parts.domain
-      }.${(parts.topLevelDomains || []).join('.')}${req.url}`;
+      }.${(parts.topLevelDomains || []).join('.')}${req.originalUrl}`;
 
-      // todo: if(url != originalUrl)redirect
-      return res.redirect(301, url);
+      // redirect only if the url has been changed to prevent circular redirects
+      if (url !== `${req.protocol}://${req.hostname}${req.originalUrl}`) {
+        return res.redirect(301, url);
+      }
     }
     next();
   };
