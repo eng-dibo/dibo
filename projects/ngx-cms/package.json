@@ -19,7 +19,11 @@
     "start:dev": "npm run build:dev && npm run serve:inspect",
     "start:nodemon": "nodemon  . -e ts,html,scss --exec \"npm run start:dev\"",
     "update": "npm run update --prefix=../.. && ng update --force --allow-dirty",
-    "prerender": "npm run ng -- run ngx-cms:prerender"
+    "prerender": "npm run ng -- run ngx-cms:prerender",
+    "docker:build": "npx ncp Dockerfile ../../dist/Dockerfile && npx docker build ../../dist -t gcr.io/dibo-cloud/ngx-cms",
+    "docker:view": "docker run -it --rm=true gcr.io/dibo-cloud/ngx-cms sh",
+    "docker:push": "docker push gcr.io/dibo-cloud/ngx-cms",
+    "docker:run": "docker run -it -p 4200:4200 --rm gcr.io/dibo-cloud/ngx-cms"
   },
   "private": false,
   "main": "../../dist/ngx-cms/core/server/main.js",
