@@ -8,8 +8,8 @@
     "build:server": "npm run ng -- run ngx-cms:server:production --bundle-dependencies",
     "build:server:dev": "npm run ng -- run ngx-cms:server --bundle-dependencies",
     "build:config": "tsc -p config",
-    "build": "npx cross-env NODE_ENV=production \"npm run build:browser && npm run build:server && build:config\"",
-    "build:dev": "npx cross-env NODE_ENV=development \"npm run build:browser:dev && npm run build:server:dev && build:config\"",
+    "build": "cross-env-shell NODE_ENV=production \"npm run build:browser && npm run build:server && npm run build:config\"",
+    "build:dev": "cross-env-shell NODE_ENV=development \"npm run build:browser:dev && npm run build:server:dev && npm run build:config\"",
     "serve": "node ../../dist/ngx-cms/core/server/main.js --start",
     "serve:ng": "npm run ng -- serve -o",
     "serve:inspect": "node --inspect ../../dist/ngx-cms/core/server/main.js --start",
@@ -27,6 +27,10 @@
     "@angular/material": "^12.2.6"
   },
   "devDependencies": {},
+  "globalDependencies": [
+    "ng",
+    "cross-env"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/eng-dibo/dibo.git"
