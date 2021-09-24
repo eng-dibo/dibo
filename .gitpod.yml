@@ -3,3 +3,6 @@
 ports:
   - port: 8080
     onOpen: open-browser
+  # for docker containers (9090 is the port in gcloud run)
+  - port: 9090
+    onOpen: open-browser
