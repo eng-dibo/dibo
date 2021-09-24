@@ -1,0 +1,8 @@
+# install gcloud cli
+https://cloud.google.com/sdk/docs/install
+https://stackoverflow.com/a/31037280/12577650
+
+> curl https://sdk.cloud.google.com | bash
+> source '[path-to-my-home]/google-cloud-sdk/path.bash.inc'
+> source '[path-to-my-home]/google-cloud-sdk/completion.bash.inc'
+

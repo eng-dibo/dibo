@@ -23,7 +23,11 @@
     "docker:build": "npx ncp Dockerfile ../../dist/Dockerfile && npx docker build ../../dist -t gcr.io/dibo-cloud/ngx-cms",
     "docker:view": "docker run -it --rm=true gcr.io/dibo-cloud/ngx-cms sh",
     "docker:push": "docker push gcr.io/dibo-cloud/ngx-cms",
-    "docker:run": "docker run -it -p 4200:4200 --rm gcr.io/dibo-cloud/ngx-cms"
+    "docker:run": "docker run -it -p 4200:4200 --rm gcr.io/dibo-cloud/ngx-cms",
+    "gcloud:start": "npm run gcloud:login && npm run docker:build && npm run docker:push && npm run gcloud:deploy",
+    "gcloud:login": "gcloud auth login",
+    "gcloud:deploy": "gcloud run deploy cms-run --image=gcr.io/dibo-cloud/ngx-cms --platform=managed --port=4200 --region=europe-west1 --allow-unauthenticated",
+    "gcloud:run": "PORT=4200 && docker run -p 9090:${PORT} -e PORT=${PORT} --rm gcr.io/dibo-cloud/ngx-cms"
   },
   "private": false,
   "main": "../../dist/ngx-cms/core/server/main.js",
