@@ -6,6 +6,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ContentModule } from './content/content.module';
 import { ErrorComponent } from './error/error.component';
 import { Routes, RouterModule, InitialNavigation } from '@angular/router';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import env from '~config/env';
 
 /*
@@ -39,6 +40,7 @@ const enableTracing = env.mode === 'development';
     RouterModule.forRoot(endRoutes, { enableTracing }),
     BrowserModule.withServerTransition({ appId: 'serverApp' }),
     BrowserAnimationsModule,
+    MatToolbarModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
