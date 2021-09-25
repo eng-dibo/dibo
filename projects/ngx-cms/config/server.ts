@@ -16,3 +16,11 @@ export const TEMP = join(DIST, './temp');
 
 // use auth code to perform admin operations.
 export const AUTH = '';
+
+export const DB = {
+  type: 'mongodb',
+  auth: ['dbUsername', 'env:dbPass'],
+  host: 'username-gbdqa.gcp.mongodb.net',
+  srv: true,
+  dbName: prod ? 'dbname' : 'test',
+};
