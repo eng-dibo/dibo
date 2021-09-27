@@ -37,7 +37,9 @@ let config: Configuration = {
   },
   externals: [
     // add node_modules to externals in target:node
-    node(undefined, [/@engineers\/.+/, /s?css$/]),
+    // except: @engineers/* -> not compiled or published, imported from source
+    // and *.scss files
+    node(undefined, [/@engineers\/.+/, /\.s?css$/]),
   ],
   output: {
     path: resolve(__dirname, './dist'),
