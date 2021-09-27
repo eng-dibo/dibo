@@ -6,7 +6,7 @@ import { ServerModule } from '@angular/platform-server';
 import { AppModule } from '~browser/app/app.module';
 import { AppComponent } from '~browser/app/app.component';
 
-if (env.mode === 'prod') {
+if (env.mode === 'production') {
   enableProdMode();
 }
 
