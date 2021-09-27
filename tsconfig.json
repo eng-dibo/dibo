@@ -33,8 +33,11 @@
     "resolveJsonModule": true,
     "paths": {
       "~~*": ["./*"],
-      "@engineers/*": ["./packages/*"],
-      "*": ["node_modules/*", "types/*"]
+      "@engineers/*": ["./packages/*"]
+      /* causes `ERR_REQUIRE_ESM` error 
+      https://stackoverflow.com/questions/69351138/tsconfig-causes-err-require-esm-must-use-import-to-load-es-module
+       "*": ["node_modules/*", "types/*"]
+        */
     },
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
@@ -89,12 +92,7 @@
     // - in runtime, example: `node dist/transpiled-file.js`
     // - to compile webpack config file in typescript, example: `webpack --config webpack.config.ts`
     // npm i -D tsconfig-paths
-    // https://typestrong.org/ts-node/docs/paths
-    // https://webpack.js.org/configuration/configuration-languages/#typescript
-    // todo: causes error: require() of ES modules is not supported.
-    // https://github.com/webpack/webpack/issues/14157#issuecomment-914223400
-    // todo: causes error: _jestWorker(...).Worker is not a constructor with `jest`
-    // https://github.com/dividab/tsconfig-paths/issues/178
+    // or use `ts-node -r tsconfig-paths/register`
     "require": ["tsconfig-paths/register"],
     "transpileOnly": true,
     "moduleTypes": {

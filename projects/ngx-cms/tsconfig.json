@@ -7,8 +7,7 @@
       "~*": ["./*"],
       /* todo: merge root tsconfig.json's path with this path, use tmpl */
       "~~*": ["../../*"],
-      "@engineers/*": ["../../packages/*"],
-      "*": ["node_modules/*", "types/*"]
+      "@engineers/*": ["../../packages/*"]
     }
   }
 }
