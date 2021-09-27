@@ -30,6 +30,7 @@ let config: Configuration = {
     extensions: ['.tsx', '.ts', '.jsx', '.js'],
     symlinks: false,
     alias: {
+      // add '~' for each project as the project's root
       '~~': resolve(__dirname, './'),
       '@engineers': resolve(__dirname, './packages/'),
     },
@@ -40,7 +41,7 @@ let config: Configuration = {
   ],
   output: {
     path: resolve(__dirname, './dist'),
-    library: '',
+    library: undefined,
     libraryTarget: 'commonjs2',
   },
   module: {

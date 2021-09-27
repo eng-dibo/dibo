@@ -119,10 +119,14 @@
           }
         },
         "server": {
-          "builder": "@angular-devkit/build-angular:server",
+          "builder": "@angular-builders/custom-webpack:server",
           "options": {
+            "customWebpackConfig": {
+              "path": "server/webpack.config.ts"
+            },
             "outputPath": "../../dist/ngx-cms/core/server",
-            "main": "server/express.ts",
+            /* same as webpack.config.entry{} */
+            "main": "",
             "tsConfig": "server/tsconfig.json"
           },
           "configurations": {
