@@ -85,14 +85,15 @@ export type Report = 'whitelisted' | { matched: any; transform: string };
 
 /**
  * add list of items to webpack's externals
+ * if any item of this list matched the request and didn't match the whitelist transform it
  * @method externals
  * @param list
- * @param transform  a function or string to transform the request; default is `commonjs [request]`
+ * @param transform  a function or string to transform the request; default is `commonjs {{request}}`
  * @param whitelist an array of paths (strings or regex) to be excluded from adding to externals even if matched
- * @return [description]
+ * @return
  *
  * @example
- * config.externals[function(){ externals(["path",/pathRegex/], arguments) }]
+ * config.externals[ externals(["path",/pathRegex/]) ]
  *
  */
 export default function externals(
