@@ -37,9 +37,12 @@ let config: Configuration = {
   },
   externals: [
     // add node_modules to externals in target:node
-    // except: @engineers/* -> not compiled or published, imported from source
-    // and *.scss files
-    node(undefined, [/@engineers\/.+/, /\.s?css$/]),
+    // except:
+    //   - @engineers/* -> not compiled or published, imported from source
+    //   -*.scss files
+    //   - ~* (i.e: ~config|browser|server/*) -> to prevent it from transforming to `commnjs2 ~config/*`
+    //     so it can be properly transformed to 'commonjs ../config/*'
+    node(undefined, [/@engineers\/.+/, /\.s?css$/, /^~/]),
   ],
   output: {
     path: resolve(__dirname, './dist'),

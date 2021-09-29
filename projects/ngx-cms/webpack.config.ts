@@ -24,15 +24,13 @@ let config: Configuration = deepMerge([baseConfig, projectConfig]);
 // add @engineers/*, ~*, ~~* to externals
 (config.externals as Array<any>).unshift(
   // externals([/@engineers\/.+/],'commonjs2 ../../../../packages/{{request}}'),
-  externals(
-    [/^~{1,2}config\/(.*)/],
-    (externalsParams) =>
-      // path is relative to dist/ngx-cms/core/server|browser
-      `commonjs2 ${externalsParams.request.replace(
-        '~config/',
-        '../../config/'
-      )}`
-  )
+  function () {
+    externals(
+      arguments,
+      [/^~{1,2}config\/(.*)/],
+      'commonjs2 ../../config/{{$1}}'
+    );
+  }
 );
 
 export default config;

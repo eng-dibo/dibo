@@ -32,7 +32,7 @@
     "gcloud:run": "PORT=4200 && docker run -p 9090:${PORT} -e PORT=${PORT} --rm gcr.io/dibo-cloud/ngx-cms"
   },
   "private": false,
-  "main": "../../dist/ngx-cms/core/server/main.js",
+  "main": "../../dist/ngx-cms/core/server/express.js",
   "dependencies": {
     "@angular/material": "^12.2.6"
   },
