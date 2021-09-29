@@ -1,3 +1,5 @@
+// todo: move to externalsPlugin, to avoid wrapping it inside a function and passing 'arguments' param
+
 import { toRegExp } from '@engineers/javascript/regex';
 import { includes, Obj } from '@engineers/javascript/objects';
 import { resolve } from 'path';
@@ -6,7 +8,7 @@ export interface ExternalsParams {
   // the absolute 'request' path
   path: string;
   // the requested path
-  request: any;
+  request: string;
   // The directory of the file which contains the import statement
   context: any;
   // todo: (...)=>void
@@ -73,7 +75,9 @@ export function params(
  *  - function: return true to include the requested item
  */
 export type ExternalsList = Array<
-  RegExp | string | ((externalsParams: ExternalsParams) => boolean)
+  | RegExp
+  | string
+  | ((externalsParams: ExternalsParams) => RegExpMatchArray | null)
 >;
 
 export type ExternalsTransform =
@@ -81,11 +85,20 @@ export type ExternalsTransform =
   // todo: (externalsParams,match)
   | ((externalsParams: ExternalsParams) => string);
 
-export type Report = 'whitelisted' | { matched: any; transform: string };
+export type Report =
+  | {
+      status: 'whitelisted' | 'transformed';
+      matched: any;
+      transform?: string;
+      arguments?: any;
+    }
+  | undefined;
 
 /**
  * add list of items to webpack's externals
  * if any item of this list matched the request and didn't match the whitelist transform it
+ * you need to wrap externals() inside a function and pass it's arguments to it as the first param
+ * so it executed every time with new arguments, i.e: evaluate a new transform value
  * @method externals
  * @param list
  * @param transform  a function or string to transform the request; default is `commonjs {{request}}`
@@ -93,103 +106,118 @@ export type Report = 'whitelisted' | { matched: any; transform: string };
  * @return
  *
  * @example
- * config.externals[ externals(["path",/pathRegex/]) ]
+ * config.externals[ function(){externals(arguments,["path",/pathRegex/])} ]
  *
  */
 export default function externals(
+  args: any,
   list: ExternalsList,
   transform?: ExternalsTransform,
   whitelist?: ExternalsList
-): (...args: any[]) => Report {
-  return (...args: any[]) => {
-    // prevent options from mutation
+): Report {
+  // prevent options from mutation
 
-    // reports every item whether it whitelisted or matched
-    // matched: the matched pattern
-    // transformed: the transformed value
-    let report: Report = 'whitelisted';
+  // reports every item whether it whitelisted or matched
+  // matched: the matched pattern
+  // transformed: the transformed value
+  let report: Report;
 
-    // the callback result
-    // null or error -> callback(error)
-    // string | [string] | object -> callback(null,transform)
-    let action: string | undefined;
+  // the callback result
+  // null or error -> callback(error)
+  // string | [string] | object -> callback(null,transform)
+  let action: string | undefined;
 
-    let externalsParams = params(args);
-    let { path, request, callback } = externalsParams;
+  let externalsParams = params(args);
+  let { path, request, callback } = externalsParams;
 
-    for (let item of list) {
-      // todo: item = 'pattern' | {pattern, ...options}
-      // ex: {'^config/(.*).ts', value: 'commonjs [request]/[$1]'}
+  for (let item of list) {
+    // todo: item = 'pattern' | {pattern, ...options}
+    // ex: {'^config/(.*).ts', value: 'commonjs [request]/[$1]'}
 
-      let itemMatched: boolean,
-        whitelisted = false;
+    let itemMatched: RegExpMatchArray | null,
+      whitelisted = false;
 
-      if (typeof item === 'function') {
-        itemMatched = item(externalsParams) === true;
-      } else {
-        let pattern = toRegExp(item);
-        itemMatched = pattern.test(pattern.global ? path : request);
-      }
-
-      if (itemMatched) {
-        // if any of whitelist[] matched 'request', just return
-
-        if (whitelist) {
-          for (let whitelistItem of whitelist) {
-            if (typeof whitelistItem === 'function') {
-              if (whitelistItem(externalsParams)) {
-                whitelisted = true;
-                break;
-              }
-            } else {
-              let pattern = toRegExp(whitelistItem);
-              if (pattern.test(pattern.global ? path : request)) {
-                whitelisted = true;
-                break;
-              }
-            }
-          }
-        }
-        if (!whitelisted) {
-          if (transform && typeof transform === 'function') {
-            transform = transform(externalsParams);
-          }
-
-          transform = (transform || `commonjs2 ${path}`).trim();
-          if (transform.length > 0 && transform.indexOf(' ') === -1) {
-            //  transform is module type, example: `commonjs2`
-            transform = `${transform} ${path}`;
-          }
-
-          // support template variable, ex: 'commonjs {{request}}'
-          // todo: support multiple groups: ex: "commonjs {{var1}} - {{var2}}"
-          transform = transform.replace(
-            /\{{(.*)}}/g,
-            (...matched: any[]): string => {
-              // todo: expose more variables (ex: matches[])
-              // todo: support obj.* syntax ex: "commonjs ${var.property}"
-              // todo: support js ex: "commonjs ${var.replace('x','y')}"
-              // @ts-ignore
-              return externalsParams[matched[1]];
-            }
-          );
-
-          report = {
-            matched: item,
-            transform,
-          };
-
-          action = transform;
-          break;
-        }
-      }
+    if (typeof item === 'function') {
+      itemMatched = item(externalsParams);
+    } else {
+      let pattern = toRegExp(item);
+      // itemMatched = pattern.test(pattern.global ? path : request);
+      itemMatched = (pattern.global ? path : request).match(pattern);
     }
 
-    action ? callback(null, action) : callback();
-    // todo: use webpack logger
-    // console.log({ report });
-    return report;
-  };
+    if (itemMatched) {
+      // if any of whitelist[] matched 'request', just return
+
+      if (whitelist) {
+        for (let whitelistItem of whitelist) {
+          if (typeof whitelistItem === 'function') {
+            if (whitelistItem(externalsParams)) {
+              whitelisted = true;
+              report = {
+                status: 'whitelisted',
+                matched: whitelistItem,
+                arguments: externalsParams,
+              };
+              break;
+            }
+          } else {
+            let pattern = toRegExp(whitelistItem);
+            if (pattern.test(pattern.global ? path : request)) {
+              whitelisted = true;
+              report = {
+                status: 'whitelisted',
+                matched: whitelistItem,
+                arguments: externalsParams,
+              };
+              break;
+            }
+          }
+        }
+      }
+      if (!whitelisted) {
+        if (transform && typeof transform === 'function') {
+          transform = transform(externalsParams);
+        }
+
+        transform = (transform || `commonjs2 ${path}`).trim();
+        if (transform.length > 0 && transform.indexOf(' ') === -1) {
+          //  transform is module type, example: `commonjs2`
+          transform = `${transform} ${path}`;
+        }
+
+        // support template variable, ex: 'commonjs {{request}}'
+        // todo: support multiple groups: ex: "commonjs {{var1}} - {{var2}}"
+        transform = transform.replace(
+          /\{{(.*?)}}/g,
+          (...matched: any[]): string => {
+            // todo: expose more variables (ex: matches[])
+            // todo: support obj.* syntax ex: "commonjs ${var.property}"
+            // todo: support js ex: "commonjs ${var.replace('x','y')}"
+            let matchedValue = matched[1];
+            if (matchedValue.startsWith('$')) {
+              return itemMatched![matchedValue.substring(1)];
+            }
+            // @ts-ignore
+            return externalsParams[matchedValue];
+          }
+        );
+
+        report = {
+          status: 'transformed',
+          matched: item,
+          transform,
+          arguments: externalsParams,
+        };
+
+        action = transform;
+        break;
+      }
+    }
+  }
+
+  action ? callback(null, action) : callback();
+  // todo: use webpack logger
+  return report;
 }
 
 /**
@@ -221,18 +249,7 @@ export function node(
     // a path to a `node_modules` dir
     /^.*?\/node_modules\//g,
   ];
-  return externals(list, transform, whitelist);
-}
-
-// todo: move to pkg/nodejs
-// todo: use in node().list[parseNodePackageName]
-// https://github.com/npm/validate-npm-package-name
-export function validatePackageName(name: string): boolean {
-  name = name.trim();
-  // length>0
-  // [a-z\-.]
-  // don't start with ._
-  // don't contain ~)('!*
-
-  return true;
+  return function () {
+    return externals(arguments, list, transform, whitelist);
+  };
 }
