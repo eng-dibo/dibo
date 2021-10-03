@@ -7,12 +7,7 @@
 // in this case the project must be started from this location (npm run start),
 // starting the project from dist/*/server > node express is wrong
 
-import { join } from 'path';
-
 export const prod = process.env.NODE_ENV === 'production';
-export const DIST = join(__dirname, '../../../ngx-cms');
-// todo: use system.temp
-export const TEMP = join(DIST, './temp');
 
 // use auth code to perform admin operations.
 export const AUTH = '';

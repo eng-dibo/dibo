@@ -2,26 +2,30 @@ import {
   server as expressServer,
   run,
 } from '@engineers/ngx-universal-express/express';
-import { DIST, TEMP } from '~config/server';
 import { AppServerModule } from './main';
-import { join } from 'path';
 
 import { json as jsonParser, urlencoded as urlParser } from 'body-parser';
 import cors from 'cors';
 import v1 from './api/v1';
 import redirect from '@engineers/express-redirect-middleware';
+import { resolve } from 'path';
 
 // The Express app is exported so that it can be used by serverless Functions.
 export function server(): ReturnType<typeof expressServer> {
   // todo: move to expressServer.msg
   console.info(`the server is working in ${process.env.NODE_ENV} mode`);
 
-  let browserDir = join(DIST, './core/browser');
+  // relative to dist/ngx-cms/core/server
+  let DistFolder = resolve(__dirname, '../..'),
+    browserDir = DistFolder + '/core/browser',
+    tempDir = DistFolder + '/core/temp';
+
   return expressServer({
     browserDir,
     serverModule: AppServerModule,
     // TEMP: cache files, created at runtime
-    staticDirs: [browserDir, TEMP],
+    // todo: use system.temp
+    staticDirs: [browserDir, tempDir],
     transform: (app) => {
       // to use req.protocol in case of using a proxy in between (ex: cloudflare, heroku, ..),
       // without it express may always returns req.protocol="https" even if GET/ https://***
