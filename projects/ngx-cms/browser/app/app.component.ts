@@ -11,7 +11,7 @@ export class AppComponent {
   name = metaTags.name;
   toolbar = _toolbar;
 
-  constructor(private router: Router) {
+  constructor() {
     this.toolbar.map((item: any) => {
       if (!item.tag) {
         if (item.link) {
@@ -24,12 +24,5 @@ export class AppComponent {
       }
       return item;
     });
-  }
-
-  go(path: Array<string> | string): void {
-    if (typeof path === 'string') {
-      path = [path];
-    }
-    this.router.navigate(path);
   }
 }
