@@ -3,6 +3,7 @@
   "description": "A monorepo for multiple projects",
   "version": "0.0.0-development",
   "scripts": {
+    "postinstall": "ngcc",
     "lint": "prettier --write . && eslint --fix --config .eslintrc.js --ext .js,.ts",
     "prepare": "husky install",
     "test": "jest",
