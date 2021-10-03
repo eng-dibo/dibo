@@ -179,7 +179,7 @@ export default function externals(
           transform = transform(externalsParams);
         }
 
-        transform = (transform || `commonjs2 ${path}`).trim();
+        transform = ((transform as string) || `commonjs2 ${path}`).trim();
         if (transform.length > 0 && transform.indexOf(' ') === -1) {
           //  transform is module type, example: `commonjs2`
           transform = `${transform} ${path}`;
