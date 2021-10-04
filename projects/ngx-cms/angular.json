@@ -125,8 +125,7 @@
               "path": "server/webpack.config.ts"
             },
             "outputPath": "../../dist/ngx-cms/core/server",
-            /* same as webpack.config.entry{} */
-            "main": "",
+            "main": "server/express.ts",
             "tsConfig": "server/tsconfig.json"
           },
           "configurations": {

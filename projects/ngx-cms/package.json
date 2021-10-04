@@ -15,7 +15,7 @@
     "build:config:dev": "webpack -c config!!/webpack.config.ts",
     "build": "cross-env-shell NODE_ENV=production \"npm run build:browser && npm run build:server && npm run build:config\"",
     "build:dev": "cross-env-shell NODE_ENV=development \"npm run build:browser:dev && npm run build:server:dev && npm run build:config:dev\"",
-    "serve": "node ../../dist/ngx-cms/core/server/express.js --start",
+    "serve": "node ../../dist/ngx-cms/core/server/main.js --start",
     "serve:ng": "ng serve -o",
     "serve:inspect": "node --inspect ../../dist/ngx-cms/core/server/express.js --start",
     "serve:dev": "nodemon ../../dist/ngx-cms/core/server/express.js --start",

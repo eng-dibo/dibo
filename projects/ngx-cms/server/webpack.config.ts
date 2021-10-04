@@ -7,10 +7,13 @@ let config: Configuration = deepMerge([
   baseConfig,
   {
     entry: {
-      express: resolve(__dirname, './express.ts'),
+      // use angular.server.options.main
+      // express: resolve(__dirname, './express.ts'),
     },
     output: {
       path: resolve(__dirname, '../../../dist/ngx-cms/core/server'),
+      // todo: use the original filename, i.e: express not main
+      filename: '[name].js',
     },
   },
 ]);
