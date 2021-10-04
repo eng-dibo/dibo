@@ -3,6 +3,7 @@
   "description": "A monorepo for multiple projects",
   "version": "0.0.0-development",
   "scripts": {
+    "postinstall": "ngcc",
     "lint": "prettier --write . && eslint --fix --config .eslintrc.js --ext .js,.ts",
     "prepare": "husky install",
     "test": "jest",
@@ -110,6 +111,7 @@
     "ts-loader": "^9.2.6",
     "ts-node": "^10.2.1",
     "tsconfig-paths": "^3.11.0",
+    "tsconfig-paths-webpack-plugin": "^3.5.1",
     "tslint": "~6.1.0",
     "typescript": "^4.3.5",
     "webpack": "^5.54.0",

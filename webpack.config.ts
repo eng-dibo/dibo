@@ -5,6 +5,7 @@ import { Configuration } from 'webpack';
 import { node } from './packages/webpack/externals';
 import { resolve } from 'path';
 import BasePlugin from './packages/webpack/plugins';
+import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
 
 class FilterErrors extends BasePlugin {
   hooks = [
@@ -29,11 +30,14 @@ let config: Configuration = {
   resolve: {
     extensions: ['.tsx', '.ts', '.jsx', '.js'],
     symlinks: false,
+    /* use TsconfigPathsPlugin
     alias: {
       // add '~' for each project as the project's root
       '~~': resolve(__dirname, './'),
       '@engineers': resolve(__dirname, './packages/'),
-    },
+    },*/
+    // add tsconfig paths to webpack alias
+    plugins: [new TsconfigPathsPlugin()],
   },
   externals: [
     // add node_modules to externals in target:node
