@@ -22,7 +22,7 @@ export type Uri =
       retryWrites?: boolean;
     };
 
-export interface ConnectionOptions extends mongoose.ConnectionOptions {
+export interface ConnectionOptions extends mongoose.ConnectOptions {
   // if false, don't create a new connection if there is another connection already open
   multiple?: boolean;
 }
@@ -46,17 +46,11 @@ export function connect(
   delete options.multiple;
 
   let defaultOptions: ConnectionOptions = {
-    // todo: export static defaultConnectionOptions={..}
-    useCreateIndex: true,
-    // https://mongoosejs.com/docs/deprecations.html;
-    useNewUrlParser: true,
-    useFindAndModify: false,
     // https://mongoosejs.com/docs/connections.html
     bufferCommands: false,
     autoIndex: false,
-    useUnifiedTopology: true,
-    writeConcern: { w: 'majority' },
     keepAlive: true,
+    //  writeConcern: { w: 'majority' },
   };
   let opts = Object.assign(options || {}, defaultOptions);
 
