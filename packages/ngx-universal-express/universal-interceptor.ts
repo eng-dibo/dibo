@@ -26,8 +26,11 @@ export class UniversalInterceptor implements HttpInterceptor {
         newUrl += '/';
       }
       newUrl += req.url;
+      // req is immutable, you have to clone it and modify the cloned object
+      // use req.clone({url}) -> equivalent to `{...req, url: 'newUrl'}`
       serverReq = req.clone({ url: newUrl });
     }
+
     return next.handle(serverReq);
   }
 }
