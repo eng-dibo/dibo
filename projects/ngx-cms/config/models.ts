@@ -2,7 +2,6 @@
 
 import shortId from 'shortid';
 import mongoose from 'mongoose';
-export let basic = {};
 
 /*
 //replace '-' with '@', because it will be used as a separator between the id and the slug,

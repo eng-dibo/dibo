@@ -7,15 +7,13 @@
 // in this case the project must be started from this location (npm run start),
 // starting the project from dist/*/server > node express is wrong
 
+import db from './database';
+import firebase, { BUCKET as _bucket } from './firebase';
+
 export const prod = process.env.NODE_ENV === 'production';
+const BUCKET = prod ? _bucket : 'test';
 
 // use auth code to perform admin operations.
 export const AUTH = '';
-
-export const DB = {
-  type: 'mongodb',
-  auth: ['dbUsername', 'env:dbPass'],
-  host: 'username-gbdqa.gcp.mongodb.net',
-  srv: true,
-  dbName: prod ? 'dbname' : 'test',
-};
+export { db, firebase, BUCKET };
+export * as models from './models';
