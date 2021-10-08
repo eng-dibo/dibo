@@ -1,6 +1,6 @@
 <!--
 todo:
-- adjust pipes by the data providor
+- adjust pipes by the data provider
   i.e: instead of using "title | length:200", data.title must be provided correctly,
   or use options to adjust it.
 -  as of angular 9 @ngx-share/buttons has an issue: Cannot read property 'shareButton' of undefined
@@ -53,7 +53,11 @@ todo:
         <a href="{{item.link || '#'}}">{{item.title | length:200}}</a>
       </h4>
       <h6 mat-line dir="auto">{{item.subtitle | length:200}}</h6>
-      <div mat-line [innerHtml]="item.content | summary" dir="auto"></div>
+      <div
+        mat-line
+        [innerHtml]="item.content | html2text | length:500 | nl2br"
+        dir="auto"
+      ></div>
       <!-- todo: add cancel btn -->
     </mat-list-item>
   </mat-list>
