@@ -4,19 +4,27 @@ import type { Config } from '@jest/types';
 // run 'ngcc' https://thymikee.github.io/jest-preset-angular/docs/guides/angular-ivy/
 import 'jest-preset-angular/ngcc-jest-processor';
 
-import pathsToModuleNameMapper from 'ts-jest/utils';
+import { pathsToModuleNameMapper } from 'ts-jest/utils';
 import stripJsonComments from 'strip-json-comments';
 import fs from 'fs';
+import { resolve } from 'path';
 
-// todo: use `import { read } from "@engineers/nodejs/fs-sync.read()"`
-function readJson(path: string): any {
-  let content = fs.readFileSync(path).toString();
-  // strip comments from json file
-  return JSON.parse(stripJsonComments(content));
+export function getPaths(
+  tsConfigPath = './tsconfig.json',
+  prefix = '<rootDir>'
+) {
+  // todo: use `import { read } from "@engineers/nodejs/fs-sync.read()"`
+  function readJson(path: string): any {
+    let content = fs.readFileSync(path).toString();
+    // strip comments from json file
+    return JSON.parse(stripJsonComments(content));
+  }
+
+  let tsConfig = readJson(tsConfigPath);
+  return pathsToModuleNameMapper(tsConfig.compilerOptions.paths, {
+    prefix,
+  });
 }
-
-let tsConfig = readJson('./tsconfig.json');
-let { compilerOptions } = tsConfig;
 
 let config: Config.InitialOptions = {
   // use 'ts-jest' to enable type checking while testing
@@ -55,12 +63,11 @@ let config: Config.InitialOptions = {
    https://huafu.github.io/ts-jest/user/config/#paths-mapping
    // fixed: pathsToModuleNameMapper is mapping to `<rootDir>/./packages/$1`
    https://github.com/kulshekhar/ts-jest/issues/2709
+   // todo: add '~' to every project or package jest.config
    */
 
-  /* moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, {
-    prefix: "<rootDir>",
-  }),*/
-  // todo: use pathsToModuleNameMapper
+  moduleNameMapper: getPaths(),
+  /*
   moduleNameMapper: {
     '~~(.*)': '<rootDir>/$1',
     '@engineers/(.*)': '<rootDir>/packages/$1',
@@ -68,6 +75,7 @@ let config: Config.InitialOptions = {
     // https://github.com/kulshekhar/ts-jest/issues/2718
     // "(.*)": "<rootDir>/node_modules/$1",
   },
+  */
 
   // jest setups for each testing file,
   // for example: preparing the testing environment
