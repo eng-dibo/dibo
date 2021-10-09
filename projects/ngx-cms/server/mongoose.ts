@@ -1,4 +1,5 @@
 import { connect as _connect, model, mongoose, Uri } from '@engineers/mongoose';
+import { Obj } from '@engineers/javascript/objects';
 import { models, db } from '~config/server';
 
 /**
@@ -29,8 +30,8 @@ export function disconnect(): Promise<void> {
  * @return
  */
 export function getModel(
-  collection: any,
-  schemaObj = {}
+  collection: string,
+  schemaObj?: Obj
 ): ReturnType<typeof model> {
   // console.log("model: " +{ type, models: mongoose.models, modelNames: mongoose.modelNames() });
 
@@ -43,6 +44,5 @@ export function getModel(
     schemaObj =
       schemaName in models ? models[schemaName as keyof typeof models] : {};
   }
-
   return model(collection, schemaObj, { strict: false });
 }

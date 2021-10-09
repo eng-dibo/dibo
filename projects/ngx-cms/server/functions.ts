@@ -11,12 +11,21 @@ import { Categories } from '~browser/formly-categories-material/functions';
 import { timer } from '@engineers/javascript/time';
 import { BUCKET } from '~config/firebase';
 import { resolve } from 'path';
+import init from '../../../packages/firebase-admin/init';
+import { apps } from 'firebase-admin';
 
 export let dev = process.env.NODE_ENV === 'development';
 
 // todo: use env:GOOGLE_APPLICATION_CREDENTIALS=Path.resolve("./firebase-$app.json")
+init({
+  serviceAccount: resolve(
+    __dirname,
+    '../../../packages/firebase-admin/test/firebase.json'
+  ),
+  name: 'ngxCms',
+});
 
-export let bucket = new Storage({ bucket: BUCKET });
+export let bucket = new Storage({ bucket: BUCKET, app: apps[0] });
 
 // relative to /dist/$project/core/server
 const TEMP = resolve(__dirname, '..');

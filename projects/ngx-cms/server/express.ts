@@ -16,9 +16,9 @@ export function server(): ReturnType<typeof expressServer> {
   console.info(`the server is working in ${process.env.NODE_ENV} mode`);
 
   // relative to dist/ngx-cms/core/server
-  let DistFolder = resolve(__dirname, '../..'),
-    browserDir = DistFolder + '/core/browser',
-    tempDir = DistFolder + '/core/temp';
+  let distFolder = resolve(__dirname, '../..'),
+    browserDir = distFolder + '/core/browser',
+    tempDir = distFolder + '/core/temp';
 
   return expressServer({
     browserDir,
@@ -56,8 +56,8 @@ export function server(): ReturnType<typeof expressServer> {
 }
 
 // Start up the Node server
-//firebase starts the server automatically, so we don't need to start it again (error)
-//todo: onError, try port++
+// firebase starts the server automatically, so we don't need to start it again (error)
+// todo: onError, try port++
 if (process.argv[2] == '--start') {
   run(server());
 }

@@ -11,6 +11,8 @@ import { resize } from '@engineers/graphics';
 import { backup, restore, query as _query } from '@engineers/mongoose';
 import { replaceAll } from '@engineers/javascript/string';
 import * as mongoose from 'mongoose';
+import { slug } from '@engineers/ngx-content-core/pipes-functions';
+import { resolve } from 'path';
 
 let app = Router();
 const TEMP = resolve(__dirname, '../../temp');
@@ -18,8 +20,6 @@ const TEMP = resolve(__dirname, '../../temp');
 // todo: add auth token
 
 // todo: don't import from ngx-* packages, because it may contain browser-specific APIs.
-import { slug } from '@engineers/ngx-content-core/pipes-functions';
-import { resolve } from 'path';
 
 // todo: import {} from 'fs/promises' doesn't supported yet (experimental)
 let { readdir, unlink } = require('fs').promises;
@@ -40,10 +40,10 @@ app.get('/collections', (req: any, res: any) => res.json(supportedCollections));
 
 export function query(
   operation: string,
-  collection: string | Array<any>,
-  params: Array<any>
+  collection: string,
+  ...params: Array<any>
 ): ReturnType<typeof _query> {
-  return _query(operation, getModel(collection), params);
+  return _query(operation, getModel(collection), ...params);
 }
 
 /**
