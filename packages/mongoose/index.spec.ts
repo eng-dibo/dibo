@@ -1,7 +1,6 @@
 import { test, expect, afterAll } from '@jest/globals';
 import {
   connect,
-  Uri,
   model,
   mongoose,
   query,
@@ -12,21 +11,12 @@ import {
   restore,
   getConnection,
 } from './index';
+import { uri as _uri } from './test/config';
 import shortId from 'shortid';
-
-// todo: get uri from user.env!!.json
-// https://cloud.mongodb.com/v2/5bc831c29ccf64e6ceb8d15b#metrics/replicaSet/60f01cd09f632f7e383aff79/explorer
-let uri: Uri = {
-  host: process.env.db_host || 'cluster0.v3unb.mongodb.net',
-  username: process.env.db_username || 'admin',
-  password: process.env.db_password || 'Testing@xx',
-  srv: true,
-  dbName: 'spec',
-};
 
 // only run tests if credentials provided
 
-uri = Object.assign({ host: '127.0.0.1', dbName: 'spec' }, uri);
+let uri = Object.assign({ host: '127.0.0.1', dbName: 'spec' }, _uri);
 
 let booksSchema = { name: 'string', serial: 'number' },
   options = { shortId: true },
@@ -133,12 +123,12 @@ test('restore', () => {
       query(
         'find',
         // todo: use empty schema, i.e: model('books',{},...)
-        model('books', { name: 'string' }, { strict: false }, 'spec'),
-        [{} /*, { rawResult: true }*/]
+        model('books', { name: 'string' }, { strict: false }, 'spec')
+        /*, {} , { rawResult: true }*/
       )
     )
     .then((data: any) => {
-      /* 
+      /*
         // for testing using empty schema
         console.log({
           data,

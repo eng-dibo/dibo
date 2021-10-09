@@ -183,21 +183,17 @@ export function model(
  * to use another database pass model(...,dbName) to the param `collection`
  * @method query
  * @param  operation  operation name, example: find
- * @param  modelObj   model object (as accepted in @engineers/mongoose model()) or collection name as string
- * @param  params  every operation has it's own params, for example find accepts filter, docs, options
+ * @param  collection  collection name or model object (as accepted in @engineers/mongoose model())
+ * @param  params  every operation has it's own params, for example find(filter, docs, options)
  * @return {}
  * @example: GET /api/v1/find/articles
  * @example: GET /api/v1/find/articles/$articleId
- * @example: GET /api/v1/find/articles/[{"status":"approved"},null,{"limit":1}]
+ * @example: GET /api/v1/find/articles/{"status":"approved"},null,{"limit":1}
  */
 export function query(
   operation: string,
   collection: string | mongoose.Model<any>,
-  params: Array<any> = [],
-  // true: return a mongoose.Document
-  // false: return a plain array of documents
-  // null: return mongoose.Query, use .exec() or .lean()
-  lean: boolean = false
+  ...params: any[]
 ): /*mongoose.Query<any[], any> |*/ Promise<any> {
   // if (dev) { console.log('[server] query', { operation, collection, params });}
 
@@ -214,6 +210,7 @@ export function query(
       params[0] = { _id: params[0] };
     }
   }
+
   // example: contentModel.find(...params)
   // @ts-ignore: This expression is not callable.
   // because not all keys of contentModel are methods
@@ -223,7 +220,7 @@ export function query(
   ](...params);
 
   // .exec() converts mongoose.Query to promise
-  // return mongooseQuery[lean ? 'lean' : 'exec']();
+  // todo: return mongooseQuery[lean ? 'lean' : 'exec']();
   return mongooseQuery.exec();
 }
 
