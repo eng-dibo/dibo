@@ -1,10 +1,9 @@
 import { test, expect, beforeAll, afterAll } from '@jest/globals';
-import app, { query } from './v1';
-import { Router } from 'express';
-import { connect, getModel } from '../mongoose';
+import app, { query } from './routes';
+import { connect, getModel } from './mongoose';
 // todo: use '~'
-import { model, mongoose } from '../../../../packages/mongoose';
-import { uri } from '../../../../packages/mongoose/test/config';
+import { mongoose } from '../../../packages/mongoose';
+import { uri } from '../../../packages/mongoose/test/config';
 
 // todo: afterAll() -> delete db
 beforeAll(() => {
@@ -27,11 +26,7 @@ test('query', () => {
     (result) => {
       expect(result).toBeInstanceOf(Array);
       expect(result.length).toEqual(1);
-      expect(result[0].title.indexOf('article#')).toEqual(0);
+      expect(result[0].title).toMatch(/^article#[12]$/);
     }
   );
 });
-
-// todo: testing routes via SuperTest
-// https://dev.to/lukekyl/testing-your-express-js-backend-server-3ae6
-test('routes', () => {});

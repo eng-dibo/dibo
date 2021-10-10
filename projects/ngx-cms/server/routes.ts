@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import shortId from 'shortid';
-import { connect, getModel } from '../mongoose';
+import { connect, getModel } from './mongoose';
 import { prod, BUCKET } from '~config/server';
-import { upload, bucket, getCategories } from '../functions';
+import { upload, bucket, getCategories } from './functions';
 import { write, mkdir } from '@engineers/nodejs/fs';
 import cache from '@engineers/nodejs/cache';
 import { Categories } from '~browser/formly-categories-material/functions';
@@ -15,7 +15,7 @@ import { slug } from '@engineers/ngx-content-core/pipes-functions';
 import { resolve } from 'path';
 
 let app = Router();
-const TEMP = resolve(__dirname, '../../temp');
+const TEMP = resolve(__dirname, '../temp');
 
 // todo: add auth token
 
@@ -62,7 +62,7 @@ app.get(/\/:([^\/]+)\/([^\/]+)(?:\/(.+))?/, (req: any, res: any) => {
   }
   timer(`get ${req.url}`);
 
-  query(operation, collection, params)
+  query(operation, collection, ...params)
     .then((data: any) => res.json(data))
     .catch((error: any) => res.json({ error }))
     .then(() => {
@@ -188,7 +188,7 @@ app.get(/\/([^\/]+)(?:\/(.+))?/, (req: any, res: any, next: any) => {
   }
   // ------------------ /API route validation ------------------//
 
-  // todo: add query to file cashe ex: articles_index?filter={status:approved}
+  // todo: add query to file cache ex: articles_index?filter={status:approved}
   //  -> articles_index__JSON_stringify(query)
   // for item temp=.../item/$id/data.json because this folder will also contain it's images
   let tmp = `${TEMP}/${collection}/${itemType}${item ? `/${item}` : ''}${
@@ -203,11 +203,11 @@ app.get(/\/([^\/]+)(?:\/(.+))?/, (req: any, res: any, next: any) => {
       connect().then(() => {
         let content;
         if (itemType === 'item') {
-          content = query('find', collection, [item]);
+          content = query('find', collection, item);
         } else {
           let findOptions = {
             filter: JSON.parse((req.query.filter as string) || '{}') || {},
-            // todo: support docs{} -> typeod docsstring in both cases
+            // todo: support docs{} -> typed docs string in both cases
             docs: req.query.docs, // projection
             options: JSON.parse((req.query.options as string) || '{}') || {},
           };
@@ -226,11 +226,13 @@ app.get(/\/([^\/]+)(?:\/(.+))?/, (req: any, res: any, next: any) => {
           }
 
           if (itemType === 'index') {
-            content = query('find', collection, [
+            content = query(
+              'find',
+              collection,
               findOptions.filter,
               findOptions.docs,
-              findOptions.options,
-            ]);
+              findOptions.options
+            );
           } else if (itemType === 'category') {
             content = getCategories(collection).then((categories: any) => {
               let ctg = new Categories(categories);
@@ -251,11 +253,13 @@ app.get(/\/([^\/]+)(?:\/(.+))?/, (req: any, res: any, next: any) => {
                 });
 
               findOptions.filter._id = { $in: items };
-              return query('find', collection, [
+              return query(
+                'find',
+                collection,
                 findOptions.filter,
                 findOptions.docs,
-                findOptions.options,
-              ]);
+                findOptions.options
+              );
             });
           } else if (itemType === 'image') {
           }

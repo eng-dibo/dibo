@@ -6,7 +6,7 @@ import { AppServerModule } from './main';
 
 import { json as jsonParser, urlencoded as urlParser } from 'body-parser';
 import cors from 'cors';
-import v1 from './api/v1';
+import routes from './routes';
 import redirect from '@engineers/express-redirect-middleware';
 import { resolve } from 'path';
 
@@ -16,6 +16,9 @@ export function server(): ReturnType<typeof expressServer> {
   console.info(`the server is working in ${process.env.NODE_ENV} mode`);
 
   // relative to dist/ngx-cms/core/server
+  // this may be have different values for different compilation scenarios
+  // for instance, with `ts-node server/express.ts`, __dirname = '/server'
+  // also `jest` transpiles .ts files on the fly, but doesn't output to 'dist' folder
   let distFolder = resolve(__dirname, '../..'),
     browserDir = distFolder + '/core/browser',
     tempDir = distFolder + '/core/temp';
@@ -49,7 +52,18 @@ export function server(): ReturnType<typeof expressServer> {
       // access the server API from client-side (i.e: Angular)
       app.use(cors());
 
-      app.use('/api/v1', v1);
+      // deprecated api version
+      app.use(/^\/api\/v(\d)\/(.+)/, (req, res, next) => {
+        if (req.params[0] !== '1') {
+          next(
+            `api version ${req.params[0]} is invalid or deprecated, use /api/v1`
+          );
+        } else {
+          next();
+        }
+      });
+      app.use('/api/v1', routes);
+
       return app;
     },
   });
