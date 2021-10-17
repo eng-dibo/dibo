@@ -17,11 +17,9 @@ import { apps } from 'firebase-admin';
 export let dev = process.env.NODE_ENV === 'development';
 
 // todo: use env:GOOGLE_APPLICATION_CREDENTIALS=Path.resolve("./firebase-$app.json")
+// paths relative to 'dist/*'
 init({
-  serviceAccount: resolve(
-    __dirname,
-    '../../../packages/firebase-admin/test/firebase.json'
-  ),
+  serviceAccount: resolve(__dirname, '../../config/firebase.json'),
   name: 'ngxCms',
 });
 
