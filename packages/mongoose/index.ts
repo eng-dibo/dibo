@@ -226,13 +226,19 @@ export function query(
 
 /**
  * get Admin access to mongodb, for example to add/remove users or listDatabases()
+ * connect to 'admin', i.e connect('mongodb://user:pass@host/admin').then(connection=>admin(connection))
  * https://mongodb.github.io/node-mongodb-native/api-generated/admin.html
+ * https://stackoverflow.com/a/61398301/12577650
  * @param connection
  * @returns
  */
-export function admin(connection?: Connection): Admin {
-  return getConnection(connection).db.admin();
-  // `new mongoose.mongo.Admin(connection.db);` doesn't work
+// todo: test this function
+export function admin(
+  connection: Connection = mongoose.connection
+): any /*Admin*/ {
+  return new mongoose.mongo.Admin();
+  // return new mongoose.mongo.Admin(connection.db);
+  // return getConnection(connection).db.admin();
 }
 
 /**
