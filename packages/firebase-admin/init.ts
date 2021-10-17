@@ -1,10 +1,9 @@
-import {
-  initializeApp,
+import admin, {
+  // initializeApp,
   ServiceAccount,
   credential,
   AppOptions,
 } from 'firebase-admin';
-import { Obj } from '@engineers/javascript/objects';
 
 // todo: InitOptions properties
 export interface InitOptions extends AppOptions {
@@ -69,5 +68,8 @@ export default function (options: InitOptions | string): void {
       opts.authDomain = `${opts.projectId}.firebaseapp.com`;
     }*/
   }
-  initializeApp(opts, opts.name);
+
+  // don't import {initializeApp} from 'firebase-admin'
+  // https://github.com/firebase/firebase-admin-node/issues/593#issuecomment-908616694
+  admin.initializeApp(opts, opts.name);
 }
