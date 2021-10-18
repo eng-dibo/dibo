@@ -1,7 +1,7 @@
 import { resolve } from 'path';
 import baseConfig from '~~webpack.config';
-import { deepMerge } from '@engineers/javascript/merge';
-import { Configuration, RuleSetRule } from 'webpack';
+import webpackMerge from 'webpack-merge';
+import { Configuration } from 'webpack';
 import externals from '@engineers/webpack/externals';
 
 let projectConfig: Configuration = {
@@ -11,7 +11,7 @@ let projectConfig: Configuration = {
     },
   },
 };
-let config: Configuration = deepMerge([baseConfig, projectConfig]);
+let config: Configuration = webpackMerge(baseConfig, projectConfig);
 
 // use tsconfig.json for this project to use the project's paths
 (
