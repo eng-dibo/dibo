@@ -40,13 +40,17 @@ let config: Configuration = {
     plugins: [new TsconfigPathsPlugin()],
   },
   externals: [
-    // add node_modules to externals in target:node
-    // except:
-    //   - @engineers/* -> not compiled or published, imported from source
-    //   -*.scss files
-    //   - ~* (i.e: ~config|browser|server/*) -> to prevent it from transforming to `commnjs2 ~config/*`
-    //     so it can be properly transformed to 'commonjs ../config/*'
-    node(undefined, [/@engineers\/.+/, /\.s?css$/, /^~/]),
+    /*
+       add node_modules to externals in target:node
+       except:
+       - @engineers/* -> not compiled or published, imported from source
+       -*.scss files
+       - ~* (i.e: ~config|browser|server/*) -> to prevent it from transforming to `commnjs2 ~config/*`
+         so it can be properly transformed to 'commonjs ../config/*'
+       - @babel/runtime -> temporary to solve the error `SyntaxError: Unexpected token 'export'`
+         when using as async/await function (todo: why it should excluded from webpack.externals)
+    */
+    node(undefined, [/@engineers\/.+/, /\.s?css$/, /^~/, /@babel\/runtime/]),
   ],
   output: {
     path: resolve(__dirname, './dist'),
