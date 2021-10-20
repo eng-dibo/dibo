@@ -28,7 +28,7 @@ const appRoutes: Routes = [
   //  { path: "", component: AppComponent, pathMatch: "full" }
 ];
 const endRoutes: Routes = [{ path: '**', component: ErrorComponent }];
-const enableTracing = env.mode === 'development';
+const enableTracing = false; // env.mode === 'development';
 
 @NgModule({
   declarations: [AppComponent, ErrorComponent],
