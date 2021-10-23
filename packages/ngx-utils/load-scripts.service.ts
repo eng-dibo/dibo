@@ -115,10 +115,10 @@ export class NgxLoadService {
 
       this.renderer.appendChild(parent || this.document.head, el);
 
-      console.log({
+      /* console.log({
         el,
         head: this.document.head,
-      });
+      }); */
     });
   }
 }
