@@ -32,7 +32,9 @@ export class ApiInterceptor implements HttpInterceptor {
     // todo: only API requests (not routerLink)
 
     let changes = {
-      url: req.url.startsWith('/api/v') ? req.url : `/api/v1${req.url}`,
+      url: req.url.startsWith('/api/v')
+        ? req.url
+        : `/api/v1${req.url.startsWith('/') ? '' : '/'}${req.url}`,
       // use toFormData in POST requests
       // todo: if(req.context.toFormData)
       // sending data as FormData instead of Object may cause that req.body=undefined
@@ -52,7 +54,7 @@ export class ApiInterceptor implements HttpInterceptor {
         */
 
     let newReq = req.clone(changes);
-    newReq.body.x = 2;
+    // newReq.body.x = 2;
 
     if (env.mode === 'development') {
       console.log(`[httpService] ${newReq.method} ${newReq.url}`);
