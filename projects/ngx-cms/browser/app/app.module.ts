@@ -41,7 +41,6 @@ const enableTracing = false; // env.mode === 'development';
     AppRoutingModule,
     ContentModule,
     RouterModule.forRoot(endRoutes, { enableTracing }),
-    BrowserModule.withServerTransition({ appId: 'serverApp' }),
     BrowserAnimationsModule,
     MatToolbarModule,
     HttpClientModule,
