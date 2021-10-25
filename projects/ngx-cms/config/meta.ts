@@ -6,18 +6,18 @@ let metaTags: Meta = {
   baseUrl:
     env.mode === 'development'
       ? 'http://localhost:4200/'
-      : 'https://www.domain.com/',
+      : process.env.meta_baseUrl,
   // page's canonical link (different for each page)
-  link: 'https://www.domain.com/',
+  link: process.env.meta_baseUrl,
   description: '',
   'content-language': 'ar,en',
   image: { src: `/assets/site-image.webp` },
   twitter: {
-    site: 'twitter_account',
-    'site:id': 'twitter_account',
+    site: process.env.meta_twitterAccount,
+    'site:id': process.env.meta_twitterAccount,
   },
   //page title, site name will be added to title via meta.service
-  title: 'site title',
+  title: 'ngx-cms',
 };
 
 export default metaTags;
