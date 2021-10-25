@@ -273,8 +273,7 @@ app.get(/\/([^\/]+)(?:\/(.+))?/, (req: any, res: any, next: any) => {
       res.json(payload);
       if (!prod) {
         console.log(
-          `[server/api] getData: +${timer(`get ${req.url}`, true)}sec`,
-          payload
+          `[server/api] getData: +${timer(`get ${req.url}`, true)}sec`
         );
       }
     })
