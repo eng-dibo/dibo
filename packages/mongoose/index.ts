@@ -72,7 +72,10 @@ export function connect(
     uri = 'mongodb' + (srv ? '+srv' : '') + '://' + uri;
   }
 
-  return mongoose.connect(uri, opts);
+  return mongoose.connect(uri, opts).catch((error: any) => {
+    error.details = { uri, options: opts };
+    throw error;
+  });
 }
 
 /**
