@@ -117,6 +117,6 @@ export default function (
         }
       }
 
-      return Promise.reject('[cache] cannot fetch any data');
+      throw error;
     });
 }
