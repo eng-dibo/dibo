@@ -57,7 +57,7 @@ export class ApiInterceptor implements HttpInterceptor {
     // newReq.body.x = 2;
 
     if (env.mode === 'development') {
-      console.log(`[httpService] ${newReq.method} ${newReq.url}`);
+      console.log(`[httpService] ${newReq.method} ${req.url} -> ${newReq.url}`);
     }
     return (
       next
