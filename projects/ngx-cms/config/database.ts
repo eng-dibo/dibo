@@ -9,11 +9,12 @@ interface DB {
 let db: DB = {
   type: 'mongodb',
   config: {
-    username: process.env.dbUserName!,
+    username: process.env.dbUsername!,
     password: process.env.dbPassword!,
-    host: 'username-gbdqa.gcp.mongodb.net',
+    // '<clusterName>-gbdqa.gcp.mongodb.net'
+    host: process.env.dbHost,
     srv: true,
-    dbName: prod ? 'dbname' : 'test',
+    dbName: prod ? process.env.dbName || 'dbname' : 'test',
   },
 };
 
