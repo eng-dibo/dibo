@@ -53,17 +53,76 @@ export function parse(url: string): Operation {
     /^(?:([^:\/]+):)?(?:([^\/.]+)\.)?([^\/]+)(?:\/([^?]+))?(?:\?(.+)?)?$/;
   let match = url.match(pattern);
   if (match) {
-    let [fullMatch, operation, database, collection, portions, query] = match;
-    // todo: parse portions
-    // todo: add portions to query
-
-    return {
-      operation: operation || 'find',
+    let [
+      fullMatch,
+      operation = 'find',
       database,
       collection,
-      portions: portions ? portions.split('/') : [],
-      // convert query to object
-      query: queryToObject(query || ''),
+      _portions,
+      _query,
+    ] = match;
+
+    let portions = _portions ? _portions.split('/') : [];
+    // convert query to object
+    let query = queryToObject(_query || '');
+
+    // parse portions and add known portions syntax to query
+    // update:users/1/{name: "example"} -> query:{ data:{name: "example"} }
+    // portions must be parsed  from last to first,
+    // because it may be or may be not deleted after parsing and added to query
+    if (['update', 'insert'].includes(operation) && portions && portions[1]) {
+      query.data = portions[1];
+      portions.pop();
+    }
+
+    // find/skip:limit~fields@conditions
+    // consumer has to determine when to use something like findOne, findMany, ...
+    if (
+      ['find', 'delete', 'update', 'replace'].includes(operation) &&
+      portions &&
+      portions.length > 0
+    ) {
+      let fieldsMatch = portions[0].match(/~([^:~@]+)/),
+        conditionMatch = portions[0].match(/@([^:~@]+)/),
+        rangeMatch = portions[0].match(/([^:~@]+)?:([^:~@]+)?/);
+
+      if (rangeMatch) {
+        if (rangeMatch[1]) {
+          query.skip = +rangeMatch[1];
+        }
+        if (rangeMatch[2]) {
+          query.limit = +rangeMatch[2];
+        }
+
+        portions[0] = portions[0].replace(rangeMatch[0], '');
+      }
+
+      if (fieldsMatch) {
+        query.fields = fieldsMatch[1];
+        portions[0] = portions[0].replace(fieldsMatch[0], '');
+      }
+
+      if (conditionMatch) {
+        query.condition = conditionMatch[1];
+        portions[0] = portions[0].replace(conditionMatch[0], '');
+      }
+
+      if (!fieldsMatch && !conditionMatch && !rangeMatch) {
+        query.id = portions[0];
+        portions.shift();
+      }
+
+      if (portions[0] === '') {
+        portions.shift();
+      }
+    }
+
+    return {
+      operation,
+      database,
+      collection,
+      portions,
+      query,
     };
   }
 
