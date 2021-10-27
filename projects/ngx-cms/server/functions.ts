@@ -1,14 +1,12 @@
-import { connect, getModel } from './mongoose';
 import {
   read as readSync,
   write as writeSync,
 } from '@engineers/nodejs/fs-sync';
-import cache from '@engineers/nodejs/cache';
+
 import Storage from '@engineers/firebase-admin/storage';
 import { initializeApp } from 'firebase-admin';
 import multer from 'multer';
-import { Categories } from '~browser/formly-categories-material/functions';
-import { timer } from '@engineers/javascript/time';
+
 import { BUCKET } from '~config/firebase';
 import { resolve } from 'path';
 import init from '../../../packages/firebase-admin/init';
@@ -26,57 +24,7 @@ init({
 export let bucket = new Storage({ bucket: BUCKET, app: apps[0] });
 
 // relative to /dist/$project/core/server
-const TEMP = resolve(__dirname, '..');
-
-/*
-/**
- * get adjusted categories (i.e: adding branches, top to each entry & add main categories)
- * & adjusted articles_categories (i.e: article_categories & category_articles)
- * & inputs (for forms)
- * @method categories
- * @return {categories, main, article_categories, category_articles, inputs}
- */
-export function getCategories(
-  collection: string = 'articles'
-): ReturnType<typeof cache> {
-  return cache(`${TEMP}/${collection}/categories.json`, () =>
-    connect().then(() => {
-      timer('getCategories');
-      return Promise.all([
-        getModel(`${collection}_categories`).find({}).lean(),
-        // get all topics categories
-        getModel(collection).find({}, 'categories').lean(),
-      ])
-        .then(([categories, items]) => {
-          if (dev) {
-            console.log(
-              `[server] getCategories: fetched from server +${timer(
-                'getCategories'
-              )}`
-            );
-          }
-
-          // don't close the connection after every query
-          // todo: close the connection when the server restarts or shutdown
-          // https://hashnode.com/post/do-we-need-to-close-mongoose-connection-cjetx0dxh003hcws2l1fs81nl
-          // mongoose.connection.close(() => { if (dev){ console.log("connection closed");} });
-
-          let ctg = new Categories(categories);
-          ctg.adjust();
-          if (dev) {
-            console.log(
-              `[server] getCategories: adjusted ${timer('getCategories', true)}`
-            );
-          }
-          return ctg.itemCategories(items);
-        })
-        .catch((err) => {
-          console.error('[server] getCategories', err);
-          throw new Error(`[server] getCategories, ${err.message}`);
-        });
-    })
-  );
-}
+export const TEMP = resolve(__dirname, '..');
 
 export let json = {
   read(type: string, id?: string | number): any {

@@ -1,18 +1,19 @@
 import { Router } from 'express';
 import shortId from 'shortid';
-import { connect, getModel } from './mongoose';
+import { connect, getModel, query } from './database';
 import { prod, BUCKET } from '~config/server';
-import { upload, bucket, getCategories } from './functions';
+import { upload, bucket } from './functions';
+import { getCategories } from './database';
 import { write, mkdir } from '@engineers/nodejs/fs';
 import cache from '@engineers/nodejs/cache';
 import { Categories } from '~browser/formly-categories-material/functions';
 import { timer } from '@engineers/javascript/time';
 import { resize } from '@engineers/graphics';
-import { backup, restore, query as _query } from '@engineers/mongoose';
+import { backup, restore } from '@engineers/mongoose';
 import { replaceAll } from '@engineers/javascript/string';
-import * as mongoose from 'mongoose';
 import { slug } from '@engineers/ngx-content-core/pipes-functions';
 import { resolve } from 'path';
+import { parse } from '@engineers/databases/operations';
 
 let app = Router();
 const TEMP = resolve(__dirname, '../temp');
@@ -38,21 +39,13 @@ let supportedCollections = [
 ];
 app.get('/collections', (req: any, res: any) => res.json(supportedCollections));
 
-export function query(
-  operation: string,
-  collection: string,
-  ...params: Array<any>
-): ReturnType<typeof _query> {
-  return _query(operation, getModel(collection), ...params);
-}
-
 /**
  * performs db operations via API.
  * todo: use AUTH_TOKEN
  * @example /api/v1/:find/articles/$articleId
  * @example /api/v1/:find/articles?params=[{"status":"approved"},null,{"limit":2}]
  */
-app.get(/\/:([^\/]+)\/([^\/]+)(?:\/(.+))?/, (req: any, res: any) => {
+/* app.get(/\/:([^\/]+)\/([^\/]+)(?:\/(.+))?/, (req: any, res: any) => {
   let operation = req.params[0],
     collection = req.params[1],
     // array of function params ex: find(...params)
@@ -70,7 +63,7 @@ app.get(/\/:([^\/]+)\/([^\/]+)(?:\/(.+))?/, (req: any, res: any) => {
         console.log('[server] get', req.url, timer(`get_${req.url}`, true));
       }
     });
-});
+}); */
 
 /**
  * saves the article's cover image to filesystem
@@ -141,38 +134,23 @@ app.get(/\/image\/([^/-]+)-([^/-]+)-([^/]+)/, (req: any, res: any) => {
 });
 
 /*
-  -> $collection
-  -> $collection/$itemId
-  -> $collection/$itemType=$itemValue
-    ex: /api/v1/articles?limit=50 -> get all articles
-    ex: /api/v1/articles/123 -> get article: 123
-    ex: /api/v1/articles/category=123 -> get articles from this category
-    ex: /api/v1/articles_categories -> get categories list
+  database operation (using operation syntax @engineers/databases/operations.parse())
+  must be the last route (because it starts with a variable)
+
+  syntax: operation:db.collection/portions?query
+  examples:
+   - articles -> get all articles
+   - articles/:50 -> get all articles, limit=50
+   - articles/123 -> get article where _id=123
+   - articles/:50@category=1 -> get articles where category=1, limit=50
+   - articles/:50?limit=10 -> query overrides portions
+
    */
-app.get(/\/([^\/]+)(?:\/(.+))?/, (req: any, res: any, next: any) => {
-  let collection = req.params[0],
-    itemType: string,
-    item: any;
-
+app.get('*', (req: any, res: any, next: any) => {
+  console.log({ req });
   timer(`get ${req.url}`);
-
-  if (!req.params[1]) {
-    itemType = 'index';
-  } else if (req.params[1].indexOf('=') !== -1) {
-    [itemType, item] = req.params[1].split('=');
-  } else {
-    itemType = 'item';
-    item = req.params[1];
-  }
-
-  // ------------------ API route validation ------------------//
-  if (!['item', 'category', 'index', 'image'].includes(itemType)) {
-    return res.json({
-      error: {
-        message: 'unknown itemType, allowed values: item, category, index',
-      },
-    });
-  }
+  let queryObject = parse(req.path);
+  let { operation, database, collection, portions, params } = queryObject;
 
   /* todo:
     if (!supportedCollections.includes(collection))
@@ -183,58 +161,27 @@ app.get(/\/([^\/]+)(?:\/(.+))?/, (req: any, res: any, next: any) => {
         }
       }); */
 
-  if (itemType !== 'index' && !item) {
-    return res.json({ error: { message: 'no id provided' } });
-  }
   // ------------------ /API route validation ------------------//
 
   // todo: add query to file cache ex: articles_index?filter={status:approved}
   //  -> articles_index__JSON_stringify(query)
   // for item temp=.../item/$id/data.json because this folder will also contain it's images
-  let tmp = `${TEMP}/${collection}/${itemType}${item ? `/${item}` : ''}${
-    itemType === 'item' ? '/data' : ''
-  }.json`;
 
+  let tmp = `${TEMP}/${collection}/${params.id || 'index'}.json`;
+
+  // todo: save to cache only if(operation==='find')
   return cache(
     tmp,
     () =>
       // @ts-ignore: error TS2349: This expression is not callable.
       // Each member of the union type ... has signatures, but none of those signatures are compatible with each other.
       connect().then(() => {
-        let content;
-        if (itemType === 'item') {
-          content = query('find', collection, item);
-        } else {
-          let findOptions = {
-            filter: JSON.parse((req.query.filter as string) || '{}') || {},
-            // todo: support docs{} -> typed docs string in both cases
-            docs: req.query.docs, // projection
-            options: JSON.parse((req.query.options as string) || '{}') || {},
-          };
-          if (req.query.limit) {
-            findOptions.options.limit = +req.query.limit;
-          }
+        return query(queryObject);
 
-          if (
-            ['articles', 'jobs'].includes(collection) &&
-            !findOptions.filter.status
-          ) {
-            findOptions.filter.status = 'approved';
-          }
-          if (findOptions.filter.status === null) {
-            delete findOptions.filter.status;
-          }
-
-          if (itemType === 'index') {
-            content = query(
-              'find',
-              collection,
-              findOptions.filter,
-              findOptions.docs,
-              findOptions.options
-            );
-          } else if (itemType === 'category') {
-            content = getCategories(collection).then((categories: any) => {
+        /*
+          // todo:
+          if(collection.indexOf('_categories)){
+             content = getCategories(collection).then((categories: any) => {
               let ctg = new Categories(categories);
 
               let category = categories.categories.find(
@@ -261,10 +208,8 @@ app.get(/\/([^\/]+)(?:\/(.+))?/, (req: any, res: any, next: any) => {
                 findOptions.options
               );
             });
-          } else if (itemType === 'image') {
           }
-        }
-        return content;
+        */
       }),
     // todo: ?refresh=AUTH_TOKEN
     req.query.refresh ? -1 : 3
@@ -317,11 +262,10 @@ app.post('/:collection', upload.single('cover'), (req: any, res: any) => {
   }
   let collection = req.params.collection;
 
-  if (collection === 'article') {
-    collection = 'articles';
-  } else if (collection === 'job') {
-    collection = 'jobs';
+  if (['article', 'job'].includes(collection)) {
+    collection += 's';
   }
+
   timer(`post ${req.url}`);
 
   let tmp = `${TEMP}/${collection}/item/${data._id}`;

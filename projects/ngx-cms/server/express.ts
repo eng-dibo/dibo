@@ -1,3 +1,6 @@
+// database and storage systems should be separated from the server logic
+// so the developer can change their implementation easily
+
 import {
   server as expressServer,
   run,
