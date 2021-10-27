@@ -40,6 +40,7 @@ export interface Operation {
 export function parse(url: string): Operation {
   /*
       pattern:
+        (?:\/)?           -> url may start with an optional '/
         (?:([^:\/]+):)?   -> operation, any character sequence except ':' and '/', followed by ':'
         (?:([^\/.]+)\.)?  -> database, any character sequence except '/' and '.' followed by '.'
         ([^\/]+)          -> collection
@@ -50,7 +51,7 @@ export function parse(url: string): Operation {
 
     */
   let pattern =
-    /^(?:([^:\/]+):)?(?:([^\/.]+)\.)?([^\/]+)(?:\/([^?]+))?(?:\?(.+)?)?$/;
+    /^(?:\/)?(?:([^:\/]+):)?(?:([^\/.]+)\.)?([^\/]+)(?:\/([^?]+))?(?:\?(.+)?)?$/;
   let match = url.match(pattern);
   if (match) {
     let [
@@ -87,22 +88,22 @@ export function parse(url: string): Operation {
         rangeMatch = portions[0].match(/([^:~@]+)?:([^:~@]+)?/);
 
       if (rangeMatch) {
-        if (rangeMatch[1]) {
+        if (!query.limit && rangeMatch[1]) {
           query.skip = +rangeMatch[1];
         }
-        if (rangeMatch[2]) {
+        if (!query.skip && rangeMatch[2]) {
           query.limit = +rangeMatch[2];
         }
 
         portions[0] = portions[0].replace(rangeMatch[0], '');
       }
 
-      if (fieldsMatch) {
+      if (!query.fields && fieldsMatch) {
         query.fields = fieldsMatch[1];
         portions[0] = portions[0].replace(fieldsMatch[0], '');
       }
 
-      if (conditionMatch) {
+      if (!query.condition && conditionMatch) {
         query.condition = conditionMatch[1];
         portions[0] = portions[0].replace(conditionMatch[0], '');
       }

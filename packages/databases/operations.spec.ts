@@ -102,6 +102,21 @@ let operations = {
     portions: [],
     query: { id: 'selector', data: 'data' },
   },
+  'users/:10?limit=20': {
+    operation: 'find',
+    database: undefined,
+    collection: 'users',
+    portions: [],
+    // query must take precedence over portions
+    query: { limit: 20 },
+  },
+  'db.users/123': {
+    operation: 'find',
+    database: 'db',
+    collection: 'users',
+    portions: [],
+    query: { id: 123 },
+  },
 };
 
 for (let key in operations) {
