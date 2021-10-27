@@ -196,9 +196,19 @@ export function model(
  */
 export function query(
   url: string,
-  schema?: mongoose.Model<any> | mongoose.Schema | Obj
+  schema?:
+    | mongoose.Model<any>
+    | mongoose.Schema
+    | Obj
+    | ((collection: string) => mongoose.Model<any> | mongoose.Schema | Obj)
 ): /*mongoose.Query<any[], any> |*/ Promise<any> {
   let { operation, database, collection, portions, query: _query } = parse(url);
+
+  // consumer doesn't have to extract the collection from the url
+  if (typeof schema === 'function') {
+    // @ts-ignore
+    schema = schema(collection);
+  }
 
   let contentModel: mongoose.Model<any> =
     schema && schema instanceof mongoose.Model
