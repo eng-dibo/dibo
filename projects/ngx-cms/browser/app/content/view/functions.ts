@@ -49,7 +49,9 @@ export function transformData(data: Payload, params: Params): Payload {
     data = data.map((item: Article) =>
       adjustArticle(item, params)
     ) as Article[];
-  } else if (!data.error) {
+  } else if (!data.error && data.content) {
+    // data may be doesn't 'content' property
+    // for example article_categories
     data = adjustArticle(data as Article, params);
   }
 
@@ -142,11 +144,7 @@ export function adjustArticle(
   // todo: this needs to add 'categories' getData()
   // todo: use item.categories[0].title
   if (!item.link) {
-    item.link =
-      `/${params.type}/` +
-      (item.categories && item.categories.length > 0
-        ? `${item.categories[0]}/${item.slug}@${item.id}`
-        : `item/${item.id}`);
+    item.link = `/${params.type}/item/${item.slug}@${item.id}`;
   }
 
   item.author = {
