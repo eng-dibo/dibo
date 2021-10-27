@@ -74,7 +74,7 @@ test('model', () => {
 test('query', () => {
   return booksModel
     .create({ name: 'book#1' }, { name: 'book#2' })
-    .then(() => query('find', 'books'))
+    .then(() => query('books'))
     .then((books) => {
       expect(books).toBeInstanceOf(Array);
       expect(books.length).toEqual(2);

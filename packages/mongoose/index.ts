@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import shortId from 'shortid';
 import { Obj, chunk } from '@engineers/javascript/objects';
+import { parse } from '@engineers/databases/operations';
 import { Admin } from 'mongodb';
 
 // to use the native Mongo driver: connection.getClient()
@@ -194,33 +195,31 @@ export function model(
  * @example: GET /api/v1/find/articles/{"status":"approved"},null,{"limit":1}
  */
 export function query(
-  operation: string,
-  collection: string | mongoose.Model<any>,
-  ...params: any[]
+  url: string,
+  schema?: mongoose.Model<any> | mongoose.Schema | Obj
 ): /*mongoose.Query<any[], any> |*/ Promise<any> {
-  // if (dev) { console.log('[server] query', { operation, collection, params });}
+  let { operation, database, collection, portions, query: _query } = parse(url);
 
   let contentModel: mongoose.Model<any> =
-    typeof collection === 'string' ? model(collection) : collection;
+    schema && schema instanceof mongoose.Model
+      ? (schema as mongoose.Model<any>)
+      : model(collection, schema);
 
-  if (typeof params[0] === 'string') {
+  if (_query && _query.id) {
     if (operation === 'find') {
       operation = 'findById';
-    } else if (['update', 'delete'].includes(operation)) {
+    } else if (['update', 'delete', 'replace'].includes(operation)) {
       operation += 'One';
-    }
-    if (operation.indexOf('One')) {
-      params[0] = { _id: params[0] };
     }
   }
 
   // example: contentModel.find(...params)
-  // @ts-ignore: This expression is not callable.
-  // because not all keys of contentModel are methods
-  // ~fix:  (contentModel[..] as contentModel.method )()
-  let mongooseQuery: mongoose.Query<any[], any> = contentModel[
-    operation as keyof typeof contentModel
-  ](...params);
+  // todo: some mongodb function have multiple parameters
+  let mongooseQuery: mongoose.Query<any[], any> =
+    // @ts-ignore: This expression is not callable.
+    // because not all keys of contentModel are methods
+    // ~fix:  (contentModel[..] as contentModel.method )()
+    contentModel[operation as keyof typeof contentModel](_query);
 
   // .exec() converts mongoose.Query to promise
   // todo: return mongooseQuery[lean ? 'lean' : 'exec']();
@@ -251,15 +250,19 @@ export function admin(
  * @returns an array of the available databases.
  */
 export function listDatabases(connection?: Connection, systemDbs = false): any {
-  return admin(connection)
-    .listDatabases()
-    .then((_dbs: any) =>
-      systemDbs
-        ? _dbs.databases
-        : _dbs.databases.filter(
-            (db: any) => !['admin', 'local'].includes(db.name)
-          )
-    );
+  return (
+    admin(connection)
+      // todo: listDatabases() parameters
+      // https://docs.mongodb.com/manual/reference/command/listDatabases/
+      .listDatabases()
+      .then((_dbs: any) =>
+        systemDbs
+          ? _dbs.databases
+          : _dbs.databases.filter(
+              (db: any) => !['admin', 'local'].includes(db.name)
+            )
+      )
+  );
 }
 
 /**
