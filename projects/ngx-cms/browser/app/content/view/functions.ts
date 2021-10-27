@@ -27,14 +27,15 @@ export function getParams(params: any, query: any): Params {
 }
 
 export function getUrl(params: Params): string {
-  let url = `${params.type}/`;
-  if (params.id) {
-    url += params.id;
-  } else if (params.category) {
-    url += `category=${encodeURIComponent(params.category)}`;
+  let url: string;
+  if (params.category) {
+    url = `${params.type}_categories/${params.category}`;
+  } else {
+    // todo: ~_id,title,subtitle,slug,summary,author,cover,categories,updatedAt
+    let filter = encodeURIComponent(JSON.stringify({ status: 'approved' }));
+    url = `${params.type}/${params.id ? params.id : ':50@' + filter}`;
   }
 
-  // todo: ?docs="_id title subtitle slug summary author cover categories updatedAt"
   return url;
 }
 
@@ -116,7 +117,7 @@ export function adjustArticle(
   if (item.cover) {
     // if the layout changed, change the attribute sizes, for example if a side menue added.
     // todo: i<originalSize/250
-    let src = `/image/${params.type}-cover-${item._id}/${item.slug}.webp`,
+    let src = `/api/v1/image/${params.type}-cover-${item._id}/${item.slug}.webp`,
       srcset = '',
       sizes =
         '(max-width: 1000px) 334px, (max-width: 800px) 400px,(max-width: 550px) 550px';
