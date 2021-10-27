@@ -23,17 +23,22 @@ let booksSchema = { name: 'string', serial: 'number' },
   booksModel = model('books', booksSchema, options),
   backupData: BackupData;
 
-afterAll(() =>
-  // drop all databases used for testing and close the connection after finishing testing
-  // to avoid open handlers
-  Promise.all(
+export { booksModel };
+/**
+ * drop all databases used for testing and close the connection after finishing testing
+ * to avoid open handlers
+ */
+export function clean(): Promise<any> {
+  return Promise.all(
     ['spec', 'spec2']
       .map((db) => mongoose.connection.useDb(db))
       .map((con) => {
         con.db.dropDatabase().then(() => con.close());
       })
-  )
-);
+  );
+}
+
+afterAll(() => clean());
 
 test('connect -> wrong auth', () => {
   let uri2 = Object.assign({}, uri, { password: 'wrong' });
