@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import shortId from 'shortid';
 import { Obj, chunk } from '@engineers/javascript/objects';
-import { parse } from '@engineers/databases/operations';
+import { parse, Operation } from '@engineers/databases/operations';
 import { Admin } from 'mongodb';
 
 // to use the native Mongo driver: connection.getClient()
@@ -195,14 +195,17 @@ export function model(
  * @example: GET /api/v1/find/articles/{"status":"approved"},null,{"limit":1}
  */
 export function query(
-  url: string,
+  url: string | Operation,
   schema?:
     | mongoose.Model<any>
     | mongoose.Schema
     | Obj
     | ((collection: string) => mongoose.Model<any> | mongoose.Schema | Obj)
 ): /*mongoose.Query<any[], any> |*/ Promise<any> {
-  let { operation, database, collection, portions, query: _query } = parse(url);
+  if (typeof url === 'string') {
+    url = parse(url);
+  }
+  let { operation, database, collection, portions, query: params } = url;
 
   // consumer doesn't have to extract the collection from the url
   if (typeof schema === 'function') {
@@ -215,12 +218,29 @@ export function query(
       ? (schema as mongoose.Model<any>)
       : model(collection, schema);
 
-  if (_query && _query.id) {
+  if (params && params.id) {
     if (operation === 'find') {
       operation = 'findById';
     } else if (['update', 'delete', 'replace'].includes(operation)) {
       operation += 'One';
     }
+  }
+
+  let args: Array<any>;
+  if (operation === 'find') {
+    // Model.find(filter, projection, options)
+    // condition is an object, it must be stringified and encoded
+    // i.e: `encodeURIComponent(JSON.stringify({ field: 'value' }))`
+    if (params.condition) {
+      params.condition = JSON.parse(decodeURIComponent(params.condition));
+    }
+    args = [params.condition, params.fields, params];
+  } else {
+    // todo: args for other operations
+    // https://mongoosejs.com/docs/api/model.html
+    // also methods other than Model methods such as monggose.prototype.connect()
+    // example: query('connect:mongodb://uri')
+    args = [params];
   }
 
   // example: contentModel.find(...params)
@@ -229,7 +249,7 @@ export function query(
     // @ts-ignore: This expression is not callable.
     // because not all keys of contentModel are methods
     // ~fix:  (contentModel[..] as contentModel.method )()
-    contentModel[operation as keyof typeof contentModel](_query);
+    contentModel[operation as keyof typeof contentModel](...args);
 
   // .exec() converts mongoose.Query to promise
   // todo: return mongooseQuery[lean ? 'lean' : 'exec']();

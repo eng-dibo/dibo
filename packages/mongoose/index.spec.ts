@@ -1,4 +1,4 @@
-import { test, expect, afterAll } from '@jest/globals';
+import { test, expect, afterAll, afterEach } from '@jest/globals';
 import {
   connect,
   model,
@@ -39,6 +39,14 @@ export function clean(): Promise<any> {
 }
 
 afterAll(() => clean());
+afterEach(() => {
+  // delete all documents from the collection 'books'
+  // only could be deleted after connecting to the database
+  if (mongoose.connection.readyState === 1) {
+    return booksModel.deleteMany().exec();
+  }
+  return Promise.resolve();
+});
 
 test('connect -> wrong auth', () => {
   let uri2 = Object.assign({}, uri, { password: 'wrong' });
@@ -84,6 +92,24 @@ test('query', () => {
       expect(books).toBeInstanceOf(Array);
       expect(books.length).toEqual(2);
       expect(books[0].name).toEqual('book#1');
+    });
+});
+
+test('query: find()', () => {
+  return booksModel
+    .create({ name: 'book#1' }, { name: 'book#2' })
+    .then(() =>
+      query(
+        // condition must be stringified and encoded
+        `books/:1~name@${encodeURIComponent(
+          JSON.stringify({ name: 'book#2' })
+        )}`
+      )
+    )
+    .then((books) => {
+      expect(books).toBeInstanceOf(Array);
+      expect(books.length).toEqual(1);
+      expect(books[0].name).toEqual('book#2');
     });
 });
 
