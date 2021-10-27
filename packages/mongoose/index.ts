@@ -229,16 +229,18 @@ export function query(
   let args: Array<any>;
   if (operation === 'find') {
     // Model.find(filter, projection, options)
-    // condition is an object, it must be stringified and encoded
+    // filter is an object, it must be stringified and encoded
     // i.e: `encodeURIComponent(JSON.stringify({ field: 'value' }))`
     if (params.filter) {
       params.filter = JSON.parse(decodeURIComponent(params.filter));
     }
     args = [params.filter, params.fields, params];
+  } else if (operation === 'findById') {
+    args = [params.id];
   } else {
     // todo: args for other operations
     // https://mongoosejs.com/docs/api/model.html
-    // also methods other than Model methods such as monggose.prototype.connect()
+    // also methods other than Model methods such as mongoose.prototype.connect()
     // example: query('connect:mongodb://uri')
     args = [params];
   }
