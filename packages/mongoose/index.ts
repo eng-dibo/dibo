@@ -205,7 +205,7 @@ export function query(
   if (typeof url === 'string') {
     url = parse(url);
   }
-  let { operation, database, collection, portions, query: params } = url;
+  let { operation, database, collection, portions, params } = url;
 
   // consumer doesn't have to extract the collection from the url
   if (typeof schema === 'function') {
@@ -231,10 +231,10 @@ export function query(
     // Model.find(filter, projection, options)
     // condition is an object, it must be stringified and encoded
     // i.e: `encodeURIComponent(JSON.stringify({ field: 'value' }))`
-    if (params.condition) {
-      params.condition = JSON.parse(decodeURIComponent(params.condition));
+    if (params.filter) {
+      params.filter = JSON.parse(decodeURIComponent(params.filter));
     }
-    args = [params.condition, params.fields, params];
+    args = [params.filter, params.fields, params];
   } else {
     // todo: args for other operations
     // https://mongoosejs.com/docs/api/model.html

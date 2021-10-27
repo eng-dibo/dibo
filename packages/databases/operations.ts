@@ -6,18 +6,18 @@ export interface Operation {
   collection: string;
   item?: string;
   portions: Array<string>;
-  query: { [key: string]: any };
+  params: { [key: string]: any };
 }
 
 /**
  * parse an operation syntax as a string to an object
- * full syntax: operation:db.collection/portion1/portion2?query&x=1
+ * full syntax: operation:db.collection/portion1/portion2?params&x=1
  * only collection is require, other parts are optional
  *
  * @param url
  * @examples
  *   find:users/1 -> find users where id=1 (the default primary key name may be differ between databases drivers)
- *   find:users/1?query -> use query to provide extra options
+ *   find:users/1?params -> use params to provide extra options
  *   users/5:2  -> find 2 users after the first 5
  *   users/~email,mobile -> get email,mobile fields from users
  *   users/5:~email@id>3,age>20 -> get users where id>3 and age>20, skip the first 5
@@ -33,7 +33,7 @@ export interface Operation {
  *   update:users/selector/data
  *   users/~^_ -> get fields that starts with "_" from users (regex)
  *
- *   for some operations portions are parsed and added to query,
+ *   for some operations portions are parsed and added to params,
  *   for example: parse() can get skip, limit, condition for the operation 'find'
  *   if portions are not parsed, it will be included without modifications in portions[]
  */
@@ -47,7 +47,7 @@ export function parse(url: string): Operation {
         \/([^?]+)          -> portions (example: item id), 
                              some operation supports multiple portions (update/selector/data)
                              may contain '/'
-        (?:\?(.+)?)?           -> query, the part after '?'
+        (?:\?(.+)?)?           -> params, the part after '?'
 
     */
   let pattern =
@@ -60,19 +60,19 @@ export function parse(url: string): Operation {
       database,
       collection,
       _portions,
-      _query,
+      _params,
     ] = match;
 
     let portions = _portions ? _portions.split('/') : [];
     // convert query to object
-    let query = queryToObject(_query || '');
+    let params = queryToObject(_params || '');
 
-    // parse portions and add known portions syntax to query
-    // update:users/1/{name: "example"} -> query:{ data:{name: "example"} }
+    // parse portions and add known portions syntax to params
+    // update:users/1/{name: "example"} -> params:{ data:{name: "example"} }
     // portions must be parsed  from last to first,
-    // because it may be or may be not deleted after parsing and added to query
+    // because it may be or may be not deleted after parsing and added to params
     if (['update', 'insert'].includes(operation) && portions && portions[1]) {
-      query.data = portions[1];
+      params.data = portions[1];
       portions.pop();
     }
 
@@ -84,32 +84,32 @@ export function parse(url: string): Operation {
       portions.length > 0
     ) {
       let fieldsMatch = portions[0].match(/~([^:~@]+)/),
-        conditionMatch = portions[0].match(/@([^:~@]+)/),
+        filterMatch = portions[0].match(/@([^:~@]+)/),
         rangeMatch = portions[0].match(/([^:~@]+)?:([^:~@]+)?/);
 
       if (rangeMatch) {
-        if (!query.limit && rangeMatch[1]) {
-          query.skip = +rangeMatch[1];
+        if (!params.limit && rangeMatch[1]) {
+          params.skip = +rangeMatch[1];
         }
-        if (!query.skip && rangeMatch[2]) {
-          query.limit = +rangeMatch[2];
+        if (!params.skip && rangeMatch[2]) {
+          params.limit = +rangeMatch[2];
         }
 
         portions[0] = portions[0].replace(rangeMatch[0], '');
       }
 
-      if (!query.fields && fieldsMatch) {
-        query.fields = fieldsMatch[1];
+      if (!params.fields && fieldsMatch) {
+        params.fields = fieldsMatch[1];
         portions[0] = portions[0].replace(fieldsMatch[0], '');
       }
 
-      if (!query.condition && conditionMatch) {
-        query.condition = conditionMatch[1];
-        portions[0] = portions[0].replace(conditionMatch[0], '');
+      if (!params.filter && filterMatch) {
+        params.filter = filterMatch[1];
+        portions[0] = portions[0].replace(filterMatch[0], '');
       }
 
-      if (!fieldsMatch && !conditionMatch && !rangeMatch) {
-        query.id = portions[0];
+      if (!fieldsMatch && !filterMatch && !rangeMatch) {
+        params.id = portions[0];
         portions.shift();
       }
 
@@ -123,7 +123,7 @@ export function parse(url: string): Operation {
       database,
       collection,
       portions,
-      query,
+      params,
     };
   }
 
