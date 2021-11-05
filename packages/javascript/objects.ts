@@ -226,7 +226,7 @@ export function stringToObject(keys: string | Array<string>, value?: any): Obj {
   let tmp = obj;
 
   for (let i = 0; i < keys.length - 1; i++) {
-    let key = keys[i];
+    let key: string = keys[i];
 
     if (!(key in tmp)) {
       tmp[key] = {};
@@ -236,8 +236,8 @@ export function stringToObject(keys: string | Array<string>, value?: any): Obj {
   }
 
   // last element
-  let key = keys[keys.length - 1];
-  tmp[key] = value;
+  let _key = keys[keys.length - 1];
+  tmp[_key] = value;
 
   return obj;
 }
