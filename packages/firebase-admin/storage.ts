@@ -9,6 +9,7 @@ import {
 } from '@google-cloud/storage';
 import { mkdirSync } from 'fs';
 import { dirname } from 'path';
+import stripJsonComments from 'strip-json-comments';
 
 export interface StorageOptions {
   bucket?: string;
@@ -19,7 +20,8 @@ export interface UploadOptions {
 }
 
 export interface DownloadOptions {
-  destination: string;
+  destination?: string;
+  encoding?: BufferEncoding | null;
 }
 
 // import { DeleteOptions } from '@google-cloud/service-object';
@@ -80,20 +82,42 @@ export default class Storage {
    * @return Promise<DownloadResponse>
    */
 
+  // todo: if(!options.destination)return th content as Promise<Buffer | ...>
+  // otherwise write the content into a local destination and return boolean
   download(
     file: string | File,
-    options: DownloadOptions | string = { destination: '' }
-  ): Promise<DownloadResponse> {
+    options?: DownloadOptions | string
+  ): Promise<Buffer | string | Array<any> | { [key: string]: any }> {
     if (typeof file === 'string') {
       file = this.bucket.file(file);
     }
-    if (typeof options === 'string') {
-      options = { destination: options };
-    }
+
+    let defaultOptions = {
+      encoding: null,
+    };
+    let opts: DownloadOptions = Object.assign(
+      defaultOptions,
+      typeof options === 'string' ? { destination: options } : options || {}
+    );
 
     // create the destination if it doesn't exist'
-    mkdirSync(dirname(options.destination), { recursive: true });
-    return file.download(options);
+    if (opts.destination) {
+      mkdirSync(dirname(opts.destination), { recursive: true });
+    }
+
+    // @ts-ignore
+    return file.download(opts).then((result: [Buffer]) => {
+      let data: Buffer = result[0];
+
+      // from @engineers/nodejs/fs.ts
+      if (opts.encoding === undefined) {
+        return data;
+      }
+      let dataString: string = data.toString();
+      return file.toString().trim().slice(-5) === '.json'
+        ? JSON.parse(stripJsonComments(dataString))
+        : dataString;
+    });
   }
 
   /**

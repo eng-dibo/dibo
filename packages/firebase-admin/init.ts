@@ -37,11 +37,7 @@ export default function (options: InitOptions | string): void {
 
   // get projectId from credentials or serviceAccount
   if (!opts.projectId) {
-    // @ts-ignore: projectId' does not exist on type 'Credential'
-    if (opts.credential!.projectId) {
-      // @ts-ignore
-      opts.projectId = opts.credential.projectId;
-    } else if (opts.serviceAccount) {
+    if (opts.serviceAccount) {
       if (typeof opts.serviceAccount === 'string') {
         opts.serviceAccount = require(opts.serviceAccount);
       }
