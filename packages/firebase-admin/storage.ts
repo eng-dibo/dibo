@@ -1,4 +1,6 @@
 import { storage, app as _app } from 'firebase-admin';
+
+// todo: use 'firebase/storage'
 import {
   File,
   Bucket,
@@ -20,10 +22,16 @@ export interface DownloadOptions {
   destination: string;
 }
 
+// import { DeleteOptions } from '@google-cloud/service-object';
+export interface DeleteOptions {
+  ignoreNotFound?: boolean;
+}
+
 /**
  * firebase storage functions, such as upload() and download()
  */
-// todo: extends admin.storage
+// todo: extends Bucket
+// super(storage: Storage, name: string, options?: BucketOptions);
 export default class Storage {
   // todo: bucket: Bucket
   public bucket: Bucket;
@@ -34,42 +42,34 @@ export default class Storage {
    * @param  bucket
    */
   // todo: if(bucket instanceof admin.Bucket)this.bucket=bucket
+  // constructor();
   constructor(options: StorageOptions = {}) {
-    // apps[0] may be null, but storage(...) accepts app | undefined only
     this.bucket = storage(
+      // apps[0] may be null, but storage(...) accepts app | undefined only
       options.app === null ? undefined : options.app
-    ).bucket(options.bucket);
+      // todo: using a custom bucket name causes error:
+      // The project to be billed is associated with an absent billing account.
+      // or: The specified bucket does not exist
+      // or: Not Found
+    ).bucket(/*options.bucket*/);
   }
 
   /**
    * uploads a file to the current bucket
    * @method upload
-   * @param  file file path or Buffer
+   * @param  file file path
    * @param  options UploadOptions object or destination path as string
    * @return Promise<UploadResponse>;  //UploadResponse=[File, API request]
    */
   // todo: upload / download a folder
-  // todo: upload(..):File{}
   upload(
-    file: string | Buffer,
+    file: string,
     options?: UploadOptions | string
   ): Promise<UploadResponse | void> {
     if (typeof options === 'string') {
       options = { destination: options };
     }
-    // convert base64 to buffer
-    if (
-      typeof file === 'string' &&
-      /data:.+\/.+?;base64,([^=]+)={0,2}/.test(file)
-    ) {
-      file = Buffer.from(file.replace(/data:.+\/.+?;base64,/, ''), 'base64');
-    }
-
-    if (typeof file === 'string') {
-      return this.bucket.upload(file, options);
-    } else {
-      return this.bucket.file(options?.destination as string).save(file);
-    }
+    return this.bucket.upload(file, options);
   }
 
   /**
@@ -99,5 +99,16 @@ export default class Storage {
   /**
    * writes a content to a file in the bucket
    */
-  write(file: any, content: string | Buffer): any {}
+  write(path: string, content: string | Buffer): Promise<void> {
+    return this.bucket.file(path).save(content);
+  }
+
+  delete(path: string, options?: DeleteOptions): Promise<any> {
+    // https://stackoverflow.com/a/64539948/12577650
+    return this.bucket.file(path).delete(options);
+    // or: return this.bucket.deleteFiles(query?: DeleteFilesOptions);
+  }
+
+  // todo: read(file:string):Buffer
+  // todo: delete folder
 }

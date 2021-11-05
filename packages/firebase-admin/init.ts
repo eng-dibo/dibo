@@ -8,7 +8,7 @@ import admin, {
 // todo: InitOptions properties
 export interface InitOptions extends AppOptions {
   // a service account object, or a path to serviceAccount json file
-  // get your serviceAccount from: firebase console -> project settings -> serviceAccount ->
+  // get your serviceAccount from: firebase console -> project settings -> serviceAccounts -> generate private key
   serviceAccount?: string | ServiceAccount;
   name?: string;
 }
@@ -23,6 +23,8 @@ export default function (options: InitOptions | string): void {
     typeof options === 'string' ? { projectId: options } : options
   );
 
+  // todo: if(typeof opts.credential==='string') -> credential.cert()
+  // else if(!opts.credential) -> applicationDefault()
   if (!opts.credential) {
     if (opts.serviceAccount) {
       opts.credential = credential.cert(opts.serviceAccount);
@@ -43,7 +45,6 @@ export default function (options: InitOptions | string): void {
       if (typeof opts.serviceAccount === 'string') {
         opts.serviceAccount = require(opts.serviceAccount);
       }
-      console.log({ xx: opts.serviceAccount });
       opts.serviceAccount = opts.serviceAccount as ServiceAccount;
       opts.projectId =
         // @ts-ignore: 'project_id' does not exist on type 'ServiceAccount'
@@ -55,7 +56,7 @@ export default function (options: InitOptions | string): void {
 
   if (opts.projectId) {
     if (!('storageBucket' in opts)) {
-      opts.storageBucket = `gs://${opts.projectId}.appspot.com`;
+      opts.storageBucket = `${opts.projectId}.appspot.com`;
     }
 
     if (!('databaseURL' in opts)) {
