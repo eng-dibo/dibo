@@ -247,16 +247,15 @@ export interface ReadOptions {
 export function read(
   path: PathLike,
   options?: ReadOptions | BufferEncoding
-): string | Array<any> | Obj {
-  if (typeof options === 'string') {
-    options = { encoding: options } as ReadOptions;
-  }
-
+): Buffer | string | Array<any> | Obj {
   let defaultOptions: ReadOptions = {
     encoding: null,
     flag: 'r',
   };
-  let opts: ReadOptions = Object.assign({}, defaultOptions, options);
+  let opts: ReadOptions = Object.assign(
+    defaultOptions,
+    typeof options === 'string' ? { encoding: options } : options || {}
+  );
 
   let data = readFileSync(path, {
     encoding: opts.encoding,

@@ -178,7 +178,6 @@ export function read(
     flag: 'r',
   };
   let opts: ReadOptions = Object.assign(
-    {},
     defaultOptions,
     typeof options === 'string' ? { encoding: options } : options || {}
   );
