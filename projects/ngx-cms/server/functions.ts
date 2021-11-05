@@ -3,20 +3,10 @@ import {
   write as writeSync,
 } from '@engineers/nodejs/fs-sync';
 
-import { initializeApp } from 'firebase-admin';
 import multer from 'multer';
 import { resolve } from 'path';
-import init from '../../../packages/firebase-admin/init';
-import { apps } from 'firebase-admin';
 
 export let dev = process.env.NODE_ENV === 'development';
-
-// todo: use env:GOOGLE_APPLICATION_CREDENTIALS=Path.resolve("./firebase-$app.json")
-// paths relative to 'dist/*'
-init({
-  serviceAccount: resolve(__dirname, '../../config/firebase.json'),
-  name: 'ngxCms',
-});
 
 // relative to /dist/$project/core/server
 export const TEMP = resolve(__dirname, '..');
