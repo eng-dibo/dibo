@@ -1,19 +1,22 @@
-export let cert = {
-  type: 'service_account',
-  project_id: process.env.firebase_projectId,
-  private_key_id: process.env.firebase_privateKeyId,
-  private_key: process.env.firebase_privateKey,
-  client_email: process.env.firebase_clientEmail,
-  client_id: process.env.firebase_clientId,
-  auth_uri: 'https://accounts.google.com/o/oauth2/auth',
-  token_uri: 'https://oauth2.googleapis.com/token',
-  auth_provider_x509_cert_url: 'https://www.googleapis.com/oauth2/v1/certs',
-  client_x509_cert_url: process.env.firebase_certUrl,
-};
+import { existsSync } from 'fs';
+import { resolve } from 'path';
+
+let serviceAccount: string;
+if (process.env.firebase_serviceAccount) {
+  serviceAccount = process.env.firebase_serviceAccount;
+} else if (existsSync(resolve(__dirname, './firebase.json'))) {
+  serviceAccount = resolve(__dirname, './firebase.json');
+} else {
+  serviceAccount = resolve(
+    __dirname,
+    '../../../packages/firebase-admin/test/firebase.json'
+  );
+}
 
 export default {
-  // admin.credential.cert()
-  cert,
+  // path to firebase.json
+  // get serviceAccount from firebase -> project settings -> service accounts -> generate
+  serviceAccount,
   appId: process.env.firebase_appId,
   apiKey: process.env.firebase_apiKey,
   // Cloud Messaging
@@ -22,8 +25,14 @@ export default {
   authDomain: process.env.firebase_authDomain,
   databaseURL: process.env.firebase_databaseURL,
   projectId: process.env.firebase_projectId,
-  storageBucket: process.env.firebase_storageBucket,
+  // todo: using 'storageBucket' cases:
+  // The project to be billed is associated with an absent billing account
+  // storageBucket: process.env.firebase_storageBucket || 'test',
 };
 
 // bucket name for gcloud storage
-export const BUCKET = process.env.firebase_storageBucket;
+// todo: use config.storageBucket
+export const BUCKET =
+  (process.env.NODE_ENV === 'production'
+    ? process.env.firebase_storageBucket || 'test'
+    : 'test') + '/ngx-cms';
