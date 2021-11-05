@@ -58,6 +58,8 @@ let config: Configuration = {
     libraryTarget: 'commonjs2',
   },
   module: {
+    // see packages/webpack/native-require.js
+    noParse: /\/native-require.js$/,
     rules: [
       {
         test: /\.tsx?$/,

@@ -4,6 +4,7 @@ import admin, {
   credential,
   AppOptions,
 } from 'firebase-admin';
+const nativeRequire = require('@engineers/webpack/native-require');
 
 // todo: InitOptions properties
 export interface InitOptions extends AppOptions {
@@ -39,7 +40,10 @@ export default function (options: InitOptions | string): void {
   if (!opts.projectId) {
     if (opts.serviceAccount) {
       if (typeof opts.serviceAccount === 'string') {
-        opts.serviceAccount = require(opts.serviceAccount);
+        // todo: dynamic require()
+        // https://stackoverflow.com/a/54559637/12577650
+        // https://webpack.js.org/guides/dependency-management/#require-with-expression
+        opts.serviceAccount = nativeRequire(opts.serviceAccount);
       }
       opts.serviceAccount = opts.serviceAccount as ServiceAccount;
       opts.projectId =
