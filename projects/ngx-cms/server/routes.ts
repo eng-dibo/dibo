@@ -95,15 +95,20 @@ app.get(/\/image\/([^/-]+)-([^/-]+)-([^/]+)/, (req: any, res: any) => {
   cache(
     resizedPath,
     () =>
-      cache(localPath, () => read(filePath), 24).then((data: any) =>
-        resize(data, size, {
-          //  dest: resizedPath, //if the resized img saved to a file, data=readFile(resized)
-          format:
-            req.headers?.accept.indexOf('image/webp') !== -1 ? 'webp' : 'jpeg',
-          // todo: add this options to resize()
-          // allowBiggerDim: false,
-          // allowBiggerSize: false,
-        })
+      // use { encoding: undefined } so read() returns Buffer instead of string
+      // otherwise resize(data) consider data: string as a file path
+      cache(localPath, () => read(filePath, { encoding: undefined }), 24).then(
+        (data: any) =>
+          resize(data, size, {
+            //  dest: resizedPath, //if the resized img saved to a file, data=readFile(resized)
+            format:
+              req.headers?.accept.indexOf('image/webp') !== -1
+                ? 'webp'
+                : 'jpeg',
+            // todo: add this options to resize()
+            // allowBiggerDim: false,
+            // allowBiggerSize: false,
+          })
       ),
     24
   )
