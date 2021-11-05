@@ -1,10 +1,10 @@
 import { Router } from 'express';
 import shortId from 'shortid';
 import { connect, getModel, query } from './database';
-import { prod, BUCKET } from '~config/server';
-import { upload, bucket } from './functions';
+import { prod } from '~config/server';
+import { upload } from './functions';
 import { getCategories } from './database';
-import { write, mkdir } from '@engineers/nodejs/fs';
+import { write as writeFs, mkdir } from '@engineers/nodejs/fs';
 import cache from '@engineers/nodejs/cache';
 import { Categories } from '~browser/formly-categories-material/functions';
 import { timer } from '@engineers/javascript/time';
@@ -14,6 +14,7 @@ import { replaceAll } from '@engineers/javascript/string';
 import { slug } from '@engineers/ngx-content-core/pipes-functions';
 import { resolve } from 'path';
 import { parse } from '@engineers/databases/operations';
+import { read, write } from './storage';
 
 let app = Router();
 const TEMP = resolve(__dirname, '../temp');
@@ -81,7 +82,7 @@ app.get(/\/image\/([^/-]+)-([^/-]+)-([^/]+)/, (req: any, res: any) => {
     name = req.params[1],
     id = req.params[2],
     size = req.query.size as string,
-    bucketPath = `${BUCKET}/${collection}/${id}/${name}.webp`,
+    filePath = `${collection}/${id}/${name}.webp`,
     localPath = `${TEMP}/${collection}/item/${id}/${name}.webp`,
     resizedPath = `${localPath.replace('.webp', '')}_${size}.webp`;
 
@@ -94,11 +95,7 @@ app.get(/\/image\/([^/-]+)-([^/-]+)-([^/]+)/, (req: any, res: any) => {
   cache(
     resizedPath,
     () =>
-      cache(
-        localPath,
-        () => bucket.download(bucketPath).then((data: any) => data[0]),
-        24
-      ).then((data: any) =>
+      cache(localPath, () => read(filePath), 24).then((data: any) =>
         resize(data, size, {
           //  dest: resizedPath, //if the resized img saved to a file, data=readFile(resized)
           format:
@@ -302,7 +299,7 @@ app.post('/:collection', upload.single('cover'), (req: any, res: any) => {
       fullString: any
     ) => {
       let fileName = date.getTime(),
-        bucketPath = `${BUCKET}/${collection}/${data._id}/${fileName}.webp`,
+        filePath = `${collection}/${data._id}/${fileName}.webp`,
         src = `api/v1/image/${collection}-${fileName}-${data._id}/${data.slug}.webp`,
         srcset = '',
         sizes = '';
@@ -312,10 +309,10 @@ app.post('/:collection', upload.single('cover'), (req: any, res: any) => {
 
       // todo: catch(err=>writeFile('queue/*',{imgData,err})) to retry uploading again
       resize(imgData, '', { format: 'webp' /*, input: 'base64' */ })
-        .then((_data: any) => bucket.upload(_data, bucketPath)) // todo: get fileName
+        .then((_data: any) => write(filePath, _data))
         .then(() => {
           console.log(`[server/api] uploaded: ${fileName}`);
-          write(`${tmp}/${fileName}.webp`, imgData);
+          writeFs(`${tmp}/${fileName}.webp`, imgData);
         });
       // todo: get image dimensions from dataImg
       return `<img width="" height="" data-src="${src}" data-srcset="${srcset}" sizes="${sizes}" alt="${data.title}" />`;
@@ -330,17 +327,17 @@ app.post('/:collection', upload.single('cover'), (req: any, res: any) => {
     data.cover = true;
 
     // to get original name: cover.originalname
-    let bucketPath = `${BUCKET}/${collection}/${data._id}/cover.webp`;
+    let filePath = `${collection}/${data._id}/cover.webp`;
 
     resize(req.file.buffer, '', { format: 'webp' })
-      .then((_data: any) => bucket.upload(_data, bucketPath))
+      .then((_data: any) => write(filePath, _data))
       .then((file: any) => {
         console.log(`[server/api] cover uploaded`);
-        write(`${tmp}/cover.webp`, req.file.buffer);
+        writeFs(`${tmp}/cover.webp`, req.file.buffer);
       });
   }
 
-  write(`${tmp}/data.json`, data).catch((error: any) =>
+  writeFs(`${tmp}/data.json`, data).catch((error: any) =>
     console.error(
       `[server/api] cannot write the temp file for: ${data._id}`,
       error
@@ -447,7 +444,7 @@ app.get('/backup', (req: any, res: any) => {
         }
         let result = { info: con.client.s, backup: data };
 
-        return write(file, result)
+        return writeFs(file, result)
           .then(() => {
             console.log('[backup] Done');
             res.json(result);

@@ -3,11 +3,8 @@ import {
   write as writeSync,
 } from '@engineers/nodejs/fs-sync';
 
-import Storage from '@engineers/firebase-admin/storage';
 import { initializeApp } from 'firebase-admin';
 import multer from 'multer';
-
-import { BUCKET } from '~config/firebase';
 import { resolve } from 'path';
 import init from '../../../packages/firebase-admin/init';
 import { apps } from 'firebase-admin';
@@ -20,8 +17,6 @@ init({
   serviceAccount: resolve(__dirname, '../../config/firebase.json'),
   name: 'ngxCms',
 });
-
-export let bucket = new Storage({ bucket: BUCKET, app: apps[0] });
 
 // relative to /dist/$project/core/server
 export const TEMP = resolve(__dirname, '..');
