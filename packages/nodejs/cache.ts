@@ -32,7 +32,6 @@ export default function (
   files: PathLike | PathLike[],
   dataSource: () => any,
   age: number | [number, number] = 0,
-  type: 'txt' | 'json' | 'buffer' = 'txt',
   allowEmpty = false
 ): Promise<any> {
   if (!(files instanceof Array)) {
@@ -55,20 +54,7 @@ export default function (
   let data;
   // todo: readCache<T>
   let readCache = (filePath: PathLike): any => {
-    if (!type) {
-      if (getExtension(filePath) === 'json') {
-        type = 'json';
-      } else if (
-        // todo: list all media types
-        ['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp3', 'mp4'].includes(
-          getExtension(filePath) as string
-        )
-      ) {
-        type = 'buffer';
-      }
-    }
-
-    return read(filePath, { mode: type });
+    return read(filePath);
   };
 
   // todo: remove filesInfo

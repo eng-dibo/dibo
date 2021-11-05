@@ -160,32 +160,49 @@ export function write(
   // .then-> {file,data}
 }
 
+/**
+ * read a file content
+ * @param path
+ * @param options
+ * @returns a promise that resolves to:
+ *   - string: if options.encoding!==undefined
+ *   - Array or Object: for .json files
+ *   - Buffer: otherwise
+ */
 export function read(
   path: PathLike,
   options?: ReadOptions | BufferEncoding
-): Promise<string | Array<any> | Obj> {
-  if (typeof options === 'string') {
-    options = { encoding: options } as ReadOptions;
-  }
-
+): Promise<Buffer | string | Array<any> | Obj> {
   let defaultOptions: ReadOptions = {
-    mode: 'txt',
     encoding: null,
     flag: 'r',
   };
-  let opts: ReadOptions = Object.assign({}, defaultOptions, options);
+  let opts: ReadOptions = Object.assign(
+    {},
+    defaultOptions,
+    typeof options === 'string' ? { encoding: options } : options || {}
+  );
 
   return fsp
     .readFile(path, {
       encoding: opts.encoding,
       flag: opts.flag,
     })
-    .then((data) => (opts.mode === 'buffer' ? data : data.toString()))
-    .then((data) =>
-      opts.mode === 'json' || path.toString().trim().slice(-5) === '.json'
-        ? JSON.parse(stripJsonComments(data as string))
-        : data
-    );
+    .then((data) => {
+      // if(opts.encoding) readFile() will return string, otherwise it returns Buffer
+      // if the consumer wants the data as Buffer, provide options.encoding=undefined explicitly
+      // to use the default encoding provide options.encoding=null (the default behavior is)
+      // https://stackoverflow.com/a/48818444/12577650
+      // https://nodejs.org/api/fs.html#fs_fs_readfilesync_path_options
+      if (opts.encoding === undefined) {
+        return data;
+      }
+
+      data = data.toString();
+      return path.toString().trim().slice(-5) === '.json'
+        ? JSON.parse(stripJsonComments(data))
+        : data;
+    });
 }
 
 // todo: getEntriesGenerator() : uses nodejs.generator or rxjs.observable

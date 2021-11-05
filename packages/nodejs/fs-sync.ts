@@ -223,7 +223,6 @@ export function write(
 }
 
 export interface ReadOptions {
-  mode?: 'json' | 'txt' | 'buffer';
   encoding?: BufferEncoding | null;
   flag?:
     | 'a'
@@ -254,7 +253,6 @@ export function read(
   }
 
   let defaultOptions: ReadOptions = {
-    mode: 'txt',
     encoding: null,
     flag: 'r',
   };
@@ -265,10 +263,11 @@ export function read(
     flag: opts.flag,
   });
 
-  if (opts.mode !== 'buffer') {
-    data = data.toString();
+  if (opts.encoding === undefined) {
+    return data;
   }
-  return opts.mode === 'json' || path.toString().trim().slice(-5) === '.json'
+  data = data.toString();
+  return path.toString().trim().slice(-5) === '.json'
     ? JSON.parse(stripJsonComments(data as string))
     : data;
 }
