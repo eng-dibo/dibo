@@ -2,6 +2,10 @@
   "name": "@eng-dibo/dibo",
   "description": "A monorepo for multiple projects",
   "version": "0.0.0-development",
+  "workspaces": [
+    "./projects/*",
+    "./packages/*"
+  ],
   "scripts": {
     "postinstall": "ngcc",
     "lint": "prettier --write . && eslint --fix --config .eslintrc.js --ext .js,.ts",
