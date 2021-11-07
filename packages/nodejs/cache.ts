@@ -13,8 +13,6 @@ import { read, write } from './fs';
  * @param  files to be read from
  * @param  dataSource a function to fetch the data if no cached file is found
  * @param  age cache age in hours
- * @param  type data type, by default it is detected by file extension, ex: '.json'
- * @param  allowEmpty allow creating an empty cache file if th returned data from dataSource is empty
  * @return Promise<data:any>;  returns a promise (because some operations executed in async mode) , use await or .then()
  *  todo:
  *  - strategy -> in case of no valid cache & failed to get data, return:
@@ -31,8 +29,7 @@ import { read, write } from './fs';
 export default function (
   files: PathLike | PathLike[],
   dataSource: () => any,
-  age: number | [number, number] = 0,
-  allowEmpty = false
+  age: number | [number, number] = 0
 ): Promise<any> {
   if (!(files instanceof Array)) {
     files = [files];
@@ -51,7 +48,7 @@ export default function (
     if (dataSource === ":purge:")
       return Promise.all(files.map((file: string) => ({ [file]: unlink(file) })));
   */
-  let data;
+  let data: any;
   // todo: readCache<T>
   let readCache = (filePath: PathLike): any => {
     return read(filePath);
@@ -84,15 +81,13 @@ export default function (
   data = dataSource();
 
   // todo: also support rxjs.Observable
-  let p: Promise<any> = isPromise(data) ? data : Promise.resolve(data);
+  let p: Promise<any> = isPromise(data) ? data : new Promise((r) => r(data));
 
   return p
     .then((_data: any) => {
-      if (allowEmpty || !isEmpty(_data)) {
-        write(file, _data);
-      }
-
-      return _data; // todo: return write()
+      write(file, _data);
+      // todo: return write()
+      return _data;
     })
     .catch((error: any) => {
       if (maxAge > -1) {

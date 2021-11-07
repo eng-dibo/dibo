@@ -1,42 +1,44 @@
-import { test, expect, describe, jest, afterAll } from '@jest/globals';
+import { test, expect, beforeEach, afterAll } from '@jest/globals';
 import cache from './cache';
 import { write, remove } from './fs';
 import { resolve } from './fs-sync';
 
-let dir = resolve(__dirname, './test!!/cache'),
-  file1 = `${dir}/file1.txt`,
-  file2 = `${dir}/file2.txt`,
-  file3 = `${dir}/file3.txt`,
-  file4 = `${dir}/file4.txt`,
-  fileJson = `${dir}/file-json.json`,
-  fileJsonComments = `${dir}/file-json-comments.json`,
-  fileArray = `${dir}/file-array.json`;
+let dir = resolve(__dirname, './test!!/cache');
 
-test('read from an existing cached file', () =>
-  write(file1, 'content#1')
-    .then(() => cache(file1, () => 'content#2'))
-    .then((value) => expect(value).toEqual('content#1')));
+beforeEach(() => remove(`${dir}/file.txt`));
+afterAll(() => remove(dir));
 
 test('create a new cache', () =>
-  cache(file2, () => 'content#2').then((value) =>
-    expect(value).toEqual('content#2')
+  cache(`${dir}/new-file.txt`, () => 'content').then((value) =>
+    expect(value).toEqual('content')
   ));
 
+test('read from an existing cached file', () =>
+  write(`${dir}/file.txt`, 'content#1')
+    .then(() => cache(`${dir}/file.txt`, () => 'content#2'))
+    .then((value) => expect(value).toEqual('content#1')));
+
 test('read from multiple cache paths, one of them exists', () =>
-  write(file1, 'content#1')
-    .then(() => remove([file2, file3]))
-    .then(() => cache([file3, file1, file2], () => 'content#3'))
+  write(`${dir}/file.txt`, 'content#1')
+    .then(() =>
+      cache(
+        [`${dir}/none1.txt`, `${dir}/file.txt`, `${dir}/none2.txt`],
+        () => 'content#3'
+      )
+    )
     .then((value) => expect(value).toEqual('content#1')));
 
 test('read from multiple cache paths, non exists', () =>
-  remove([file3, file4])
-    .then(() => cache([file3, file4], () => 'content#3'))
-    .then((value) => expect(value).toEqual('content#3')));
+  cache([`${dir}/none3.txt`, `${dir}/none4.txt`], () => 'content').then(
+    (value) => expect(value).toEqual('content')
+  ));
 
 test('read from .json file', () =>
-  write(fileJson, { x: 1 })
-    .then(() => cache(fileJson, () => 'nothing'))
+  write(`${dir}/file.json`, { x: 1 })
+    .then(() => cache(`${dir}/file.json`, () => 'nothing'))
     .then((value) => expect(value).toEqual({ x: 1 })));
 
-// clean the repo
-afterAll(() => remove(dir));
+test('read from a Promise dataSource', () =>
+  cache(`${dir}/promise.txt`, () => {
+    return new Promise((r) => r('content'));
+  }).then((value) => expect(value).toEqual('content')));
