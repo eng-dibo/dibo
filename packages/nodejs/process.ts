@@ -243,7 +243,8 @@ export function execSync(cmd: string): void {
   // https://stackoverflow.com/a/31104898/12577650
   // todo: don't wait until std complete to display the output
   // https://stackoverflow.com/a/30168821/12577650
-  _execSync(cmd, { stdio: 'inherit' }).toString();
+  // using `{ stdio: 'inherit' })` this function displays the output and returns null
+  _execSync(cmd, { stdio: 'inherit' });
 }
 
 /**
@@ -252,8 +253,11 @@ export function execSync(cmd: string): void {
  * @param args
  * @example `node tasks.js mytask --option1=value`
  */
-// todo: return Promise
-export function runTask(tasks: Obj, args?: string | Array<string>): void {
+
+export async function runTask(
+  tasks: Obj,
+  args?: string | Array<string>
+): Promise<void> {
   // let task = argv.slice(2)[0], params = argv.slice(3);
 
   let parsedArgs = parseArgv(args),
@@ -268,8 +272,7 @@ export function runTask(tasks: Obj, args?: string | Array<string>): void {
 
   try {
     console.log(`>> running the task: ${task}`);
-    // todo: support async tasks
-    tasks[task](options);
+    await tasks[task](options);
     console.log('>> Done');
   } catch (error) {
     console.error({ error });
