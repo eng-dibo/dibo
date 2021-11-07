@@ -149,7 +149,6 @@ app.get(/\/image\/([^/-]+)-([^/-]+)-([^/]+)/, (req: any, res: any) => {
 
    */
 app.get('*', (req: any, res: any, next: any) => {
-  console.log({ req });
   timer(`get ${req.url}`);
   let queryObject = parse(req.path);
   let { operation, database, collection, portions, params } = queryObject;
