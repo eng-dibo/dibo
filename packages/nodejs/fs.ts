@@ -9,9 +9,9 @@ import {
   constants,
   MakeDirectoryOptions,
   WriteFileOptions,
-  Abortable,
   lstatSync,
 } from 'fs';
+import { Abortable } from 'events';
 import {
   MoveOptions,
   RemoveOptions,
