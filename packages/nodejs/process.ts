@@ -244,6 +244,7 @@ export function execSync(cmd: string): void {
   // todo: don't wait until std complete to display the output
   // https://stackoverflow.com/a/30168821/12577650
   // using `{ stdio: 'inherit' })` this function displays the output and returns null
+  console.log(`> ${cmd}`);
   _execSync(cmd, { stdio: 'inherit' });
 }
 
