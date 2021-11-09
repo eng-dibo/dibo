@@ -1,10 +1,11 @@
 {
+  "name": "@engineers/express-redirect-middleware",
   "description": "an express middleware to redirect the request, add https, www. to improve SEO",
   "keywords": [
     "express",
     "SEO"
   ],
-  "peerDependencies": {
+  "dependencies": {
     "parse-domain": "^4.1.0"
   }
 }
