@@ -48,7 +48,19 @@ export function server(): ReturnType<typeof expressServer> {
         next();
       });
 
-      app.use(redirect());
+      app.use(
+        redirect({
+          protocol: 'https',
+          subdomain: 'www',
+          cb: (oldUrl, newUrl, parts) => {
+            if (process.env.NODE_ENV !== 'production') {
+              console.log(`[express] redirecting ${oldUrl} -> ${newUrl}`, {
+                parts,
+              });
+            }
+          },
+        })
+      );
       app.use(jsonParser());
       app.use(urlParser({ extended: true }));
 
