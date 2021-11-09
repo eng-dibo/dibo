@@ -83,7 +83,9 @@ export function connect(
  * encodes the username and password for URI
  */
 export function encode(value: string): string {
-  return encodeURIComponent(value); // .replace(/%/g, "%25");
+  // example: convert '@' to '%40%
+  // the character `%` must be encoded too
+  return encodeURIComponent(value).replace(/%/g, '%25');
 }
 
 export type Connection =
@@ -267,12 +269,8 @@ export function query(
  * @returns
  */
 // todo: test this function
-export function admin(
-  connection: Connection = mongoose.connection
-): any /*Admin*/ {
-  return new mongoose.mongo.Admin();
-  // return new mongoose.mongo.Admin(connection.db);
-  // return getConnection(connection).db.admin();
+export function admin(connection: Connection = mongoose.connection): Admin {
+  return getConnection(connection).db.admin();
 }
 
 /**
@@ -305,7 +303,7 @@ export function listDatabases(connection?: Connection, systemDbs = false): any {
  * @param connection
  * @param filter Query to filter collections by,
  * example: to include the collection 'outlets' only: `{name: 'outlets'}`
- * example: to execlude the collection 'outlets': `{name: {$ne: 'outlets'}}`
+ * example: to exclude the collection 'outlets': `{name: {$ne: 'outlets'}}`
  * @returns array of collections
  */
 export function listCollections(
