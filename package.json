@@ -7,16 +7,16 @@
     "./packages/*"
   ],
   "scripts": {
-    "lint": "prettier --write . && eslint --fix --config .eslintrc.js --ext .js,.ts",
+    "setup": "npm cache clean -f &&  npm i -D husky && npm i --unsafe-perm --production=false --include=dev -f -ws",
     "prepare": "husky install",
+    "postinstall": "ngcc",
+    "lint": "prettier --write . && eslint --fix --config .eslintrc.js --ext .js,.ts",
     "test": "jest",
     "test:all": "jest --coverage --only-changed=false",
     "semantic-release": "semantic-release",
     "vscode": "export project=$PWD && npm run docker:stop --prefix=projects/vscode && npm run docker:run --prefix=projects/vscode",
     "task": "ts-node  -r tsconfig-paths/register ./tasks/index.ts",
-    "tasks:build": "webpack --entry=./tasks/index.ts  --output-path=./tasks/tasks~~.js",
-    "ng:update": "ng update --force --allow-dirty",
-    "update": "npm run ng:update @angular/core@latest @angular/cli@latest && npm run ng:update @angular/material && npm run ng:update"
+    "tasks:build": "webpack --entry=./tasks/index.ts  --output-path=./tasks/tasks~~.js"
   },
   "lint-staged": {
     "*": "npm run lint"
