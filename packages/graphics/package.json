@@ -7,7 +7,7 @@
     "sharp",
     "resize images"
   ],
-  "peerDependencies": {
+  "dependencies": {
     "sharp": "^0.26.3"
   },
   "repository": {

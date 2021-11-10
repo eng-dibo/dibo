@@ -6,7 +6,7 @@
     "mongodb",
     "database"
   ],
-  "peerDependencies": {
+  "dependencies": {
     "mongoose": "^5.13.2",
     "shortid": "^2.2.16"
   },

@@ -13,6 +13,8 @@ import routes from './routes';
 import redirect from '@engineers/express-redirect-middleware';
 import { resolve } from 'path';
 
+console.log({ env: process.env });
+
 // The Express app is exported so that it can be used by serverless Functions.
 export function server(): ReturnType<typeof expressServer> {
   // todo: move to expressServer.msg
