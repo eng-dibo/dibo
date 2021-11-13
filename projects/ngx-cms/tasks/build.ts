@@ -1,8 +1,16 @@
 import { execSync } from '@engineers/nodejs/process';
-import { mkdir } from '@engineers/nodejs/fs-sync';
-import { readdirSync, lstatSync, existsSync, copyFileSync } from 'fs';
+import { mkdir, write } from '@engineers/nodejs/fs-sync';
+import {
+  readdirSync,
+  lstatSync,
+  existsSync,
+  copyFileSync,
+  writeFileSync,
+} from 'fs';
 import { basename } from 'path';
 import { rootPath, projectPath, destination } from './index';
+
+let time = Date.now();
 
 export type Mode = 'production' | 'development' | 'test';
 export interface BuildOptions {
@@ -13,7 +21,7 @@ export interface BuildOptions {
 export default function (options?: BuildOptions): void {
   let opts = Object.assign(
     {
-      targets: 'browser,server,config,deploy',
+      targets: 'browser,server,config,package',
       mode: process.env.NODE_ENV || 'production',
     },
     options || {}
@@ -29,8 +37,8 @@ export default function (options?: BuildOptions): void {
   if (targets.includes('config')) {
     buildConfig();
   }
-  if (targets.includes('deploy')) {
-    buildDeploy();
+  if (targets.includes('package')) {
+    buildPackage();
   }
 }
 
@@ -40,6 +48,8 @@ export function buildBrowser(mode: Mode = 'production'): void {
       mode === 'production' ? '--configuration=production' : ''
     }`
   );
+
+  write(`${destination}/core/browser/info.json`, { mode, time });
 }
 
 export function buildServer(mode: Mode = 'production'): void {
@@ -48,6 +58,8 @@ export function buildServer(mode: Mode = 'production'): void {
       mode === 'production' ? 'production' : ''
     } --bundle-dependencies`
   );
+
+  write(`${destination}/core/server/info.json`, { mode, time });
 }
 
 export function buildConfig(): void {
@@ -83,7 +95,7 @@ export function buildConfig(): void {
     );
 }
 
-export function buildDeploy(): void {
+export function buildPackage(): void {
   // copy files for deployment: Dockerfile, package.json, root/package-lock.json
-  // & adjust package.json
+  // & adjust package.json/scripts{start,deploy}, remove properties used for build
 }
