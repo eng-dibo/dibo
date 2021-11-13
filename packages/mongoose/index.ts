@@ -51,6 +51,8 @@ export function connect(
     bufferCommands: false,
     autoIndex: false,
     keepAlive: true,
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
     //  writeConcern: { w: 'majority' },
   };
   let opts = Object.assign(options || {}, defaultOptions);
@@ -85,7 +87,7 @@ export function connect(
 export function encode(value: string): string {
   // example: convert '@' to '%40%
   // the character `%` must be encoded too
-  return encodeURIComponent(value).replace(/%/g, '%25');
+  return encodeURIComponent(value); //.replace(/%/g, '%25');
 }
 
 export type Connection =
