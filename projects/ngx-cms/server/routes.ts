@@ -224,14 +224,16 @@ app.get('*', (req: any, res: any, next: any) => {
       }
     })
     .catch((error: any) => {
-      res.json({ error });
       if (!prod) {
         console.error(
-          '[server/api] getData:',
-          timer(`get ${req.url}`, true),
-          error
+          `[server/api] getData: ${timer('get ' + req.url, true)}`,
+          { error }
         );
+      } else {
+        error.details.uri = '** check logs **';
       }
+
+      res.json({ error });
     });
 });
 
