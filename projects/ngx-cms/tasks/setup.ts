@@ -8,6 +8,7 @@ import { execSync } from '@engineers/nodejs/process';
 export default function (): void {
   gcloudSetup();
   containerRegistryAuth();
+  gcloudInit();
 }
 
 /**
@@ -36,17 +37,19 @@ export function gcloudSetup(): void {
   execSync(
     `sudo apt-get update && sudo apt-get install google-cloud-sdk --yes`
   );
-
-  // init
-  execSync('gcloud auth login');
-  execSync(`gcloud init`);
 }
 
 /**
  * authenticate docker to use gcloud registry
  * https://cloud.google.com/container-registry/docs/advanced-authentication#linux
  */
-export function containerRegistryAuth() {
+export function containerRegistryAuth(): void {
   execSync('sudo usermod -a -G docker ${USER}');
-  execSync('gcloud auth configure-docker');
+  execSync('gcloud auth configure-docker --quiet');
+}
+
+export function gcloudInit(): void {
+  execSync('gcloud auth login');
+  // must login first
+  execSync(`gcloud init`);
 }
