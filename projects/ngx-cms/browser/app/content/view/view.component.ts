@@ -80,6 +80,9 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
       // also we use concatMap and not mergeMap, to wait until the previous Obs. to be completed.
       concatMap((params) => this.httpService.get<Payload>(getUrl(params))),
       map((data) => {
+        if (typeof data === 'string') {
+          data = JSON.parse(data);
+        }
         let content = transformData(data, this.params);
         this.tags = getMetaTags(content, this.params);
         return content;
