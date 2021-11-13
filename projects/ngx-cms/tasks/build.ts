@@ -70,12 +70,6 @@ export function buildConfig(): void {
   let files = readdirSync(`${projectPath}/config`);
   // user-specific files (i.e file!!.ext, file!!) overrides project files (i.e file.ext)
   let userFiles = files.filter((el) => /!!(\..+)?$/.test(el));
-  userFiles.forEach((el) =>
-    copyFileSync(
-      `${projectPath}/config/${el}`,
-      `${destination}/config/${basename(el)}`
-    )
-  );
 
   files
     .filter(
