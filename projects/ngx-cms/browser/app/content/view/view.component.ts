@@ -12,6 +12,7 @@
 import { Payload, Meta } from '@engineers/ngx-content-view-mat';
 import { MetaService } from '@engineers/ngx-utils/meta.service';
 import { ADSENSE } from '~config/browser';
+import env from '~config/env';
 
 import {
   Component,
@@ -69,6 +70,9 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
     this.data$ = urlParams(this.route).pipe(
       map(([params, query]) => {
         this.params = getParams(params, query);
+        if (env.mode === 'development') {
+          console.log({ params, query, result: this.params });
+        }
         return this.params;
       }),
       // we use concatMap here instead of map because it emits Observable (this.getData())

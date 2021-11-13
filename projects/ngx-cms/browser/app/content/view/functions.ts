@@ -16,12 +16,17 @@ export function getParams(params: any, query: any): Params {
     // item may be: id or slug-text=id
     item = params.get('item');
 
+  if (!category && item && item.indexOf('~') === -1) {
+    category = item;
+    item = null;
+  }
+
   return {
     type,
     category,
     // get last part of a string https://stackoverflow.com/a/6165387/12577650
     // using '=' (i.e /slug=id) will redirect to /slug
-    id: item && item.indexOf('@') !== -1 ? item.split('@').pop() : item,
+    id: item && item.indexOf('~') !== -1 ? item.split('~').pop() : item,
     refresh: query.get('refresh'),
   };
 }
@@ -141,10 +146,9 @@ export function adjustArticle(
     };
   }
 
-  // todo: this needs to add 'categories' getData()
-  // todo: use item.categories[0].title
+  // todo: /$type/item.$categories[0].title/$item.slug~id
   if (!item.link) {
-    item.link = `/${params.type}/item/${item.slug}@${item.id}`;
+    item.link = `/${params.type}/${item.slug}~${item.id}`;
   }
 
   item.author = {
