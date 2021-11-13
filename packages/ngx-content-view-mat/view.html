@@ -7,10 +7,10 @@ todo:
   https://github.com/MurhafSousli/ngx-sharebuttons/issues/429#issuecomment-583906237
   so we temporary stopped <share-buttons>
  -->
-<ng-container *ngIf="data; else loading">
+<ng-container *ngIf="content; else loading">
   <!-- *ngTemplateOutlet="!data===null?noContent:type==.." -->
   <ng-container
-    *ngTemplateOutlet="type=='item'?itemBlock:options.layout=='list'?listBlock:gridBlock; context:{data:data}"
+    *ngTemplateOutlet="type=='item'?itemBlock:options.layout=='list'?listBlock:gridBlock; context:{data:content}"
   ></ng-container>
 </ng-container>
 

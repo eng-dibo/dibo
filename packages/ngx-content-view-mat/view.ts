@@ -35,10 +35,17 @@ export interface ViewOptions extends ArticleOptions {
   styleUrls: ['./view.scss'],
 })
 export class NgxContentViewComponent implements OnInit {
+  // in the template, toObservable(this.data) makes the data has an observable value
+  // instead of undefined, use another variable (i.e content) which guaranteed to has
+  // a value only when the observable fired a value
+  // otherwise you will see an error:
+  // `Cannot find a differ supporting object '[object Object]' of type 'object'. NgFor only supports binding to Iterables such as Arrays.`
+  // because a non-iterable value has passed to `gFor`
   @Input() data!: Payload | Observable<Payload>;
   @Input() type!: Type;
   @Input() meta!: Meta;
   @Input() options!: ViewOptions;
+  content: Payload;
 
   constructor(private metaService: MetaService) {}
 
@@ -58,7 +65,7 @@ export class NgxContentViewComponent implements OnInit {
 
       this.metaService.setTags(this.meta as Meta);
       this.type = data instanceof Array ? 'list' : 'item';
-      this.data = data;
+      this.content = data;
     });
   }
 }
