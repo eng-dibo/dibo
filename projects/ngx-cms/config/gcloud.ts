@@ -11,7 +11,8 @@ export interface CloudRun {
 }
 
 const config: GCloudConfig = {
-  projectId: process.env.gcloud_projectId || 'dibo-cloud',
+  // todo: use dist/config/.env for deploying the production-ready project
+  projectId: process.env.gcloud_projectId! || 'dibo-cloud',
   cloudRun: {
     name: 'ngx-cms',
     platform: 'managed',

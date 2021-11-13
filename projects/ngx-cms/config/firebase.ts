@@ -32,7 +32,4 @@ export default {
 
 // bucket name for gcloud storage
 // todo: use config.storageBucket
-export const BUCKET =
-  (process.env.NODE_ENV === 'production'
-    ? process.env.firebase_storageBucket || 'test'
-    : 'test') + '/ngx-cms';
+export const BUCKET = process.env.firebase_storageBucket + '/ngx-cms';

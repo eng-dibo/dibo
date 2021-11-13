@@ -14,7 +14,7 @@ let db: DB = {
     // '<clusterName>-gbdqa.gcp.mongodb.net'
     host: process.env.dbHost,
     srv: true,
-    dbName: prod ? process.env.dbName || 'dbname' : 'test',
+    dbName: process.env.dbName,
   },
 };
 
