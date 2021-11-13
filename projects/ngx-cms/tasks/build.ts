@@ -78,7 +78,7 @@ export function buildConfig(): void {
     .forEach((el) =>
       copyFileSync(
         `${projectPath}/config/${el}`,
-        `${destination}/config/${basename(el)}`
+        `${destination}/config/${basename(el).replace('!!', '')}`
       )
     );
 }
