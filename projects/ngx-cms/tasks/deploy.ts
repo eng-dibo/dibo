@@ -1,8 +1,8 @@
-import { basename, resolve } from 'path';
-import { ncp } from 'ncp';
+import { basename } from 'path';
 import gcloudConfig, { GCloudConfig } from '~config/gcloud';
 import { execSync } from '@engineers/nodejs/process';
-import { remove } from '@engineers/nodejs/fs';
+import { copyFileSync } from 'fs';
+import { rootPath, projectPath, destination } from './index';
 
 /**
  * build a docker image and deploy it to gcloud run
@@ -11,7 +11,7 @@ import { remove } from '@engineers/nodejs/fs';
  * @param options overrides gcloudConfig
  */
 // todo: detect if gcloud not installed, run task: setup
-export default function (options?: GCloudConfig): Promise<any> {
+export default function (options?: GCloudConfig): void {
   let opts: GCloudConfig = Object.assign(
     {
       runInstance: {
@@ -24,63 +24,38 @@ export default function (options?: GCloudConfig): Promise<any> {
     gcloudConfig || {},
     options || {}
   );
-  let image = `gcr.io/${gcloudConfig.projectId}/ngx-cms`,
-    rootPath = resolve(__dirname, '../../..'),
-    projectPath = resolve(__dirname, '..'),
-    destination = `${rootPath}/dist/ngx-cms`;
+
+  let image = `gcr.io/${gcloudConfig.projectId}/ngx-cms`;
 
   // copy the required files to build the container image
-  return Promise.all(
-    [
-      `${projectPath}/Dockerfile`,
-      `${projectPath}/package.json`,
-      `${rootPath}/package-lock.json`,
-    ].map((file) =>
-      remove(`${destination}/${basename(file)}`).then(() =>
-        copy(file, `${destination}/${basename(file)}`)
-      )
-    )
-  )
-    .then(() => {
-      console.log('login to gcloud');
-      // todo: only if not signed
-      // use `gcloud auth list --filter=status:ACTIVE --format="value(account)"`
-      // todo: auto auth in ci (i.e: github actions)
-      execSync('gcloud auth login');
+  [
+    `${projectPath}/Dockerfile`,
+    `${projectPath}/package.json`,
+    `${rootPath}/package-lock.json`,
+  ].forEach((file) => copyFileSync(file, `${destination}/${basename(file)}`));
 
-      console.log(`> building the image ${image} ...`);
-      execSync(`docker build ${rootPath}/dist/ngx-cms -t ${image}`);
+  console.log('login to gcloud');
+  // todo: only if not signed
+  // use `gcloud auth list --filter=status:ACTIVE --format="value(account)"`
+  // todo: auto auth in ci (i.e: github actions)
+  execSync('gcloud auth login');
 
-      console.log('> pushing the image ...');
-      execSync(`docker push ${image}`);
+  console.log(`> building the image ${image} ...`);
+  execSync(`docker build ${rootPath}/dist/ngx-cms -t ${image}`);
 
-      console.log('> deploying ...');
-      execSync(
-        `gcloud run deploy ${
-          opts.cloudRun.name
-        } --image=${image} --port=4200 --project=${opts.projectId} --platform=${
-          opts.cloudRun.platform
-        } --region=${opts.cloudRun.region} ${
-          opts.cloudRun.allowUnauthenticated ? '--allow-unauthenticated' : ''
-        }`
-      );
+  console.log('> pushing the image ...');
+  execSync(`docker push ${image}`);
 
-      console.log('Done');
-    })
-    .catch((err) => console.log({ err }));
-}
+  console.log('> deploying ...');
+  execSync(
+    `gcloud run deploy ${
+      opts.cloudRun.name
+    } --image=${image} --port=4200 --project=${opts.projectId} --platform=${
+      opts.cloudRun.platform
+    } --region=${opts.cloudRun.region} ${
+      opts.cloudRun.allowUnauthenticated ? '--allow-unauthenticated' : ''
+    }`
+  );
 
-/**
- * converts `ncp` into a promise
- * @param source
- * @param destination
- * @returns
- */
-function copy(source: string, destination: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    ncp(source, destination, (error) => {
-      console.log(`${source} copied to ${destination}`);
-      error ? reject(error) : resolve();
-    });
-  });
+  console.log('Done');
 }
