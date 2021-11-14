@@ -49,11 +49,7 @@ export default class Storage {
     this.bucket = storage(
       // apps[0] may be null, but storage(...) accepts app | undefined only
       options.app === null ? undefined : options.app
-      // todo: using a custom bucket name causes error:
-      // The project to be billed is associated with an absent billing account.
-      // or: The specified bucket does not exist
-      // or: Not Found
-    ).bucket(/*options.bucket*/);
+    ).bucket(options.bucket);
   }
 
   /**

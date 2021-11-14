@@ -4,8 +4,10 @@ import { resolve } from 'path';
 let serviceAccount: string;
 if (process.env.firebase_serviceAccount) {
   serviceAccount = process.env.firebase_serviceAccount;
-} else if (existsSync(resolve(__dirname, './firebase.json'))) {
-  serviceAccount = resolve(__dirname, './firebase.json');
+  // don't use `firebase.json` because import 'config/firebase' will import it instead of firebase.ts
+} else if (existsSync(resolve(__dirname, './firebase-service-account.json'))) {
+  // todo: or use env:GOOGLE_APPLICATION_CREDENTIALS=Path.resolve("./firebase-$app.json")
+  serviceAccount = resolve(__dirname, './firebase-service-account.json');
 } else {
   serviceAccount = resolve(
     __dirname,
@@ -25,11 +27,5 @@ export default {
   authDomain: process.env.firebase_authDomain,
   databaseURL: process.env.firebase_databaseURL,
   projectId: process.env.firebase_projectId,
-  // todo: using 'storageBucket' cases:
-  // The project to be billed is associated with an absent billing account
-  // storageBucket: process.env.firebase_storageBucket || 'test',
+  storageBucket: process.env.firebase_storageBucket,
 };
-
-// bucket name for gcloud storage
-// todo: use config.storageBucket
-export const BUCKET = process.env.firebase_storageBucket;

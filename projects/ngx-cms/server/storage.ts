@@ -1,6 +1,6 @@
 import Storage from '@engineers/firebase-admin/storage';
 import init from '@engineers/firebase-admin/init';
-import firebaseConfig, { BUCKET } from '~config/firebase';
+import firebaseConfig from '~config/firebase';
 import { apps } from 'firebase-admin';
 import deasync from 'deasync';
 import { ReadOptions } from '@engineers/nodejs/fs-sync';
@@ -9,29 +9,8 @@ import { objectType } from '@engineers/javascript/objects';
 
 init({ name: 'testApp', ...firebaseConfig });
 
-// todo: use env:GOOGLE_APPLICATION_CREDENTIALS=Path.resolve("./firebase-$app.json")
-/* if (process.env.NODE_ENV === 'test') {
-  init({
-    // test (and ts-node) runs from the source code directly, not from 'dist
-    serviceAccount: resolve(
-      __dirname,
-
-      '../../../packages/firebase-admin/test/firebase.json'
-    ),
-    name: 'testApp',
-  });
-} else {
-  init({
-    serviceAccount: resolve(
-      __dirname,
-
-      '../../config/firebase.json'
-    ),
-    name: 'ngxCms',
-  });
-}*/
-
-let storage = new Storage({ bucket: BUCKET, app: apps[0] });
+let bucket = firebaseConfig.storageBucket;
+let storage = new Storage({ bucket, app: apps[0] });
 
 // all functions must have the same signature as @engineers/nodejs/fs.read(), write()
 // todo: if(dev) use filesystem
@@ -41,7 +20,7 @@ export function read(
   path: PathLike,
   options?: ReadOptions | BufferEncoding
 ): Promise<Buffer | string | Array<any> | { [key: string]: any }> {
-  return storage.download(`${BUCKET}/${path.toString()}`, options);
+  return storage.download(`${bucket}/${path.toString()}`, options);
 }
 
 // export function writeFileSync(path: PathLike | number, data: string | NodeJS.ArrayBufferView, options?: WriteFileOptions): void;
@@ -51,13 +30,13 @@ export function write(
   options?: WriteFileOptions
 ): Promise<any> {
   return storage.write(
-    `${BUCKET}/${path.toString()}`,
+    `${bucket}/${path.toString()}`,
     ['array', 'object'].includes(objectType(data)) ? JSON.stringify(data) : data
   );
 }
 
 export function remove(path: PathLike): Promise<any> {
-  return storage.delete(`${BUCKET}/${path.toString()}`);
+  return storage.delete(`${bucket}/${path.toString()}`);
 }
 
 /*
