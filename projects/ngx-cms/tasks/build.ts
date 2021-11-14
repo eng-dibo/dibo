@@ -63,9 +63,12 @@ export function buildServer(mode: Mode = 'production'): void {
 }
 
 export function buildConfig(): void {
-  execSync(`webpack -c config/webpack.config.ts`);
+  // now the source code(.ts) cold used in config using `ts-node` instead of `webpack`
+  // no need to compile it
+  // i.e read config/*.ts using ts-node for more readability
+  // webpack produces non-human readable output
+  // execSync(`webpack -c config/webpack.config.ts`);
 
-  // copy non-ts files
   mkdir(`${destination}/config`);
   let files = readdirSync(`${projectPath}/config`);
   // user-specific files (i.e file!!.ext, file!!) overrides project files (i.e file.ext)
@@ -74,7 +77,7 @@ export function buildConfig(): void {
   files
     .filter(
       (el) =>
-        !el.endsWith('.ts') &&
+        // !el.endsWith('.ts') &&
         // get the corresponding project files to any existing user-specific files
         !userFiles.map((el) => el.replace('!!', '')).includes(el) &&
         lstatSync(`${projectPath}/config/${el}`).isFile() &&

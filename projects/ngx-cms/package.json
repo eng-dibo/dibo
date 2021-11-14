@@ -13,7 +13,7 @@
     "build:dev": "npm run task -- build --mode=development",
     "build:browser:dev": "npm run task -- build --mode=development --targets=browser",
     "build:server:dev": "npm run task -- build --mode=development --targets=server",
-    "serve": "cross-env NODE_ENV=production node -r dotenv/config  --inspect ../../dist/ngx-cms/core/server/main.js --start dotenv_config_path=../../dist/ngx-cms/config/.env",
+    "serve": "cross-env NODE_ENV=production ts-node -r dotenv/config  ../../dist/ngx-cms/core/server/main.js --start dotenv_config_path=../../dist/ngx-cms/config/.env -- --inspect",
     "prerender": "ng run ngx-cms:prerender",
     "ng:update": "ng update --force --allow-dirty",
     "update": "npm run ng:update @angular/core@latest @angular/cli@latest && npm run ng:update @angular/material && npm run ng:update",
