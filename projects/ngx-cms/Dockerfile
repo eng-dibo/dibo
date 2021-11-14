@@ -14,7 +14,10 @@ COPY package*.json ./
 # https://stackoverflow.com/a/34700657/12577650
 # use --no-save to not modify package.json for caching
 # install @angular/cli to run 'ngcc', dotenv to run 'npm run serve'
-RUN npm install -D --also=dev --no-save --fund=false dotenv@^10.0.0 @angular/cli@~12.2.6
+RUN npm install -D --also=dev --no-save --fund=false dotenv@^10.0.0 @angular/cli@~12.2.6 ts-node@^10.4.0
+
+# todo: temporary install ts-node globally utill $dist/package.json has 'serve' script that uses 'ts-node'
+RUN npm i -g ts-node@^10.4.0
 
 # use 'unsafe-perm' to force running 'postinstall'
 # https://stackoverflow.com/a/69614679/12577650
@@ -28,6 +31,6 @@ ENV PORT=4200
 EXPOSE $PORT
 
 # todo: use 'npm run serve'
-CMD node -r dotenv/config ./core/server/main.js --start dotenv_config_path=./config/server/.env 
+CMD ts-node -r dotenv/config ./core/server/main.js --start dotenv_config_path=./config/server/.env 
 
 
