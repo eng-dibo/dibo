@@ -4,6 +4,7 @@ import { execSync } from '@engineers/nodejs/process';
 import { execSync as _execSync } from 'child_process';
 import { copyFileSync } from 'fs';
 import { rootPath, projectPath, destination } from './index';
+import setup from './setup';
 
 /**
  * build a docker image and deploy it to gcloud run
@@ -35,6 +36,16 @@ export default function (options?: GCloudConfig): void {
     `${rootPath}/package-lock.json`,
   ].forEach((file) => copyFileSync(file, `${destination}/${basename(file)}`));
 
+  console.log(`> building the image ${image} ...`);
+  execSync(`docker build ${rootPath}/dist/ngx-cms -t ${image}`);
+
+  try {
+    _execSync('gcloud');
+  } catch (err) {
+    console.log('installing gcloud tools...');
+    setup({ init: false });
+  }
+
   if (!_execSync(`gcloud auth list --format="value(account)"`).toString()) {
     console.log('login to gcloud');
     // todo: auto auth in ci (i.e: github actions), without a user action
@@ -42,9 +53,6 @@ export default function (options?: GCloudConfig): void {
     execSync('gcloud auth login');
     // no need to run `gcloud init`
   }
-
-  console.log(`> building the image ${image} ...`);
-  execSync(`docker build ${rootPath}/dist/ngx-cms -t ${image}`);
 
   console.log('> pushing the image ...');
   execSync(`docker push ${image}`);

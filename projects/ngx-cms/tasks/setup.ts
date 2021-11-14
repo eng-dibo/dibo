@@ -1,14 +1,20 @@
 import { execSync } from '@engineers/nodejs/process';
 
+export interface SetupOptions {
+  init?: boolean;
+}
 /**
  * install the required SDKs
  */
 // this setup is for Debian and Ubuntu systems
 // todo: auto detect system
-export default function (): void {
+export default function (options?: SetupOptions): void {
+  let opts = Object.assign({}, options || {});
   gcloudSetup();
   containerRegistryAuth();
-  gcloudInit();
+  if (opts.init !== false) {
+    gcloudInit();
+  }
 }
 
 /**
