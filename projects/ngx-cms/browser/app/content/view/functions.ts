@@ -7,7 +7,7 @@ import {
 } from '@engineers/ngx-content-view-mat';
 import { html2text, length } from '@engineers/ngx-content-core/pipes-functions';
 import { slug } from '@engineers/ngx-content-core';
-import { metaTags as _defaultMetaTags } from '~config/browser';
+import _defaultMetaTags from '~config/browser/meta';
 import { replaceAll } from '@engineers/javascript/string';
 
 export function getParams(params: any, query: any): Params {
