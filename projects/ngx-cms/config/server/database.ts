@@ -1,4 +1,3 @@
-import { prod } from './server';
 import { Uri } from '@engineers/mongoose';
 
 interface DB {

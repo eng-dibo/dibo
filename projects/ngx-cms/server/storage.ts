@@ -1,6 +1,6 @@
 import Storage from '@engineers/firebase-admin/storage';
 import init from '@engineers/firebase-admin/init';
-import firebaseConfig from '~config/firebase';
+import firebaseConfig from '~config/server/firebase';
 import { apps } from 'firebase-admin';
 import deasync from 'deasync';
 import { ReadOptions } from '@engineers/nodejs/fs-sync';

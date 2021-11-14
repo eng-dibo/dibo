@@ -69,27 +69,28 @@ export function buildConfig(): void {
   // webpack produces non-human readable output
   // execSync(`webpack -c config/webpack.config.ts`);
 
-  mkdir(`${destination}/config`);
-  let files = readdirSync(`${projectPath}/config`);
-  // user-specific files (i.e file!!.ext, file!!) overrides project files (i.e file.ext)
-  let userFiles = files.filter((el) => /!!(\..+)?$/.test(el));
+  ['browser', 'server'].forEach((target) => {
+    mkdir([`${destination}/config/${target}`]);
 
-  files
-    .filter(
-      (el) =>
-        // !el.endsWith('.ts') &&
-        // get the corresponding project files to any existing user-specific files
-        !userFiles.map((el) => el.replace('!!', '')).includes(el) &&
-        lstatSync(`${projectPath}/config/${el}`).isFile() &&
+    let files = readdirSync(`${projectPath}/config/${target}`);
+    // user-specific files (i.e file!!.ext, file!!) overrides project files (i.e file.ext)
+    let userFiles = files.filter((el) => /!!(\..+)?$/.test(el));
+
+    files
+      .filter(
+        (el) =>
+          // get the corresponding project files to any existing user-specific files
+          !userFiles.map((el) => el.replace('!!', '')).includes(el) &&
+          lstatSync(`${projectPath}/config/${target}/${el}`).isFile()
         // exclude files used for building
-        !['tsconfig.json'].includes(el)
-    )
-    .forEach((el) =>
-      copyFileSync(
-        `${projectPath}/config/${el}`,
-        `${destination}/config/${basename(el).replace('!!', '')}`
       )
-    );
+      .forEach((el) =>
+        copyFileSync(
+          `${projectPath}/config/${target}/${el}`,
+          `${destination}/config/${target}/${basename(el).replace('!!', '')}`
+        )
+      );
+  });
 }
 
 export function buildPackage(): void {

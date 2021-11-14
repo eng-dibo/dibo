@@ -10,7 +10,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { UniversalInterceptor } from '@engineers/ngx-universal-express/universal-interceptor';
 import { ApiInterceptor } from './http.interceptor';
-import env from '~config/env';
+import env from '~config/browser/env';
 
 /*
 routes are loaded in the following order:

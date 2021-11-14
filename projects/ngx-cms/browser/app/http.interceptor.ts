@@ -11,7 +11,7 @@ import {
 } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import env from '~config/env';
+import env from '~config/browser/env';
 
 interface Obj {
   [key: string]: any;

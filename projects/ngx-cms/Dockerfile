@@ -28,6 +28,6 @@ ENV PORT=4200
 EXPOSE $PORT
 
 # todo: use 'npm run serve'
-CMD node -r dotenv/config ./core/server/main.js --start dotenv_config_path=./config/.env 
+CMD node -r dotenv/config ./core/server/main.js --start dotenv_config_path=./config/server/.env 
 
 

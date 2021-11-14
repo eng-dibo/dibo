@@ -7,6 +7,7 @@ import { Configuration } from 'webpack';
 let entries: { [key: string]: string } = {};
 
 // add all *.ts files in this directory.
+// todo: files moved to subdirectories /server, browser
 readdirSync(resolve(__dirname))
   .filter((el) => el !== 'webpack.config.ts' && el.endsWith('.ts'))
   .forEach((el) => {

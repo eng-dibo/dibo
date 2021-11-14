@@ -12,7 +12,7 @@
 import { Payload, Meta } from '@engineers/ngx-content-view-mat';
 import { MetaService } from '@engineers/ngx-utils/meta.service';
 import { ADSENSE } from '~config/browser';
-import env from '~config/env';
+import env from '~config/browser/env';
 
 import {
   Component,

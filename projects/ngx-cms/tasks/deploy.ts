@@ -1,5 +1,5 @@
 import { basename } from 'path';
-import gcloudConfig, { GCloudConfig } from '~config/gcloud';
+import gcloudConfig, { GCloudConfig } from '~config/server/gcloud';
 import { execSync } from '@engineers/nodejs/process';
 import { execSync as _execSync } from 'child_process';
 import { copyFileSync } from 'fs';

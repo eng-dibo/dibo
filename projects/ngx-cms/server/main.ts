@@ -1,7 +1,7 @@
 // Initialize the server environment, and add DOM types to the global scope
 import '@angular/platform-server/init';
 import { enableProdMode } from '@angular/core';
-import env from '~config/env';
+import env from '~config/browser/env';
 import { NgModule } from '@angular/core';
 import { ServerModule } from '@angular/platform-server';
 import { AppModule } from '~browser/app/app.module';
