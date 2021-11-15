@@ -90,9 +90,12 @@ app.get(/\/image\/([^/-]+)-([^/-]+)-([^/]+)/, (req: any, res: any) => {
     });
   }
 
-  // use { encoding: undefined } so read() returns Buffer instead of string
+  // use { encoding: undefined } so read() and cache() returns Buffer instead of string
   // otherwise resize(data) consider data: string as a file path
-  cache(localPath, () => read(filePath, { encoding: undefined }), 24)
+  cache(localPath, () => read(filePath, { encoding: undefined }), {
+    age: 24,
+    encoding: undefined,
+  })
     .then((data) => {
       if (!req.query.size) {
         return data;
@@ -113,7 +116,7 @@ app.get(/\/image\/([^/-]+)-([^/-]+)-([^/]+)/, (req: any, res: any) => {
             //   - allowBiggerImageDim: false,
             //   - allowBiggerFileSize: false,
           }),
-        24
+        { age: 24, encoding: undefined }
       );
     })
     .then((data: any) => {
@@ -122,8 +125,9 @@ app.get(/\/image\/([^/-]+)-([^/-]+)-([^/]+)/, (req: any, res: any) => {
       // res.write VS res.send https://stackoverflow.com/a/54874227/12577650
       // res.write VS res.sendFile https://stackoverflow.com/a/44693016/12577650
       // res.writeHead VS res.setHeader https://stackoverflow.com/a/28094490/12577650
+
       res.writeHead(200, {
-        'Content-Type': 'image/jpeg',
+        'Content-Type': 'image/webp',
         'Cache-Control': 'max-age=31536000',
       });
 
@@ -217,7 +221,7 @@ app.get('*', (req: any, res: any, next: any) => {
         */
       }),
     // todo: ?refresh=AUTH_TOKEN
-    req.query.refresh ? -1 : 3
+    { age: req.query.refresh ? -1 : 3 }
   )
     .then((payload: any) => {
       res.json(payload);
