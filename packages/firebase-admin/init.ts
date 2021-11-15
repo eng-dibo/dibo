@@ -50,11 +50,11 @@ export default function (options: InitOptions | string): app.App {
   delete opts.serviceAccount;
 
   if (opts.projectId) {
-    if (!('storageBucket' in opts)) {
+    if (!opts.storageBucket) {
       opts.storageBucket = `${opts.projectId}.appspot.com`;
     }
 
-    if (!('databaseURL' in opts)) {
+    if (!opts.databaseURL) {
       opts.databaseURL = `https://${opts.projectId}.firebaseio.com`;
     }
 
@@ -67,6 +67,10 @@ export default function (options: InitOptions | string): app.App {
 
   if (!opts.storageBucket?.endsWith('.appspot.com')) {
     opts.storageBucket += '.appspot.com';
+  }
+
+  if (!opts.databaseURL?.endsWith('.firebaseio.com')) {
+    opts.databaseURL += '.firebaseio.com';
   }
 
   // don't import {initializeApp} from 'firebase-admin'
