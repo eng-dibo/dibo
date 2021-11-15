@@ -1,9 +1,4 @@
-import admin, {
-  // initializeApp,
-  ServiceAccount,
-  credential,
-  AppOptions,
-} from 'firebase-admin';
+import admin, { ServiceAccount, AppOptions, app } from 'firebase-admin';
 const nativeRequire = require('@engineers/webpack/native-require');
 
 // todo: InitOptions properties
@@ -18,7 +13,7 @@ export interface InitOptions extends AppOptions {
  * initializes firebase app
  * @param options
  */
-export default function (options: InitOptions | string): void {
+export default function (options: InitOptions | string): app.App {
   let opts: InitOptions = Object.assign(
     {},
     typeof options === 'string' ? { projectId: options } : options
@@ -28,9 +23,9 @@ export default function (options: InitOptions | string): void {
   // else if(!opts.credential) -> applicationDefault()
   if (!opts.credential) {
     if (opts.serviceAccount) {
-      opts.credential = credential.cert(opts.serviceAccount);
+      opts.credential = admin.credential.cert(opts.serviceAccount);
     } else if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
-      opts.credential = credential.applicationDefault();
+      opts.credential = admin.credential.applicationDefault();
     }
 
     // todo: else throw error: no credentials provided
@@ -70,7 +65,11 @@ export default function (options: InitOptions | string): void {
     }*/
   }
 
+  if (!opts.storageBucket?.endsWith('.appspot.com')) {
+    opts.storageBucket += '.appspot.com';
+  }
+
   // don't import {initializeApp} from 'firebase-admin'
   // https://github.com/firebase/firebase-admin-node/issues/593#issuecomment-908616694
-  admin.initializeApp(opts, opts.name);
+  return admin.initializeApp(opts, opts.name);
 }

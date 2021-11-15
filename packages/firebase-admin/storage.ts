@@ -48,7 +48,7 @@ export default class Storage {
   constructor(options: StorageOptions = {}) {
     this.bucket = storage(
       // apps[0] may be null, but storage(...) accepts app | undefined only
-      options.app === null ? undefined : options.app
+      options.app || undefined
     ).bucket(options.bucket);
   }
 
