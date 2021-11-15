@@ -1,20 +1,18 @@
 import Storage from '@engineers/firebase-admin/storage';
 import init from '@engineers/firebase-admin/init';
 import firebaseConfig from '~config/server/firebase';
-import { apps } from 'firebase-admin';
 import deasync from 'deasync';
 import { ReadOptions } from '@engineers/nodejs/fs-sync';
 import { PathLike, WriteFileOptions } from 'fs';
 import { objectType } from '@engineers/javascript/objects';
 
-init({ name: 'testApp', ...firebaseConfig });
-
-let bucket = firebaseConfig.storageBucket;
-let storage = new Storage({ bucket, app: apps[0] });
-
 // all functions must have the same signature as @engineers/nodejs/fs.read(), write()
 // todo: if(dev) use filesystem
 // todo: if path:URl remove protocol i.e: `file://`
+
+let app = init({ name: 'ngxCms', ...firebaseConfig });
+let bucket = firebaseConfig.storageBucket;
+let storage = new Storage({ bucket, app });
 
 export function read(
   path: PathLike,

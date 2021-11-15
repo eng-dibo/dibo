@@ -98,6 +98,7 @@ app.get(/\/image\/([^/-]+)-([^/-]+)-([^/]+)/, (req: any, res: any) => {
       // use { encoding: undefined } so read() returns Buffer instead of string
       // otherwise resize(data) consider data: string as a file path
       cache(localPath, () => read(filePath, { encoding: undefined }), 24).then(
+        // todo: only if(size)cache(resizedPath)
         (data: any) =>
           resize(data, size, {
             //  dest: resizedPath, //if the resized img saved to a file, data=readFile(resized)
