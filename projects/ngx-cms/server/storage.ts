@@ -11,8 +11,10 @@ import { objectType } from '@engineers/javascript/objects';
 // todo: if path:URl remove protocol i.e: `file://`
 
 let app = init({ name: 'ngxCms', ...firebaseConfig });
-let bucket = firebaseConfig.storageBucket;
-let storage = new Storage({ bucket, app });
+let storage = new Storage({ app, bucket: firebaseConfig.storageBucket });
+// the parent folder where all files saved
+// todo: change to ngx-cms
+let bucket = 'almogtama3.com';
 
 export function read(
   path: PathLike,
