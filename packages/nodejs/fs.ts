@@ -177,32 +177,39 @@ export function read(
   let defaultOptions: ReadOptions = {
     encoding: null,
     flag: 'r',
+    age: 0,
   };
   let opts: ReadOptions = Object.assign(
     defaultOptions,
     typeof options === 'string' ? { encoding: options } : options || {}
   );
 
-  return fsp
-    .readFile(path, {
-      encoding: opts.encoding,
-      flag: opts.flag,
-    })
-    .then((data) => {
-      // if(opts.encoding) readFile() will return string, otherwise it returns Buffer
-      // if the consumer wants the data as Buffer, provide options.encoding=undefined explicitly
-      // to use the default encoding provide options.encoding=null (the default behavior is)
-      // https://stackoverflow.com/a/48818444/12577650
-      // https://nodejs.org/api/fs.html#fs_fs_readfilesync_path_options
-      if (opts.encoding === undefined) {
-        return data;
-      }
+  return getModifiedTime(path).then((modified) => {
+    if (opts.age && opts.age > 0 && modified + opts.age < Date.now()) {
+      throw new Error(`[fs-sync] expired file ${path}`);
+    }
 
-      data = data.toString();
-      return path.toString().trim().slice(-5) === '.json'
-        ? JSON.parse(stripJsonComments(data))
-        : data;
-    });
+    return fsp
+      .readFile(path, {
+        encoding: opts.encoding,
+        flag: opts.flag,
+      })
+      .then((data) => {
+        // if(opts.encoding) readFile() will return string, otherwise it returns Buffer
+        // if the consumer wants the data as Buffer, provide options.encoding=undefined explicitly
+        // to use the default encoding provide options.encoding=null (the default behavior is)
+        // https://stackoverflow.com/a/48818444/12577650
+        // https://nodejs.org/api/fs.html#fs_fs_readfilesync_path_options
+        if (opts.encoding === undefined) {
+          return data;
+        }
+
+        data = data.toString();
+        return path.toString().trim().slice(-5) === '.json'
+          ? JSON.parse(stripJsonComments(data))
+          : data;
+      });
+  });
 }
 
 // todo: getEntriesGenerator() : uses nodejs.generator or rxjs.observable

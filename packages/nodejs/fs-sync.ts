@@ -238,6 +238,8 @@ export interface ReadOptions {
     | 'wx'
     | 'w+'
     | 'wx+';
+  // file age in milliseconds
+  age?: number;
 }
 /**
  * read a file and return its content
@@ -251,11 +253,21 @@ export function read(
   let defaultOptions: ReadOptions = {
     encoding: null,
     flag: 'r',
+    age: 0,
   };
   let opts: ReadOptions = Object.assign(
     defaultOptions,
     typeof options === 'string' ? { encoding: options } : options || {}
   );
+
+  // todo: test
+  if (
+    opts.age &&
+    opts.age > 0 &&
+    getModifiedTime(path) + opts.age < Date.now()
+  ) {
+    throw new Error(`[fs-sync] expired file ${path}`);
+  }
 
   let data = readFileSync(path, {
     encoding: opts.encoding,

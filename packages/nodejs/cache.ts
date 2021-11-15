@@ -1,10 +1,6 @@
-import { PathLike, existsSync } from 'fs';
-import { isPromise, isEmpty } from '@engineers/javascript/objects';
-import {
-  resolve,
-  getExtension,
-  getModifiedTime as getModifiedTimeSync,
-} from './fs-sync';
+import { PathLike } from 'fs';
+import { isPromise } from '@engineers/javascript/objects';
+import { resolve } from './fs-sync';
 import { read, write } from './fs';
 
 /**
@@ -29,73 +25,52 @@ import { read, write } from './fs';
 export default function (
   files: PathLike | PathLike[],
   dataSource: () => any,
-  age: number | [number, number] = 0
+  age: number = 0,
+  maxAge: number = 0
 ): Promise<any> {
-  if (!(files instanceof Array)) {
-    files = [files];
-  }
-  files = files.map((filePath) => resolve(filePath));
+  let cacheFiles: PathLike[] = (files instanceof Array ? files : [files]).map(
+    (filePath) => resolve(filePath)
+  );
 
-  let maxAge: number;
-  if (age instanceof Array) {
-    [age, maxAge] = age;
-  } else {
-    maxAge = 0;
-  }
-
-  /*
-    //use fs.delete(files)
-    if (dataSource === ":purge:")
-      return Promise.all(files.map((file: string) => ({ [file]: unlink(file) })));
-  */
   let data: any;
-  // todo: readCache<T>
-  let readCache = (filePath: PathLike): any => {
-    return read(filePath);
-  };
 
-  // todo: remove filesInfo
-  // contains exists files only with mtime for each file.
-  let filesInfo: { [key: string]: number } = {};
-  let _now = Date.now();
+  async function readCache(entries: PathLike[], age: number): Promise<any> {
+    for (let filePath of entries) {
+      await read(filePath, { age: age * 60 * 60 * 1000 })
+        .then((result) => {
+          data = result;
+        })
+        .catch((e) => {});
 
-  for (let filePath of files) {
-    if (existsSync(filePath)) {
-      filesInfo[filePath as keyof typeof filesInfo] =
-        getModifiedTimeSync(filePath);
-
-      if (
-        age === 0 ||
-        (age > -1 &&
-          filesInfo[filePath as keyof typeof filesInfo] + age * 60 * 60 * 1000 >
-            _now)
-      ) {
-        return readCache(filePath);
+      if (data !== undefined) {
+        return Promise.resolve(data);
       }
     }
+
+    throw 'no valid cache found';
   }
 
-  // if there is no valid file, run dataSource()
-  let file: PathLike = files[0];
+  // search for a valid cache
+  return readCache(cacheFiles, age)
+    .catch(() => {
+      // if there is no valid file, run dataSource()
+      let file: PathLike = cacheFiles[0];
+      data = dataSource();
 
-  data = dataSource();
+      // todo: also support rxjs.Observable
+      let p: Promise<any> = isPromise(data)
+        ? data
+        : new Promise((r) => r(data));
 
-  // todo: also support rxjs.Observable
-  let p: Promise<any> = isPromise(data) ? data : new Promise((r) => r(data));
-
-  return p
-    .then((_data: any) => {
-      write(file, _data);
-      // todo: return write()
-      return _data;
+      return p.then((_data: any) => {
+        write(file, _data);
+        // todo: return write()
+        return new Promise(() => _data);
+      });
     })
     .catch((error: any) => {
-      if (maxAge > -1) {
-        for (let k in filesInfo) {
-          if (maxAge === 0 || filesInfo[k] + maxAge * 60 * 60 * 1000 > _now) {
-            return readCache(k);
-          }
-        }
+      if (maxAge > age) {
+        return readCache(cacheFiles, maxAge);
       }
 
       throw error;
