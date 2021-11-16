@@ -27,18 +27,20 @@ export default function (options?: BuildOptions): void {
     options || {}
   );
 
+  let progress = Promise.resolve();
+
   let targets = opts.targets.split(',');
   if (targets.includes('browser')) {
-    buildBrowser(opts.mode);
+    progress = progress.then(() => buildBrowser(opts.mode));
   }
   if (targets.includes('server')) {
-    buildServer(opts.mode);
+    progress = progress.then(() => buildServer(opts.mode));
   }
   if (targets.includes('config')) {
-    buildConfig();
+    progress = progress.then(() => buildConfig());
   }
   if (targets.includes('package')) {
-    buildPackage();
+    progress = progress.then(() => buildPackage());
   }
 }
 

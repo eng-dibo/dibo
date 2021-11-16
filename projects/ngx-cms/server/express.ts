@@ -13,10 +13,12 @@ import routes from './routes';
 import redirect from '@engineers/express-redirect-middleware';
 import { resolve } from 'path';
 
+let mode = process.env.NODE_ENV || 'production';
+
 // The Express app is exported so that it can be used by serverless Functions.
 export function server(): ReturnType<typeof expressServer> {
   // todo: move to expressServer.msg
-  console.info(`the server is working in ${process.env.NODE_ENV} mode`);
+  console.info(`the server is working in ${mode} mode`);
 
   // relative to dist/ngx-cms/core/server
   // this may be have different values for different compilation scenarios
@@ -53,7 +55,7 @@ export function server(): ReturnType<typeof expressServer> {
           protocol: 'https',
           subdomain: 'www',
           cb: (oldUrl, newUrl, parts) => {
-            if (process.env.NODE_ENV !== 'production') {
+            if (mode !== 'production') {
               console.log(`[express] redirecting ${oldUrl} -> ${newUrl}`, {
                 parts,
               });
