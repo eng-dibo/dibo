@@ -5,13 +5,70 @@ import { basename, dirname, resolve } from 'path';
 import { existsSync } from 'fs';
 import ejs from 'ejs';
 
-const rootPath = resolve('..');
+let rootPath = resolve(__dirname, '..'),
+  rootPackage = readSync(`${rootPath}/package.json`),
+  // todo: copy `author` to other package.json files only if not existing.
+  keys = ['repository', 'homepage', 'bugs', 'license', 'author', 'funding'],
+  rootData = filterObjectByKeys(rootPackage as Obj, keys);
+
+export interface GenerateOptions {
+  // if name provided, create a new package, or update a specific package
+  // else update all packages
+  name?: string;
+  type?: string;
+  // other properties of package.json
+  [key: string]: any;
+}
 
 /**
  * generates build files such as package.json, readme.md, etc.
  */
-export default function generate(): Promise<void> {
-  return generatePackages().then(() => generateReadMe());
+export default function generate(options: GenerateOptions = {}): Promise<void> {
+  if (options.name) {
+    let { name, type, ...pkg } = options;
+    return create(name, type, pkg);
+  } else {
+    return updatePackages().then(() => updateReadMe());
+  }
+}
+
+/**
+ * create a new project or package
+ * todo: if  package exists update it (i.e use the existing package.json)
+ */
+function create(
+  name: string,
+  target = 'packages',
+  pkgObj: { [key: string]: any }
+): Promise<void> {
+  let pkg = Object.assign(
+      {
+        name: `@engineers/${name}`,
+        version: '0.0.1',
+        private: false,
+        ...pkgObj,
+      },
+      rootData
+    ),
+    path = `${rootPath}/${target}/${name}`;
+  return write(`${path}/package.json`, pkg)
+    .then(() =>
+      // get existing entries (ie projects and packages) to mention them as good resources
+      Promise.all(
+        ['./packages', './projects'].map((dir) => getEntries(dir, 'dirs', 0))
+      ).then((entries: Array<Array<string>>) => entries[0].concat(entries[1]))
+    )
+    .then((entries) => {
+      // generate readMe.md
+      return ejs
+        .renderFile(`${rootPath}/tasks/README.tmpl.md`, {
+          about: '',
+          pkg,
+          entries,
+        })
+        .then((content) => write(`${path}/README.md`, content))
+        .then(() => write(`${path}/index.ts`, ''));
+    });
 }
 
 /**
@@ -21,13 +78,8 @@ export default function generate(): Promise<void> {
  *
  * paths are relative to cwd()
  */
-function generatePackages(): Promise<void> {
-  let rootPackage = readSync('./package.json'),
-    // todo: copy `author` to other package.json files only if not existing.
-    keys = ['repository', 'homepage', 'bugs', 'license', 'author', 'funding'],
-    packages = /^(?!node_modules).+?\/package\.json$/;
-
-  let rootData = filterObjectByKeys(rootPackage as Obj, keys);
+function updatePackages(): Promise<void> {
+  let packages = /^(?!node_modules).+?\/package\.json$/;
 
   return Promise.all(
     ['./packages', './projects'].map((dir) => getEntries(dir, packages))
@@ -57,7 +109,7 @@ function generatePackages(): Promise<void> {
     .then();
 }
 
-function generateReadMe(): Promise<void> {
+function updateReadMe(): Promise<void> {
   return Promise.all(
     ['./packages', './projects'].map((dir) => getEntries(dir, 'dirs', 0))
   )
