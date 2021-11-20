@@ -1,5 +1,5 @@
 import { argv } from 'process';
-import { execSync as _execSync } from 'child_process';
+import { exec, execSync as _execSync, ExecSyncOptions } from 'child_process';
 import {
   Obj,
   chunk,
@@ -238,14 +238,40 @@ export function toArgv(argsObj: Argv): string {
  * displays the output of the child process in the main std
  * @param cmd
  */
-export function execSync(cmd: string): void {
+export function execSync(
+  cmd: string,
+  options?: ExecSyncOptions
+): Buffer | string {
+  let opts = Object.assign({ stdio: 'inherit' }, options || {});
   // display the output
   // https://stackoverflow.com/a/31104898/12577650
   // todo: don't wait until std complete to display the output
   // https://stackoverflow.com/a/30168821/12577650
   // using `{ stdio: 'inherit' })` this function displays the output and returns null
-  console.log(`> ${cmd}`);
-  _execSync(cmd, { stdio: 'inherit' });
+  return _execSync(cmd, opts);
+}
+
+/**
+ * promisify exec()
+ * @param cmd
+ * @param options
+ * @returns
+ */
+export function execPromise(cmd: string, options?: any): Promise<string> {
+  let opts = Object.assign(
+    { stdio: 'inherit', encoding: 'utf8' },
+    options || {}
+  );
+  return new Promise((res, rej) => {
+    exec(cmd, opts, (error: any, strout: any, stderr: any) => {
+      if (error) {
+        error.message = stderr;
+        rej(error);
+      } else {
+        res(strout);
+      }
+    });
+  });
 }
 
 /**
@@ -275,9 +301,9 @@ export async function runTask(
     console.log(`>> running the task: ${task}`);
     await tasks[task](options);
     console.log('>> Done');
-  } catch (error) {
-    console.error({ error });
-    throw new Error(`>> error in task ${task}, ${error}`);
+  } catch (error: any) {
+    error.task = task;
+    throw error;
   }
 }
 
