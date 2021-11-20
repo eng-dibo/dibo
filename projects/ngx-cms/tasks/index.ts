@@ -11,4 +11,6 @@ export let rootPath = resolve(__dirname, '../../..');
 export let projectPath = resolve(__dirname, '..');
 export let destination = `${rootPath}/dist/ngx-cms`;
 
-runTask({ setup, deploy, build });
+runTask({ setup, deploy, build }).catch((error) => {
+  console.log(`>> error in task ${error.task}: \n ${error}`);
+});

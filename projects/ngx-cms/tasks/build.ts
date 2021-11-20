@@ -1,4 +1,4 @@
-import { execSync } from '@engineers/nodejs/process';
+import { execPromise, execSync } from '@engineers/nodejs/process';
 import { mkdir, write } from '@engineers/nodejs/fs-sync';
 import {
   readdirSync,
@@ -27,40 +27,41 @@ export default function (options?: BuildOptions): void {
     options || {}
   );
 
-  let progress = Promise.resolve();
+  let progress: Promise<any> = Promise.resolve();
 
   let targets = opts.targets.split(',');
   if (targets.includes('browser')) {
-    progress = progress.then(() => buildBrowser(opts.mode));
+    buildBrowser(opts.mode);
   }
+
   if (targets.includes('server')) {
-    progress = progress.then(() => buildServer(opts.mode));
+    buildServer(opts.mode);
   }
   if (targets.includes('config')) {
-    progress = progress.then(() => buildConfig());
+    buildConfig();
   }
   if (targets.includes('package')) {
-    progress = progress.then(() => buildPackage());
+    buildPackage();
   }
 }
 
 export function buildBrowser(mode: Mode = 'production'): void {
-  execSync(
-    `ng build --aot ${
-      mode === 'production' ? '--configuration=production' : ''
-    }`
-  );
+  let cmd = `ng build --aot ${
+    mode === 'production' ? '--configuration=production' : ''
+  }`;
 
+  console.log(`> build browser: ${cmd}`);
+  execSync(cmd);
   write(`${destination}/core/browser/info.json`, { mode, time });
 }
 
 export function buildServer(mode: Mode = 'production'): void {
-  execSync(
-    `ng run ngx-cms:server:${
-      mode === 'production' ? 'production' : ''
-    } --bundle-dependencies`
-  );
+  let cmd = `ng run ngx-cms:server:${
+    mode === 'production' ? 'production' : ''
+  } --bundle-dependencies`;
 
+  console.log(`> build server: ${cmd}`);
+  execSync(cmd);
   write(`${destination}/core/server/info.json`, { mode, time });
 }
 
@@ -70,6 +71,9 @@ export function buildConfig(): void {
   // i.e read config/*.ts using ts-node for more readability
   // webpack produces non-human readable output
   // execSync(`webpack -c config/webpack.config.ts`);
+  // todo: if error: Promise.reject()
+
+  console.log(`> build config`);
 
   ['browser', 'server'].forEach((target) => {
     mkdir([`${destination}/config/${target}`]);
@@ -96,6 +100,7 @@ export function buildConfig(): void {
 }
 
 export function buildPackage(): void {
+  console.log(`> build package`);
   // copy files for deployment: Dockerfile, package.json, root/package-lock.json
   // & adjust package.json/scripts{start,deploy}, remove properties used for build
 }
