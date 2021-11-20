@@ -7,7 +7,7 @@
     "command": "editor.action.duplicateSelection"
   },
   {
-    "key": "shift+d",
+    "key": "ctrl+shift+d",
     "command": "editor.action.deleteLines",
     "when": "textInputFocus && !editorReadonly"
   },
@@ -15,5 +15,10 @@
     "key": "ctrl+shift+k",
     "command": "-editor.action.deleteLines",
     "when": "textInputFocus && !editorReadonly"
+  },
+  {
+    "key": "ctrl+shift+d",
+    "command": "-workbench.view.debug",
+    "when": "viewContainer.workbench.view.debug.enabled"
   }
 ]
