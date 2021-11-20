@@ -8,18 +8,21 @@ let entries: { [key: string]: string } = {};
 
 // add all *.ts files in this directory.
 // todo: files moved to subdirectories /server, browser
-readdirSync(resolve(__dirname))
-  .filter((el) => el !== 'webpack.config.ts' && el.endsWith('.ts'))
-  .forEach((el) => {
-    entries[el.replace('.ts', '')] = resolve(__dirname, el);
-  });
+['server', 'browser'].forEach((target) => {
+  readdirSync(resolve(`${__dirname}/${target}`))
+    .filter((el) => el !== 'webpack.config.ts' && el.endsWith('.ts'))
+    .forEach((el) => {
+      entries[`${target}/${el.replace('.ts', '')}`] =
+        resolve(`${__dirname}/${target}/${el}`) + '?xx=ok';
+    });
+});
 
 let config: Configuration = deepMerge([
   baseConfig,
   {
     entry: entries,
     output: {
-      path: resolve(__dirname, '../../../dist/ngx-cms/config'),
+      path: resolve(__dirname, '../../../dist/ngx-cms/config/'),
     },
     // add config files to externals to prevent bundling them
     // i.e: server should require('./database') instead of including its code while compiling
