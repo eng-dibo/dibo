@@ -1,4 +1,4 @@
-# @engineers/ngx-formly
+# @engineers/ngx-forms
 
 converts plain objects into Angular reactive forms using formly
 
@@ -7,7 +7,7 @@ converts plain objects into Angular reactive forms using formly
 install the package and it's peer dependencies:
 
 ```
-npm i @engineers/ngx-formly
+npm i @engineers/ngx-forms
 ```
 
 you can build this package and any of our packages yourself from [source](https://github.com/eng-dibo/dibo/tree/main/packages)
@@ -37,7 +37,7 @@ read our [contributing guide](https://github.com/eng-dibo/dibo/blob/main/CONTRIB
   - [mongoose](https://github.com/eng-dibo/dibo/tree/main/packages/mongoose)
   - [ngx-content-core](https://github.com/eng-dibo/dibo/tree/main/packages/ngx-content-core)
   - [ngx-content-view-mat](https://github.com/eng-dibo/dibo/tree/main/packages/ngx-content-view-mat)
-  - [ngx-formly](https://github.com/eng-dibo/dibo/tree/main/packages/ngx-formly)
+  - [ngx-forms](https://github.com/eng-dibo/dibo/tree/main/packages/ngx-forms)
   - [ngx-universal-express](https://github.com/eng-dibo/dibo/tree/main/packages/ngx-universal-express)
   - [ngx-utils](https://github.com/eng-dibo/dibo/tree/main/packages/ngx-utils)
   - [nodejs](https://github.com/eng-dibo/dibo/tree/main/packages/nodejs)
