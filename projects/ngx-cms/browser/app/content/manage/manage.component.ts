@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-manage',
+  selector: 'content-manage',
   templateUrl: './manage.component.html',
   styleUrls: ['./manage.component.scss'],
 })
-export class ManageComponent implements OnInit {
+export class ContentManageComponent implements OnInit {
   constructor() {}
 
   ngOnInit(): void {}
