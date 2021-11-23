@@ -1,13 +1,8 @@
 // https://jestjs.io/docs/cli
 import type { Config } from '@jest/types';
-
-// run 'ngcc' https://thymikee.github.io/jest-preset-angular/docs/guides/angular-ivy/
-import 'jest-preset-angular/ngcc-jest-processor';
-
 import { pathsToModuleNameMapper } from 'ts-jest/utils';
 import stripJsonComments from 'strip-json-comments';
 import fs from 'fs';
-import { resolve } from 'path';
 
 export function getPaths(
   tsConfigPath = './tsconfig.json',
@@ -21,16 +16,25 @@ export function getPaths(
   }
 
   let tsConfig = readJson(tsConfigPath);
+  /*
+   pathsToModuleNameMapper generates moduleNameMapper from tsconfig.compilerOptions.paths
+   https://huafu.github.io/ts-jest/user/config/#paths-mapping
+   // fixed: pathsToModuleNameMapper is mapping to `<rootDir>/./packages/$1`
+   https://github.com/kulshekhar/ts-jest/issues/2709
+   // todo: add '~' to every project or package jest.config
+   */
+
   return pathsToModuleNameMapper(tsConfig.compilerOptions.paths, {
     prefix,
   });
 }
 
 let config: Config.InitialOptions = {
+  rootDir: __dirname,
   // use 'ts-jest' to enable type checking while testing
   // use 'jest-preset-angular' for angular projects (built in top of ts-jest)
   // 'jest-preset-angular' requires tsconfig.spec.json file
-  preset: 'jest-preset-angular',
+  preset: 'ts-jest',
   testEnvironment: 'node',
   // don't inject jest methods (test,describe,...) to the global scope
   // you must import them from '@jest/globals
@@ -46,43 +50,23 @@ let config: Config.InitialOptions = {
     'js',
     'jsx',
     'json',
-    'node',
     'html',
     'scss',
     'css',
+    'node',
   ],
   transform: {
-    // transform non-js files with 'jest-preset-angular' to let jest understand their syntax
-    // so it can compile angular component's template and style files
-    // https://thymikee.github.io/jest-preset-angular/docs/getting-started/options/#exposed-configuration
-    // https://github.com/thymikee/jest-preset-angular/issues/992?notification_referrer_id=MDE4Ok5vdGlmaWNhdGlvblRocmVhZDIzMTMyODI4NTE6NTczMDg1MzE%3D#issuecomment-902427868
-    '^.+\\.(ts|js|html)$': 'jest-preset-angular',
+    '^.+\\.(t|j)sx?$': 'ts-jest',
   },
-  /*
-   pathsToModuleNameMapper generates moduleNameMapper from tsconfig.compilerOptions.paths
-   https://huafu.github.io/ts-jest/user/config/#paths-mapping
-   // fixed: pathsToModuleNameMapper is mapping to `<rootDir>/./packages/$1`
-   https://github.com/kulshekhar/ts-jest/issues/2709
-   // todo: add '~' to every project or package jest.config
-   */
-
   moduleNameMapper: getPaths(),
-  /*
-  moduleNameMapper: {
-    '~~(.*)': '<rootDir>/$1',
-    '@engineers/(.*)': '<rootDir>/packages/$1',
-    // this causes error: Could not locate module ./lib/source-map-generator
-    // https://github.com/kulshekhar/ts-jest/issues/2718
-    // "(.*)": "<rootDir>/node_modules/$1",
-  },
-  */
-
-  // jest setups for each testing file,
-  // for example: preparing the testing environment
-  setupFilesAfterEnv: ['<rootDir>/jest-setup.ts'],
 
   // todo: causes error: AggregatedResult must be present after test run is complete
   // watch: true,
+  projects: [
+    '<rootDir>/packages/**/jest.config.ts',
+    '<rootDir>/projects/**/jest.config.ts',
+  ],
+  // todo: exclude /dist
 };
 export default config;
 

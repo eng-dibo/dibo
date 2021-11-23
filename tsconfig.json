@@ -41,6 +41,8 @@
     },
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
+    // required for ts-jest
+    "allowJs": true,
     /* todo: enable this option https://stackoverflow.com/a/50241920/12577650 */
     "strictPropertyInitialization": false,
     // fixes ngcc failed to run on ngx-sharebuttons

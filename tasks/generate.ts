@@ -35,6 +35,8 @@ export default function generate(options: GenerateOptions = {}): Promise<void> {
 /**
  * create a new project or package
  * todo: if  package exists update it (i.e use the existing package.json)
+ * todo: add jest.config.ts
+ * todo: update other readme.md files to add a link to the recently created package
  */
 function create(
   name: string,

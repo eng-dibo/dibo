@@ -12,7 +12,7 @@
     "postinstall": "ngcc",
     "lint": "prettier --write . && eslint --fix --config .eslintrc.js --ext .js,.ts",
     "test": "jest",
-    "test:all": "jest --coverage --only-changed=false",
+    "test:all": "npm t -- --coverage --only-changed=false",
     "semantic-release": "semantic-release",
     "vscode": "export project=$PWD && npm run docker:stop --prefix=projects/vscode && npm run docker:run --prefix=projects/vscode",
     "task": "ts-node  -r tsconfig-paths/register ./tasks/index.ts",
