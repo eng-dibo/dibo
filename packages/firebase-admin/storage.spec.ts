@@ -3,6 +3,7 @@ import Storage from './storage';
 import init from './init';
 import { apps } from 'firebase-admin';
 import { rmdirSync, unlinkSync } from 'fs';
+import { remove } from '@engineers/nodejs/fs';
 
 // important: to pass this test, you need to setup the storage serviceAccount from firebase console
 // and select a region
@@ -21,7 +22,7 @@ afterAll(() => {
   // todo: delete the entire folder
   return Promise.all(
     ['flower.jpg'].map((file) => storage.delete(`${bucket}/${file}`))
-  );
+  ).then(() => remove(__dirname + '/test!!'));
 });
 
 test('upload', () => {
@@ -45,7 +46,7 @@ test('write', () => {
 });
 
 test('download', () => {
-  let destination = __dirname + '/test/flower-downloaded.jpg';
+  let destination = __dirname + '/test!!/flower-downloaded.jpg';
   return storage
     .download(`${bucket}/flower.jpg`, destination)
     .then((result) => {
@@ -61,13 +62,13 @@ test('download non-existing file', () => {
 });
 
 test('download to a non-existing directory', () => {
-  let destination = __dirname + '/test/non-existing/flower-downloaded.jpg';
+  let destination = __dirname + '/test!!/non-existing/flower-downloaded.jpg';
   return storage
     .download(`${bucket}/flower.jpg`, destination)
     .then((result) => {
       expect(result).toEqual([]);
       unlinkSync(destination);
-      rmdirSync(__dirname + '/test/non-existing');
+      rmdirSync(__dirname + '/test!!/non-existing');
     });
 });
 
