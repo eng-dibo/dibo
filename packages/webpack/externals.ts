@@ -75,9 +75,7 @@ export function params(
  *  - function: return true to include the requested item
  */
 export type ExternalsList = Array<
-  | RegExp
-  | string
-  | ((externalsParams: ExternalsParams) => RegExpMatchArray | null)
+  RegExp | string | ((externalsParams: ExternalsParams) => boolean)
 >;
 
 export type ExternalsTransform =
@@ -134,7 +132,7 @@ export default function externals(
     // todo: item = 'pattern' | {pattern, ...options}
     // ex: {'^config/(.*).ts', value: 'commonjs [request]/[$1]'}
 
-    let itemMatched: RegExpMatchArray | null,
+    let itemMatched: boolean | RegExpMatchArray | null,
       whitelisted = false;
 
     if (typeof item === 'function') {
@@ -186,21 +184,27 @@ export default function externals(
         }
 
         // support template variable, ex: 'commonjs {{request}}'
+        // only works if item is RegExp or string or a function that returns a Regexp or String
+        // i.e doesn't work if item is a function that returns boolean
         // todo: support multiple groups: ex: "commonjs {{var1}} - {{var2}}"
-        transform = transform.replace(
-          /\{{(.*?)}}/g,
-          (...matched: any[]): string => {
-            // todo: expose more variables (ex: matches[])
-            // todo: support obj.* syntax ex: "commonjs ${var.property}"
-            // todo: support js ex: "commonjs ${var.replace('x','y')}"
-            let matchedValue = matched[1];
-            if (matchedValue.startsWith('$')) {
-              return itemMatched![matchedValue.substring(1)];
+        if (itemMatched instanceof Array) {
+          transform = transform.replace(
+            /\{{(.*?)}}/g,
+            (...matched: any[]): string => {
+              // todo: expose more variables (ex: matches[])
+              // todo: support obj.* syntax ex: "commonjs ${var.property}"
+              // todo: support js ex: "commonjs ${var.replace('x','y')}"
+              let matchedValue = matched[1];
+              if (matchedValue.startsWith('$')) {
+                return itemMatched![
+                  matchedValue.substring(1) as keyof typeof itemMatched
+                ];
+              }
+              // @ts-ignore
+              return externalsParams[matchedValue];
             }
-            // @ts-ignore
-            return externalsParams[matchedValue];
-          }
-        );
+          );
+        }
 
         report = {
           status: 'transformed',
