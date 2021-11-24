@@ -115,7 +115,7 @@ let operations = {
     database: 'db',
     collection: 'users',
     portions: [],
-    params: { id: 123 },
+    params: { id: '123' },
   },
 };
 

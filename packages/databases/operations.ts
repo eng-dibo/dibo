@@ -88,10 +88,10 @@ export function parse(url: string): Operation {
         rangeMatch = portions[0].match(/([^:~@]+)?:([^:~@]+)?/);
 
       if (rangeMatch) {
-        if (!params.limit && rangeMatch[1]) {
+        if (!params.skip && rangeMatch[1]) {
           params.skip = +rangeMatch[1];
         }
-        if (!params.skip && rangeMatch[2]) {
+        if (!params.limit && rangeMatch[2]) {
           params.limit = +rangeMatch[2];
         }
 
@@ -116,6 +116,15 @@ export function parse(url: string): Operation {
       if (portions[0] === '') {
         portions.shift();
       }
+    }
+
+    // convert to numeric values
+    // query.limit may be provided by the user as string
+    if (params.limit) {
+      params.limit = +params.limit;
+    }
+    if (params.skip) {
+      params.skip = +params.skip;
     }
 
     return {
