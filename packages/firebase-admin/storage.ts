@@ -75,7 +75,12 @@ export default class Storage {
    * @method download
    * @param  file        file path
    * @param  options DownloadOptions object or destination as string
-   * @return Promise<DownloadResponse>
+   * @return Promise that resolves to:
+   *           - boolean: if options.destination used
+   *           - Buffer: if options.encoding is undefined
+   *           - Array or plain object: if the file is json
+   *           - string: otherwise
+   *
    */
 
   // todo: if(!options.destination)return th content as Promise<Buffer | ...>
@@ -83,7 +88,7 @@ export default class Storage {
   download(
     file: string | File,
     options?: DownloadOptions | string
-  ): Promise<Buffer | string | Array<any> | { [key: string]: any }> {
+  ): Promise<Buffer | string | Array<any> | { [key: string]: any } | boolean> {
     if (typeof file === 'string') {
       file = this.bucket.file(file);
     }
@@ -101,8 +106,11 @@ export default class Storage {
       mkdirSync(dirname(opts.destination), { recursive: true });
     }
 
-    // @ts-ignore
-    return file.download(opts).then((result: [Buffer]) => {
+    // file.download(opts) mutates opts
+    return file.download({ ...opts }).then((result: [Buffer]) => {
+      if (opts.destination) {
+        return true;
+      }
       let data: Buffer = result[0];
 
       // from @engineers/nodejs/fs.ts
@@ -110,7 +118,8 @@ export default class Storage {
         return data;
       }
       let dataString: string = data.toString();
-      return file.toString().trim().slice(-5) === '.json'
+
+      return (file as File).name.slice(-5) === '.json'
         ? JSON.parse(stripJsonComments(dataString))
         : dataString;
     });
