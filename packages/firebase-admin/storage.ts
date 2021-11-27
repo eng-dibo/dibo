@@ -6,6 +6,7 @@ import {
   Bucket,
   UploadResponse,
   DownloadResponse,
+  SaveOptions,
 } from '@google-cloud/storage';
 import { mkdirSync } from 'fs';
 import { dirname } from 'path';
@@ -128,8 +129,12 @@ export default class Storage {
   /**
    * writes a content to a file in the bucket
    */
-  write(path: string, content: string | Buffer): Promise<void> {
-    return this.bucket.file(path).save(content);
+  write(
+    path: string,
+    content: string | Buffer,
+    options?: SaveOptions
+  ): Promise<void> {
+    return this.bucket.file(path).save(content, options);
   }
 
   delete(path: string, options?: DeleteOptions): Promise<any> {

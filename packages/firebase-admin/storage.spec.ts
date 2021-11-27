@@ -24,7 +24,7 @@ afterAll(() => {
   // delete all files
   // todo: delete the entire folder
   return Promise.all(
-    ['file.json', 'note.txt'].map((file) => storage.delete(`${bucket}/${file}`))
+    ['file.json'].map((file) => storage.delete(`${bucket}/${file}`))
   ).then(() => remove(__dirname + '/test~~'));
 });
 
