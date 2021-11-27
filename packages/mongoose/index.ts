@@ -239,6 +239,8 @@ export function query(
       params.filter = JSON.parse(decodeURIComponent(params.filter));
     }
     args = [params.filter, params.fields, params];
+    delete params.filter;
+    delete params.fields;
   } else if (operation === 'findById') {
     args = [params.id];
   } else {
