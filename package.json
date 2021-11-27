@@ -7,9 +7,7 @@
     "./packages/*"
   ],
   "scripts": {
-    "setup": "npm cache clean -f &&  npm i --unsafe-perm --production=false --include=dev --ignore-scripts=false  -f -ws --include-workspace-root",
     "prepare": "husky install",
-    "postinstall": "ngcc",
     "lint": "prettier --write . && eslint --fix --config .eslintrc.js --ext .js,.ts",
     "test": "jest",
     "test:all": "npm t -- --coverage --only-changed=false",

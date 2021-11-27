@@ -15,8 +15,6 @@
     "serve": "ts-node -r dotenv/config  ../../dist/ngx-cms/core/server/main.js --start dotenv_config_path=../../dist/ngx-cms/config/server/.env -- --inspect",
     "serve:dev": "cross-env NODE_ENV=development npm run serve",
     "prerender": "ng run ngx-cms:prerender",
-    "ng:update": "ng update --force --allow-dirty",
-    "update": "npm run ng:update @angular/core@latest @angular/cli@latest && npm run ng:update @angular/material && npm run ng:update",
     "setup": "npm run task -- setup",
     "postinstall": "ngcc"
   },
