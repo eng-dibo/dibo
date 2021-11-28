@@ -19,7 +19,7 @@ let bucket = 'almogtama3.com';
 export function read(
   path: PathLike,
   options?: ReadOptions | BufferEncoding
-): Promise<Buffer | string | Array<any> | { [key: string]: any }> {
+): Promise<Buffer | string | Array<any> | { [key: string]: any } | boolean> {
   return storage.download(`${bucket}/${path.toString()}`, options);
 }
 
