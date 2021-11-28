@@ -9,22 +9,26 @@ import { MetaService } from '@engineers/ngx-utils/meta.service';
 import { NgxLoadService } from '@engineers/ngx-utils/load-scripts.service';
 
 const routes: Routes = [
-  { path: ':type', component: ContentViewComponent },
-  { path: ':type/editor', component: ContentEditorComponent },
   { path: ':type/editor/:item', component: ContentEditorComponent },
+  { path: ':type/editor', component: ContentEditorComponent },
   { path: ':type/manage', component: ContentManageComponent },
   // example: /articles/category.title/[item.slug]~id
   { path: ':type/:category/:item', component: ContentViewComponent },
   // example: /articles/category.title
   // example: /articles/[item.slug]~item.id
   { path: ':type/:item', component: ContentViewComponent },
+  { path: ':type', component: ContentViewComponent },
 
   //or: redirectTo: "articles",
   { path: '', component: ContentViewComponent, pathMatch: 'full' },
 ];
 
 @NgModule({
-  declarations: [ContentViewComponent, EditorComponent, ManageComponent],
+  declarations: [
+    ContentViewComponent,
+    ContentEditorComponent,
+    ContentManageComponent,
+  ],
   imports: [CommonModule, RouterModule.forChild(routes), NgxContentViewModule],
   providers: [MetaService, NgxLoadService],
 })
