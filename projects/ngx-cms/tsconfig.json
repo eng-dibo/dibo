@@ -3,6 +3,8 @@
   "compilerOptions": {
     "baseUrl": ".",
     "outDir": "../../dist/ngx-cms",
+    // causes issue with `ts-node ../../dist/server/main.js`
+    "allowJs": false,
     "paths": {
       "~*": ["./*"],
       /* todo: merge root tsconfig.json's path with this path, use tmpl */

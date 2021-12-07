@@ -1,1 +1,11 @@
-<p>editor works!</p>
+<form
+  *ngIf="control"
+  #formElement
+  [formGroup]="control"
+  method="post"
+  enctype="multipart/form-data"
+>
+  <formly-form [form]="control" [fields]="fields" [model]="model"></formly-form>
+</form>
+
+pristine={{ control.pristine }}

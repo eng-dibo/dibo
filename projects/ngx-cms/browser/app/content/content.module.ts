@@ -7,6 +7,10 @@ import { Routes, RouterModule } from '@angular/router';
 import { NgxContentViewModule } from '@engineers/ngx-content-view-mat/module';
 import { MetaService } from '@engineers/ngx-utils/meta.service';
 import { NgxLoadService } from '@engineers/ngx-utils/load-scripts.service';
+import { FormlyModule } from '@ngx-formly/core';
+import { FormlyMaterialModule } from '@ngx-formly/material';
+import { NgxLoadingModule } from 'ngx-loading';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 const routes: Routes = [
   { path: ':type/editor/:item', component: ContentEditorComponent },
@@ -29,7 +33,15 @@ const routes: Routes = [
     ContentEditorComponent,
     ContentManageComponent,
   ],
-  imports: [CommonModule, RouterModule.forChild(routes), NgxContentViewModule],
+  imports: [
+    CommonModule,
+    RouterModule.forChild(routes),
+    NgxContentViewModule,
+    FormsModule,
+    ReactiveFormsModule,
+    FormlyModule.forRoot(),
+    FormlyMaterialModule,
+  ],
   providers: [MetaService, NgxLoadService],
 })
 export class ContentModule {}
