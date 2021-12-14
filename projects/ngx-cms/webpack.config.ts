@@ -2,16 +2,15 @@ import { resolve } from 'path';
 import baseConfig from '~~webpack.config';
 import webpackMerge from 'webpack-merge';
 import { Configuration } from 'webpack';
-import externals from '@engineers/webpack/externals';
 
-let projectConfig: Configuration = {
+let config: Configuration = webpackMerge(baseConfig, {
   resolve: {
     alias: {
       '~': resolve(__dirname, '.'),
     },
   },
-};
-let config: Configuration = webpackMerge(baseConfig, projectConfig);
+  externals: [],
+});
 
 // use tsconfig.json for this project to use the project's paths
 (
@@ -20,17 +19,5 @@ let config: Configuration = webpackMerge(baseConfig, projectConfig);
     (el: any) => el.loader === 'ts-loader'
   ) as { [key: string]: any }
 ).options!.configFile = resolve(__dirname, './tsconfig.json');
-
-// add @engineers/*, ~*, ~~* to externals
-(config.externals as Array<any>).unshift(
-  // externals([/@engineers\/.+/],'commonjs2 ../../../../packages/{{request}}'),
-  function () {
-    externals(
-      arguments,
-      [/^~{1,2}config\/(.*)/],
-      'commonjs2 ../../config/{{$1}}'
-    );
-  }
-);
 
 export default config;

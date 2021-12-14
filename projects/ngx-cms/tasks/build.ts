@@ -34,6 +34,11 @@ export default function (options?: BuildOptions): void {
     options || {}
   );
 
+  // set process.env.NODE_ENV for building tools such as webpack
+  if (!process.env.NODE_ENV) {
+    process.env.NODE_ENV = opts.mode;
+  }
+
   let progress: Promise<any> = Promise.resolve();
 
   let targets = opts.targets.split(',');

@@ -1,7 +1,8 @@
 import { resolve } from 'path';
-import baseConfig from '../webpack.config';
+import baseConfig from '~webpack.config';
 import { Configuration } from 'webpack';
 import webpackMerge from 'webpack-merge';
+import externals, { node } from '@engineers/webpack/externals';
 
 // merge with 'webpackMerge' so arrays are merged
 let config: Configuration = webpackMerge(baseConfig, {
@@ -14,6 +15,28 @@ let config: Configuration = webpackMerge(baseConfig, {
     // todo: use the original filename, i.e: express not main
     filename: '[name].js',
   },
+  externals: [
+    /*
+       add node_modules to externals in target:node
+       except:
+       - @engineers/* -> not compiled or published, imported from source
+       -*.scss files
+       - ~* (i.e: ~config|browser|server/*) -> to prevent it from transforming to `commnjs2 ~config/*`
+         so it can be properly transformed to 'commonjs ../config/*'
+       - @babel/runtime -> temporary to solve the error `SyntaxError: Unexpected token 'export'`
+         when using as async/await function (todo: why it should excluded from webpack.externals)
+    */
+    node(undefined, [/@engineers\/.+/, /\.s?css$/, /^~/, /@babel\/runtime/]),
+    // add @engineers/*, ~*, ~~* to externals
+    // externals([/@engineers\/.+/],'commonjs2 ../../../../packages/{{request}}'),
+    function () {
+      externals(
+        arguments,
+        [/^~{1,2}config\/(.*)/],
+        'commonjs2 ../../config/{{$1}}'
+      );
+    },
+  ],
 });
 
 // use tsconfig.json for server

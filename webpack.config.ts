@@ -2,7 +2,6 @@ import { Configuration } from 'webpack';
 // todo: use aliases (i.e: ./packages/* -> @engineers/*)
 // webpack uses `ts-node` to compile webpack.config.ts
 // add `tsconfig-paths` to `tsconfig['ts-node']` to add tsConfig's paths to webpack's aliases
-import { node } from './packages/webpack/externals';
 import { resolve } from 'path';
 import BasePlugin from './packages/webpack/plugins';
 import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
@@ -24,8 +23,7 @@ class FilterErrors extends BasePlugin {
 }
 
 let config: Configuration = {
-  // change 'mode' by env, example: `npx cross-env NODE_ENV=production`
-  mode: 'none',
+  mode: (process.env.NODE_ENV || 'none') as any,
   target: 'node',
   resolve: {
     extensions: ['.tsx', '.ts', '.jsx', '.js'],
@@ -39,19 +37,7 @@ let config: Configuration = {
     // add tsconfig paths to webpack alias
     plugins: [new TsconfigPathsPlugin()],
   },
-  externals: [
-    /*
-       add node_modules to externals in target:node
-       except:
-       - @engineers/* -> not compiled or published, imported from source
-       -*.scss files
-       - ~* (i.e: ~config|browser|server/*) -> to prevent it from transforming to `commnjs2 ~config/*`
-         so it can be properly transformed to 'commonjs ../config/*'
-       - @babel/runtime -> temporary to solve the error `SyntaxError: Unexpected token 'export'`
-         when using as async/await function (todo: why it should excluded from webpack.externals)
-    */
-    node(undefined, [/@engineers\/.+/, /\.s?css$/, /^~/, /@babel\/runtime/]),
-  ],
+
   output: {
     path: resolve(__dirname, './dist'),
     library: undefined,
