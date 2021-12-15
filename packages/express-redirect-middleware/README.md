@@ -1,13 +1,13 @@
-# @engineers/javascript
+# @engineers/express-redirect-middleware
 
-javascript utils
+an express middleware to redirect the request, add https, www. to improve SEO
 
 ## install
 
 install the package and it's peer dependencies:
 
 ```
-npm i @engineers/javascript
+npm i @engineers/express-redirect-middleware
 ```
 
 you can build this package and any of our packages yourself from [source](https://github.com/eng-dibo/dibo/tree/main/packages)

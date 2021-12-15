@@ -1,13 +1,13 @@
-# @engineers/javascript
+# @engineers/databases
 
-javascript utils
+universal databases operations
 
 ## install
 
 install the package and it's peer dependencies:
 
 ```
-npm i @engineers/javascript
+npm i @engineers/databases
 ```
 
 you can build this package and any of our packages yourself from [source](https://github.com/eng-dibo/dibo/tree/main/packages)

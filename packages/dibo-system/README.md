@@ -1,7 +1,5 @@
 # @engineers/dibo-system
 
-adds lifecycle to any project and manages projects lifecycle, allows using hooks and third party plugins
-
 when creating a project of any scale, you can just generate some scripts contains some codes.
 it will run, but to fine tune any functionality of this project, you need to modify the original scripts.
 
@@ -38,13 +36,16 @@ read our [contributing guide](https://github.com/eng-dibo/dibo/blob/main/CONTRIB
 
 - check out these useful packages that created by [@engineers organization](https://www.npmjs.com/org/engineers)
 
+  - [databases](https://github.com/eng-dibo/dibo/tree/main/packages/databases)
   - [dibo-system](https://github.com/eng-dibo/dibo/tree/main/packages/dibo-system)
+  - [express-redirect-middleware](https://github.com/eng-dibo/dibo/tree/main/packages/express-redirect-middleware)
   - [firebase-admin](https://github.com/eng-dibo/dibo/tree/main/packages/firebase-admin)
   - [graphics](https://github.com/eng-dibo/dibo/tree/main/packages/graphics)
   - [javascript](https://github.com/eng-dibo/dibo/tree/main/packages/javascript)
   - [mongoose](https://github.com/eng-dibo/dibo/tree/main/packages/mongoose)
   - [ngx-content-core](https://github.com/eng-dibo/dibo/tree/main/packages/ngx-content-core)
   - [ngx-content-view-mat](https://github.com/eng-dibo/dibo/tree/main/packages/ngx-content-view-mat)
+  - [ngx-forms](https://github.com/eng-dibo/dibo/tree/main/packages/ngx-forms)
   - [ngx-universal-express](https://github.com/eng-dibo/dibo/tree/main/packages/ngx-universal-express)
   - [ngx-utils](https://github.com/eng-dibo/dibo/tree/main/packages/ngx-utils)
   - [nodejs](https://github.com/eng-dibo/dibo/tree/main/packages/nodejs)
