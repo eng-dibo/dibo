@@ -15,7 +15,7 @@ export interface GenerateOptions {
   // if name provided, create a new package, or update a specific package
   // else update all packages
   name?: string;
-  type?: string;
+  target?: 'packages' | 'projects';
   // other properties of package.json
   [key: string]: any;
 }
@@ -25,8 +25,8 @@ export interface GenerateOptions {
  */
 export default function generate(options: GenerateOptions = {}): Promise<void> {
   if (options.name) {
-    let { name, type, ...pkg } = options;
-    return create(name, type, pkg);
+    let { name, target, ...pkg } = options;
+    return create(name, target, pkg);
   } else {
     return updatePackages().then(() => updateReadMe());
   }
@@ -43,15 +43,12 @@ function create(
   target = 'packages',
   pkgObj: { [key: string]: any }
 ): Promise<void> {
-  let pkg = Object.assign(
-      {
-        name: `@engineers/${name}`,
-        version: '0.0.1',
-        private: false,
-        ...pkgObj,
-      },
-      rootData
-    ),
+  let pkg = Object.assign(rootData, {
+      name: `@engineers/${name}`,
+      version: '0.0.1',
+      private: false,
+      ...pkgObj,
+    }),
     path = `${rootPath}/${target}/${name}`;
   return write(`${path}/package.json`, pkg)
     .then(() =>
@@ -120,14 +117,20 @@ function updateReadMe(): Promise<void> {
       Promise.all(
         entries.map((entry: string) => {
           read(`${entry}/package.json`)
+            // if ${entry}/package.json not exists, use rootData
+            .catch((err) =>
+              Object.assign(rootData, {
+                name: `@engineers/${entry}`,
+                version: '0.0.1',
+                private: false,
+              })
+            )
             .then((pkg) => {
               pkg = pkg as Obj;
 
               let about;
               if (existsSync(`${entry}/about.md`)) {
                 about = readSync(`${entry}/about.md`);
-              } else {
-                about = '';
               }
 
               // todo: use `{{ .. }}` instead of `<% .. %>

@@ -1,15 +1,13 @@
 # <%= pkg.name %>
 
-<%= pkg.description %>
-
-<%- about %>
+<%- about || pkg.description %>
 
 ## install
 
 install the package and it's peer dependencies:
 
 ```
-npm i <%= pkg.name %> <%# todo: peerDependencies.toString() %>
+npm i <%= pkg.name %><%# todo: peerDependencies.toString() %>
 ```
 
 you can build this package and any of our packages yourself from [source](<%= pkg.homepage.replace('#readme','') %>/tree/main/packages)
@@ -24,7 +22,7 @@ read our [contributing guide](<%= pkg.homepage.replace('#readme','') %>/blob/mai
 
 <% pkg.funding.forEach(el=>{ %>
 
-- [<%= el.type %>](<%= el.url %>) <% })
+- [<%= el.type %>](<%= el.url %>)<% })
   %>
 
 ## useful packages by `@engineers`

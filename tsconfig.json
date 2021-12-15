@@ -49,7 +49,7 @@
     // https://github.com/MurhafSousli/ngx-sharebuttons/issues/474#issuecomment-715603754
     "skipLibCheck": true
   },
-  "exclude": ["node_modules", "dist", "**/*.spec.ts", "**/e2e"],
+  "exclude": ["node_modules", "dist", "**/*.spec.ts", "**/e2e", "**/test.ts"],
   "angularCompilerOptions": {
     "enableIvy": true,
     "strictTemplates": true,
