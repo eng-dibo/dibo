@@ -1,0 +1,29 @@
+/* 
+apply css to formly fields use global style.css or ::ng-deep
+add :host before ::ng-deep to keep encapsulation
+https://stackoverflow.com/a/55026015/12577650 
+https://angular.io/guide/component-styles#deprecated-deep--and-ng-deep
+*/
+:host ::ng-deep {
+  .mat-form-field {
+    display: block;
+    margin: 5px 0;
+  }
+
+  label:first-letter {
+    text-transform: capitalize;
+  }
+
+  /* don't include the extension in scss 
+  files https://sass-lang.com/documentation/at-rules/import#importing-css
+  todo: use the recommended @use
+  */
+  @import "~quill/dist/quill.core";
+  @import "~quill/dist/quill.bubble";
+  @import "~quill/dist/quill.snow";
+
+  .ql-editor {
+    height: fit-content;
+    min-height: 500px;
+  }
+}

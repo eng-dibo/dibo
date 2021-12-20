@@ -9,13 +9,12 @@ export interface Article extends Obj {
   title: string;
   subtitle?: string;
   content: string;
-  // todo: if(keywods:string)keywords=keywords.split(',').map(text=>({text}))
+  // todo: if(keywords:string)keywords=keywords.split(',').map(text=>({text}))
   keywords?: Keywords[];
   cover?: Image;
   // todo: img?: string | Image
   author?: { name?: string; image?: string; link?: string };
   link?: string;
-  categories?: string[];
   createdAt: string;
   updatedAt: string;
 }

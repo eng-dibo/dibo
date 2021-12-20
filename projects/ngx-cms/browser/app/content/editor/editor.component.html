@@ -1,11 +1,52 @@
-<form
-  *ngIf="control"
-  #formElement
-  [formGroup]="control"
-  method="post"
-  enctype="multipart/form-data"
->
-  <formly-form [form]="control" [fields]="fields" [model]="model"></formly-form>
-</form>
+<ng-container *ngIf="params?.type">
+  <h1>
+    <!--todo: create or edit -->
+    <!-- if( form.model.data or this.data )edit -->
+    create a new {{ params.postType }}
+  </h1>
 
-pristine={{ control.pristine }}
+  <form
+    #formElement
+    [formGroup]="control"
+    method="post"
+    enctype="multipart/form-data"
+  >
+    <formly-form [form]="control" [fields]="fields" [model]="model">
+    </formly-form>
+
+    <!--
+using (ngSubmit)="onSubmit(..)" causes the form to show errors after submitting
+so we replaced it with (click)="onSubmit(..)", and  type="submit" with type="button"
+https://stackoverflow.com/a/51003685/12577650 -->
+    <!--
+    <button
+      mat-raised-button
+      (click)="moveSteps(-1)"
+      type="button"
+      [disabled]="step === 0 || !control?.valid"
+    >
+      Previous
+    </button>
+    <button
+      mat-raised-button
+      (click)="moveSteps(+1)"
+      type="button"
+      [disabled]="step === this.totalSteps || !control?.valid"
+    >
+      Next
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      type="button"
+      [disabled]="
+        !control?.valid || control?.pristine || response.status === 'loading'
+      "
+      (click)="onSubmit(control)"
+    >
+      Submit
+    </button>
+  --></form>
+
+  <ngx-loading [show]="!fields || response?.status === 'loading'"></ngx-loading>
+</ng-container>

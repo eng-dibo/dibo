@@ -1,0 +1,34 @@
+.invisible {
+  display: none;
+}
+
+ul,
+li {
+  margin-top: 0;
+  margin-bottom: 0;
+  list-style-type: none;
+}
+
+/*
+   * This padding sets alignment of the nested nodes (children).
+   */
+.mat-nested-tree-node div[role="group"] {
+  padding-left: 40px;
+}
+
+/*
+   * Padding for leaf nodes.
+   * Leaf nodes need to have padding so as to align with other non-leaf nodes
+   * under the same parent.
+   */
+div[role="group"] > .mat-tree-node {
+  padding-left: 40px;
+}
+
+/* 
+  main categories (!parent) with no children 
+  have to align with main categories that have children (starts with an arrow button)
+*/
+mat-tree-node {
+  padding-left: 40px;
+}
