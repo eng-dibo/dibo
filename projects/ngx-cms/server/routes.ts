@@ -4,7 +4,7 @@ import { connect, getModel, query } from './database';
 import { prod } from '~config/server';
 import { upload } from './functions';
 import { getCategories } from './database';
-import { write as writeFs, mkdir } from '@engineers/nodejs/fs';
+import { write as writeFs, read as readFS, mkdir } from '@engineers/nodejs/fs';
 import cache from '@engineers/nodejs/cache';
 import { Categories } from '~browser/formly-categories-material/functions';
 import { timer } from '@engineers/javascript/time';
@@ -12,9 +12,10 @@ import { resize } from '@engineers/graphics';
 import { backup, restore } from '@engineers/mongoose';
 import { replaceAll } from '@engineers/javascript/string';
 import { slug } from '@engineers/ngx-content-core/pipes-functions';
-import { resolve } from 'path';
+import { resolve, extname } from 'path';
 import { parse } from '@engineers/databases/operations';
 import { read, write } from './storage';
+import { existsSync, readdirSync } from 'fs';
 
 let app = Router();
 const TEMP = resolve(__dirname, '../temp');
@@ -143,19 +144,116 @@ app.get(/\/image\/([^/-]+)-([^/-]+)-([^/]+)/, (req: any, res: any) => {
     .catch((error: any) => res.json({ error }));
 });
 
+// todo: /backup?filter=db1,db2:coll1,coll2,db3:!coll4
+app.get('/backup', (req: any, res: any) => {
+  let filter: any;
+  if (req.query.filter) {
+    let tmp = JSON.parse(req.query.filter as string);
+    if (tmp instanceof Array) {
+      filter = (db: any, coll: any) => tmp.includes(db);
+    }
+    // todo: else of object; else if string
+  } else {
+    filter = (db: any, coll: any) => {
+      return true;
+    };
+  }
+  connect()
+    // @ts-ignore: error TS2349: This expression is not callable.
+    // Each member of the union type ... has signatures, but none of those signatures are compatible with each other.
+    .then((con: any) => {
+      let host = con.connection.client.s.options.srvHost,
+        now = replaceAll(new Date().toISOString(), ':', '-');
+
+      return backup(con, filter).then((data: any) => {
+        let path = `../temp/db-backup/${host}/${now}`,
+          info = con.connection.client.s;
+        return Promise.all(
+          Object.keys(data)
+            .map((db: string) =>
+              writeFs(resolve(__dirname, `${path}/${db}.json`), data[db])
+            )
+            .concat([writeFs(resolve(__dirname, `${path}/__info.json`), info)])
+        ).then(() => {
+          console.log('[backup] Done');
+          res.json({ info, data });
+        });
+      });
+    })
+
+    .catch((error: any) => res.json({ error }));
+});
+
+// before running this route: make any transformation (add/filter data) and drop any db if needed
+app.get('/restore', (req: any, res: any) => {
+  let dir = /*req.params.dir ||*/ req.query.dir;
+  if (!dir) {
+    return res.json({ error: 'provide ?dir' });
+  }
+  let dirPath = resolve(__dirname, `../temp/db-backup/${dir}`);
+  if (!existsSync) {
+    return res.json({ error: `the dir ${dirPath} not existing` });
+  }
+  return connect()
+    .then(() =>
+      Promise.all(
+        readdirSync(dirPath).map((file) => {
+          let filePath = resolve(`${dirPath}/${file}`);
+          if (extname(filePath) !== '.json') {
+            return;
+          }
+
+          return (
+            readFS(filePath)
+              .then((content: any) => {
+                restore({ [file.replace('.json', '')]: content });
+              })
+              // todo: move .catch() to the top-level of Promise chain
+              .catch((error) => {
+                console.log(`[restore] error in restore()`, { error });
+                throw error;
+              })
+          );
+        })
+      )
+    )
+    .then(() => res.json({ done: true }))
+    .catch((error) => res.json({ error }));
+});
+
 /*
-  database operation (using operation syntax @engineers/databases/operations.parse())
-  must be the last route (because it starts with a variable)
+   cors default options:
+   {
+    "origin": "*",
+    "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+    "preflightContinue": false,
+    "optionsSuccessStatus": 204
+  }
+ 
 
-  syntax: operation:db.collection/portions?query
-  examples:
-   - articles -> get all articles
-   - articles/:50 -> get all articles, limit=50
-   - articles/123 -> get article where _id=123
-   - articles/:50@category=1 -> get articles where category=1, limit=50
-   - articles/:50?limit=10 -> query overrides portions
-
-   */
+app.use(
+    formidableMiddleware({
+      //  uploadDir: './data/uploads/$type',
+      multiples: true,
+      keepExtensions: true,
+      maxFileSize: 5 * 1024 * 1024,
+      maxFieldsSize: 5 * 1024 * 1024 //the amount of memory all fields together (except files)
+    })
+  );
+*/
+/**
+ * database operation (using operation syntax @engineers/databases/operations.parse())
+ * must be the last route (because it starts with a variable)
+ *
+ * syntax: operation:db.collection/portions?query
+ *
+ * examples:
+ * - articles -> get all articles
+ * - articles/:50 -> get all articles, limit=50
+ * - articles/123 -> get article where _id=123
+ * - articles/:50@category=1 -> get articles where category=1, limit=50
+ * - articles/:50?limit=10 -> query overrides portions
+ */
 app.get('*', (req: any, res: any, next: any) => {
   timer(`get ${req.url}`);
   let queryObject = parse(req.path);
@@ -420,80 +518,5 @@ app.post('/:collection', upload.single('cover'), (req: any, res: any) => {
 
   // the content will be available after the process completed (uploading files, inserting to db, ..)
 });
-
-// todo: /backup?filter=db1,db2:coll1,coll2,db3:!coll4
-app.get('/backup', (req: any, res: any) => {
-  let filter: any;
-  if (req.query.filter) {
-    let tmp = JSON.parse(req.query.filter as string);
-    if (tmp instanceof Array) {
-      filter = (db: any, coll: any) => tmp.includes(db);
-    }
-    // todo: else of object; else if string
-  } else {
-    filter = (db: any, coll: any) => {
-      if (!prod) {
-        console.log('[backup] filter', db, coll);
-      }
-      return true;
-    };
-  }
-
-  connect
-    // @ts-ignore: error TS2349: This expression is not callable.
-    // Each member of the union type ... has signatures, but none of those signatures are compatible with each other.
-    .then((con: any) => {
-      let host = con.client.s.options.srvHost,
-        now = replaceAll(new Date().toISOString(), ':', '-');
-      console.log(`[backup] host: ${host}`);
-
-      // using !console.log() or console.log() || true is illegal in typescript
-      // don't convert void to boolean this way, use ',' (console.log(),true)
-      // playground: https://www.typescriptlang.org/play?#code/GYVwdgxgLglg9mABFApgZygCgB4H4BcARnHADYoCGYAlAN4C+AsAFAssD07cA1i6hpkwQEaMigB0pOAHNM1ADRQATiBTVqbVs04olSuEr7oswsKPKSZcjc35YAhKfMSps9UYFOxlt4gA+fsgqakA
-      // issue: https://github.com/microsoft/TypeScript/issues/28248#issuecomment-434693307
-      return backup(con, filter).then((data: any) => {
-        let file = `${process.env.INIT_CWD}/tmp/db-backup/${host}/${now}.json`;
-        if (!prod) {
-          console.log('[backup]', { file, data });
-        }
-        let result = { info: con.client.s, backup: data };
-
-        return writeFs(file, result)
-          .then(() => {
-            console.log('[backup] Done');
-            res.json(result);
-          })
-          .catch((error: any) => {
-            console.error({ error });
-            throw Error(`[backup] cannot write to ${file}`);
-          });
-      });
-    })
-
-    .catch((error: any) => res.json({ error }));
-});
-
-// todo: /restore?filter=db1;db2:coll2,coll3;db3:!coll1,coll2 & change=db2:db5
-// i.e: upload db2:coll2 to db5
-app.get('/restore', (req: any, res: any) => {});
-/*
-   cors default options:
-   {
-    "origin": "*",
-    "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
-    "preflightContinue": false,
-    "optionsSuccessStatus": 204
-  }
-   */
-
-/*app.use(
-    formidableMiddleware({
-      //  uploadDir: './data/uploads/$type',
-      multiples: true,
-      keepExtensions: true,
-      maxFileSize: 5 * 1024 * 1024,
-      maxFieldsSize: 5 * 1024 * 1024 //the amount of memory all fields together (except files)
-    })
-  );*/
 
 export default app;
