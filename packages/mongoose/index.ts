@@ -327,16 +327,14 @@ export interface BackupData {
     [collection: string]: {
       info: Obj;
       data: Obj[];
-      // the model object, ex: {NAME: 'string', serial: 'number'}
-      // to be added by the consumer before restoring the database
-      model?: Obj;
-      modelOptions?: Obj;
     };
   };
 }
 
 /**
  * create a full backup of the databases and their contents.
+ * you need to establish a connection before calling this method
+ * i.e: connect().then(()=>backup(..))
  * @method backup
  * @param  connection see getConnection()
  * @param  filter  a filter strategy for databases/collections/fields to be fetched
@@ -385,30 +383,29 @@ export function backup(
 /**
  * restore databases from a backup created by this backup() function
  * this function doesn't use mongoose model and doesn't validate backupData,
- * you have to validate the backupData before restoring it
+ * you have to validate the backupData before restoring it.
+ *
+ * before performing the restore process:
+ *  - adjust the backup data, for example: filter any unwanted database or collection
+ *  - you may need to drop the database or collections
+ *  - validate the data model
+ * you need to establish a connection before calling this method
+ * i.e: connect().then(()=>backup(..))
  * @method restore
  * @param  backupData
  * @return void
- *
- * notes:
- * - to insert the data into another database just modify backupData and rename dbName.
- *   example:
- *       data.backup.newDbName = data.backup.oldDbName
- *       delete data.backup.oldDbName
- *   todo: return promise<{dbName:report}>
  */
 export function restore(
   backupData: BackupData,
   chunkSize: number = 50
 ): Promise<void> {
-  // todo: return Promise.all(...insertMany(data))
-
-  // convert backupData format to [ { dbName, collName, ...collection } ]
+  // convert backupData format to [ { dbName, collName, ...collection } ] to use Promise.all()
+  //todo: return Promise.all(Object.keys(backupData).map(...))
+  // todo: return promise<{dbName:report}>
   let backupDataArray: Array<Obj> = [];
   Object.keys(backupData).forEach((dbName: string) => {
     Object.keys(backupData[dbName]).forEach((collectionName: string) => {
-      let collection = backupData[dbName][collectionName];
-      let { data, info } = collection;
+      let { data, info } = backupData[dbName][collectionName];
       backupDataArray.push({
         dbName,
         collectionName,
@@ -419,10 +416,9 @@ export function restore(
   });
 
   // insert all backupData then fulfil the promise
+  // todo: use info to create indexes (if collection doesn't exist)
   return Promise.all(
-    backupDataArray.map((el) => {
-      let { dbName, collectionName, data, info } = el;
-
+    backupDataArray.map(({ dbName, collectionName, data, info }) => {
       let dataModel = model(
         collectionName,
         {},
@@ -440,7 +436,7 @@ export function restore(
               console.log(
                 `[backup] inserted: ${dbName}/${collectionName}: part ${
                   index + 1
-                }/${data.length} `
+                }/${dataChunk.length} `
               )
             )
             .catch((err: any) => {
