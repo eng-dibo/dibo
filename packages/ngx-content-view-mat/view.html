@@ -1,3 +1,10 @@
+<div
+  *ngIf="board"
+  class="alert"
+  [ngClass]="'alert-' +board.status || ''"
+  [innerHTML]="board.message"
+></div>
+
 <!--
 todo:
 - adjust pipes by the data provider
@@ -7,11 +14,15 @@ todo:
   https://github.com/MurhafSousli/ngx-sharebuttons/issues/429#issuecomment-583906237
   so we temporary stopped <share-buttons>
  -->
-<ng-container *ngIf="content; else loading">
+<ng-container *ngIf="content">
   <!-- *ngTemplateOutlet="!data===null?noContent:type==.." -->
   <ng-container
     *ngTemplateOutlet="type=='item'?itemBlock:options.layout=='list'?listBlock:gridBlock; context:{data:content}"
   ></ng-container>
+</ng-container>
+
+<ng-container #loading *ngIf="!content && !board">
+  <ngx-loading [show]="true"></ngx-loading>
 </ng-container>
 
 <ng-template let-item="data" #itemBlock>
@@ -66,8 +77,4 @@ todo:
 <ng-template #noContent
   >{{options.noContent || 'No content!'}} <br />
   <a href="{{options.back || '/'}}">Back</a>
-</ng-template>
-
-<ng-template #loading>
-  <ngx-loading [show]="true"></ngx-loading>
 </ng-template>

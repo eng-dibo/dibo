@@ -78,7 +78,19 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
       // we use concatMap here instead of map because it emits Observable (this.getData())
       // so we flatten the inner Obs. i.e: it subscribes to the inner Obs. (this.getData) instead of the outer one (urlParams())
       // also we use concatMap and not mergeMap, to wait until the previous Obs. to be completed.
-      concatMap((params) => this.httpService.get<Payload>(getUrl(params))),
+      concatMap(
+        (params) => {
+          // prevent old routes format from making any request
+          // old route: /$id-$slug
+          // new route: /$type/$slug~$id
+          if (!['articles', 'jobs'].includes(params.type as string)) {
+            throw new Error(`path not allowed: /${params.type}`);
+          }
+          return this.httpService.get<Payload>(getUrl(params));
+        }
+        // old data routes doesn't start with articles|jobs which causes creating arbitrary collections in the database
+        // example: /${id}-${slug} instead of /articles/${slug}-${id}
+      ),
       map((data) => {
         if (typeof data === 'string') {
           data = JSON.parse(data);

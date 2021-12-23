@@ -6,6 +6,7 @@ import { QuillViewComponent } from 'ngx-quill';
 import { Article, ArticleOptions } from './article';
 import { MetaService } from '@engineers/ngx-utils/meta.service';
 import { toObservable } from '@engineers/rxjs';
+
 /*
 - usage:
 <content-view [data]="{title,content,keywords[],author{},...}" [related]="[{id,title,..}]" >
@@ -29,6 +30,10 @@ export interface ViewOptions extends ArticleOptions {
   noContent?: string;
 }
 
+export interface Board {
+  message: string;
+  status: 'ok' | 'error' | 'warning';
+}
 @Component({
   selector: 'ngx-content-view',
   templateUrl: './view.html',
@@ -46,6 +51,7 @@ export class NgxContentViewComponent implements OnInit {
   @Input() meta!: Meta;
   @Input() options!: ViewOptions;
   content: Payload;
+  board: Board;
 
   constructor(private metaService: MetaService) {}
 
@@ -60,12 +66,23 @@ export class NgxContentViewComponent implements OnInit {
       this.options || {}
     );
 
-    toObservable(this.data).subscribe((data: Payload) => {
-      // todo: if (typeof data == "string") data = JSON.parse(data);
+    toObservable(this.data).subscribe(
+      (data: Payload) => {
+        // todo: if (typeof data == "string") data = JSON.parse(data);
 
-      this.metaService.setTags(this.meta as Meta);
-      this.type = data instanceof Array ? 'list' : 'item';
-      this.content = data;
-    });
+        this.metaService.setTags(this.meta as Meta);
+        this.type = data instanceof Array ? 'list' : 'item';
+        this.content = data;
+      },
+
+      (error) => {
+        this.board = {
+          status: 'error',
+          message:
+            ((typeof error === 'string' ? error : error.message) || 'error!') +
+            `<br /><a href="/">go to homepage</a>`,
+        };
+      }
+    );
   }
 }

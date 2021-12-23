@@ -40,11 +40,13 @@ export function getUrl(params: Params): string {
     let filter = encodeURIComponent(JSON.stringify({ status: 'approved' }));
     url = `${params.type}/${params.id ? params.id : ':50@' + filter}`;
   }
-
   return url;
 }
 
 export function transformData(data: Payload, params: Params): Payload {
+  if (!data) {
+    throw new Error('[transformData] no data');
+  }
   if (typeof data === 'string') {
     // ex: the url fetched via a ServiceWorker
     data = JSON.parse(data);
