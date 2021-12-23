@@ -90,6 +90,7 @@ export function edit(img: Img, options: EditOptions = {}): Promise<ImgOutput> {
   let inputImage = img;
 
   if (typeof img === 'string' && img.indexOf('data:image/') === 0) {
+    opts.output = opts.output || 'buffer';
     img = Buffer.from(img.replace(/data:image\/.+?;base64,/, ''), 'base64');
   }
 
