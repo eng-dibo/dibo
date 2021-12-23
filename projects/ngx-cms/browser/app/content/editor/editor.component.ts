@@ -1,10 +1,4 @@
-import {
-  Component,
-  OnInit,
-  ViewChild,
-  SimpleChanges,
-  OnChanges,
-} from '@angular/core';
+import { Component, OnInit, ViewChild, TemplateRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { HttpEvent, HttpEventType } from '@angular/common/http';
@@ -40,9 +34,9 @@ export interface Response {
   templateUrl: './editor.component.html',
   styleUrls: ['./editor.component.scss'],
 })
-export class ContentEditorComponent implements OnInit, OnChanges {
+export class ContentEditorComponent implements OnInit {
   params!: Params;
-  control = new FormGroup({});
+  formGroup = new FormGroup({});
   fields: FormlyFieldConfig[];
   // holds arbitrary data
   model: { [key: string]: any } = {};
@@ -55,6 +49,7 @@ export class ContentEditorComponent implements OnInit, OnChanges {
   // Set<File> = new Set();
   files = [];
   progress!: Progress;
+  @ViewChild('buttons') buttonsTemplate: TemplateRef<any>;
 
   // todo: hide this route (/editor) from search engines
 
@@ -80,12 +75,18 @@ export class ContentEditorComponent implements OnInit, OnChanges {
     forkJoin([this.getData<Article>(), this.getCategories()]).subscribe(
       ([data, categories]) => {
         this.model = data;
+
         this.fields = [
           {
             type: 'stepper',
+            templateOptions: {
+              buttonsTemplate: this.buttonsTemplate,
+            },
             fieldGroup: [
               {
-                templateOptions: { label: `${this.params.postType} content` },
+                templateOptions: {
+                  label: `${this.params.postType} content`,
+                },
                 fieldGroup: this.getArticleFields(),
               },
               {
@@ -109,6 +110,24 @@ export class ContentEditorComponent implements OnInit, OnChanges {
         this.response.status = undefined;
       }
     );
+  }
+
+  move(direction: 'next' | 'previous', stepper: any) {
+    if (direction === 'next') {
+      stepper.next();
+    } else if (direction === 'previous') {
+      stepper.previous();
+    }
+  }
+
+  isValid(field: FormlyFieldConfig): boolean {
+    if (field.formControl) {
+      return field.formControl.valid;
+    } else if (field.fieldGroup) {
+      return field.fieldGroup.every((f) => this.isValid(f));
+    }
+
+    return false;
   }
 
   /**
@@ -230,26 +249,7 @@ export class ContentEditorComponent implements OnInit, OnChanges {
     return this.cache.articleFields;
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if ('response' in changes && changes.response.currentValue) {
-      let resp = changes.response.currentValue;
-
-      this.response.class = {
-        [`alert-${resp.status === 'loading' ? 'warning' : resp.status}`]: true,
-      };
-
-      if (!this.response.message) {
-        this.response.message =
-          resp.status === 'ok'
-            ? 'Form submitted successfully'
-            : resp.status === 'error'
-            ? 'Error'
-            : 'Loading....';
-      }
-    }
-  }
-
-  onSubmit(control: FormGroup): void {
+  onSubmit(stepper: any): void {
     // todo: data.files=this.upload() or: submit().subscribe(data=>upload())
     // todo: data.files= {cover: #cover.files.data}
     // todo: send base64 data from data.content to firebase storage
@@ -259,73 +259,68 @@ export class ContentEditorComponent implements OnInit, OnChanges {
       status: 'loading',
     };
 
-    if (!this.control || !this.control.value) {
+    if (!this.formGroup || !this.formGroup.value) {
       this.response = {
         status: 'error',
-        message: 'technical error: `form` is undefined',
+        message: 'technical error: `formGroup` is undefined',
       };
 
       return;
     }
 
-    let data = this.control.value;
+    let data = this.formGroup.value;
     data._id = this.params.id;
-    // todo: control.get('cover').files?
+    // todo: formGroup.get('cover').files?
     let files = this.fields!.filter((el: any) => el.type === 'file');
     // todo: subscribe to progress events
-    let url = '';
+    let url = `/${this.params.type}`;
     this.httpService
       .post<any>(url, data, { reportProgress: true })
-      .subscribe((event: HttpEvent<any>) => {
-        if (event.type === HttpEventType.UploadProgress) {
-          this.progress = { loaded: event.loaded, total: event.total };
-        }
-        // todo: send to formObj$.fields[type=file]
-        else if (event.type === HttpEventType.Response) {
-          let _data = event.body;
+      .subscribe((result) => {
+        // todo: show progress bar
 
-          if (!_data) {
-            this.response = {
-              status: 'error',
-              message: 'no data',
-            };
-          } else {
-            this.response = _data.error
-              ? {
-                  status: 'error',
-                  message: _data.error.message,
-                }
-              : {
-                  status: 'ok',
-                  message: _data._id
-                    ? `${this.params.postType} posted successfully,
-                    <a href="${this.params.type}/item/${_data._id}">view</a><br />
+        if (!result) {
+          this.response = {
+            status: 'error',
+            message: 'no data',
+          };
+        } else {
+          this.response = result.error
+            ? {
+                status: 'error',
+                message: result.error.message,
+              }
+            : {
+                status: 'ok',
+                message: result._id
+                  ? `${this.params.postType} posted successfully,
+                    <a href="${this.params.type}/~${result._id}">view</a><br />
                     <a href="${this.params.type}/editor">post another ${this.params.postType}</a>
                     `
-                    : '',
-                };
-          }
-
-          // todo: reset progress value
-          // todo: showSnackBar() content: is html
-          this.showSnackBar(
-            (this.response.status === 'ok' ? 'form submitted' : 'error') +
-              this.response.message || '',
-            'close',
-            7000
-          );
-          // this.uploadedFiles=event.body;
-          this.control.reset();
-
-          // todo: fix: this.formComp.formElement.reset is not a function
-          //  this.formComp.formElement.reset(); //https://stackoverflow.com/a/49789012/12577650; also see create.html
-          //  this.files.clear();
-          this.files = [];
+                  : '',
+              };
         }
-      });
-  }
 
-  showSnackBar(message: string, action: string, duration = 0): void {
-    this.snackBar.open(message, action, { duration });
+        // todo: display html inside showSnackBar, or convert the html message into plain text
+        this.snackBar.open(
+          (this.response.status === 'ok' ? 'form submitted' : 'error') +
+            /* this.response.message ||*/ '',
+          'close',
+          { duration: 7000 }
+        );
+
+        // this.uploadedFiles=event.body;
+
+        this.formGroup.reset();
+        // reset the stepper to the first step
+        stepper.selectedIndex = 0;
+
+        // todo: fix: this.formComp.formElement.reset is not a function
+        // this.formComp.formElement.reset();
+        // https://stackoverflow.com/a/49789012/12577650; also see create.html
+        // this.files.clear();
+        this.files = [];
+        // todo: reset progress value
+      });
   }
 }

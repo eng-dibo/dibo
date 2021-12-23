@@ -15,7 +15,7 @@ import { slug } from '@engineers/ngx-content-core/pipes-functions';
 import { resolve, extname } from 'path';
 import { parse } from '@engineers/databases/operations';
 import { read, write } from './storage';
-import { existsSync, readdirSync } from 'fs';
+import { existsSync, readdirSync, unlinkSync } from 'fs';
 
 let app = Router();
 const TEMP = resolve(__dirname, '../temp');
@@ -347,38 +347,35 @@ app.get('*', (req: any, res: any, next: any) => {
 // todo: cover= only one img -> upload.single()
 // todo: change to /api/v1/collection/itemType[/id]
 app.post('/:collection', upload.single('cover'), (req: any, res: any) => {
+  timer(`post ${req.url}`);
   if (!prod) {
     console.log('[server/api] post', {
       body: req.body,
       files: req.files,
       file: req.file,
-      cover: req.body.cover, // should be moved to files[] via multer
+      // should be moved to files[] via multer
+      cover: req.body.cover,
     });
   }
 
   if (!req.body || !req.body.content) {
-    return res.send({ error: { message: 'no data posted' } });
+    return res.json({ error: { message: 'no data posted' } });
   }
 
-  let data = req.body;
+  let data = req.body,
+    collection = req.params.collection,
+    tmp = `${TEMP}/${collection}/item/${data._id}`,
+    date = new Date(),
+    update: boolean;
 
-  let update: boolean;
+  mkdir(tmp);
+
   if (!data._id) {
     data._id = shortId.generate();
     update = false;
   } else {
     update = true;
   }
-  let collection = req.params.collection;
-
-  if (['article', 'job'].includes(collection)) {
-    collection += 's';
-  }
-
-  timer(`post ${req.url}`);
-
-  let tmp = `${TEMP}/${collection}/item/${data._id}`;
-  mkdir(tmp);
 
   // todo: replace content then return insertData()
   /*
@@ -386,8 +383,6 @@ app.post('/:collection', upload.single('cover'), (req: any, res: any) => {
     2- insert data to db
     3- upload cover image then resize it
      */
-
-  let date = new Date();
 
   if (!data.slug || data.slug === '') {
     data.slug = slug(data.title, {
@@ -449,6 +444,7 @@ app.post('/:collection', upload.single('cover'), (req: any, res: any) => {
       });
   }
 
+  // we don't need to wait until writeFs to be finished to insert data to the db
   writeFs(`${tmp}/data.json`, data).catch((error: any) =>
     console.error(
       `[server/api] cannot write the temp file for: ${data._id}`,
@@ -472,14 +468,13 @@ app.post('/:collection', upload.single('cover'), (req: any, res: any) => {
             })
             // return data to the front-End
             .then((doc: any) => {
-              let temp = `${TEMP}/${collection}/item/${data._id}`;
-              readdir(temp).then((files: any) => {
+              readdir(tmp).then((files: any) => {
                 files.forEach((file: any) => {
                   // remove images and cover sizes; cover.webp, $images.webp and data.json are already renewed.
                   if (file.indexOf('.webp') && file.indexOf('_') !== -1) {
-                    unlink(`${temp}/${file}`).catch((error: any) =>
+                    unlink(`${tmp}/${file}`).catch((error: any) =>
                       console.error(
-                        `[server/api] cannot delete ${temp}/${file}`,
+                        `[server/api] cannot delete ${tmp}/${file}`,
                         {
                           error,
                         }
@@ -497,8 +492,11 @@ app.post('/:collection', upload.single('cover'), (req: any, res: any) => {
       return content.save();
     })
     .then((_data: any) => {
-      res.send(_data);
-      unlink(`${TEMP}/${collection}/index.json`);
+      res.json(_data);
+      // force remove the cached index.json
+      if (existsSync(`${tmp}/index.json`)) {
+        unlinkSync(`${tmp}/index.json`);
+      }
       if (!prod) {
         console.log(
           `[server/api] post: ${collection}`,
@@ -508,7 +506,7 @@ app.post('/:collection', upload.single('cover'), (req: any, res: any) => {
       }
     })
     .catch((error: any) => {
-      res.send({ error });
+      res.json({ error });
       console.error(
         `[server/api] post: ${collection}`,
         timer(`post ${req.url}`, true),

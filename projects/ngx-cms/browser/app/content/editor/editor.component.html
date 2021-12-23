@@ -5,48 +5,71 @@
     create a new {{ params.postType }}
   </h1>
 
+  <div
+    *ngIf="response"
+    class="alert"
+    [ngClass]="
+      response.class ||
+      'alert-' +
+        (response.status === 'loading' ? 'warning' : response.status) ||
+      ''
+    "
+    [innerHTML]="response.message"
+  ></div>
+
   <form
     #formElement
-    [formGroup]="control"
+    [formGroup]="formGroup"
     method="post"
     enctype="multipart/form-data"
   >
-    <formly-form [form]="control" [fields]="fields" [model]="model">
+    <formly-form [form]="formGroup" [fields]="fields" [model]="model">
     </formly-form>
 
-    <!--
-using (ngSubmit)="onSubmit(..)" causes the form to show errors after submitting
-so we replaced it with (click)="onSubmit(..)", and  type="submit" with type="button"
-https://stackoverflow.com/a/51003685/12577650 -->
-    <!--
-    <button
-      mat-raised-button
-      (click)="moveSteps(-1)"
-      type="button"
-      [disabled]="step === 0 || !control?.valid"
-    >
-      Previous
-    </button>
-    <button
-      mat-raised-button
-      (click)="moveSteps(+1)"
-      type="button"
-      [disabled]="step === this.totalSteps || !control?.valid"
-    >
-      Next
-    </button>
-    <button
-      mat-raised-button
-      color="primary"
-      type="button"
-      [disabled]="
-        !control?.valid || control?.pristine || response.status === 'loading'
-      "
-      (click)="onSubmit(control)"
-    >
-      Submit
-    </button>
-  --></form>
+    <!-- use last or stepper.selectedIndex===stepper.steps.length-1 -->
+    <ng-template #buttons let-stepper="stepper" let-step="step" let-last="last">
+      <button
+        mat-raised-button
+        color="primary"
+        [disabled]="
+          stepper.selectedIndex === 0 || response?.status === 'loading'
+        "
+        type="button"
+        (click)="move('previous', stepper)"
+      >
+        <mat-icon>arrow_left</mat-icon> Previous
+      </button>
+
+      <button
+        mat-raised-button
+        color="primary"
+        type="button"
+        [disabled]="!isValid(step) || last || response?.status === 'loading'"
+        (click)="move('next', stepper)"
+      >
+        Next <mat-icon>arrow_right</mat-icon>
+      </button>
+
+      <!--
+  using (ngSubmit)="onSubmit(..)" causes the form to show errors after submitting
+  so we replaced it with (click)="onSubmit(..)", and  type="submit" with type="button"
+  https://stackoverflow.com/a/51003685/12577650 
+-->
+      <button
+        mat-raised-button
+        color="primary"
+        [disabled]="
+          !last ||
+          !formGroup?.valid ||
+          formGroup?.pristine ||
+          response?.status === 'loading'
+        "
+        (click)="onSubmit(stepper)"
+      >
+        <mat-icon>done</mat-icon> Submit
+      </button>
+    </ng-template>
+  </form>
 
   <ngx-loading [show]="!fields || response?.status === 'loading'"></ngx-loading>
 </ng-container>

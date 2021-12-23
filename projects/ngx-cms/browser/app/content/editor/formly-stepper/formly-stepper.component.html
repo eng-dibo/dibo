@@ -5,33 +5,14 @@
   >
     <formly-field [field]="step"></formly-field>
     <div>
-      <button
-        matStepperPrevious
-        mat-raised-button
-        color="primary"
-        [disabled]="index === 0"
-        type="button"
-      >
-        <mat-icon>arrow_left</mat-icon> Previous
-      </button>
-
-      <button
-        matStepperNext
-        mat-raised-button
-        color="primary"
-        type="button"
-        [disabled]="!isValid(step) || last"
-      >
-        Next <mat-icon>arrow_right</mat-icon>
-      </button>
-      <button
-        mat-raised-button
-        color="primary"
-        [disabled]="!form.valid || !last"
-        type="submit"
-      >
-        <mat-icon>done</mat-icon> Submit
-      </button>
+      <ng-container *ngIf="to.buttonsTemplate">
+        <ng-container
+          *ngTemplateOutlet="
+            to.buttonsTemplate;
+            context: { stepper: formlyStepper, step: step, last: last }
+          "
+        ></ng-container>
+      </ng-container>
     </div>
   </mat-step>
 </mat-horizontal-stepper>

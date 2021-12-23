@@ -52,10 +52,11 @@ export class FormlyTreeComponent extends FieldType implements OnInit {
     // else remove it
     this.formControl.patchValue(
       checked
-        ? [...(this.formControl.value || [5]), node._id]
-        : [...(this.formControl.value || [6])].filter((o) => o !== node._id)
+        ? [...(this.formControl.value || []), node._id]
+        : [...(this.formControl.value || [])].filter((o) => o !== node._id)
     );
     this.formControl.markAsTouched();
+    // todo: toggle all children
   }
 
   isChecked(node: any) {
