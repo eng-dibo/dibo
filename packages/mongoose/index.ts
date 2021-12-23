@@ -327,6 +327,10 @@ export interface BackupData {
     [collection: string]: {
       info: Obj;
       data: Obj[];
+      // the model object, ex: {NAME: 'string', serial: 'number'}
+      // to be added by the consumer before restoring the database
+      model?: Obj;
+      modelOptions?: Obj;
     };
   };
 }
@@ -405,12 +409,10 @@ export function restore(
   let backupDataArray: Array<Obj> = [];
   Object.keys(backupData).forEach((dbName: string) => {
     Object.keys(backupData[dbName]).forEach((collectionName: string) => {
-      let { data, info } = backupData[dbName][collectionName];
       backupDataArray.push({
         dbName,
         collectionName,
-        data,
-        info,
+        ...backupData[dbName][collectionName],
       });
     });
   });
@@ -418,35 +420,49 @@ export function restore(
   // insert all backupData then fulfil the promise
   // todo: use info to create indexes (if collection doesn't exist)
   return Promise.all(
-    backupDataArray.map(({ dbName, collectionName, data, info }) => {
-      let dataModel = model(
+    backupDataArray.map(
+      ({
+        dbName,
         collectionName,
-        {},
-        { strict: false, validateBeforeSave: false },
-        getConnection(dbName)
-      );
+        data,
+        info,
+        model: modelObj,
+        modelOptions,
+      }) => {
+        let dataModel = model(
+          collectionName,
+          // todo: mongoose casts _id from string to ObjectId which may changes its value
+          // https://github.com/Automattic/mongoose/issues/11136
+          modelObj || { _id: 'string' },
+          Object.assign(
+            { strict: false, validateBeforeSave: false },
+            modelOptions || {}
+          ),
+          getConnection(dbName)
+        );
 
-      let dataChunk = chunk(data, chunkSize || data.length);
-      // wait until all parts inserted then fulfil the promise
-      return Promise.all(
-        dataChunk.map((part: Array<any>, index: number) =>
-          dataModel
-            .insertMany(part, { lean: true, rawResult: true })
-            .then(() =>
-              console.log(
-                `[backup] inserted: ${dbName}/${collectionName}: part ${
-                  index + 1
-                }/${dataChunk.length} `
+        let dataChunk = chunk(data, chunkSize || data.length);
+        // wait until all parts inserted then fulfil the promise
+        return Promise.all(
+          dataChunk.map((part: Array<any>, index: number) =>
+            dataModel
+              .insertMany(part, { lean: true, rawResult: true })
+              .then(() =>
+                console.log(
+                  `[backup] inserted: ${dbName}/${collectionName}: part ${
+                    index + 1
+                  }/${dataChunk.length} `
+                )
               )
-            )
-            .catch((err: any) => {
-              throw new Error(`error in ${dbName}/${collectionName}: ${err}`);
-            })
-        )
-      ).then(() => {
-        /* convert Array<void> from promise.all() to void */
-      });
-    })
+              .catch((err: any) => {
+                throw new Error(`error in ${dbName}/${collectionName}: ${err}`);
+              })
+          )
+        ).then(() => {
+          /* convert Array<void> from promise.all() to void */
+        });
+      }
+    )
   ).then(() => {
     /*void*/
   });
