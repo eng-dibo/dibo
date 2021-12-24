@@ -12,7 +12,10 @@ import { FormlyMaterialModule } from '@ngx-formly/material';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgxLoadingModule } from 'ngx-loading';
 import { FormlyTreeComponent } from './editor/formly-tree/formly-tree.component';
-import { FormlyFileComponent } from './editor/formly-file/formly-file.component';
+import {
+  FormlyFileComponent,
+  FileValueAccessor,
+} from './editor/formly-file/formly-file.component';
 import { QuillModule } from 'ngx-quill';
 import { FormlyQuillComponent } from './editor/formly-quill/formly-quill.component';
 import { MatTreeModule } from '@angular/material/tree';
@@ -46,6 +49,7 @@ const routes: Routes = [
     ContentManageComponent,
     FormlyTreeComponent,
     FormlyFileComponent,
+    FileValueAccessor,
     FormlyQuillComponent,
     FormlyStepperComponent,
   ],

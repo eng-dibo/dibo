@@ -38,7 +38,8 @@ export class ApiInterceptor implements HttpInterceptor {
       // use toFormData in POST requests
       // todo: if(req.context.toFormData)
       // sending data as FormData instead of Object may cause that req.body=undefined
-      body: req.method === 'post' ? toFormData(req.body) : req.body,
+      body:
+        req.method.toLowerCase() === 'post' ? toFormData(req.body) : req.body,
       params: queryParams(req.params),
     };
 

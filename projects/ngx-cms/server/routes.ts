@@ -364,11 +364,8 @@ app.post('/:collection', upload.single('cover'), (req: any, res: any) => {
 
   let data = req.body,
     collection = req.params.collection,
-    tmp = `${TEMP}/${collection}/item/${data._id}`,
     date = new Date(),
     update: boolean;
-
-  mkdir(tmp);
 
   if (!data._id) {
     data._id = shortId.generate();
@@ -384,7 +381,7 @@ app.post('/:collection', upload.single('cover'), (req: any, res: any) => {
     3- upload cover image then resize it
      */
 
-  if (!data.slug || data.slug === '') {
+  if (!data.slug || data.slug.trim() === '') {
     data.slug = slug(data.title, {
       length: 200,
       allowedChars: ':ar',
@@ -396,18 +393,19 @@ app.post('/:collection', upload.single('cover'), (req: any, res: any) => {
   data.status = 'approved';
 
   // handle base64-encoded data (async)
+  // todo: handle other file types (i.e non-images)
   data.content = data.content.replace(
-    /<img src="data:image\/(.+?);base64,([^=]+)={0,2}">/g,
+    /<img src="(data:image\/(.+?);base64,[^=]+={0,2})".+?>/g,
     (
       match: any,
-      extension: any,
       imgData: any,
+      fileType: any,
       matchPosition: any,
       fullString: any
     ) => {
       let fileName = date.getTime(),
-        filePath = `${collection}/${data._id}/${fileName}.webp`,
-        src = `api/v1/image/${collection}-${fileName}-${data._id}/${data.slug}.webp`,
+        fileStoragePath = `${collection}/${data._id}/${fileName}.webp`,
+        src = `/api/v1/image/${collection}-${fileName}-${data._id}/${data.slug}.webp`,
         srcset = '',
         sizes = '';
       for (let i = 1; i < 10; i++) {
@@ -416,10 +414,17 @@ app.post('/:collection', upload.single('cover'), (req: any, res: any) => {
 
       // todo: catch(err=>writeFile('queue/*',{imgData,err})) to retry uploading again
       resize(imgData, '', { format: 'webp' /*, input: 'base64' */ })
-        .then((_data: any) => write(filePath, _data))
-        .then(() => {
+        .then((img: any) => {
+          write(fileStoragePath, img);
+          return img;
+        })
+        .then((img: any) => {
+          writeFs(`${TEMP}/media/${data._id}/${fileName}.webp`, img);
           console.log(`[server/api] uploaded: ${fileName}`);
-          writeFs(`${tmp}/${fileName}.webp`, imgData);
+        })
+        .catch((error) => {
+          console.error('imgData', { error, imgData });
+          throw new Error(`error in handling the encoded images ${error}`);
         });
       // todo: get image dimensions from dataImg
       return `<img width="" height="" data-src="${src}" data-srcset="${srcset}" sizes="${sizes}" alt="${data.title}" />`;
@@ -434,23 +439,15 @@ app.post('/:collection', upload.single('cover'), (req: any, res: any) => {
     data.cover = true;
 
     // to get original name: cover.originalname
-    let filePath = `${collection}/${data._id}/cover.webp`;
+    let fileStoragePath = `${collection}/${data._id}/cover.webp`;
 
     resize(req.file.buffer, '', { format: 'webp' })
-      .then((_data: any) => write(filePath, _data))
+      .then((_data: any) => write(fileStoragePath, _data))
       .then((file: any) => {
         console.log(`[server/api] cover uploaded`);
-        writeFs(`${tmp}/cover.webp`, req.file.buffer);
+        writeFs(`${TEMP}/media/${data._id}/cover.webp`, req.file.buffer);
       });
   }
-
-  // we don't need to wait until writeFs to be finished to insert data to the db
-  writeFs(`${tmp}/data.json`, data).catch((error: any) =>
-    console.error(
-      `[server/api] cannot write the temp file for: ${data._id}`,
-      error
-    )
-  );
 
   // todo: data.summary=summary(data.content)
 
@@ -468,22 +465,6 @@ app.post('/:collection', upload.single('cover'), (req: any, res: any) => {
             })
             // return data to the front-End
             .then((doc: any) => {
-              readdir(tmp).then((files: any) => {
-                files.forEach((file: any) => {
-                  // remove images and cover sizes; cover.webp, $images.webp and data.json are already renewed.
-                  if (file.indexOf('.webp') && file.indexOf('_') !== -1) {
-                    unlink(`${tmp}/${file}`).catch((error: any) =>
-                      console.error(
-                        `[server/api] cannot delete ${tmp}/${file}`,
-                        {
-                          error,
-                        }
-                      )
-                    );
-                  }
-                });
-              });
-
               return data;
             })
         );
@@ -494,8 +475,8 @@ app.post('/:collection', upload.single('cover'), (req: any, res: any) => {
     .then((_data: any) => {
       res.json(_data);
       // force remove the cached index.json
-      if (existsSync(`${tmp}/index.json`)) {
-        unlinkSync(`${tmp}/index.json`);
+      if (existsSync(`${TEMP}/${collection}/index.json`)) {
+        unlinkSync(`${TEMP}/${collection}/index.json`);
       }
       if (!prod) {
         console.log(
@@ -513,6 +494,14 @@ app.post('/:collection', upload.single('cover'), (req: any, res: any) => {
         error
       );
     });
+
+  // we don't need to wait until writeFs to be finished to insert data to the db
+  writeFs(`${TEMP}/${collection}/${data._id}.json`, data).catch((error: any) =>
+    console.error(
+      `[server/api] cannot write the temp file for: ${data._id}`,
+      error
+    )
+  );
 
   // the content will be available after the process completed (uploading files, inserting to db, ..)
 });

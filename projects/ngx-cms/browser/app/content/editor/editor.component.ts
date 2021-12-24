@@ -270,8 +270,6 @@ export class ContentEditorComponent implements OnInit {
 
     let data = this.formGroup.value;
     data._id = this.params.id;
-    // todo: formGroup.get('cover').files?
-    let files = this.fields!.filter((el: any) => el.type === 'file');
     // todo: subscribe to progress events
     let url = `/${this.params.type}`;
     this.httpService
