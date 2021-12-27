@@ -44,13 +44,11 @@
       mat-card-image
       [attr.width]="data.cover.width"
       [attr.height]="data.cover.height"
-      lazyLoad="{{data.cover.lazy? data.cover.srcset || data.cover.src || '' : null}}"
-      defaultImage="{{data.cover.lazy? data.cover.placeholder || '//via.placeholder.com/'+(data.cover.width||'500')+'x'+(data.cover.height||'250')+'.webp?text=loading...':null}}"
-      [useSrcset]="data.cover.lazy && !!data.cover.srcset"
-      src="{{data.cover.src || null}}"
-      srcset="{{data.cover.srcset || null}}"
-      sizes="{{data.cover.sizes || null}}"
-      alt="{{data.cover.alt || data.title}}"
+      src="{{data.placeholder || null}}"
+      [data-src]="data.cover.src"
+      [data-srcset]="data.cover.srcset"
+      [sizes]="data.cover.sizes"
+      [alt]="data.cover.alt || data.title"
     />
 
     <!--

@@ -25,8 +25,6 @@ import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
-
-import { LazyLoadImageModule } from 'ng-lazyload-image';
 import { HighlightModule } from 'ngx-highlightjs';
 import { QuillModule } from 'ngx-quill';
 import { ShareButtonsModule } from 'ngx-sharebuttons/buttons';
@@ -38,9 +36,14 @@ import { fab } from '@fortawesome/free-brands-svg-icons';
 import { fas } from '@fortawesome/free-solid-svg-icons';
 import { NgxLoadingModule } from 'ngx-loading';
 import { ScrollingModule } from '@angular/cdk/scrolling';
+import { LazyLoadDirective } from '@engineers/lazy-load';
 
 @NgModule({
-  declarations: [NgxContentViewComponent, NgxContentArticleComponent],
+  declarations: [
+    NgxContentViewComponent,
+    NgxContentArticleComponent,
+    LazyLoadDirective,
+  ],
   exports: [NgxContentViewComponent, NgxContentArticleComponent],
   imports: [
     CommonModule,
@@ -53,7 +56,6 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
     MatChipsModule,
     MatBadgeModule,
     MatButtonModule,
-    LazyLoadImageModule,
     HighlightModule,
     QuillModule.forRoot(),
     ShareButtonsModule,

@@ -32,9 +32,7 @@ export interface Image {
   srcset?: string;
   sizes?: string;
   alt?: string;
-  lazy?: boolean;
-  placeholder?: string;
-  width?: number; // html img.width is number ex: <img width="50" />
+  width?: number;
   height?: number;
 }
 
