@@ -54,12 +54,12 @@ export function transformData(data: Payload, params: Params): Payload {
 
   if (data instanceof Array) {
     data = data.map((item: Article) =>
-      adjustArticle(item, params)
+      adjustArticle(item, params, 'list')
     ) as Article[];
   } else if (!data.error && data.content) {
     // data may be doesn't 'content' property
     // for example article_categories
-    data = adjustArticle(data as Article, params);
+    data = adjustArticle(data as Article, params, 'item');
   }
 
   return data;
@@ -124,27 +124,23 @@ export function adjustArticle(
     item.slug = slug(item.title);
   }
   if (item.cover) {
-    // if the layout changed, change the attribute sizes, for example if a side menue added.
+    // if the layout changed, change the attribute sizes, for example if a side menu added.
     // todo: i<originalSize/250
     let src = `/api/v1/image/${params.type}-cover-${item._id}/${item.slug}.webp`,
       srcset = '',
-      sizes =
-        '(max-width: 1000px) 334px, (max-width: 800px) 400px,(max-width: 550px) 550px';
+      // for type=item: image width = 100% of the viewport width
+      // for type=list: each column is adjusted to be ~250px (by css media queries)
+      // or: 1000->25vw (4 cols), 750->33vw (3cols), 500->50vw (2cols), default=100vw
+      sizes = type === 'item' ? '100vw' : '250px';
     for (let i = 1; i < 10; i++) {
-      srcset += `${src}?size=${i * 250} ${i * 250}w, `;
+      let n = i * 250;
+      srcset += `${src}?size=${n} ${n}w, `;
     }
 
     item.cover = {
       src,
       srcset,
       sizes,
-      alt: item.title,
-      lazy: true,
-      // use same colors as website theme (i.e: toolbar backgroundColor & textColor)
-      // don't use dynamic size i.e: placeholder.com/OriginalWidthXOriginalHeight, because this image will be cashed via ngsw
-      // todo: width:originalSize.width, height:..
-      placeholder:
-        '//via.placeholder.com/500x250.webp/1976d2/FFFFFF?text=loading...',
     };
   }
 

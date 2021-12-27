@@ -394,6 +394,7 @@ app.post('/:collection', upload.single('cover'), (req: any, res: any) => {
 
   // handle base64-encoded data (async)
   // todo: handle other file types (i.e non-images)
+  // todo: Browser part to handle srcset and sizes -> content.textContent.replace(/<img src="\/(.+)"/, '<img data-srcset="" sizes="">')
   data.content = data.content.replace(
     /<img src="(data:image\/(.+?);base64,[^=]+={0,2})".+?>/g,
     (
@@ -407,9 +408,13 @@ app.post('/:collection', upload.single('cover'), (req: any, res: any) => {
         fileStoragePath = `${collection}/${data._id}/${fileName}.webp`,
         src = `/api/v1/image/${collection}-${fileName}-${data._id}/${data.slug}.webp`,
         srcset = '',
-        sizes = '';
+        // in list layout (i.e the index page) only cover image is displayed
+        // content images are displayed only on item layout
+        sizes = '100vw';
+
       for (let i = 1; i < 10; i++) {
-        srcset += `${src}?size=${i * 250} ${i * 250}w,`;
+        let n = i * 250;
+        srcset += `${src}?size=${n} ${n}w, `;
       }
 
       // todo: catch(err=>writeFile('queue/*',{imgData,err})) to retry uploading again
