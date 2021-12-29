@@ -12,6 +12,7 @@ import {
   ɵDomSanitizerImpl,
   SafeHtml,
 } from '@angular/platform-browser';
+import { replaceRec } from '@engineers/javascript/string';
 
 /**
  * cuts a part of a string into the specified length, starting from `start` value
@@ -106,6 +107,8 @@ export interface Html2textOptions {
  */
 // todo: use a transformer function to convert html nodes into another format
 // todo: filter(el=>(boolean=false))
+// todo: use htmlTransform(value, transform(match)=>newValue)
+// example  html2text= htmlTransform(value, (match)=>{if(match[1]==='h1')return '<h2>$2</h2>'})
 export function html2text(
   value: string,
   options: Html2textOptions = {}
@@ -133,16 +136,19 @@ export function html2text(
     opts.links
   );
 
-  return (
-    value
-      // remove inline <style>, <script>, <meta> blocks
-      .replace(/<(style|script|meta)[^>]*>.*<\/\1>/gm, '')
-      // strip html
-      // or: /<(?:.|\s)*?>/
-      .replace(/<[^>]+>/g, '')
-      // remove leading spaces and repeated CR/LF
-      .replace(/([\r\n]+ +)+/gm, '')
-  );
+  value = value
+    // remove inline <style>, <script>, <meta> blocks
+    .replace(/<(style|script|meta)[^>]*>.*<\/\1>/gm, '')
+    // strip html(except <br> if lineBreak=br)
+    // or: /<(?:.|\s)*?>/
+    .replace(opts.lineBreak === 'br' ? /<(?!br)[^>]+>/g : /<[^>]+>/g, '')
+    // remove leading spaces and repeating CR/LF
+    .replace(/([\r\n]+ +)+/gm, '');
+
+  // remove repeating line breaks
+  // matches `<br>  <br>` and `<br>\n</br>
+  value = replaceRec(value, /(<br[^>]*?>[ \n]?)+/gm, '<br />');
+  return value;
 }
 
 /**
