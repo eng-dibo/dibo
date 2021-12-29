@@ -454,8 +454,6 @@ app.post('/:collection', upload.single('cover'), (req: any, res: any) => {
       });
   }
 
-  // todo: data.summary=summary(data.content)
-
   connect()
     // @ts-ignore: error TS2349: This expression is not callable.
     // Each member of the union type ... has signatures, but none of those signatures are compatible with each other.

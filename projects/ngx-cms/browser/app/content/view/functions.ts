@@ -119,7 +119,7 @@ export function adjustArticle(
   type: 'item' | 'list' = 'item'
 ): Article {
   item.id = item._id;
-  item.summary = item.summary || summary(item.content);
+  item.summary = summary(item.content);
   if (!item.slug || item.slug === '') {
     item.slug = slug(item.title);
   }
@@ -144,7 +144,7 @@ export function adjustArticle(
     };
   }
 
-  // todo: /$type/item.$categories[0].title/$item.slug~id
+  // todo: /$type/slug(item.$categories[0].main.title)/slug(title)~id
   if (!item.link) {
     item.link = `/${params.type}/${item.slug}~${item.id}`;
   }
@@ -200,9 +200,9 @@ export function adjustKeywords(
     });
 }
 
-export function summary(value: string): string {
-  let text = html2text(value, { lineBreak: 'br' });
-  return length(text, 500);
+export function summary(value: string, options: any = {}): string {
+  let text = html2text(value, { lineBreak: options.lineBreak || 'br' });
+  return length(text, options.length || 500);
 }
 
 // todo: defaultMetaTags(): Tags{}
