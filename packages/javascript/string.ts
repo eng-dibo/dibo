@@ -111,6 +111,25 @@ export function replaceAsync(
 }
 
 /**
+ * perform replace() recursively
+ * https://stackoverflow.com/a/14806999/12577650
+ *
+ * @example
+ * replaceRec('xxx',/x/,'x') -> result: `x`
+ * 'xxx'.replace(/x/,'x') -> result: `xx`
+ */
+export function replaceRec(
+  value: string,
+  pattern: RegExp,
+  newValue: string
+): string {
+  let newString = value.replace(pattern, newValue);
+  return newString === value
+    ? newString
+    : replaceRec(newString, pattern, newValue);
+}
+
+/**
  * converts a string to a number if possible
  * useful if the value always been passed as a string,
  * for example when it received from `cli` or asa url parameter
