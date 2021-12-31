@@ -346,15 +346,13 @@ app.get('*', (req: any, res: any, next: any) => {
 // todo: typescript: add files[] to `req` definition
 // todo: cover= only one img -> upload.single()
 // todo: change to /api/v1/collection/itemType[/id]
-app.post('/:collection', upload.single('cover'), (req: any, res: any) => {
+app.post('/:collection', upload.single('cover[]'), (req: any, res: any) => {
   timer(`post ${req.url}`);
   if (!prod) {
     console.log('[server/api] post', {
       body: req.body,
       files: req.files,
       file: req.file,
-      // should be moved to files[] via multer
-      cover: req.body.cover,
     });
   }
 
@@ -381,13 +379,11 @@ app.post('/:collection', upload.single('cover'), (req: any, res: any) => {
     3- upload cover image then resize it
      */
 
-  if (!data.slug || data.slug.trim() === '') {
-    data.slug = slug(data.title, {
-      length: 200,
-      allowedChars: ':ar',
-      encode: false,
-    });
-  } // if slug changed, cover fileName must be changed
+  let titleSlug = slug(data.title, {
+    length: 200,
+    allowedChars: ':ar',
+    encode: false,
+  });
 
   // todo: check permissions, for owner, admin -> auto approve
   data.status = 'approved';
@@ -406,7 +402,7 @@ app.post('/:collection', upload.single('cover'), (req: any, res: any) => {
     ) => {
       let fileName = date.getTime(),
         fileStoragePath = `${collection}/${data._id}/${fileName}.webp`,
-        src = `/api/v1/image/${collection}-${fileName}-${data._id}/${data.slug}.webp`,
+        src = `/api/v1/image/${collection}-${fileName}-${data._id}/${titleSlug}.webp`,
         srcset = '',
         // in list layout (i.e the index page) only cover image is displayed
         // content images are displayed only on item layout
@@ -455,6 +451,47 @@ app.post('/:collection', upload.single('cover'), (req: any, res: any) => {
   }
 
   connect()
+    .then(() =>
+      cache(`${TEMP}/articles_categories/index.json`, () =>
+        query('/articles_categories')
+      ).then((categories) => {
+        if (!data.categories || data.categories.length === 0) {
+          // default category: general topics
+          data.categories = ['dPdoPD6UEp'];
+        } else {
+          // add parents recursively
+
+          if (typeof data.categories === 'string') {
+            // Angular httpClient.post() converts arrays with one element into string
+            data.categories = [data.categories];
+          }
+          // convert to {_id:parent}
+          let tmp: any = {},
+            getParentRecursive = (entry: string) => {
+              if (tmp[entry]) {
+                data.categories.push(tmp[entry]);
+                getParentRecursive(tmp[entry]);
+              }
+            };
+          categories.forEach((el: any) => {
+            tmp[el._id] = el.parent;
+          });
+
+          data.categories.forEach((el: string) => getParentRecursive(el));
+        }
+
+        // filter the first category in data.categories[] that has no parent
+        let mainCategory = categories.filter((el: any) => {
+          return !el.parent && data.categories.includes(el._id);
+        })[0];
+
+        data.slug = `${slug(mainCategory.title, {
+          length: 200,
+          allowedChars: ':ar',
+          encode: false,
+        })}/${titleSlug}`;
+      })
+    )
     // @ts-ignore: error TS2349: This expression is not callable.
     // Each member of the union type ... has signatures, but none of those signatures are compatible with each other.
     .then(() => {

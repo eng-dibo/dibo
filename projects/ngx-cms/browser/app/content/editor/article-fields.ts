@@ -9,10 +9,10 @@ let fields: FormlyFieldConfig[] = [
     key: 'title',
     type: 'input',
     templateOptions: {
-      description: '50~200 characters',
+      description: '20~200 characters',
       required: true,
       maxLength: 200,
-      minLength: 50,
+      minLength: 20,
       // todo: remove special chars (use Regex)
     },
   },
@@ -28,7 +28,7 @@ let fields: FormlyFieldConfig[] = [
     type: 'input',
     templateOptions: {
       maxLength: 200,
-      description: '50~200 characters',
+      description: '20~200 characters',
     },
   },
   {

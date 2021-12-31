@@ -55,10 +55,10 @@ export class ApiInterceptor implements HttpInterceptor {
         */
 
     let newReq = req.clone(changes);
-    // newReq.body.x = 2;
-
     if (env.mode === 'development') {
-      console.log(`[httpService] ${newReq.method} ${req.url} -> ${newReq.url}`);
+      console.log(
+        `[http interceptor] ${newReq.method} ${req.url} -> ${newReq.url}`
+      );
     }
     return (
       next
@@ -74,7 +74,7 @@ export function errorHandler(error: HttpErrorResponse): Observable<never> {
   // else -> server error
 
   // Return an observable with error object.
-  console.error('[httpService] error:', error);
+  console.error('[http interceptor] error:', error);
   return throwError(error);
 }
 
@@ -99,10 +99,13 @@ export function toFormData(data: Obj, singleElements?: string[]): FormData {
     if (data.hasOwnProperty(key)) {
       let el = data[key];
       if (
+        // causes error with `multer uploader`
+        // todo: test with multiple fileList
         (el instanceof Array || el instanceof FileList) &&
         (!singleElements || !singleElements.includes(key))
       ) {
-        // if (!key.endsWith("[]")) key += "[]";
+        // or !/\[.*\]/.test(key)
+        if (!key.endsWith('[]')) key += '[]';
         // FileList.forEach() is not a function
         for (let i = 0; i < el.length; i++) {
           if (el.hasOwnProperty(i)) {

@@ -120,9 +120,6 @@ export function adjustArticle(
 ): Article {
   item.id = item._id;
   item.summary = summary(item.content);
-  if (!item.slug || item.slug === '') {
-    item.slug = slug(item.title);
-  }
   if (item.cover) {
     // if the layout changed, change the attribute sizes, for example if a side menu added.
     // todo: i<originalSize/250
@@ -144,7 +141,6 @@ export function adjustArticle(
     };
   }
 
-  // todo: /$type/slug(item.$categories[0].main.title)/slug(title)~id
   if (!item.link) {
     item.link = `/${params.type}/${item.slug}~${item.id}`;
   }
@@ -167,8 +163,9 @@ export function adjustArticle(
   delete item.status;
   delete item.categories;
   delete item._id;
-  delete item.type; // todo: remove from database
-  //  delete item.keywords;
+  // todo: remove from database
+  delete item.type;
+  // delete item.keywords;
   return item;
 }
 

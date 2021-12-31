@@ -62,3 +62,8 @@ import 'zone.js/dist/zone'; // Included with Angular CLI.
 /***************************************************************************************************
  * APPLICATION IMPORTS
  */
+
+// fixes `regeneratorRuntime is not defined` -> appears in app/content/editor
+// https://stackoverflow.com/a/65574972/12577650
+import 'core-js/stable';
+import 'regenerator-runtime/runtime';
