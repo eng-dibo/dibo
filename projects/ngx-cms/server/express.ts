@@ -26,14 +26,15 @@ export function server(): ReturnType<typeof expressServer> {
   // also `jest` transpiles .ts files on the fly, but doesn't output to 'dist' folder
   let distFolder = resolve(__dirname, '../..'),
     browserDir = distFolder + '/core/browser',
-    tempDir = distFolder + '/core/temp';
+    tempDir = distFolder + '/core/temp',
+    configDir = distFolder + '/config/browser';
 
   return expressServer({
     browserDir,
     serverModule: AppServerModule,
     // TEMP: cache files, created at runtime
     // todo: use system.temp
-    staticDirs: [browserDir, tempDir],
+    staticDirs: [browserDir, tempDir, configDir],
     transform: (app) => {
       // to use req.protocol in case of using a proxy in between (ex: cloudflare, heroku, ..),
       // without it express may always returns req.protocol="https" even if GET/ https://***

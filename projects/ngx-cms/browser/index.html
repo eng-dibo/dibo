@@ -18,5 +18,14 @@
   </head>
   <body class="mat-typography">
     <app-root></app-root>
+
+    <!-- 
+      todo: move angular scripts here ( main.js, polyfills.js, ... )
+      to be loaded after DOM loaded
+     -->
+    <script src="scripts.mjs" type="module" id="main"></script>
+
+    <!-- todo: display instructions to enable javascript -->
+    <noscript> </noscript>
   </body>
 </html>
