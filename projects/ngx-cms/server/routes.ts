@@ -3,10 +3,8 @@ import shortId from 'shortid';
 import { connect, getModel, query } from './database';
 import { prod } from '~config/server';
 import { upload } from './functions';
-import { getCategories } from './database';
 import { write as writeFs, read as readFS, mkdir } from '@engineers/nodejs/fs';
 import cache from '@engineers/nodejs/cache';
-import { Categories } from '~browser/formly-categories-material/functions';
 import { timer } from '@engineers/javascript/time';
 import { resize } from '@engineers/graphics';
 import { backup, restore } from '@engineers/mongoose';
@@ -17,16 +15,13 @@ import { parse } from '@engineers/databases/operations';
 import { read, write } from './storage';
 import { existsSync, readdirSync, unlinkSync } from 'fs';
 import { toRegExp } from '@engineers/javascript/regex';
+// import { getCategories } from './database';
+// import { Categories } from '~browser/formly-categories-material/functions';
 
 let app = Router();
 const TEMP = resolve(__dirname, '../temp');
 
 // todo: add auth token
-
-// todo: don't import from ngx-* packages, because it may contain browser-specific APIs.
-
-// todo: import {} from 'fs/promises' doesn't supported yet (experimental)
-let { readdir, unlink } = require('fs').promises;
 
 // todo: update collection list
 // todo: get collections from db, then collections.map(el=>/*rename or remove*/), save to ./temp/supportedCollections.json
@@ -547,6 +542,11 @@ app.post('/:collection', upload.single('cover[]'), (req: any, res: any) => {
       if (existsSync(`${TEMP}/${collection}/index.json`)) {
         unlinkSync(`${TEMP}/${collection}/index.json`);
       }
+
+      if (existsSync(`${TEMP}/index.json`)) {
+        unlinkSync(`${TEMP}/index.json`);
+      }
+
       if (!prod) {
         console.log(
           `[server/api] post: ${collection}`,
