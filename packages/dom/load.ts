@@ -91,6 +91,6 @@ export default function load(
       reject(error);
     });
 
-    el.appendChild(parent || document.head);
+    (parent || document.head || document.body).appendChild(el);
   });
 }

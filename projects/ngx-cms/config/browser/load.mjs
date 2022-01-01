@@ -56,29 +56,13 @@ export default function load(
     }
 
     el.addEventListener("load", () => {
-      console.log("load", src);
       resolve(el);
     });
 
-    el.addEventListener("loaded", () => {
-      console.log("loaded", src);
-      resolve(el);
-    });
-
-    el.addEventListener("complete", () => {
-      console.log("complete", src);
-      resolve(el);
-    });
-
-    el.addEventListener("readystatechange", () => {
-      console.log("el:readystatechange", src);
-      resolve(el);
-    });
     el.addEventListener("error", (error) => {
-      console.log("el:error", { error, src });
       reject(error);
     });
 
-    el.appendChild(parent || document.head);
+    (parent || document.head || document.body).appendChild(el);
   });
 }

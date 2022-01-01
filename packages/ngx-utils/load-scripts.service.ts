@@ -94,19 +94,9 @@ export class NgxLoadService {
       }
 
       // todo: fix: non of the following events emits
-      // todo: remove listener
+      // todo: remove listener after loaded
       // equivalent to el.addEventListener()
-      let listener = this.renderer.listen(el, 'load', () => {
-        console.log('load');
-        resolve(el);
-      });
-
-      this.renderer.listen(el, 'loaded', () => {
-        console.log('loaded');
-        resolve(el);
-      });
-      this.renderer.listen(el, 'complete', () => {
-        console.log('complete');
+      this.renderer.listen(el, 'load', () => {
         resolve(el);
       });
 
@@ -115,7 +105,10 @@ export class NgxLoadService {
         reject(err);
       });
 
-      this.renderer.appendChild(parent || this.document.head, el);
+      this.renderer.appendChild(
+        parent || this.document.head || this.document.body,
+        el
+      );
 
       /* console.log({
         el,
