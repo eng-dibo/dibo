@@ -26,6 +26,8 @@ export class NgxLoadService {
    * @example load adsense
    * ngxLoadService.load('//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js',{id: 'ca-pub-9687007734660221'})
    */
+  // todo: import from @engineers/javascript/load()
+  // needs to replace document.* with this.renderer.*
   load(
     src: string,
     attributes: { [key: string]: any } = {},
