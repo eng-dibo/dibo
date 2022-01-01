@@ -33,9 +33,8 @@ const routes: Routes = [
   { path: ':type/manage', component: ContentManageComponent },
   // example: /articles/category.title/[item.slug]~id
   { path: ':type/:category/:item', component: ContentViewComponent },
-  // example: /articles/category.title
-  // example: /articles/[item.slug]~item.id
-  { path: ':type/:item', component: ContentViewComponent },
+  // example: /articles/category.title~id
+  { path: ':type/:category', component: ContentViewComponent },
   { path: ':type', component: ContentViewComponent },
 
   //or: redirectTo: "articles",

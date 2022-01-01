@@ -32,14 +32,13 @@ import { getParams, getUrl, transformData, getMetaTags } from './functions';
 // todo: import module & interfaces from packages/content/ngx-content-view/index.ts
 
 export interface Params {
-  category: string | null;
-  id?: string | null;
+  type: string;
+  category?: string;
+  item?: string;
   // pass ?refresh=auth to force refreshing the cache
   // get admin auth from ~config/server,
   // or get an auth code for each user from db
-  refresh?: string | null;
-  type?: string;
-  [key: string]: any;
+  refresh?: string;
 }
 
 @Component({
@@ -86,7 +85,11 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
           if (!['articles', 'jobs'].includes(params.type as string)) {
             throw new Error(`path not allowed: /${params.type}`);
           }
-          return this.httpService.get<Payload>(getUrl(params));
+          let url = getUrl(params);
+          if (env.mode === 'development') {
+            console.log(`> fetching ${url}`);
+          }
+          return this.httpService.get<Payload>(url);
         }
         // old data routes doesn't start with articles|jobs which causes creating arbitrary collections in the database
         // example: /${id}-${slug} instead of /articles/${slug}-${id}

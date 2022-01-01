@@ -6,19 +6,24 @@ import {
   Meta,
 } from '@engineers/ngx-content-view-mat';
 import { html2text, length } from '@engineers/ngx-content-core/pipes-functions';
-import { slug } from '@engineers/ngx-content-core';
 import _defaultMetaTags from '~config/browser/meta';
 import { replaceAll } from '@engineers/javascript/string';
 
 export function getParams(params: any, query: any): Params {
+  /*
+    examples:
+      /articles
+      /articles/category.slug
+      /articles/category.slug/item.slug~item.id
+      /articles/~item.id
+  */
   let type = params.get('type') || 'articles',
     category = params.get('category'),
-    // item may be: id or slug-text=id
     item = params.get('item');
 
-  if (!category && item && item.indexOf('~') === -1) {
-    category = item;
-    item = null;
+  if (category && category.startsWith('~')) {
+    item = category;
+    category = null;
   }
 
   return {
@@ -26,20 +31,28 @@ export function getParams(params: any, query: any): Params {
     category,
     // get last part of a string https://stackoverflow.com/a/6165387/12577650
     // using '=' (i.e /slug=id) will redirect to /slug
-    id: item && item.indexOf('~') !== -1 ? item.split('~').pop() : item,
+    item: item && item.indexOf('~') !== -1 ? item.split('~').pop() : item,
     refresh: query.get('refresh'),
   };
 }
 
 export function getUrl(params: Params): string {
   let url: string;
-  if (params.category) {
-    url = `${params.type}_categories/${params.category}`;
-  } else {
+  if (params.item) {
     // todo: ~_id,title,subtitle,slug,summary,author,cover,categories,updatedAt
     let filter = encodeURIComponent(JSON.stringify({ status: 'approved' }));
-    url = `${params.type}/${params.id ? params.id : ':50@' + filter}`;
+    url = `${params.type}/${params.item ? params.item : ':50@' + filter}`;
+  } else if (params.category) {
+    // get category by slug
+    url = `${params.type}_categories/${params.category}`;
+  } else {
+    url = params.type;
   }
+
+  if (params.refresh) {
+    url += `?refresh=${params.refresh}`;
+  }
+
   return url;
 }
 
