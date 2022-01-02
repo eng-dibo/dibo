@@ -19,7 +19,7 @@ h3 {
 }
 
 .masonry {
-  column-count: 5;
+  column-count: 4;
   column-gap: 1em;
 }
 .masonry .masonry-item {
@@ -27,23 +27,23 @@ h3 {
   margin: 0 0 1em;
   width: 100%;
 }
-/* adjust each col to be ~250px */
+/* min column width=500px */
 /* breakpoints every 250px*/
 @media (max-width: 1000px) {
-  .masonry {
-    column-count: 4;
-  }
-}
-
-@media (max-width: 750px) {
   .masonry {
     column-count: 3;
   }
 }
 
-@media (max-width: 500px) {
+@media (max-width: 750px) {
   .masonry {
     column-count: 2;
+  }
+}
+
+@media (max-width: 500px) {
+  .masonry {
+    column-count: 1;
   }
 }
 
