@@ -283,6 +283,10 @@ app.get('*', (req: any, res: any, next: any) => {
   let queryObject = parse(req.path);
   let { operation, database, collection, portions, params } = queryObject;
 
+  if (!prod) {
+    console.log('[server/routes]', { queryObject });
+  }
+
   /* todo:
     if (!supportedCollections.includes(collection))
       return res.json({

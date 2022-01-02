@@ -87,7 +87,7 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
           }
           let url = getUrl(params);
           if (env.mode === 'development') {
-            console.log(`> fetching ${url}`);
+            console.log(`[content/view] fetching from ${url}`);
           }
           return this.httpService.get<Payload>(url);
         }
@@ -98,8 +98,17 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
         if (typeof data === 'string') {
           data = JSON.parse(data);
         }
+
         let content = transformData(data, this.params);
         this.tags = getMetaTags(content, this.params);
+
+        if (env.mode === 'development') {
+          console.log('[content/view]', {
+            data,
+            params: this.params,
+            tags: this.tags,
+          });
+        }
         return content;
       })
     );
