@@ -68,9 +68,6 @@ export class NgxContentViewComponent implements OnInit {
 
     toObservable(this.data).subscribe(
       (data: Payload) => {
-        // todo: if (typeof data == "string") data = JSON.parse(data);
-
-        this.metaService.setTags(this.meta as Meta);
         this.type = data instanceof Array ? 'list' : 'item';
         this.content = data;
       },
@@ -84,5 +81,11 @@ export class NgxContentViewComponent implements OnInit {
         };
       }
     );
+  }
+
+  ngOnChanges(changes: any): void {
+    if (changes.meta) {
+      this.metaService.setTags(this.meta as Meta);
+    }
   }
 }
