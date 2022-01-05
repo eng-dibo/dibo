@@ -32,18 +32,22 @@ export interface Image {
   height?: number | string;
 }
 // todo: all meta tags https://gist.github.com/whitingx/3840905
+// todo: apply best practices for meta tags
 export interface Meta /* todo: extends MetaDefinition */ {
   image?: string | Image;
-  // page title
+  // page title, todo: max lenth=200
   title?: string;
   // application name
   name?: string;
-  description?: string; // or desc
+  // todo: html2text(), max length=500
+  description?: string;
   baseUrl?: string;
+  // canonical url
   url?: string;
   // type of the object you are sharing, examples: website, article, video, company
   type?: string;
   fb_app?: string;
+  // the corresponding apps in app stores
   apps?: {
     iphone: App;
     googleplay: App;
@@ -56,7 +60,7 @@ export interface Meta /* todo: extends MetaDefinition */ {
     'site:id'?: string;
     creator?: string;
     'creator:id'?: string;
-    description?: string; // max: 200 chars
+    description?: string;
     title?: string;
     image?: string;
     'image:alt'?: string;
@@ -116,9 +120,14 @@ export class MetaService {
         (tags.image as Image).src = tags.baseUrl + tags.image.src.slice(1);
       }
 
-      tags['og:image'] = (tags.image as Image).src;
-      tags['og:image:width'] = (tags.image as Image).width;
-      tags['og:image:height'] = (tags.image as Image).height;
+      tags['og:image'] = tags.image.src;
+      if (tags.image.width) {
+        tags['og:image:width'] = tags.image.width;
+      }
+
+      if (tags.image.height) {
+        tags['og:image:height'] = tags.image.height;
+      }
 
       // add <link> tag
       this.loadService.load(
@@ -205,19 +214,16 @@ export class MetaService {
         }
       }
     }
-
-    delete tags.desc;
     delete tags.url;
     delete tags.image;
-    delete tags.img;
     delete tags.fb_app;
     delete tags.baseUrl;
     delete tags.twitter;
-    delete tags.type;
     delete tags.name;
 
     // set meta tags, remove null values
-    let _tags: MetaDefinition[] = []; // tags.map((tag: any) => this.prepare(tag));
+    // tags.map((tag: any) => this.prepare(tag));
+    let _tags: MetaDefinition[] = [];
     for (let key in tags) {
       if (tags.hasOwnProperty(key)) {
         _tags.push(this.convert(key, tags[key]));
@@ -234,7 +240,7 @@ export class MetaService {
    * @returns an array of the final meta tags
    */
   // todo: <meta name> VS <meta property>
-  setTags(tags: Meta = {}): MetaDefinition[] {
+  addTags(tags: Meta = {}): HTMLMetaElement[] {
     let defaultTags = {
       viewport: 'width=device-width, initial-scale=1',
       type: 'website',
@@ -249,8 +255,8 @@ export class MetaService {
     let _tags: MetaDefinition[] = this.prepare(
       Object.assign(defaultTags, tags)
     );
-    this.metaService.addTags(_tags, false);
-    return _tags;
+
+    return this.metaService.addTags(_tags, false);
   }
 
   /**
@@ -259,28 +265,25 @@ export class MetaService {
    * @returns
    */
 
-  updateTags(tags: Meta): MetaDefinition {
-    // todo: when updating title 'for example', also update og:title, twitter:title, ...
-    // there is no method called: this.metaService.updateTags()
-
+  updateTags(tags: Meta = {}): HTMLMetaElement[] {
     // todo: retrieve all existing tags and prepare(allTags) then updateTags(tags) and return allTags
     tags = this.prepare(tags);
+    console.log({ tags });
 
-    let result: Meta[] = [];
-    for (let key in tags) {
-      if (tags.hasOwnProperty(key)) {
-        result.push({ [key]: tags[key] });
-
-        if (key === 'url' || key === 'link') {
-          // already loads by this.prepare()
-          // this.loadService.load(tags[key], { rel: 'canonical' }, 'link');
-        } else {
-          this.metaService.updateTag(this.convert(key, tags[key]));
-        }
+    let result: HTMLMetaElement[] = [];
+    tags.forEach((tag: MetaDefinition) => {
+      if (tag.name && tag.name === 'url') {
+        // already handled by this.prepare()
+        return;
       }
-    }
-    // todo: return all tags (not only the updated ones)
-    return tags;
+
+      let el = this.metaService.updateTag(tag);
+      if (el) {
+        result.push(el);
+      }
+    });
+
+    return result;
   }
 
   /**
@@ -313,7 +316,7 @@ export class MetaService {
     let prop: string;
 
     if (['charset'].includes(key)) {
-      // <meta charset="UTF-8"> not <meta charset="charset" content="UTF-8">
+      // <meta charset="UTF-8"> not <meta name="charset" content="UTF-8">
       return { [key]: value };
     }
 
