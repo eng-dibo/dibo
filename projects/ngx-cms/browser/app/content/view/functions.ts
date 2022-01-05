@@ -6,7 +6,7 @@ import {
   Meta,
 } from '@engineers/ngx-content-view-mat';
 import { html2text, length } from '@engineers/ngx-content-core/pipes-functions';
-import _defaultMetaTags from '~config/browser/meta';
+import defaultMetaTags from '~config/browser/meta';
 import { replaceAll } from '@engineers/javascript/string';
 
 export function getParams(params: any, query: any): Params {
@@ -79,41 +79,31 @@ export function transformData(data: Payload, params: Params): Payload {
 }
 
 export function getMetaTags(data: Payload, params: Params): Meta {
+  if (!data) {
+    return {};
+  }
   let metaTags;
   if (!(data instanceof Array)) {
-    let defaultTags = defaultMetaTags(params.type);
-
-    if (data.keywords && defaultTags.baseUrl) {
-      data.keywords = adjustKeywords(data.keywords, defaultTags);
+    if (data.keywords && defaultMetaTags.baseUrl) {
+      data.keywords = adjustKeywords(data.keywords, defaultMetaTags);
     }
 
     metaTags = {
-      ...defaultTags,
-      ...data,
+      ...defaultMetaTags,
+      // todo: change data.link to data.url
+      url: data.link,
+      title: data.title,
       author: data?.author?.name,
-      // todo: | data.summary
-      description: data?.content,
-      image: data?.cover || defaultTags?.image,
+      description: summary(data.content, { lineBreak: '\n', length: 500 }),
+      image: data?.cover || defaultMetaTags?.image,
       // todo: pass twitter:creator, twitter:creator:id
       // todo: expires
     };
   }
-  // todo: page link, title
+  // todo: category link, title
   else {
-    metaTags = defaultMetaTags(params.type);
+    metaTags = { ...defaultMetaTags, url: defaultMetaTags.url + params.type };
   }
-  /*
-     todo:
-     delete tags.id;
-     delete tags.slug;
-     delete tags.cover;
-     delete tags.content;
-     delete tags.summary;
-     delete tags.sources; //todo: display resources
-     delete tags.path; //todo: display path, ex: news/politics
-     //delete tags.createdAt;
-     //delete tags.updatedAt; -> last-modified
-      */
 
   // todo: if(jobs)description=..
   if (!('cover' in metaTags) && params.type === 'jobs') {
@@ -213,12 +203,4 @@ export function adjustKeywords(
 export function summary(value: string, options: any = {}): string {
   let text = html2text(value, { lineBreak: options.lineBreak || 'br' });
   return length(text, options.length || 500);
-}
-
-// todo: defaultMetaTags(): Tags{}
-export function defaultMetaTags(
-  type: string = 'articles'
-): typeof _defaultMetaTags {
-  _defaultMetaTags.link += type;
-  return _defaultMetaTags;
 }

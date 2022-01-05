@@ -10,17 +10,10 @@
  */
 
 import { Payload, Meta } from '@engineers/ngx-content-view-mat';
-import { MetaService } from '@engineers/ngx-utils/meta.service';
 import { ADSENSE } from '~config/browser';
 import env from '~config/browser/env';
 
-import {
-  Component,
-  OnInit,
-  AfterViewInit,
-  ElementRef,
-  ViewChild,
-} from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map, concatMap } from 'rxjs/operators';
@@ -119,6 +112,7 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
     // todo: use HighlightJS for `<code>..</code>`
 
     // todo: adsense profit sharing
+    // todo: if browser && !localhost||127.0.0.1
     this.loadService.load(
       '//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js',
       { 'data-ad-client': ADSENSE }
