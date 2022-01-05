@@ -85,7 +85,12 @@ export class NgxContentViewComponent implements OnInit {
 
   ngOnChanges(changes: any): void {
     if (changes.meta) {
-      this.metaService.setTags(this.meta as Meta);
+      // addTags() may causes duplication
+      // The Meta tags are equal only if values of all the attributes are equal
+      // updateTags() inserts the tag if matching meta element is not found
+      // updateTag() replaces only the first instance of the search criteria
+      // https://www.tektutorialshub.com/angular/meta-service-in-angular-add-update-meta-tags-example/
+      this.metaService.updateTags(this.meta as Meta);
     }
   }
 }
