@@ -78,7 +78,12 @@ export function transformData(data: Payload, params: Params): Payload {
   return data;
 }
 
-export function getMetaTags(data: Payload, params: Params): Meta {
+export function getMetaTags(
+  data: Payload,
+  params: Params,
+  // override tags from `data`
+  tags: any = {}
+): Meta {
   if (!data) {
     return {};
   }
@@ -96,6 +101,7 @@ export function getMetaTags(data: Payload, params: Params): Meta {
       author: data?.author?.name,
       description: summary(data.content, { lineBreak: '\n', length: 500 }),
       image: data?.cover || defaultMetaTags?.image,
+      ...tags,
       // todo: pass twitter:creator, twitter:creator:id
       // todo: expires
     };

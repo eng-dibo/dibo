@@ -26,6 +26,7 @@ import { FormlyStepperComponent } from './editor/formly-stepper/formly-stepper.c
 import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { PlatformService } from '@engineers/ngx-utils/platform';
 
 const routes: Routes = [
   { path: ':type/editor/:item', component: ContentEditorComponent },
@@ -124,6 +125,6 @@ const routes: Routes = [
     MatListModule,
     QuillModule.forRoot(),
   ],
-  providers: [MetaService, NgxLoadService],
+  providers: [MetaService, NgxLoadService, PlatformService],
 })
 export class ContentModule {}

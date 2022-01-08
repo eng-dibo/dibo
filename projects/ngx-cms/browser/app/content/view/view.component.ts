@@ -12,8 +12,16 @@
 import { Payload, Meta } from '@engineers/ngx-content-view-mat';
 import { ADSENSE } from '~config/browser';
 import env from '~config/browser/env';
+import meta from '~config/browser/meta';
 
-import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  AfterViewInit,
+  ViewChild,
+  Optional,
+  Inject,
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map, concatMap } from 'rxjs/operators';
@@ -21,6 +29,8 @@ import { urlParams } from '@engineers/ngx-utils/router';
 import { NgxLoadService } from '@engineers/ngx-utils/load-scripts.service';
 import { HttpClient } from '@angular/common/http';
 import { getParams, getUrl, transformData, getMetaTags } from './functions';
+import { REQUEST } from '@nguniversal/express-engine/tokens';
+import { PlatformService } from '@engineers/ngx-utils/platform';
 
 // todo: import module & interfaces from packages/content/ngx-content-view/index.ts
 
@@ -55,7 +65,9 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
   constructor(
     private route: ActivatedRoute,
     private httpService: HttpClient,
-    private loadService: NgxLoadService
+    private loadService: NgxLoadService,
+    @Optional() @Inject(REQUEST) protected request: Request,
+    private platform: PlatformService
   ) {}
 
   ngOnInit(): void {
@@ -93,7 +105,21 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
         }
 
         let content = transformData(data, this.params);
-        this.tags = getMetaTags(content, this.params);
+        if (this.platform.isServer() && this.request) {
+          // set met tags in server only, no need to re-set them again in the browser
+          /*
+            to grt baseUrl:
+              - in browser: use location or document.baseURI
+              - in server:
+                 - @Inject(DOCUMENT) -> doesn't have .baseURI (this.document.baseURI)
+                 - @Inject(REQUEST) -> this.request.hostname          
+          */
+          // @ts-ignore
+          let baseUrl = `${this.request.protocol}://${this.request.hostname}${
+            meta.URL || '/'
+          }`;
+          this.tags = getMetaTags(content, this.params, { baseUrl });
+        }
 
         if (env.mode === 'development') {
           console.log('[content/view]', {
