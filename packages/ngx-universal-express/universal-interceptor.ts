@@ -13,6 +13,8 @@ import { Observable } from 'rxjs';
 
 @Injectable()
 export class UniversalInterceptor implements HttpInterceptor {
+  // the REQUEST token is available in the server only (not in the browser)
+  // so we make it @Optional(), and it may be undefined
   constructor(@Optional() @Inject(REQUEST) protected request: Request) {}
 
   intercept(
