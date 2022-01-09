@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
-import { metaTags, toolbar as _toolbar } from '~config/browser';
+import { Meta } from '@engineers/ngx-utils/meta.service';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -8,7 +9,9 @@ import { metaTags, toolbar as _toolbar } from '~config/browser';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  name = metaTags.name;
+  meta: Meta;
+  toolbar: any;
+
   /*
   to get the toolbar content (as html) from ~config/toolbar.html
   ```
@@ -24,20 +27,33 @@ export class AppComponent {
    compile it at runtime
    https://www.linkedin.com/pulse/compiling-angular-templates-runtime-dima-slivin
   */
-  toolbar = _toolbar;
 
-  constructor(private http: HttpClient) {
-    this.toolbar.map((item: any) => {
-      if (!item.tag) {
-        if (item.link) {
-          item.tag = 'a';
-        } else if (item.click) {
-          item.tag = 'button';
-        } else {
-          item.tag = 'div';
+  constructor(private http: HttpClient) {}
+
+  ngOnInit(): void {
+    forkJoin([
+      this.http.get('api/v1/config/browser/meta'),
+      this.http.get('api/v1/config/browser/toolbar'),
+    ]).subscribe(
+      (result: any) => {
+        this.meta = result[0].default;
+        let toolbar = result[1].default;
+        if (toolbar && toolbar instanceof Array) {
+          this.toolbar = toolbar.map((item: any) => {
+            if (!item.tag) {
+              if (item.link) {
+                item.tag = 'a';
+              } else if (item.click) {
+                item.tag = 'button';
+              } else {
+                item.tag = 'div';
+              }
+            }
+            return item;
+          });
         }
-      }
-      return item;
-    });
+      },
+      (err) => console.log({ err })
+    );
   }
 }

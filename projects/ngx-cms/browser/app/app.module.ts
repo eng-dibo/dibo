@@ -10,7 +10,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { UniversalInterceptor } from '@engineers/ngx-universal-express/universal-interceptor';
 import { ApiInterceptor } from './http.interceptor';
-import env from '~config/browser/env';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 /*
 routes are loaded in the following order:
@@ -43,6 +43,7 @@ const enableTracing = false; // env.mode === 'development';
     RouterModule.forRoot(endRoutes, { enableTracing }),
     BrowserAnimationsModule,
     MatToolbarModule,
+    MatTooltipModule,
     HttpClientModule,
   ],
   providers: [
