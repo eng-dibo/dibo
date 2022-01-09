@@ -140,6 +140,20 @@ app.get(/\/image\/([^/-]+)-([^/-]+)-([^/]+)/, (req: any, res: any) => {
     .catch((error: any) => res.json({ error }));
 });
 
+app.get(/\/config\/(.+)/, (req: any, res: any) => {
+  let nativeRequire = require('@engineers/webpack/native-require');
+  let filePath = resolve(__dirname, `../../config/${req.params[0]}`);
+  let content = nativeRequire(filePath);
+  res.json(content);
+
+  /*
+  // todo: use ES6 dynamic import(), requires node>14
+  import(filePath)
+    .then((content) => res.json(content))
+    .catch((error) => res.json({ error, filePath }));
+    */
+});
+
 // todo: /backup?filter=db1,db2:coll1,coll2,db3:!coll4
 app.get('/backup', (req: any, res: any) => {
   let filter: any;
