@@ -1,5 +1,4 @@
 import { Meta } from '@engineers/ngx-utils/meta.service';
-import env from './env';
 
 let metaTags: Meta = {
   name: 'site name',
@@ -14,7 +13,8 @@ let metaTags: Meta = {
     'site:id': '',
   },
   //page title, site name will be added to title via meta.service
-  title: 'ngx-cms',
+  // default = site name
+  title: undefined,
 };
 
 export default metaTags;
