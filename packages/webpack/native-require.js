@@ -14,9 +14,8 @@
       }
    
    file.js:
-   import nativeRequire from '$path/native-require'
-   let file = '/some/module.js'
-   const someModule = nativeRequire(file)  
+   import nativeRequire = require('./native-require')
+   const someModule = nativeRequire('./module.js')  
 */
 
 module.exports = require;
