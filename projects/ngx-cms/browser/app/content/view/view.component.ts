@@ -10,8 +10,8 @@
  */
 
 import { Payload, Meta } from '@engineers/ngx-content-view-mat';
-import { ADSENSE } from '~config/browser';
 import env from '~config/browser/env';
+// todo: get meta by http.get('/config/browser/meta')
 import meta from '~config/browser/meta';
 
 import {
@@ -136,12 +136,5 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
   }
   ngAfterViewInit(): void {
     // todo: use HighlightJS for `<code>..</code>`
-
-    // todo: adsense profit sharing
-    // todo: if browser && !localhost||127.0.0.1
-    this.loadService.load(
-      '//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js',
-      { 'data-ad-client': ADSENSE }
-    );
   }
 }
