@@ -16,7 +16,8 @@
     "serve:ng": "ng serve",
     "prerender": "ng run ngx-cms:prerender",
     "setup": "npm run task -- setup",
-    "postinstall": "ngcc"
+    "postinstall": "ngcc",
+    "kill-port:linux": "fuser -k 4200/tcp"
   },
   "private": false,
   "main": "../../dist/ngx-cms/core/server/express.js",
