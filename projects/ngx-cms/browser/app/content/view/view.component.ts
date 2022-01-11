@@ -10,7 +10,7 @@
  */
 
 import { Payload, Meta } from '@engineers/ngx-content-view-mat';
-import env from '~config/browser/env';
+import env from '../../../env';
 // todo: get meta by http.get('/config/browser/meta')
 import meta from '~config/browser/meta';
 

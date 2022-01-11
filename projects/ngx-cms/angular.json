@@ -40,8 +40,8 @@
             "production": {
               "fileReplacements": [
                 {
-                  "replace": "./config/browser/env.ts",
-                  "with": "./config/browser/env.prod.ts"
+                  "replace": "./browser/env.ts",
+                  "with": "./browser/env.prod.ts"
                 }
               ],
               "optimization": true,
@@ -136,8 +136,8 @@
               "outputHashing": "media",
               "fileReplacements": [
                 {
-                  "replace": "./config/browser/env.ts",
-                  "with": "./config/browser/env.prod.ts"
+                  "replace": "./browser/env.ts",
+                  "with": "./browser/env.prod.ts"
                 }
               ],
               "optimization": true,
