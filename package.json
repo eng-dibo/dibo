@@ -21,10 +21,6 @@
     "*": "npm run lint"
   },
   "private": false,
-  "globalDependencies": [
-    "webpack-cli@^4.8.0",
-    "ts-node@10.2.1"
-  ],
   "dependencies": {
     "tslib": "^2.0.0"
   },
