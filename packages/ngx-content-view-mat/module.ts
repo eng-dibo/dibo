@@ -34,9 +34,9 @@ import {
 } from '@fortawesome/angular-fontawesome';
 import { fab } from '@fortawesome/free-brands-svg-icons';
 import { fas } from '@fortawesome/free-solid-svg-icons';
-import { NgxLoadingModule } from 'ngx-loading';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { LazyLoadDirective } from '@engineers/lazy-load';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @NgModule({
   declarations: [
@@ -62,11 +62,7 @@ import { LazyLoadDirective } from '@engineers/lazy-load';
     FontAwesomeModule,
     HttpClientModule,
     NgxContentCoreModule,
-    NgxLoadingModule.forRoot({
-      primaryColour: 'red',
-      secondaryColour: 'blue',
-      tertiaryColour: 'green',
-    }),
+    MatProgressSpinnerModule,
     ScrollingModule,
   ],
   providers: [],

@@ -21,9 +21,13 @@ todo:
   ></ng-container>
 </ng-container>
 
-<ng-container #loading *ngIf="!content && !board">
-  <ngx-loading [show]="true"></ngx-loading>
-</ng-container>
+<!-- todo: move the loading spinner implementation to the parent component -->
+<mat-spinner
+  strokeWidth="10"
+  diameter="200"
+  *ngIf="!content && !board"
+  style="margin: auto"
+></mat-spinner>
 
 <ng-template let-item="data" #itemBlock>
   <ngx-content-article
