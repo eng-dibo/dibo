@@ -7,7 +7,7 @@
     "database"
   ],
   "dependencies": {
-    "mongoose": "^5.13.2",
+    "mongoose": "^6.1.6",
     "shortid": "^2.2.16"
   },
   "repository": {

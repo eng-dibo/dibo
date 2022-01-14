@@ -3,7 +3,7 @@
   "description": "convert Angular projects into universal apps using `expressjs`",
   "dependencies": {
     "@nguniversal/express-engine": "",
-    "express": "^4.15.2"
+    "express": "^4.17.2"
   },
   "repository": {
     "type": "git",

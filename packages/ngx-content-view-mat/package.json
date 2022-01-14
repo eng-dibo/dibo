@@ -9,16 +9,16 @@
     "material design"
   ],
   "dependencies": {
-    "ngx-highlightjs": "^4.1.4",
-    "ngx-quill": "^14.2.0",
-    "ngx-sharebuttons": "^8.0.5",
-    "@fortawesome/angular-fontawesome": "^0.9.0",
-    "@fortawesome/fontawesome-svg-core": "^1.2.28",
+    "ngx-highlightjs": "^6.1.1",
+    "ngx-quill": "^16.1.1",
+    "ngx-sharebuttons": "^9.0.0",
+    "@fortawesome/angular-fontawesome": "^0.10.1",
+    "@fortawesome/fontawesome-svg-core": "^1.2.36",
     "@fortawesome/free-brands-svg-icons": "^5.15.4",
     "@fortawesome/free-solid-svg-icons": "^5.15.4"
   },
   "peerDependencies": {
-    "@angular/material": "^14"
+    "@angular/material": "^13"
   },
   "repository": {
     "type": "git",

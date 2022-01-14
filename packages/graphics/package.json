@@ -8,7 +8,7 @@
     "resize images"
   ],
   "dependencies": {
-    "sharp": "^0.26.3"
+    "sharp": "^0.29.3"
   },
   "repository": {
     "type": "git",
