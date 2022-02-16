@@ -27,7 +27,7 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
 import { HighlightModule } from 'ngx-highlightjs';
 import { QuillModule } from 'ngx-quill';
-import { ShareButtonsModule } from 'ngx-sharebuttons/buttons';
+// import { ShareButtonsModule } from 'ngx-sharebuttons/buttons';
 import {
   FontAwesomeModule,
   FaIconLibrary,
@@ -58,7 +58,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatButtonModule,
     HighlightModule,
     QuillModule.forRoot(),
-    ShareButtonsModule,
+    //  ShareButtonsModule,
     FontAwesomeModule,
     HttpClientModule,
     NgxContentCoreModule,

@@ -1,7 +1,7 @@
 // todo: use @use instead of @import https://sass-lang.com/documentation/at-rules/import
 // not supported by sass-loader, use dart-loader https://github.com/webpack-contrib/sass-loader#getting-started
 // todo: '~' is deprecated https://github.com/webpack-contrib/sass-loader#resolving-import-at-rules
-@import "~ngx-sharebuttons/themes/default/default-theme";
+// @import "~ngx-sharebuttons/themes/default/default-theme";
 @import "~quill/dist/quill.core.css";
 @import "~quill/dist/quill.snow.css";
 
