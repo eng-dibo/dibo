@@ -136,7 +136,7 @@ export class ContentEditorComponent implements OnInit {
    * @param query
    * @returns
    */
-  getCache(key: string, query: Observable<any>) {
+  getCache<T>(key: string, query: Observable<any>): Observable<T> {
     return this.cache[key]
       ? of(this.cache[key])
       : query.pipe(
@@ -153,7 +153,7 @@ export class ContentEditorComponent implements OnInit {
    * @returns
    */
   getData<T>(): Observable<T> {
-    return this.getCache(
+    return this.getCache<T>(
       'data',
       this.params.id
         ? this.httpService.get<T>(`/${this.params.type}/${this.params.id}`)
@@ -162,7 +162,7 @@ export class ContentEditorComponent implements OnInit {
   }
 
   getCategories(): Observable<any> {
-    return this.getCache(
+    return this.getCache<any>(
       'categories',
       this.httpService.get<any>('/articles_categories')
     );
