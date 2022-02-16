@@ -10,7 +10,6 @@ import { NgxLoadService } from '@engineers/ngx-utils/load-scripts.service';
 import { FormlyModule, FormlyFieldConfig } from '@ngx-formly/core';
 import { FormlyMaterialModule } from '@ngx-formly/material';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { NgxLoadingModule } from 'ngx-loading';
 import { FormlyTreeComponent } from './editor/formly-tree/formly-tree.component';
 import {
   FormlyFileComponent,
@@ -111,11 +110,6 @@ const routes: Routes = [
       ],
     }),
     FormlyMaterialModule,
-    NgxLoadingModule.forRoot({
-      primaryColour: 'red',
-      secondaryColour: 'blue',
-      tertiaryColour: 'green',
-    }),
     MatTreeModule,
     MatIconModule,
     MatCheckboxModule,
