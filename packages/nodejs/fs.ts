@@ -10,8 +10,9 @@ import {
   MakeDirectoryOptions,
   WriteFileOptions,
   lstatSync,
-  Abortable,
 } from 'fs';
+
+import { Abortable } from 'node:events';
 
 import {
   MoveOptions,

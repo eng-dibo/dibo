@@ -51,8 +51,6 @@ export function connect(
     bufferCommands: false,
     autoIndex: false,
     keepAlive: true,
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
     //  writeConcern: { w: 'majority' },
   };
   let opts = Object.assign(options || {}, defaultOptions);

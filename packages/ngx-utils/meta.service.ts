@@ -176,7 +176,7 @@ export class MetaService {
             for (let kk in tags.app[k]) {
               if (tags.app[k].hasOwnProperty(kk)) {
                 defaultTwitterTags[
-                  `${kk}:${k}` as keyof typeof defaultTwitterTags
+                  `${kk}:${k}` as unknown as keyof typeof defaultTwitterTags
                 ] = tags.app[k][kk];
               }
             }
