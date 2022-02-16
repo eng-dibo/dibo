@@ -9,6 +9,7 @@ node_modules
 *.log
 *.cache
 *.tmp
+.angular
 
 # any folder or file ends with '!!' or '~~', 
 # examples: notes!!, notes!!.md
