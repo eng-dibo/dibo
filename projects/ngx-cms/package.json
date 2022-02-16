@@ -57,7 +57,7 @@
     "rxjs": "~7.5.2",
     "sharp": "^0.29.3",
     "shortid": "^2.2.16",
-    "strip-json-comments": "^4.0.0",
+    "strip-json-comments": "^3.1.1",
     "ts-jest": "^27.1.2",
     "tslib": "^2.3.1",
     "zone.js": "~0.11.4"
