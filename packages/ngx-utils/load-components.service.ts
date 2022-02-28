@@ -1,5 +1,6 @@
-import { ComponentRef, ViewContainerRef } from '@angular/core';
 import {
+  ComponentRef,
+  ViewContainerRef,
   Injectable,
   ComponentFactoryResolver,
   Renderer2,

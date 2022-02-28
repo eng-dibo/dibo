@@ -3,7 +3,7 @@
 import { test, expect, beforeAll, afterAll } from '@jest/globals';
 import webpack, { Configuration } from 'webpack';
 import { write, read, remove } from '@engineers/nodejs/fs-sync';
-import { resolve } from 'path';
+import { resolve } from 'node:path';
 import externals, { node } from './externals';
 
 let config: Configuration;

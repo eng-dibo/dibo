@@ -1,6 +1,5 @@
 import { test, expect, beforeAll } from '@jest/globals';
 import { dev, bucket, getCategories } from './functions';
-import { storage } from 'firebase-admin';
 import { connect } from './mongoose';
 import { uri } from '../../../packages/mongoose/test/config';
 

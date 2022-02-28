@@ -1,6 +1,12 @@
 {
   "name": "@engineers/ngx-content-core",
   "description": "tools for managing the content in Angular.",
+  "peerDependencies": {
+    "@angular/core": "^13.1.2",
+    "@angular/platform-browser": "^13.1.2",
+    "@angular/router": "^13.1.2"
+  },
+  "dependencies": {},
   "keywords": [
     "angular",
     "cms",

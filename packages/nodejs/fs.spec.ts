@@ -16,7 +16,7 @@ import {
   remove,
   getEntries,
 } from './fs';
-import { existsSync } from 'fs';
+import { existsSync } from 'node:fs';
 import { objectType } from '@engineers/javascript/objects';
 
 let dir = resolve(__dirname, './test!!/fs'),

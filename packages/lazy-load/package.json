@@ -23,5 +23,9 @@
   "name": "@engineers/lazy-load",
   "description": "lazy load images or any element has 'srs' or 'srcset' attribute",
   "version": "0.0.1",
-  "private": false
+  "private": false,
+  "peerDependencies": {
+    "@angular/core": "^13.1.2",
+    "@angular/common": "^13.1.2"
+  }
 }

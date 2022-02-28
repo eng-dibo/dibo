@@ -1,6 +1,9 @@
 {
   "name": "@engineers/rxjs",
-  "description": "rxjs",
+  "description": "rxjs utils",
+  "dependencies": {
+    "rxjs": "^7.4.0"
+  },
   "keywords": [
     "rxjs"
   ],

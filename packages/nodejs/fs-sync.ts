@@ -9,7 +9,7 @@ import {
   dirname,
   basename,
   extname,
-} from 'path';
+} from 'node:path';
 import { objectType, Obj } from '@engineers/javascript/objects';
 
 import {
@@ -27,7 +27,12 @@ import {
   PathLike,
   WriteFileOptions,
   readFileSync,
-} from 'fs';
+} from 'node:fs';
+
+// strip-json-comments v4.0.0 supports esm only
+// to use it in a commonjs project use version < 4.0.0
+// or use https://www.npmjs.com/package/jsonminify
+// https://github.com/sindresorhus/strip-json-comments/issues/53#issuecomment-1024804079
 import stripJsonComments from 'strip-json-comments';
 
 /**

@@ -1,5 +1,9 @@
-import { argv } from 'process';
-import { exec, execSync as _execSync, ExecSyncOptions } from 'child_process';
+import { argv } from 'node:process';
+import {
+  exec,
+  execSync as _execSync,
+  ExecSyncOptions,
+} from 'node:child_process';
 import {
   Obj,
   chunk,

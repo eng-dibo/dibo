@@ -1,4 +1,4 @@
-import { PathLike } from 'fs';
+import { PathLike } from 'node:fs';
 import { isPromise } from '@engineers/javascript/objects';
 import { resolve, ReadOptions } from './fs-sync';
 import { read, write } from './fs';
