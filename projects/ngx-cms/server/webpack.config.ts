@@ -26,9 +26,14 @@ let config: Configuration = webpackMerge(baseConfig, {
        - @babel/runtime -> temporary to solve the error `SyntaxError: Unexpected token 'export'`
          when using as async/await function (todo: why it should excluded from webpack.externals)
     */
-    node(undefined, [/@engineers\/.+/, /\.s?css$/, /^~/, /@babel\/runtime/]),
-    // add @engineers/*, ~*, ~~* to externals
-    // externals([/@engineers\/.+/],'commonjs2 ../../../../packages/{{request}}'),
+    /* todo: fix: some packages (like @angular/*, @ngx-formly/*) couldn't be handled as commonjs
+      as a temporary workaround remove node() from externals[]
+      and manually add 'sharp'
+   */
+    // node(undefined, [/@engineers\/.+/, /\.s?css$/, /^~/, /@babel\/runtime/]),
+    function () {
+      externals(arguments, [/sharp/], 'commonjs2 {{request}}');
+    },
     function () {
       externals(
         arguments,
