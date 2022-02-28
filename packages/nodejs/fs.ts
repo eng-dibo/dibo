@@ -21,7 +21,7 @@ import {
   ReadOptions,
   stripComments,
 } from './fs-sync';
-import { dirname, join } from 'path';
+import { dirname, join } from 'node:path';
 import { objectType, Obj } from '@engineers/javascript/objects';
 import stripJsonComments from 'strip-json-comments';
 // todo: import { lstat } from 'fs/promises';

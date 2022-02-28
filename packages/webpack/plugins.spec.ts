@@ -9,7 +9,7 @@ import {
 import BasePlugin from './plugins';
 import webpack, { Configuration } from 'webpack';
 import { write, remove } from '@engineers/nodejs/fs-sync';
-import { resolve } from 'path';
+import { resolve } from 'node:path';
 
 let config: any;
 let root: string;

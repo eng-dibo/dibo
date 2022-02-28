@@ -22,7 +22,7 @@ import {
 } from './fs-sync';
 import { objectType } from '@engineers/javascript/objects';
 
-import { existsSync, readFileSync } from 'fs';
+import { existsSync, readFileSync } from 'node:fs';
 
 let dir = resolve(__dirname, './test!!/fs-sync'),
   file = dir + '/file.txt';

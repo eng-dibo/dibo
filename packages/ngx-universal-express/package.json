@@ -2,8 +2,13 @@
   "name": "@engineers/ngx-universal-express",
   "description": "convert Angular projects into universal apps using `expressjs`",
   "dependencies": {
-    "@nguniversal/express-engine": "",
-    "express": "^4.17.2"
+    "@nguniversal/express-engine": "^13.0.1",
+    "express": "^4.17.2",
+    "zone.js": "~0.11.4",
+    "rxjs": "^7.4.0"
+  },
+  "peerDependencies": {
+    "@angular/common": "^13.1.2"
   },
   "repository": {
     "type": "git",

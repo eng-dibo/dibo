@@ -2,7 +2,7 @@
 
 import { toRegExp } from '@engineers/javascript/regex';
 import { includes, Obj } from '@engineers/javascript/objects';
-import { resolve } from 'path';
+import { resolve } from 'node:path';
 
 export interface ExternalsParams {
   // the absolute 'request' path
