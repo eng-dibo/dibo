@@ -15,10 +15,13 @@ let config: Configuration = webpackMerge(baseConfig, {
   },
 });
 
-(
-  config.module!.rules!.find((el: any) => el.loader === 'ts-loader') as {
-    [key: string]: any;
-  }
-).options!.configFile = resolve(__dirname, './tsconfig.json');
+let tsLoader = config.module!.rules!.find(
+  // todo: (el: RuleSetRule)
+  (el: any) => el.loader === 'ts-loader'
+) as { [key: string]: any };
+
+if (tsLoader) {
+  tsLoader.options!.configFile = resolve(__dirname, './tsconfig.json');
+}
 
 export default config;
