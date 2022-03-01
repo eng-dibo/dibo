@@ -1,5 +1,7 @@
-// require() not defined in browser https://sebhastian.com/javascript-require-is-not-defined/
+// require() is not defined in browser
 // await import() expects a js module, not json
+// https://sebhastian.com/javascript-require-is-not-defined/
+
 import info from "./info.json" assert { type: "json" };
 
 export let googleAnalytics = "";
