@@ -12,7 +12,7 @@ let config: Configuration = webpackMerge(baseConfig, {
   externals: [],
 });
 
-// remove ts-loader as .ts files already loaded by angular linker
+// remove ts-loader as .ts files already loaded by Angular linker
 config.module!.rules = config.module!.rules!.filter(
   // todo: (el: RuleSetRule)
   (el: any) => el.loader !== 'ts-loader'
