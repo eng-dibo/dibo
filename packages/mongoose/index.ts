@@ -152,7 +152,8 @@ export function model(
 
   if (connection.models[collection]) {
     if (options.override) {
-      delete connection.models[collection];
+      // todo: connection.models is Readonly
+      // delete connection.models[collection];
     } else {
       return connection.models[collection];
     }
