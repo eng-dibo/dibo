@@ -12,12 +12,20 @@ let config: Configuration = webpackMerge(baseConfig, {
   externals: [],
 });
 
-// use tsconfig.json for this project to use the project's paths
-(
-  config.module!.rules!.find(
-    // todo: (el: RuleSetRule)
-    (el: any) => el.loader === 'ts-loader'
-  ) as { [key: string]: any }
-).options!.configFile = resolve(__dirname, './tsconfig.json');
+// remove ts-loader as .ts files already loaded by angular linker
+config.module!.rules = config.module!.rules!.filter(
+  // todo: (el: RuleSetRule)
+  (el: any) => el.loader !== 'ts-loader'
+);
+
+// if ts-loader used, change tsconfig.json for this project to use the project's paths
+let tsLoader = config.module!.rules!.find(
+  // todo: (el: RuleSetRule)
+  (el: any) => el.loader === 'ts-loader'
+) as { [key: string]: any };
+
+if (tsLoader) {
+  tsLoader.options!.configFile = resolve(__dirname, './tsconfig.json');
+}
 
 export default config;

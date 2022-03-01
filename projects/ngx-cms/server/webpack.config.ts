@@ -1,6 +1,6 @@
 import { resolve } from 'path';
 import baseConfig from '~webpack.config';
-import { Configuration } from 'webpack';
+import { Configuration, RuleSetRule } from 'webpack';
 import webpackMerge from 'webpack-merge';
 import externals, { node } from '@engineers/webpack/externals';
 
@@ -26,9 +26,14 @@ let config: Configuration = webpackMerge(baseConfig, {
        - @babel/runtime -> temporary to solve the error `SyntaxError: Unexpected token 'export'`
          when using as async/await function (todo: why it should excluded from webpack.externals)
     */
-    node(undefined, [/@engineers\/.+/, /\.s?css$/, /^~/, /@babel\/runtime/]),
-    // add @engineers/*, ~*, ~~* to externals
-    // externals([/@engineers\/.+/],'commonjs2 ../../../../packages/{{request}}'),
+    /* todo: fix: some packages (like @angular/*, @ngx-formly/*) couldn't be handled as commonjs
+      as a temporary workaround remove node() from externals[]
+      and manually add 'sharp'
+   */
+    // node(undefined, [/@engineers\/.+/, /\.s?css$/, /^~/, /@babel\/runtime/]),
+    function () {
+      externals(arguments, [/sharp/], 'commonjs2 {{request}}');
+    },
     function () {
       externals(
         arguments,
@@ -40,11 +45,13 @@ let config: Configuration = webpackMerge(baseConfig, {
 });
 
 // use tsconfig.json for server
-(
-  config.module!.rules!.find(
-    // todo: (el: RuleSetRule)
-    (el: any) => el.loader === 'ts-loader'
-  ) as { [key: string]: any }
-).options!.configFile = resolve(__dirname, './tsconfig.json');
+let tsLoader = config.module!.rules!.find(
+  // todo: (el: RuleSetRule)
+  (el: any) => el.loader === 'ts-loader'
+) as { [key: string]: any };
+
+if (tsLoader) {
+  tsLoader.options!.configFile = resolve(__dirname, './tsconfig.json');
+}
 
 export default config;
