@@ -152,7 +152,8 @@ export function model(
 
   if (connection.models[collection]) {
     if (options.override) {
-      delete connection.models[collection];
+      // todo: connection.models is Readonly
+      // delete connection.models[collection];
     } else {
       return connection.models[collection];
     }
@@ -161,7 +162,6 @@ export function model(
   let opts = Object.assign(
     {},
     {
-      override: false,
       collection,
       // add createdAt, updatedAt
       // https://mongoosejs.com/docs/guide.html#timestamps
