@@ -3,6 +3,7 @@
 // todo: {property: string|()=>string}
 // todo: support sub-tags (i.e: {content: string | HtmlElement})
 // example: <a> <im /> </a>
+
 export interface HtmlElement {
   tag?: string;
   click?: string | (() => void);
@@ -11,7 +12,6 @@ export interface HtmlElement {
   link?: string;
   content?: string;
 }
-
 export interface Img extends HtmlElement {
   src?: string;
   width?: string;
@@ -23,13 +23,5 @@ export interface Img extends HtmlElement {
 export interface ToolbarItem extends HtmlElement {
   title?: string;
 }
-
-// todo: img.logo
-let toolbar: ToolbarItem[] = [
-  { content: 'jobs', link: '/jobs' },
-  { content: 'articles', link: '/' },
-  { content: 'follow us', link: '/social' },
-  { class: 'spacer' },
-  { content: 'login', id: 'member' },
-];
+declare let toolbar: ToolbarItem[];
 export default toolbar;

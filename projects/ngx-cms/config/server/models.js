@@ -1,7 +1,6 @@
 // data models
-
-import shortId from 'shortid';
-import mongoose from 'mongoose';
+const shortId = require("shortid");
+const mongoose = require("mongoose");
 
 /*
 //replace '-' with '@', because it will be used as a separator between the id and the slug,
@@ -14,14 +13,14 @@ shortid.characters(
 
 // times (createdAt, updatedAt) are added automatically, by the option {typestamps: true}
 
-export let articles = {
+let articles = {
   _id: { type: String, default: shortId.generate },
   title: String,
   subtitle: String,
   content: String,
   summary: String,
-  keywords: [{ type: String, ref: 'keywords' }],
-  author: { type: String, ref: 'persons' },
+  keywords: [{ type: String, ref: "keywords" }],
+  author: { type: String, ref: "persons" },
   // pending, approved, denied, expired
   status: String,
   // example: denied reason
@@ -30,16 +29,17 @@ export let articles = {
   categories: [String],
   sources: String,
 };
+module.exports.articles = articles;
 
-export let jobs = Object.assign(articles, {
+module.exports.jobs = Object.assign(articles, {
   contacts: String,
 });
 
-export let categories = {
+module.exports.categories = {
   _id: { type: String, default: shortId.generate },
   title: String,
   slug: String,
-  parent: { type: String, ref: 'categories' },
+  parent: { type: String, ref: "categories" },
   // associated social accounts
   // todo: social:[{type:'fb.page', id, name}]
   fb_pages: [String],
@@ -48,7 +48,7 @@ export let categories = {
   config: {},
 };
 
-export let keywords = {
+module.exports.keywords = {
   _id: { type: String, default: shortId.generate },
   text: String,
   // same as articles.status (approved keywords appears in suggestions)
@@ -57,7 +57,7 @@ export let keywords = {
   count: Number,
 };
 
-export let countries = {
+module.exports.countries = {
   // country code, ex: 'EG'
   _id: String,
   name: {
@@ -65,21 +65,21 @@ export let countries = {
     native: String,
   },
   // formal language
-  language: { type: String, ref: 'languages' },
+  language: { type: String, ref: "languages" },
   capital: String,
   currency: String,
 };
 
-export let cities = {
+module.exports.cities = {
   _id: { type: String, default: shortId.generate },
-  country: { type: String, ref: 'countries' },
+  country: { type: String, ref: "countries" },
   name: {
     en: String,
     native: String,
   },
 };
 
-export let languages = {
+module.exports.languages = {
   // language code, ex: 'ar', 'en'
   _id: String,
   name: {
@@ -88,31 +88,31 @@ export let languages = {
   },
 };
 
-export let persons = {
+module.exports.persons = {
   _id: { type: String, default: shortId.generate },
   // [first, mid, last]
   name: [String],
   gender: String,
   birthday: [Number],
-  nationality: { type: String, ref: 'countries' },
+  nationality: { type: String, ref: "countries" },
   // residence country & city
-  country: { type: String, ref: 'countries' },
-  city: { type: String, ref: 'cities' },
+  country: { type: String, ref: "countries" },
+  city: { type: String, ref: "cities" },
   // type= national id, passport, ...
   ids: [{ type: { type: String }, value: String }],
   // account role, ex: admin, moderator,...
   // todo: move role to persons
-  role: { type: mongoose.Types.ObjectId, ref: 'roles' },
+  role: { type: mongoose.Types.ObjectId, ref: "roles" },
 };
 
 // logins collection now merged with accounts
 // {type:"login", entries:{ type:"email|mobile|fb", pass:"", confirmed:boolean}}
-export let accounts = {
+module.exports.accounts = {
   _id: { type: String, default: shortId.generate },
   // email, mobile, system (system account)
   type: String,
   entry: String,
-  user: { type: String, ref: 'persons' },
+  user: { type: String, ref: "persons" },
   // todo: last confirmed timestamp
   confirmed: { type: Boolean, default: false },
   // the primary account for a specific account type
@@ -121,7 +121,7 @@ export let accounts = {
   // if the account doesn't receive our messages, put `active: false` flag
   active: Boolean,
   auth: {
-    type: { String, default: 'password' },
+    type: { String, default: "password" },
     value: String,
   },
   // example: for Adsense: { slot, channel};
@@ -129,12 +129,12 @@ export let accounts = {
 };
 
 // CV extends person info
-export let cv = {
+module.exports.cv = {
   _id: { type: String, default: shortId.generate },
-  person: { type: String, ref: 'persons' },
+  person: { type: String, ref: "persons" },
   job_hsitory: [
     {
-      company: { type: String, ref: 'places' },
+      company: { type: String, ref: "places" },
       position: String,
       // tasks, activities, job description, ...
       notes: String,
@@ -142,8 +142,8 @@ export let cv = {
       //validation: current job has no end value [Date, null]
       // validation: when selecting a job as current, offer to remove the previous current job and set an end date
       period: [Date],
-      country: { type: String, ref: 'countries' },
-      city: { type: String, ref: 'cities' },
+      country: { type: String, ref: "countries" },
+      city: { type: String, ref: "cities" },
     },
   ],
   education: [
@@ -151,7 +151,7 @@ export let cv = {
       // example: primary school, PHD, ...
       level: String,
       // school or college info
-      place: { type: String, ref: 'places' },
+      place: { type: String, ref: "places" },
       department: String,
       university: String,
       period: [Date],
@@ -159,24 +159,24 @@ export let cv = {
   ],
   languages: [
     // fluency%
-    { language: { type: String, ref: 'languages' }, fluency: Number },
+    { language: { type: String, ref: "languages" }, fluency: Number },
   ],
   // level%
   skills: [{ name: String, level: Number }],
 };
 
-export let places = {
+module.exports.places = {
   name: String,
   // [lang, lat]
   location: [String],
-  country: { type: String, ref: 'countries' },
-  city: { type: String, ref: 'cities' },
+  country: { type: String, ref: "countries" },
+  city: { type: String, ref: "cities" },
   description: String,
   // example: company, club, shop, store, ...
   type: String,
   // the head square place for this branch
-  head: { type: String, ref: 'places' },
-  contacts: [{ type: String, ref: 'accounts' }],
+  head: { type: String, ref: "places" },
+  contacts: [{ type: String, ref: "accounts" }],
   extra: {},
 };
 
@@ -191,7 +191,7 @@ roles example:
  ]
 },
  */
-export let roles = {
+module.exports.roles = {
   // admin, moderator, writer, advertiser, user, guest
   name: String,
   permissions: [{ type: { type: String }, scope: String, allowed: [String] }],

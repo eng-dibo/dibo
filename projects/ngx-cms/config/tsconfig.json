@@ -1,9 +1,0 @@
-{
-  "extends": "../tsconfig.json",
-  "compilerOptions": {
-    "outDir": "../../../dist/ngx-cms/config",
-    "removeComments": false,
-    "sourceMap": false,
-    "module": "commonjs"
-  }
-}

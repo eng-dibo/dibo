@@ -16,12 +16,6 @@ export type Mode = 'production' | 'development' | 'test';
 export interface BuildOptions {
   targets?: string | Array<string>;
   mode?: Mode;
-  // for buildConfig
-  // if `js`, use webpack to generate js bundles
-  // otherwise, copy files from source as .ts, use `node-ts`to run the server
-  // webpack produces a non-human readable output, as an alternative use ts-node to run from .ts files directly
-  // example: > `cross-env BUILD_OUTPUT=js npm run task -- build --targets=config`
-  output?: 'ts' | 'js';
 }
 
 export default function (options?: BuildOptions): void {
@@ -29,7 +23,6 @@ export default function (options?: BuildOptions): void {
     {
       targets: process.env.BUILD_TARGETS || 'browser,server,config,package',
       mode: process.env.NODE_ENV || 'production',
-      output: process.env.BUILD_OUTPUT || 'ts',
     },
     options || {}
   );
@@ -50,7 +43,7 @@ export default function (options?: BuildOptions): void {
     buildServer(opts.mode);
   }
   if (targets.includes('config')) {
-    buildConfig(opts.output);
+    buildConfig();
   }
   if (targets.includes('package')) {
     buildPackage();
@@ -70,14 +63,14 @@ export function buildBrowser(mode: Mode = 'production'): void {
 export function buildServer(mode: Mode = 'production'): void {
   let cmd = `ng run ngx-cms:server:${
     mode === 'production' ? 'production' : ''
-  } --bundle-dependencies`;
+  } `;
 
   console.log(`> build server: ${cmd}`);
   execSync(cmd);
   write(`${destination}/core/server/info.json`, { mode, time });
 }
 
-export function buildConfig(output?: string): void {
+export function buildConfig(): void {
   console.log(`> build config`);
 
   ['browser', 'server'].forEach((target) => {
@@ -87,20 +80,13 @@ export function buildConfig(output?: string): void {
       // user-specific files (i.e file!!.ext, file!!) overrides project files (i.e file.ext)
       userFiles = files.filter((el) => /!!(\..+)?$/.test(el));
 
-    if (output === 'js') {
-      execSync(`webpack -c config/webpack.config.ts`);
-
-      // copy non-ts files only
-      files = files.filter((el) => !el.endsWith('.ts'));
-    }
-
     files
       .filter(
         (el) =>
           // get the corresponding project files to any existing user-specific files
           !userFiles.map((el) => el.replace('!!', '')).includes(el) &&
           lstatSync(`${projectPath}/config/${target}/${el}`).isFile()
-        // exclude files used for building (i.e config files)
+        // todo: exclude files used for building (i.e config files)
       )
       .concat(userFiles)
       .forEach((el) =>
