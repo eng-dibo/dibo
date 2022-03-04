@@ -11,6 +11,8 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { UniversalInterceptor } from '@engineers/ngx-universal-express/universal-interceptor';
 import { ApiInterceptor } from './http.interceptor';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { ServiceWorkerModule } from '@angular/service-worker' ;
+import env from '../env';
 
 /*
 routes are loaded in the following order:
@@ -45,6 +47,12 @@ const enableTracing = false; // env.mode === 'development';
     MatToolbarModule,
     MatTooltipModule,
     HttpClientModule,
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: env.mode === 'production',
+      // Register the ServiceWorker as soon as the app is stable
+      // or after 30 seconds (whichever comes first).
+      registrationStrategy: 'registerWhenStable:30000'
+    }),
   ],
   providers: [
     {

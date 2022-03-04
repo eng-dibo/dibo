@@ -34,6 +34,7 @@
     "@angular/platform-browser-dynamic": "^13.1.2",
     "@angular/platform-server": "^13.1.2",
     "@angular/router": "^13.1.2",
+    "@angular/service-worker": "^13.1.2",
     "@nguniversal/express-engine": "^13.0.1",
     "@ngx-formly/core": "^5.10.29",
     "@ngx-formly/material": "^5.10.29",

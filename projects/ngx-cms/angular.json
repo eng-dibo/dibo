@@ -34,7 +34,9 @@
               "../../node_modules/@angular/material/prebuilt-themes/deeppurple-amber.css",
               "browser/styles.scss"
             ],
-            "scripts": []
+            "scripts": [],
+            "serviceWorker": true,
+            "ngswConfigPath": "browser/ngsw-config.json"
           },
           "configurations": {
             "production": {
