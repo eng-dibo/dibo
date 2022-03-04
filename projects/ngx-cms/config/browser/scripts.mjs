@@ -35,7 +35,9 @@ window.addEventListener("load", () => {
       ) {
         load("//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js", {
           "data-ad-client": values.adsense,
-        });
+        })
+          .then((el) => console.log("adsense loaded"))
+          .catch((err) => console.error("adsense failed to load", err));
       }
     });
 
