@@ -18,7 +18,7 @@ window.addEventListener("load", () => {
         import(
           `https://www.googletagmanager.com/gtag/js?id=${values.googleAnalytics}`
         ).then(() => {
-          window.dataLayer = window.dataLayer || [];
+          window.dataLayer = window.dataLayer || [];       
           function gtag() {
             dataLayer.push(arguments);
           }
@@ -28,7 +28,6 @@ window.addEventListener("load", () => {
       }
 
       // adsense
-      // todo: if info.mode===production && !localhost||127.0.0.1
       if (
         (values.adsense || "").trim() !== "" &&
         document.querySelector("mat-card")
@@ -41,12 +40,7 @@ window.addEventListener("load", () => {
       }
     });
 
-    load(
-      "//fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap",
-      {},
-      "css"
-    );
-    load("//fonts.googleapis.com/icon?family=Material+Icons", {}, "css");
+  
 
     // add a `copy` button to each article.
     // or for SSR add this code inside ngOnInit(), inject DOCUMENT, and use isPlatformServer

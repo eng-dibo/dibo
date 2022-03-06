@@ -8,7 +8,6 @@ import webpackMerge from 'webpack-merge';
 // todo: add ~config to externals[]
 // https://stackoverflow.com/questions/70354709/webpack-externals-for-browser
 let config: Configuration = webpackMerge(baseConfig, {
-  target: ['web', 'es5'],
   output: {
     path: resolve(__dirname, '../../../dist/ngx-cms/core/browser'),
     filename: '[name].js',
@@ -24,4 +23,5 @@ if (tsLoader) {
   tsLoader.options!.configFile = resolve(__dirname, './tsconfig.json');
 }
 
+delete config.module!.rules;
 export default config;

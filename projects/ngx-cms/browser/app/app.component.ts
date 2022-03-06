@@ -32,12 +32,14 @@ export class AppComponent {
 
   ngOnInit(): void {
     forkJoin([
+      // or use es6 import('/toolbar')
+      // config/browser added to static dirs in express config
       this.http.get('api/v1/config/browser/meta'),
       this.http.get('api/v1/config/browser/toolbar'),
     ]).subscribe(
       (result: any) => {
-        this.meta = result[0].default;
-        let toolbar = result[1].default;
+        this.meta = result[0];
+        let toolbar = result[1];
         if (toolbar && toolbar instanceof Array) {
           this.toolbar = toolbar.map((item: any) => {
             if (!item.tag) {

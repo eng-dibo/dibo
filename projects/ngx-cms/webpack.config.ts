@@ -28,4 +28,7 @@ if (tsLoader) {
   tsLoader.options!.configFile = resolve(__dirname, './tsconfig.json');
 }
 
+delete config.target;
+delete config.output!.library;
+delete config.output!.libraryTarget;
 export default config;

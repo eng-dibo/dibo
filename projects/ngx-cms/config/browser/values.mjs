@@ -7,5 +7,6 @@ export let googleAnalytics = "";
 
 // for testing use 'ca-app-pub-3940256099942544'
 // https://developers.google.com/admob/android/test-ads
+// todo: && !(localhost||127.0.0.1)
 export let adsense =
   info && info.mode === "production" ? "" : "ca-app-pub-3940256099942544";
