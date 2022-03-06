@@ -1,14 +1,12 @@
 import { Component, OnInit, ViewChild, TemplateRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { HttpEvent, HttpEventType } from '@angular/common/http';
 import { Observable, of, forkJoin } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Article } from '@engineers/ngx-content-view-mat';
-import { HighlightJS } from 'ngx-highlightjs';
 import basicArticleFields from './article-fields';
 import { FormGroup } from '@angular/forms';
-import { FormlyFieldConfig, FormlyFormOptions } from '@ngx-formly/core';
+import { FormlyFieldConfig } from '@ngx-formly/core';
 import { map } from 'rxjs/operators';
 
 export interface Params {
@@ -56,8 +54,7 @@ export class ContentEditorComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private httpService: HttpClient,
-    private snackBar: MatSnackBar,
-    private hljs: HighlightJS
+    private snackBar: MatSnackBar
   ) {
     this.route.paramMap.subscribe((params) => {
       let type = params.get('type') || 'articles';

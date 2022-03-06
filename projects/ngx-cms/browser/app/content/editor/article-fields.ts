@@ -3,7 +3,7 @@
  * import and modify it to fit your model
  */
 
-import { FieldType, FormlyFieldConfig } from '@ngx-formly/core';
+import { FormlyFieldConfig } from '@ngx-formly/core';
 let fields: FormlyFieldConfig[] = [
   {
     key: 'title',
