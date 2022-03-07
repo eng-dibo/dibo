@@ -21,6 +21,13 @@
       <!--todo: a pipe to convert timestamp or Date to string -->
       <span>{{data.createdAt || data.updatedAt }}</span>
     </mat-card-subtitle>
+    <span
+      *ngIf="this.options.copyButton!==false"
+      class="material-icons"
+      style="cursor: pointer"
+      (click)="copy()"
+      >content_copy</span
+    >
   </mat-card-header>
 
   <!--

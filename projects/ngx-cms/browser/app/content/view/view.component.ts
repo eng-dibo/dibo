@@ -53,7 +53,28 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
   @ViewChild('quillView') quillView: any;
   data$!: Observable<Payload>;
   tags!: Meta;
-  options = { layout: 'grid' };
+  options = {
+    layout: 'grid',
+    copyAction: (card: any): string | undefined => {
+      // for jobs, override the default copied data
+      if (location.pathname.split(/\//)[1] === 'jobs') {
+        let title = card.getElementsByTagName('mat-card-title')[0],
+          titleText = title.textContent,
+          // todo: shorten link -> /$type/~$id
+          link = title.getElementsByTagName('a')[0].href;
+
+        let url = new URL(link);
+        url.pathname = url.pathname.replace(
+          /([^\/]+)\/(?:[^\/]+)\/.+~([^\/?]+)/,
+          '$1/~$2'
+        );
+        link = url.href;
+
+        return `${titleText}\n${link}`;
+      }
+      return;
+    },
+  };
   // use the definite assignment assertion "!" when tsconfig.strictPropertyInitialization
   // if a property in the constructor() will be assigned to a value later (i.e outside of the constructor)
   // https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-7.html#strict-class-initialization
