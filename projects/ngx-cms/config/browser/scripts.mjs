@@ -18,7 +18,7 @@ window.addEventListener("load", () => {
         import(
           `https://www.googletagmanager.com/gtag/js?id=${values.googleAnalytics}`
         ).then(() => {
-          window.dataLayer = window.dataLayer || [];       
+          window.dataLayer = window.dataLayer || [];
           function gtag() {
             dataLayer.push(arguments);
           }
@@ -40,8 +40,6 @@ window.addEventListener("load", () => {
       }
     });
 
-  
-
     // add a `copy` button to each article.
     // or for SSR add this code inside ngOnInit(), inject DOCUMENT, and use isPlatformServer
     // todo: add tooltip
@@ -56,14 +54,9 @@ window.addEventListener("load", () => {
           titleText = title.textContent,
           // todo: shorten link -> /$type/~$id
           link = title.getElementsByTagName("a")[0].href,
-          content = card.getElementsByTagName("mat-card-content")[0],
-          // todo: intro is the text before the first <h2> element
-          intro = content.textContent.substr(0, 500),
-          headers = [...content.querySelectorAll("h2")]
-            .map((el) => el.textContent)
-            .join("\r\r"),
-          learnMore = "learn more";
+          data;
 
+        // shorten url
         let url = new URL(link);
         url.pathname = url.pathname.replace(
           /([^\/]+)\/(?:[^\/]+)\/.+~([^\/?]+)/,
@@ -71,7 +64,19 @@ window.addEventListener("load", () => {
         );
         link = url.href;
 
-        let data = `${titleText}\n\n${intro}\n${headers}\n\n${learnMore}👇👇\n${link}`;
+        if (location.pathname.split(/\//)[1] === "jobs") {
+          data = `${titleText}\n${link}`;
+        } else {
+          // todo: intro is the text before the first <h2> element
+          let content = card.getElementsByTagName("mat-card-content")[0],
+            intro = content.textContent.substr(0, 500),
+            headers = [...content.querySelectorAll("h2")]
+              .map((el) => el.textContent)
+              .join("\r\r"),
+            learnMore = "learn more";
+
+          data = `${titleText}\n\n${intro}\n${headers}\n\n${learnMore}👇👇\n${link}`;
+        }
 
         if (navigator.clipboard) {
           navigator.clipboard.writeText(data).then(
