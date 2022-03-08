@@ -67,7 +67,7 @@
       -->
     <quill-view-html
       #quillView
-      [content]="data.content"
+      [content]="data.content | hypernate"
       theme="snow"
     ></quill-view-html>
   </mat-card-content>
