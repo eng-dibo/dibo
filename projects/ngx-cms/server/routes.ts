@@ -140,10 +140,19 @@ app.get(/\/image\/([^/-]+)-([^/-]+)-([^/]+)/, (req: any, res: any) => {
     .catch((error: any) => res.json({ error }));
 });
 
+// todo: use auth for sensitive data (specially for config/server/*)
 app.get(/\/config\/(.+)/, (req: any, res: any) => {
   let nativeRequire = require('@engineers/webpack/native-require');
-  let filePath = resolve(__dirname, `../../config/${req.params[0]}`);
+  let file = req.params[0];
+  let filePath = resolve(__dirname, `../../config/${file}`);
   let content = nativeRequire(filePath);
+
+  if (file === 'server/vapid' && content) {
+    // only send the publicKey
+    content = content.publicKey;
+  } else if (file.startsWith('server/')) {
+    throw new Error('unauthorized permission');
+  }
   res.json(content);
 
   /*
@@ -385,6 +394,22 @@ app.get('*', (req: any, res: any, next: any) => {
     });
 });
 
+// Google cloud messaging (push notifications)
+app.post('/gcm/:action', (req: any, res: any) => {
+  console.log({ gcm: req.body });
+  let action = req.params.collection;
+
+  if (action == 'save') {
+    // save the subscription object
+  } else if (action === 'send') {
+    // send push notifications to the selected subscriptions (users)
+    // req.body = {payload{}, subscriptions:ids[]|undefined='all'}
+    // https://gist.github.com/jhades/4f9b93daa3469ba65c60e1e47b1a9f9b#file-04-ts
+    // https://blog.angular-university.io/angular-push-notifications/
+  } else {
+    // error
+  }
+});
 // todo: typescript: add files[] to `req` definition
 // todo: cover= only one img -> upload.single()
 // todo: change to /api/v1/collection/itemType[/id]

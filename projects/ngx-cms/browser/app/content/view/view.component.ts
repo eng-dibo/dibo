@@ -26,11 +26,13 @@ import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map, concatMap } from 'rxjs/operators';
 import { urlParams } from '@engineers/ngx-utils/router';
-import { NgxLoadService } from '@engineers/ngx-utils/load-scripts.service';
 import { HttpClient } from '@angular/common/http';
 import { getParams, getUrl, transformData, getMetaTags } from './functions';
 import { REQUEST } from '@nguniversal/express-engine/tokens';
 import { PlatformService } from '@engineers/ngx-utils/platform';
+import { MatDialog } from '@angular/material/dialog';
+import { AppDialogComponent } from '../app-dialog/app-dialog.component';
+import { NotificationsDialogComponent } from '../notifications-dialog/notifications-dialog.component';
 
 // todo: import module & interfaces from packages/content/ngx-content-view/index.ts
 
@@ -86,10 +88,27 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
   constructor(
     private route: ActivatedRoute,
     private httpService: HttpClient,
-    private loadService: NgxLoadService,
     @Optional() @Inject(REQUEST) protected request: Request,
-    private platform: PlatformService
-  ) {}
+    private platform: PlatformService,
+    private dialog: MatDialog
+  ) {
+    if (this.platform.isBrowser()) {
+      window.addEventListener('beforeinstallprompt', (ev) => {
+        this.showInstallDialog(ev);
+      });
+
+      // check if app already installed
+      if (window.matchMedia('(display-mode: standalone)').matches) {
+        this.showNotificationsDialog();
+      }
+
+      // listen to appinstalled event, this event is fired when the user install the app
+      window.addEventListener('appinstalled', (evt) => {
+        this.showNotificationsDialog();
+      });
+      // todo: listen to app uninstall event, encourage the user to reinstall it again
+    }
+  }
 
   ngOnInit(): void {
     this.data$ = urlParams(this.route).pipe(
@@ -157,5 +176,19 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
   }
   ngAfterViewInit(): void {
     // todo: use HighlightJS for `<code>..</code>`
+  }
+
+  /**
+   * display a dialog to the user to install the PWA app
+   */
+  showInstallDialog(ev: any) {
+    this.dialog.open(AppDialogComponent, { data: ev });
+  }
+
+  /**
+   * display a dialog to the user to grant the permission for push notifications
+   */
+  showNotificationsDialog() {
+    this.dialog.open(NotificationsDialogComponent);
   }
 }

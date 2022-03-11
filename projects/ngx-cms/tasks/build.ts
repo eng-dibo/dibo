@@ -1,20 +1,22 @@
-import { execPromise, execSync } from '@engineers/nodejs/process';
+import dotEnv from 'dotenv';
+
+import { execSync } from '@engineers/nodejs/process';
 import { mkdir, write, read } from '@engineers/nodejs/fs-sync';
 import {
   readdirSync,
   lstatSync,
   existsSync,
   copyFileSync,
-  writeFileSync,
   appendFileSync,
-} from 'fs';
-import { basename, resolve } from 'path';
+} from 'node:fs';
+import { basename, resolve } from 'node:path';
 import { rootPath, projectPath, destination } from './index';
 import webpack from 'webpack';
 import webpackMerge from 'webpack-merge';
 import baseConfig from '~~webpack.config';
 import externals from '@engineers/webpack/externals';
 import { JSDOM } from 'jsdom';
+import webPush from 'web-push';
 
 let time = Date.now();
 
@@ -114,6 +116,18 @@ export function buildConfig(): void {
         )
       );
   });
+
+  // generating VAPID keys for push notifications (should be generated only once)
+  let gcloudConfig = require(`${destination}/config/server/gcloud`);
+  let GCM = gcloudConfig.GCM,
+    vapidPath = resolve(`${destination}/config/server/vapid.json`);
+  if (GCM && GCM.id && !existsSync(vapidPath)) {
+    console.log('> generating VAPID keys');
+    // set .env to be used by config/server/*.js (.env is created in buildConfig())
+    dotEnv.config({ path: `${destination}/config/server/.env` });
+    let vapidKeys = webPush.generateVAPIDKeys();
+    write(vapidPath, vapidKeys);
+  }
 }
 
 export function buildPackage(): void {
@@ -267,17 +281,15 @@ export function optimize() {
     script.remove();
   });
 
-  dom
-    .querySelectorAll('link')
-    .forEach((el: any) => {
-      if (
-        el.parentElement.tagName.toLowerCase() !== 'noscript' &&
-        el.rel === 'stylesheet'
-      ) {
-        txt += `load("${el.href}",${JSON.stringify(getAttributes(el))},"css");`;
-        el.remove();
-      }
-    });
+  dom.querySelectorAll('link').forEach((el: any) => {
+    if (
+      el.parentElement.tagName.toLowerCase() !== 'noscript' &&
+      el.rel === 'stylesheet'
+    ) {
+      txt += `load("${el.href}",${JSON.stringify(getAttributes(el))},"css");`;
+      el.remove();
+    }
+  });
 
   txt = `import load from "./load.mjs";\nwindow.addEventListener("load", () => {\n${txt}\n});`;
   let script = dom.createElement('script');

@@ -25,7 +25,10 @@ import { FormlyStepperComponent } from './editor/formly-stepper/formly-stepper.c
 import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatDialogModule } from '@angular/material/dialog';
 import { PlatformService } from '@engineers/ngx-utils/platform';
+import { AppDialogComponent } from './app-dialog/app-dialog.component';
+import { NotificationsDialogComponent } from './notifications-dialog/notifications-dialog.component';
 
 const routes: Routes = [
   { path: ':type/editor/:item', component: ContentEditorComponent },
@@ -51,6 +54,8 @@ const routes: Routes = [
     FileValueAccessor,
     FormlyQuillComponent,
     FormlyStepperComponent,
+    AppDialogComponent,
+    NotificationsDialogComponent,
   ],
   imports: [
     CommonModule,
@@ -116,6 +121,7 @@ const routes: Routes = [
     MatStepperModule,
     MatButtonModule,
     MatProgressBarModule,
+    MatDialogModule,
     MatListModule,
     QuillModule.forRoot(),
   ],

@@ -11,7 +11,7 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { UniversalInterceptor } from '@engineers/ngx-universal-express/universal-interceptor';
 import { ApiInterceptor } from './http.interceptor';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { ServiceWorkerModule } from '@angular/service-worker' ;
+import { ServiceWorkerModule } from '@angular/service-worker';
 import env from '../env';
 
 /*
@@ -48,10 +48,10 @@ const enableTracing = false; // env.mode === 'development';
     MatTooltipModule,
     HttpClientModule,
     ServiceWorkerModule.register('ngsw-worker.js', {
-      enabled: env.mode === 'production',
+      enabled: true,
       // Register the ServiceWorker as soon as the app is stable
       // or after 30 seconds (whichever comes first).
-      registrationStrategy: 'registerWhenStable:30000'
+      registrationStrategy: 'registerWhenStable:30000',
     }),
   ],
   providers: [
