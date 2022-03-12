@@ -291,6 +291,7 @@ app.use(
  * - articles/123 -> get article where _id=123
  * - articles/:50@category=1 -> get articles where category=1, limit=50
  * - articles/:50?limit=10 -> query overrides portions
+ * - articles/@category=^$slug-name -> get articles from a category by its slug
  */
 app.get('*', (req: any, res: any, next: any) => {
   timer(`get ${req.url}`);
@@ -316,16 +317,38 @@ app.get('*', (req: any, res: any, next: any) => {
   //  -> articles_index__JSON_stringify(query)
   // for item temp=.../item/$id/data.json because this folder will also contain it's images
 
-  let tmp = `${TEMP}/${collection}/${params.id || 'index'}.json`;
+  let tmp = `${TEMP}/${collection}/${
+    params.id || params.filter || 'index'
+  }.json`;
 
-  // todo: save to cache only if(operation==='find')
   return cache(
     tmp,
     () =>
       // @ts-ignore: error TS2349: This expression is not callable.
       // Each member of the union type ... has signatures, but none of those signatures are compatible with each other.
       connect().then(() => {
-        return query(queryObject);
+        // get articles from a category by its slug instead of its _id
+        // prefix slug name with '^'
+        // example: 'articles/@category=^$slug-name'
+        if (params.filter && params.filter.includes('category=%5E')) {
+          // todo: return cache('articles_categories.json',..)
+          let slug = params.filter.replace('category=%5E', '');
+          return query(`${collection}_categories/:1~_id@slug=${slug}`).then(
+            (category) => {
+              console.log({
+                category,
+                url: `${collection}/${category._id}`,
+              });
+              return category.length > 0
+                ? query(`${collection}/@categories=${category[0]._id}`)
+                : Promise.reject(
+                    `category ${decodeURIComponent(slug)} not found`
+                  );
+            }
+          );
+        } else {
+          return query(queryObject);
+        }
 
         /*
           // todo:
@@ -364,6 +387,7 @@ app.get('*', (req: any, res: any, next: any) => {
     { age: req.query.refresh ? -1 : 3 }
   )
     .then((payload: any) => {
+      console.log({ payload });
       res.json(payload);
       if (!prod) {
         console.log(
