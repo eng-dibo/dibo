@@ -1,5 +1,20 @@
+<ng-container *ngIf="category">
+  <!-- todo: tooltip=category.description -->
+  <h1>
+    <a href="{{ category.link }}">{{ category.title }}</a>
+  </h1>
+  <!-- todo: implement this button-->
+  <!-- save following[category.ids] in localStorage-->
+  <!-- todo: tooltip = get a notification when a new article in this category-->
+  <button mat-raised-button color="primary">
+    <mat-icon>notifications</mat-icon>follow
+  </button>
+</ng-container>
+
+<!-- tags are set in ngOnChanges lifecycle, no need to add in *ngIf -->
 <ngx-content-view
-  [data]="data$"
+  *ngIf="data && options"
+  [data]="data"
   [options]="options"
   [meta]="tags"
 ></ngx-content-view>

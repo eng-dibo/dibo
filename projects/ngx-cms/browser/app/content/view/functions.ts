@@ -17,9 +17,9 @@ export function getParams(params: any, query: any): Params {
       /articles/category.slug/item.slug~item.id
       /articles/~item.id
   */
-  let type = params.get('type') || 'articles',
-    category = params.get('category'),
-    item = params.get('item');
+
+  let category = params.category,
+    item = params.item;
 
   if (category && category.startsWith('~')) {
     item = category;
@@ -27,26 +27,26 @@ export function getParams(params: any, query: any): Params {
   }
 
   return {
-    type,
+    type: params.type || 'articles',
     category,
     // get last part of a string https://stackoverflow.com/a/6165387/12577650
     // using '=' (i.e /slug=id) will redirect to /slug
     item: item && item.indexOf('~') !== -1 ? item.split('~').pop() : item,
-    refresh: query.get('refresh'),
+    refresh: query.refresh,
   };
 }
 
-export function getUrl(params: Params): string {
-  let url: string;
+export function getUrl(params: any, category?: any): string {
+  let url = params.type;
   if (params.item) {
     // todo: ~_id,title,subtitle,slug,summary,author,cover,categories,updatedAt
-    let filter = encodeURIComponent(JSON.stringify({ status: 'approved' }));
-    url = `${params.type}/${params.item ? params.item : ':50@' + filter}`;
+    url += `/${params.item ? params.item : ':50@status=approved'}`;
   } else if (params.category) {
-    // get category by slug
-    url = `${params.type}_categories/${params.category}`;
-  } else {
-    url = params.type;
+    url += category
+      ? // get articles where category in article.categories[]
+        `/@categories=${category._id}`
+      : // get articles in a category by its slug name
+        `/@category=${encodeURIComponent('^' + params.category)}`;
   }
 
   if (params.refresh) {
