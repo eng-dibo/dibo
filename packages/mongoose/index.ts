@@ -235,7 +235,18 @@ export function query(
     // filter is an object, it must be stringified and encoded
     // i.e: `encodeURIComponent(JSON.stringify({ field: 'value' }))`
     if (params.filter) {
-      params.filter = JSON.parse(decodeURIComponent(params.filter));
+      if (params.filter.includes('=')) {
+        // example: 'collection/@k1=v1,k2=v2'
+        let obj: { [key: string]: string } = {};
+        params.filter.split(',').forEach((el: string) => {
+          let [key, value] = el.split('=');
+          obj[decodeURIComponent(key)] = decodeURIComponent(value);
+        });
+        params.filter = obj;
+      } else {
+        // example: 'collection/@{k1:"v1", k2:"v2"}'
+        params.filter = JSON.parse(decodeURIComponent(params.filter));
+      }
     }
     args = [params.filter, params.fields, params];
     delete params.filter;
