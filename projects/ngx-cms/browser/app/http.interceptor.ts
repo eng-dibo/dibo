@@ -30,7 +30,6 @@ export class ApiInterceptor implements HttpInterceptor {
   ): Observable<HttpEvent<any>> {
     // todo: only in outgoing requests
     // todo: only API requests (not routerLink)
-
     let changes = {
       url: req.url.startsWith('/api/v')
         ? req.url
@@ -38,8 +37,12 @@ export class ApiInterceptor implements HttpInterceptor {
       // use toFormData in POST requests
       // todo: if(req.context.toFormData)
       // sending data as FormData instead of Object may cause that req.body=undefined
+
       body:
-        req.method.toLowerCase() === 'post' ? toFormData(req.body) : req.body,
+        req.method.toLowerCase() === 'post' &&
+        req.headers.get('toFormData') === 'true'
+          ? toFormData(req.body)
+          : req.body,
       params: queryParams(req.params),
     };
 

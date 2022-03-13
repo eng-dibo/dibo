@@ -270,7 +270,10 @@ export class ContentEditorComponent implements OnInit {
     // todo: subscribe to progress events
     let url = `/${this.params.type}`;
     this.httpService
-      .post<any>(url, data, { reportProgress: true })
+      .post<any>(url, data, {
+        reportProgress: true,
+        headers: { toFormData: 'true' },
+      })
       .subscribe((result) => {
         // todo: show progress bar
 
