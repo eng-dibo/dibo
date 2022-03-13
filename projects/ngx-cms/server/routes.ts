@@ -34,6 +34,7 @@ let supportedCollections = [
   'keywords',
   'persons',
   'languages',
+  'push_notifications',
 ];
 app.get('/collections', (req: any, res: any) => res.json(supportedCollections));
 
@@ -142,8 +143,18 @@ app.get(/\/image\/([^/-]+)-([^/-]+)-([^/]+)/, (req: any, res: any) => {
 
 app.get(/\/config\/(.+)/, (req: any, res: any) => {
   let nativeRequire = require('@engineers/webpack/native-require');
-  let filePath = resolve(__dirname, `../../config/${req.params[0]}`);
+  let file = req.params[0];
+  let filePath = resolve(__dirname, `../../config/${file}`);
   let content = nativeRequire(filePath);
+
+  if (file === 'server/vapid' && content) {
+    // only send the publicKey
+    content = content.publicKey;
+  } else if (file.startsWith('server/')) {
+    // todo: use auth for sensitive data (specially for config/server/*)
+    throw new Error('unauthorized permission');
+  }
+
   res.json(content);
 
   /*
@@ -387,7 +398,6 @@ app.get('*', (req: any, res: any, next: any) => {
     { age: req.query.refresh ? -1 : 3 }
   )
     .then((payload: any) => {
-      console.log({ payload });
       res.json(payload);
       if (!prod) {
         console.log(
@@ -409,10 +419,48 @@ app.get('*', (req: any, res: any, next: any) => {
     });
 });
 
+// Google cloud messaging (push notifications)
+app.post('/push_notifications/:action', (req: any, res: any) => {
+  let action = req.params.action,
+    data = req.body;
+
+  if (action === 'save') {
+    // save the subscription object
+    console.log({
+      gcm: { ...data.subscription, device: data.device },
+    });
+    if (!data.subscription || !data.subscription.endpoint) {
+      return res.json({ error: 'invalid subscription object', payload: data });
+    }
+    connect()
+      .then(() => {
+        // todo: add gcm to models
+        let model = getModel('push_notifications');
+        let content = new model({ _id: data.device, ...data.subscription });
+        return content.save();
+      })
+      .then((_data) => res.json(_data))
+      .catch((error) => res.json({ error }));
+  } else if (action === 'send') {
+    // send push notifications to the selected subscriptions (users)
+    // req.body = {payload{}, subscriptions:ids[]|undefined='all'}
+    // https://gist.github.com/jhades/4f9b93daa3469ba65c60e1e47b1a9f9b#file-04-ts
+    // https://blog.angular-university.io/angular-push-notifications/
+  } else {
+    // error
+  }
+});
+
 // todo: typescript: add files[] to `req` definition
 // todo: cover= only one img -> upload.single()
 // todo: change to /api/v1/collection/itemType[/id]
 app.post('/:collection', upload.single('cover[]'), (req: any, res: any) => {
+  let collection = req.params.collection;
+  if (!supportedCollections.includes(collection)) {
+    return res.json({
+      error: `posting to the collection "${collection}" in not allowed`,
+    });
+  }
   timer(`post ${req.url}`);
   if (!prod) {
     console.log('[server/api] post', {
@@ -427,7 +475,6 @@ app.post('/:collection', upload.single('cover[]'), (req: any, res: any) => {
   }
 
   let data = req.body,
-    collection = req.params.collection,
     date = new Date(),
     update: boolean;
 

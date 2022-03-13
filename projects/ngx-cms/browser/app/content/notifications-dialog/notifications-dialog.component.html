@@ -1,0 +1,25 @@
+<h2 mat-dialog-title>allow push notifications</h2>
+<mat-dialog-content>
+  <p>
+    <mat-icon color="primary">done</mat-icon> get notified of the most important
+    content
+  </p>
+  <p>
+    <mat-icon color="primary">done</mat-icon> you can control or stop the
+    notifications at anytime
+  </p>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button
+    mat-raised-button
+    mat-button
+    mat-dialog-close
+    color="primary"
+    (click)="subscribeToNotifications()"
+  >
+    <mat-icon>notifications_active</mat-icon> enable notifications
+  </button>
+  <!-- todo: onClose show on footer -->
+  <button mat-button mat-dialog-close>cancel</button>
+</mat-dialog-actions>

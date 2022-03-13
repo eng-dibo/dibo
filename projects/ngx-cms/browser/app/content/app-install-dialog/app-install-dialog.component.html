@@ -1,0 +1,24 @@
+<h2 mat-dialog-title>install our Free App</h2>
+<mat-dialog-content>
+  <p><mat-icon color="primary">done</mat-icon> offline access to our content</p>
+  <p><mat-icon color="primary">done</mat-icon> faster browsing</p>
+  <p>
+    <mat-icon color="primary">done</mat-icon> get notified of the most important
+    content
+  </p>
+  <p><mat-icon color="primary">done</mat-icon> very tiny, less than 1 MB</p>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button
+    mat-raised-button
+    mat-button
+    mat-dialog-close
+    color="primary"
+    (click)="installApp()"
+  >
+    <mat-icon>download</mat-icon> install
+  </button>
+  <!-- todo: onClose show on footer -->
+  <button mat-button mat-dialog-close>cancel</button>
+</mat-dialog-actions>
