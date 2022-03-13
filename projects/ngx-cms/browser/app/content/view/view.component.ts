@@ -27,6 +27,9 @@ import { HttpClient } from '@angular/common/http';
 import { getParams, getUrl, transformData, getMetaTags } from './functions';
 import { REQUEST } from '@nguniversal/express-engine/tokens';
 import { PlatformService } from '@engineers/ngx-utils/platform';
+import { MatDialog } from '@angular/material/dialog';
+import { AppInstallDialogComponent } from '../app-install-dialog/app-install-dialog.component';
+import { NotificationsDialogComponent } from '../notifications-dialog/notifications-dialog.component';
 
 // todo: import module & interfaces from packages/content/ngx-content-view/index.ts
 
@@ -60,8 +63,26 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
     private route: ActivatedRoute,
     private httpService: HttpClient,
     @Optional() @Inject(REQUEST) protected request: Request,
-    private platform: PlatformService
-  ) {}
+    private platform: PlatformService,
+    private dialog: MatDialog
+  ) {
+    if (this.platform.isBrowser()) {
+      window.addEventListener('beforeinstallprompt', (ev) => {
+        this.showInstallDialog(ev);
+      });
+
+      // check if app already installed
+      if (window.matchMedia('(display-mode: standalone)').matches) {
+        this.showNotificationsDialog();
+      }
+
+      // listen to appinstalled event, this event is fired when the user install the app
+      window.addEventListener('appinstalled', (evt) => {
+        this.showNotificationsDialog();
+      });
+      // todo: listen to app uninstall event, encourage the user to reinstall it again
+    }
+  }
 
   ngOnInit(): void {
     let router = this.route.snapshot,
@@ -152,5 +173,32 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
   }
   ngAfterViewInit(): void {
     // todo: use HighlightJS for `<code>..</code>`
+  }
+
+  /**
+   * display a dialog to the user to install the PWA app
+   */
+  showInstallDialog(ev: any) {
+    this.dialog.open(AppInstallDialogComponent, { data: ev });
+  }
+
+  /**
+   * display a dialog to the user to grant the permission for push notifications
+   */
+  showNotificationsDialog() {
+    if ('Notification' in window) {
+      if (env.mode === 'development') {
+        console.log({ notification: Notification.permission });
+      }
+      if (Notification.permission === 'default') {
+        console.log('requesting the permission to allow push notifications');
+        this.dialog.open(NotificationsDialogComponent);
+      } else if (Notification.permission === 'denied') {
+        // todo: instruct the user to allow notifications
+        console.error('notifications permission denied');
+      }
+    } else {
+      console.warn("this browser doesn't support Notifications api");
+    }
   }
 }

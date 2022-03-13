@@ -196,3 +196,13 @@ module.exports.roles = {
   name: String,
   permissions: [{ type: { type: String }, scope: String, allowed: [String] }],
 };
+
+// push notifications subscription object
+// _id is the device id
+// todo: generate models.d.ts
+module.exports.push_notifications = {
+  _id: String,
+  endpoint: String,
+  expirationTime: String,
+  keys: { p256dh: String, auth: String },
+};

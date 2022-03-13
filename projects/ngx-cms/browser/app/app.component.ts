@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { Meta } from '@engineers/ngx-utils/meta.service';
 import { forkJoin } from 'rxjs';
+import { PlatformService } from '@engineers/ngx-utils/platform';
 
 @Component({
   selector: 'app-root',
@@ -28,7 +29,19 @@ export class AppComponent {
    https://www.linkedin.com/pulse/compiling-angular-templates-runtime-dima-slivin
   */
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private platform: PlatformService) {
+    if (platform.isBrowser() && localStorage) {
+      // set the device id, use it:
+      // - as a security check, if a logingin trial from a strange device add an additional step
+      // - instead of userid if no loggedin user
+      // - to set preferences per device
+
+      if (!localStorage.getItem('device')) {
+        // todo: try to get 'device' from cookies or subScription.object.publicKey
+        localStorage.setItem('device', new Date().getTime().toString());
+      }
+    }
+  }
 
   ngOnInit(): void {
     forkJoin([
