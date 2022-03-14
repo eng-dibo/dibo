@@ -10,6 +10,16 @@
     <mat-icon>notifications</mat-icon>follow
   </button>
 </ng-container>
+<button
+  *ngIf="params"
+  mat-mini-fab
+  color="primary"
+  routerLink="/{{ params.type }}/editor"
+  matTooltip="{{ 'add a new ' + params.postType }}"
+  class="floating"
+>
+  <mat-icon>add</mat-icon>
+</button>
 
 <!-- tags are set in ngOnChanges lifecycle, no need to add in *ngIf -->
 <ngx-content-view

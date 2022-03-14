@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ContentModule } from './content/content.module';
@@ -27,9 +26,27 @@ routes are loaded in the following order:
  https://blogs.msmvps.com/deborahk/angular-route-ordering/
  */
 const appRoutes: Routes = [
-  //  { path: "", component: AppComponent, pathMatch: "full" }
+  // to lazy-load a module, use loadChildren
+  // https://angular.io/guide/lazy-loading-ngmodules
+  // to make providers[] available mark services as {providedIn: 'root' or 'any'}
+  // https://angular.io/guide/providers#limiting-provider-scope-by-lazy-loading-modules
+  // https://github.com/angular/angular/issues/37441#issuecomment-639737971
+
+  {
+    path: '',
+    loadChildren: () =>
+      import('./content/content.module').then(
+        (modules) => modules.ContentModule
+      ),
+  },
 ];
-const endRoutes: Routes = [{ path: '**', component: ErrorComponent }];
+
+// import after importing all feature modules
+const endRoutes: Routes = [
+  // the home page, if not defined in another feature module
+  { path: '', component: AppComponent, pathMatch: 'full' },
+  { path: '**', component: ErrorComponent },
+];
 const enableTracing = false; // env.mode === 'development';
 
 @NgModule({
@@ -40,8 +57,7 @@ const enableTracing = false; // env.mode === 'development';
       enableTracing,
     }),
     BrowserModule.withServerTransition({ appId: 'serverApp' }),
-    AppRoutingModule,
-    ContentModule,
+    // ContentModule,
     RouterModule.forRoot(endRoutes, { enableTracing }),
     BrowserAnimationsModule,
     MatToolbarModule,

@@ -7,6 +7,13 @@ h6 .mat-line {
   color: gray;
 }
 
+.floating {
+  z-index: 100;
+  position: fixed;
+  bottom: 50px;
+  right: 50px;
+}
+
 /*
 use ::ng-deep to apply this style to child components too (i.e child elements of <quill-view>)
 https://ngrefs.com/latest/styling/ng-deep-selector

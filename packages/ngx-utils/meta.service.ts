@@ -82,7 +82,7 @@ export interface Meta /* todo: extends MetaDefinition */ {
   [key: string]: any;
 }
 
-@Injectable()
+@Injectable({ providedIn: 'any' })
 export class MetaService {
   constructor(
     private metaService: MetaTagsService,
