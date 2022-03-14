@@ -17,7 +17,7 @@ interface Obj {
   [key: string]: any;
 }
 
-@Injectable()
+@Injectable({ providedIn: 'any' })
 /**
  * adjusts the ongoing and the response requests
  * sets the url of the outgoing request to `/api/v1/${url}` and catch errors

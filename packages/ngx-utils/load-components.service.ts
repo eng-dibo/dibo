@@ -7,7 +7,7 @@ import {
   RendererFactory2,
 } from '@angular/core';
 
-@Injectable()
+@Injectable({ providedIn: 'any' })
 export class LoadComponentsService {
   renderer: Renderer2;
   constructor(

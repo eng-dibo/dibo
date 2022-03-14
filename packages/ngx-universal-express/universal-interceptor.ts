@@ -11,7 +11,7 @@ import { Request } from 'express';
 import { REQUEST } from '@nguniversal/express-engine/tokens';
 import { Observable } from 'rxjs';
 
-@Injectable()
+@Injectable({ providedIn: 'any' })
 export class UniversalInterceptor implements HttpInterceptor {
   // the REQUEST token is available in the server only (not in the browser)
   // so we make it @Optional(), and it may be undefined

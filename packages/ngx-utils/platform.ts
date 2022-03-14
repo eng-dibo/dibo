@@ -1,7 +1,7 @@
 import { PLATFORM_ID, Inject, Injectable } from '@angular/core';
 import { isPlatformServer, isPlatformBrowser } from '@angular/common';
 
-@Injectable()
+@Injectable({ providedIn: 'any' })
 export class PlatformService {
   constructor(@Inject(PLATFORM_ID) public platformId: Object) {}
 

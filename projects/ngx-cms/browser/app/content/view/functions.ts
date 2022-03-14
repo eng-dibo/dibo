@@ -18,7 +18,8 @@ export function getParams(params: any, query: any): Params {
       /articles/~item.id
   */
 
-  let category = params.category,
+  let type = params.type || 'articles',
+    category = params.category,
     item = params.item;
 
   if (category && category.startsWith('~')) {
@@ -27,12 +28,13 @@ export function getParams(params: any, query: any): Params {
   }
 
   return {
-    type: params.type || 'articles',
+    type,
     category,
     // get last part of a string https://stackoverflow.com/a/6165387/12577650
     // using '=' (i.e /slug=id) will redirect to /slug
     item: item && item.indexOf('~') !== -1 ? item.split('~').pop() : item,
     refresh: query.refresh,
+    postType: type.slice(-1) === 's' ? type.slice(0, -1) : type,
   };
 }
 

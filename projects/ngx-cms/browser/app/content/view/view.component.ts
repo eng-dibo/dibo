@@ -37,6 +37,7 @@ export interface Params {
   type: string;
   category?: string;
   item?: string;
+  postType: string;
   // pass ?refresh=auth to force refreshing the cache
   // get admin auth from ~config/server,
   // or get an auth code for each user from db
@@ -55,6 +56,7 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
   categories!: Array<any>;
   category!: any;
   data!: Payload;
+  params!: Params;
 
   // todo: share adsense by changing this value based on the article's author
   // to totally remove the adsense code in dev mode, use: <ngx-adsense *ngIf="!dev">
@@ -85,29 +87,32 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    let router = this.route.snapshot,
-      params: Params = getParams(router.params, router.queryParams);
+    let router = this.route.snapshot;
+    this.params = getParams(router.params, router.queryParams);
 
     // prevent invalid routes from requesting data from the server
-    if (!['articles', 'jobs'].includes(params.type as string)) {
+    /* if (!['articles', 'jobs'].includes(params.type as string)) {
       throw new Error(`path not allowed: /${params.type}`);
     }
+    */
 
     this.httpService
-      .get<Array<any>>(`${params.type}_categories`)
+      .get<Array<any>>(`${this.params.type}_categories`)
       .subscribe((categories) => {
         // todo: display categories list  .filter(el=>!el.parent)
         this.categories = categories;
 
-        if (params.category) {
-          let category = categories.find((el) => el.slug === params.category);
+        if (this.params.category) {
+          let category = categories.find(
+            (el) => el.slug === this.params.category
+          );
           if (category) {
-            category.link = `/${params.type}/${category.slug}`;
+            category.link = `/${this.params.type}/${category.slug}`;
             this.category = category;
           }
         }
 
-        let url = getUrl(params, this.category);
+        let url = getUrl(this.params, this.category);
         if (env.mode === 'development') {
           console.log(`[content/view] fetching from ${url}`);
         }
@@ -117,7 +122,7 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
             data = JSON.parse(data);
           }
 
-          this.data = transformData(data, params);
+          this.data = transformData(data, this.params);
 
           /*
                 to grt baseUrl:
@@ -134,12 +139,12 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
                 `${this.request.protocol}://${this.request.hostname}`
               : '') + meta.URL || '/';
 
-          this.tags = getMetaTags(this.data, params, { baseUrl });
+          this.tags = getMetaTags(this.data, this.params, { baseUrl });
 
           if (env.mode === 'development') {
             console.log('[content/view]', {
               data,
-              params,
+              params: this.params,
               tags: this.tags,
             });
           }
