@@ -64,7 +64,7 @@ export default function (options?: BuildOptions): void {
       optimize();
     }
   } catch (err) {
-    console.log('>> faild');
+    console.log('>> failed');
     return;
   }
 }
@@ -222,7 +222,7 @@ export function buildPackage(): void {
 export function optimize() {
   console.log(`> build: optimizing`);
 
-  // minify js files using terser
+  // todo: minify js files using terser
 
   /*['browser', 'server'].forEach((dir) =>
     readdirSync(`${destination}/core/${dir}`)
@@ -239,14 +239,18 @@ export function optimize() {
 
   // transform index.html (lazy-load resources, and move them after 'load' event)
   // DOMParser() is not available in nodejs, so we use `jsdom`
-  let indexPath = `${destination}/core/browser/index.html`;
-  let content = read(indexPath) as string;
+  let browserPath = `${destination}/core/browser`,
+    indexPath = `${browserPath}/index.html`,
+    content = read(indexPath) as string;
 
   // create a backup
   write(indexPath.replace('index.html', 'index-backup.html'), content);
 
   let dom = new JSDOM(content).window.document,
     txt = '';
+
+  write(`${browserPath}/styles.css`, '');
+  write(`${browserPath}/scripts.js`, '');
 
   function getAttributes(el: any): { [key: string]: string } {
     let result: { [key: string]: string } = {};
@@ -261,25 +265,26 @@ export function optimize() {
   dom.querySelectorAll('script').forEach((script: any) => {
     // todo: ||data-keep
     if (!script.src) {
-      return;
+      appendFileSync(`${browserPath}/styles.css`, script.innerHTML);
+      script.remove();
+    } else {
+      // todo: converting <script type="module"> to load() causes a blank page displayed.
+      // even if they loaded.
+      let type = script.getAttribute('type');
+      if (type === 'module') {
+        return;
+      }
+
+      // nomodule prevents the modern browsers to load the script,
+      // it instead, will load the "module" version
+      // https://stackoverflow.com/a/45947601/12577650
+
+      txt += `load("${script.src}",{${
+        type === 'module' ? '' : 'nomodule:true,defer:true'
+      }},"${type || 'script'}");\n`;
+
+      script.remove();
     }
-
-    // todo: converting <script type="module"> to load() causes a blank page displayed.
-    // even if they loaded.
-    let type = script.getAttribute('type');
-    if (type === 'module') {
-      return;
-    }
-
-    // nomodule prevents the modern browsers to load the script,
-    // it instead, will load the "module" version
-    // https://stackoverflow.com/a/45947601/12577650
-
-    txt += `load("${script.src}","${type || 'script'}",{${
-      type === 'module' ? '' : 'nomodule:true,defer:true'
-    }});\n`;
-
-    script.remove();
   });
 
   dom.querySelectorAll('link').forEach((el: any) => {
@@ -290,6 +295,14 @@ export function optimize() {
       txt += `load("${el.href}",${JSON.stringify(getAttributes(el))},"css");`;
       el.remove();
     }
+  });
+
+  txt += `load("styles.css"); load("scripts.js")`;
+
+  dom.querySelectorAll('style').forEach((el: any) => {
+    // combine all styles into a single file, and load it via load()
+    appendFileSync(`${browserPath}/styles.css`, el.innerHTML);
+    el.remove();
   });
 
   txt = `import load from "./load.mjs";\nwindow.addEventListener("load", () => {\n${txt}\n});`;
