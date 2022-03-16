@@ -1,3 +1,8 @@
+mat-toolbar {
+  position: fixed;
+  z-index: 100;
+}
+
 mat-toolbar .logo {
   padding: 0 10px;
   background-color: black;
@@ -37,7 +42,8 @@ mat-toolbar .spacer {
   mat-toolbar.logo {
     padding: 0 5px;
   }
-  mat-toolbara {
+
+  mat-toolbar a {
     margin: 5px;
   }
 }
@@ -49,4 +55,8 @@ mat-toolbar .spacer {
   mat-toolbar .logo span {
     display: none;
   }
+}
+
+.page {
+  padding-top: 70px;
 }
