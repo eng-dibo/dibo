@@ -38,15 +38,14 @@ todo:
 </ng-template>
 
 <ng-template #gridBlock let-data="data">
-  <!-- tmp: *cdkVirtualFor not work-->
   <div class="masonry">
-    <div class="masonry-item" *ngFor="let item of data">
-      <ngx-content-article
-        [data]="item"
-        type="list"
-        [options]="options"
-      ></ngx-content-article>
-    </div>
+    <ngx-content-article
+      class="masonry-item"
+      *ngFor="let item of data"
+      [data]="item"
+      type="list"
+      [options]="options"
+    ></ngx-content-article>
   </div>
 
   <!-- todo: *cdkVirtualFor not work, temporary remove cdk scroll
@@ -68,6 +67,7 @@ todo:
         <a href="{{item.link || '#'}}">{{item.title | length:200}}</a>
       </h4>
       <h6 mat-line dir="auto">{{item.subtitle | length:200}}</h6>
+      <!-- todo: use <ng-container> to reduce dom elements -->
       <div
         mat-line
         [innerHtml]="item.content | html2text | length:500 | nl2br"
@@ -78,6 +78,7 @@ todo:
   </mat-list>
 </ng-template>
 
+<!-- todo: handle noContent by parent element: if(!data)-->
 <ng-template #noContent
   >{{options.noContent || 'No content!'}} <br />
   <a href="{{options.back || '/'}}">Back</a>

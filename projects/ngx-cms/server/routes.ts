@@ -328,9 +328,7 @@ app.get('*', (req: any, res: any, next: any) => {
   //  -> articles_index__JSON_stringify(query)
   // for item temp=.../item/$id/data.json because this folder will also contain it's images
 
-  let tmp = `${TEMP}/${collection}/${
-    params.id || params.filter || 'index'
-  }.json`;
+  let tmp = `${TEMP}/${req.path}.json`;
 
   return cache(
     tmp,

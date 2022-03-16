@@ -39,16 +39,20 @@ export function getParams(params: any, query: any): Params {
 }
 
 export function getUrl(params: any, category?: any): string {
+  console.log('getUrl', { params, category });
   let url = params.type;
   if (params.item) {
     // todo: ~_id,title,subtitle,slug,summary,author,cover,categories,updatedAt
-    url += `/${params.item ? params.item : ':50@status=approved'}`;
-  } else if (params.category) {
-    url += category
-      ? // get articles where category in article.categories[]
-        `/@categories=${category._id}`
-      : // get articles in a category by its slug name
-        `/@category=${encodeURIComponent('^' + params.category)}`;
+    url += `/${params.item}`;
+  } else {
+    url += '/:10@status=approved';
+    if (params.category) {
+      url += category
+        ? // get articles where category in article.categories[]
+          `,categories=${category._id}`
+        : // get articles in a category by its slug name
+          `,category=${encodeURIComponent('^' + params.category)}`;
+    }
   }
 
   if (params.refresh) {
@@ -68,6 +72,7 @@ export function transformData(data: Payload, params: Params): Payload {
   }
 
   if (data instanceof Array) {
+    // todo: randomize (shuffle) data[]
     data = data.map((item: Article) =>
       adjustArticle(item, params, 'list')
     ) as Article[];

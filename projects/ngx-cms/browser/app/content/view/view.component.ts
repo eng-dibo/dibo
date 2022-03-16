@@ -91,10 +91,9 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
     this.params = getParams(router.params, router.queryParams);
 
     // prevent invalid routes from requesting data from the server
-    /* if (!['articles', 'jobs'].includes(params.type as string)) {
-      throw new Error(`path not allowed: /${params.type}`);
+    if (!['articles', 'jobs'].includes(this.params.type as string)) {
+      throw new Error(`path not allowed: /${this.params.type}`);
     }
-    */
 
     this.httpService
       .get<Array<any>>(`${this.params.type}_categories`)
