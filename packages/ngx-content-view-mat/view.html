@@ -38,7 +38,12 @@ todo:
 </ng-template>
 
 <ng-template #gridBlock let-data="data">
-  <div class="masonry">
+  <div
+    class="masonry"
+    infiniteScroll
+    (scrolled)="onScrollDown.emit()"
+    (scrolledUp)="onScrollUp.emit()"
+  >
     <ngx-content-article
       class="masonry-item"
       *ngFor="let item of data"
@@ -61,7 +66,11 @@ todo:
 </ng-template>
 
 <ng-template #listBlock let-data="data">
-  <mat-list>
+  <mat-list
+    infiniteScroll
+    (scrolled)="onScrollDown.emit()"
+    (scrolledUp)="onScrollUp.emit()"
+  >
     <mat-list-item *ngFor="let item of data">
       <h4 mat-line dir="auto">
         <a href="{{item.link || '#'}}">{{item.title | length:200}}</a>

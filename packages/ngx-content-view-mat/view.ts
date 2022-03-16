@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Observable } from 'rxjs';
 // todo: enable sanitizing https://www.npmjs.com/package/ngx-quill#security-hint
 
@@ -49,6 +49,11 @@ export class NgxContentViewComponent implements OnInit {
   @Input() type!: Type;
   @Input() meta!: Meta;
   @Input() options!: ViewOptions;
+
+  // fires when the scrollbar reached 80% (up or down)
+  // todo: add ngxInfiniteScroll options
+  @Output() onScrollDown = new EventEmitter<void>();
+  @Output() onScrollUp = new EventEmitter<void>();
   content: Payload;
   board: Board;
 

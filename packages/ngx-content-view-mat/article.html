@@ -66,6 +66,7 @@
        else use <div *ngIf="type=='list'" class="content" [innerHtml]="data.content"></div>
       -->
     <quill-view-html
+      *ngIf="data.content"
       #quillView
       [content]="data.content | hypernate"
       theme="snow"

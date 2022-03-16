@@ -37,6 +37,7 @@ import { fas } from '@fortawesome/free-solid-svg-icons';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { LazyLoadDirective } from '@engineers/lazy-load';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 
 @NgModule({
   declarations: [
@@ -64,6 +65,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     NgxContentCoreModule,
     MatProgressSpinnerModule,
     ScrollingModule,
+    InfiniteScrollModule,
   ],
   providers: [],
   bootstrap: [],
