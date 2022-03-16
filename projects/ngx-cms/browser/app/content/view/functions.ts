@@ -38,18 +38,28 @@ export function getParams(params: any, query: any): Params {
   };
 }
 
-export function getUrl(params: any, category?: any): string {
-  console.log('getUrl', { params, category });
+export interface GetUrlOptions {
+  category?: any;
+  limit?: number;
+  offset?: number;
+}
+export function getUrl(params: any, options: GetUrlOptions = {}): string {
+  let opts = Object.assign(
+    {
+      limit: 10,
+    },
+    options || {}
+  );
   let url = params.type;
   if (params.item) {
     // todo: ~_id,title,subtitle,slug,summary,author,cover,categories,updatedAt
     url += `/${params.item}`;
   } else {
-    url += '/:10@status=approved';
+    url += `/${opts.offset}:${opts.limit}@status=approved`;
     if (params.category) {
-      url += category
+      url += opts.category
         ? // get articles where category in article.categories[]
-          `,categories=${category._id}`
+          `,categories=${opts.category._id}`
         : // get articles in a category by its slug name
           `,category=${encodeURIComponent('^' + params.category)}`;
     }

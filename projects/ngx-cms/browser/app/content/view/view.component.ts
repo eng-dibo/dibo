@@ -9,7 +9,12 @@
  *  - add copy-all btn to index (or category) page (*ngIf=data.type=list){show ctg.title; add copy-all btn}
  */
 
-import { Payload, Meta, ViewOptions } from '@engineers/ngx-content-view-mat';
+import {
+  Payload,
+  Meta,
+  ViewOptions,
+  Article,
+} from '@engineers/ngx-content-view-mat';
 import env from '../../../env';
 // todo: get meta by http.get('/config/browser/meta')
 import meta from '~config/browser/meta';
@@ -57,6 +62,8 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
   category!: any;
   data!: Payload;
   params!: Params;
+  limit: number = 10;
+  offset: number = 0;
 
   // todo: share adsense by changing this value based on the article's author
   // to totally remove the adsense code in dev mode, use: <ngx-adsense *ngIf="!dev">
@@ -111,16 +118,15 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
           }
         }
 
-        let url = getUrl(this.params, this.category);
+        let url = getUrl(this.params, {
+          category: this.category,
+          limit: this.limit,
+        });
         if (env.mode === 'development') {
           console.log(`[content/view] fetching from ${url}`);
         }
 
         this.httpService.get<Payload>(url).subscribe((data) => {
-          if (typeof data === 'string') {
-            data = JSON.parse(data);
-          }
-
           this.data = transformData(data, this.params);
 
           /*
@@ -204,5 +210,21 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
     } else {
       console.warn("this browser doesn't support Notifications api");
     }
+  }
+
+  loadMore(): void {
+    this.offset += this.limit;
+    this.httpService
+      .get<Article[]>(
+        getUrl(this.params, {
+          offset: this.offset,
+          limit: this.limit,
+          category: this.category,
+        })
+      )
+      .subscribe((data) => {
+        console.log(transformData(data, this.params));
+        this.data.push(...data);
+      });
   }
 }
