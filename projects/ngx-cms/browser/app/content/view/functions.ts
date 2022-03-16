@@ -82,10 +82,10 @@ export function transformData(data: Payload, params: Params): Payload {
   }
 
   if (data instanceof Array) {
-    // todo: randomize (shuffle) data[]
-    data = data.map((item: Article) =>
-      adjustArticle(item, params, 'list')
-    ) as Article[];
+    data = data
+      .map((item: Article) => adjustArticle(item, params, 'list'))
+      // randomize (shuffle) data[]
+      .sort(() => 0.5 - Math.random()) as Article[];
   } else if (!data.error && data.content) {
     // data may be doesn't 'content' property
     // for example article_categories
