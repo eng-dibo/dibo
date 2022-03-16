@@ -318,6 +318,7 @@ export function optimize() {
 
   // the hashes for modified files is changed, so we need to rebuild ngsw-config with the new hashes
   // install @angular/service-worker to use ngsw-config (or use npx ngsw-config)
+  // paths are relative to CWD
   // todo: using the absolute (`${destination}/core/browser`) path causes error
   execSync(
     `ngsw-config ../../dist/ngx-cms/core/browser browser/ngsw-config.json`

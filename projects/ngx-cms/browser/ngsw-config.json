@@ -36,7 +36,12 @@
     },
     {
       "name": "static",
-      "urls": ["//fonts.googleapis.com/*", "//www.googletagmanager.com/*"],
+      "urls": [
+        "//fonts.googleapis.com/*",
+        "//www.googletagmanager.com/*",
+        "//pagead2.googlesyndication.com/",
+        "//googleads.g.doubleclick.net/*"
+      ],
       "version": 1,
       "cacheConfig": {
         "maxSize": 100,
