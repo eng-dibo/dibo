@@ -13,6 +13,12 @@
     <meta name="theme-color" content="#1976d2" />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <!-- preloading angular scripts, to reduce the first-content-paint time -->
+    <!-- todo: https://developers.google.com/web/updates/2017/12/modulepreload#so_is_link_relmodulepreload_just_link_relpreload_for_modules -->
+    <!-- https://web.dev/optimize-lcp/#preload-important-resources -->
+    <link rel="modulepreload" href="runtime.js" />
+    <link rel="modulepreload" href="polyfills.js" />
+    <link rel="modulepreload" href="main.js" />
     <!-- todo: prevent angular building from replacing <link> in index.html with its content -->
     <link
       href="//fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap"
