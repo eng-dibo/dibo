@@ -64,6 +64,8 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
   params!: Params;
   limit: number = 10;
   offset: number = 0;
+  // stop infiniteScroll when no more data (it already stops when the scrollbar reached the end)
+  infiniteScroll = true;
 
   // todo: share adsense by changing this value based on the article's author
   // to totally remove the adsense code in dev mode, use: <ngx-adsense *ngIf="!dev">
@@ -213,6 +215,10 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
   }
 
   loadMore(): void {
+    if (!this.infiniteScroll) {
+      return;
+    }
+
     this.offset += this.limit;
     this.httpService
       .get<Article[]>(
@@ -223,8 +229,11 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
         })
       )
       .subscribe((data) => {
-        console.log(transformData(data, this.params));
-        this.data.push(...data);
+        if (data) {
+          this.data.push(...(transformData(data, this.params) as Article[]));
+        } else {
+          this.infiniteScroll = false;
+        }
       });
   }
 }
