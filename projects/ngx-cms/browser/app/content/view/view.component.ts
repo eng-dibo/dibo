@@ -78,19 +78,24 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
     private dialog: MatDialog
   ) {
     if (this.platform.isBrowser()) {
-      window.addEventListener('beforeinstallprompt', (ev) => {
-        this.showInstallDialog(ev);
-      });
+      this.showNotificationsDialog();
 
-      // check if app already installed
-      if (window.matchMedia('(display-mode: standalone)').matches) {
-        this.showNotificationsDialog();
+      // install the app
+      // todo: if notifications dialog is open, wait until it closed
+      // listen to Notification.permission change
+      // when the notification.permission is not granted, a notificationsDialog may be opened
+      if (!Notification || Notification.permission === 'granted') {
+        window.addEventListener('beforeinstallprompt', (ev) => {
+          this.showInstallDialog(ev);
+        });
       }
 
-      // listen to appinstalled event, this event is fired when the user install the app
-      window.addEventListener('appinstalled', (evt) => {
-        this.showNotificationsDialog();
-      });
+      // check if app already installed
+      // if (window.matchMedia('(display-mode: standalone)').matches) { }
+
+      // this event is fired when the user install the app
+      // window.addEventListener('appinstalled', (evt) => { });
+
       // todo: listen to app uninstall event, encourage the user to reinstall it again
     }
   }
@@ -204,9 +209,14 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
       }
       if (Notification.permission === 'default') {
         console.log('requesting the permission to allow push notifications');
-        this.dialog.open(NotificationsDialogComponent);
+        this.dialog
+          .open(NotificationsDialogComponent)
+          .afterClosed()
+          .subscribe((result) => {
+            // todo: check Notification.permission
+          });
       } else if (Notification.permission === 'denied') {
-        // todo: instruct the user to allow notifications
+        // todo: instruct the user to allow notifications (footer)
         console.error('notifications permission denied');
       }
     } else {
