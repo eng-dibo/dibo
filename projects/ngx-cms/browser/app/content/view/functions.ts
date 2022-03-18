@@ -79,6 +79,8 @@ export function transformData(data: Payload, params: Params): Payload {
   if (typeof data === 'string') {
     // ex: the url fetched via a ServiceWorker
     data = JSON.parse(data);
+  } else if (!(data instanceof Array) && data.error) {
+    throw Error('[view] error while fetching data');
   }
 
   if (data instanceof Array) {

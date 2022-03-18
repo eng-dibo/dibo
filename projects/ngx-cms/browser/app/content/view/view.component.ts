@@ -49,6 +49,7 @@ export interface Params {
   refresh?: string;
 }
 
+export type Response = Payload | { error: string };
 @Component({
   selector: 'content-view',
   templateUrl: './view.component.html',
@@ -61,6 +62,8 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
   categories!: Array<any>;
   category!: any;
   data!: Payload;
+  // data that fetched by loadMore()
+  moreData: Article[] = [];
   params!: Params;
   limit: number = 10;
   offset: number = 0;
@@ -133,25 +136,33 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
           console.log(`[content/view] fetching from ${url}`);
         }
 
-        this.httpService.get<Payload>(url).subscribe((data) => {
-          this.data = transformData(data, this.params);
+        this.httpService.get<Response>(url).subscribe((data) => {
+          // todo: try & catch
+          this.data = transformData(data as Payload, this.params);
 
-          /*
-                to grt baseUrl:
-                  - in browser: use location or document.baseURI
-                  - in server:
-                     - @Inject(DOCUMENT) -> doesn't have .baseURI (this.document.baseURI)
-                     - @Inject(REQUEST) -> this.request.hostname          
-              */
+          if (this.platform.isServer()) {
+            /*
+                  set met tags in server only, no need to re-set them again in the browser
+                  meta tags are existing in the source code only if set in the server,
+                  Angular displays only source code that exists in index.html
+                  to get baseUrl:
+                    - in browser: use location or document.baseURI
+                    - in server:
+                       - @Inject(DOCUMENT) -> doesn't have .baseURI (this.document.baseURI)
+                       - @Inject(REQUEST) -> this.request.hostname          
+                */
 
-          // todo: get baseUrl in server & browser
-          let baseUrl =
-            (this.request
-              ? // @ts-ignore
-                `${this.request.protocol}://${this.request.hostname}`
-              : '') + meta.URL || '/';
+            // todo: get baseUrl in server & browser
+            // todo: issue: titleService and metaService doesn't work in lazy-loaded modules
+            // https://github.com/angular/angular/issues/45388
+            let baseUrl =
+              (this.request
+                ? // @ts-ignore
+                  `${this.request.protocol}://${this.request.hostname}`
+                : '') + meta.URL || '/';
 
-          this.tags = getMetaTags(this.data, this.params, { baseUrl });
+            this.tags = getMetaTags(this.data, this.params, { baseUrl });
+          }
 
           if (env.mode === 'development') {
             console.log('[content/view]', {
@@ -231,16 +242,21 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
 
     this.offset += this.limit;
     this.httpService
-      .get<Article[]>(
-        getUrl(this.params, {
+      .get<Response>(
+        getUrl(Object.assign(this.params, { item: undefined }), {
           offset: this.offset,
           limit: this.limit,
           category: this.category,
         })
       )
       .subscribe((data) => {
-        if (data) {
-          this.data.push(...(transformData(data, this.params) as Article[]));
+        if (data && data instanceof Array) {
+          this.moreData.push(
+            ...(transformData(
+              data as unknown as Article[],
+              this.params
+            ) as Article[])
+          );
         } else {
           this.infiniteScroll = false;
         }
