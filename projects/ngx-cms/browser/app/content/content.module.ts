@@ -1,10 +1,8 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Routes, RouterModule } from '@angular/router';
-import { MetaService } from '@engineers/ngx-utils/meta.service';
 import { NgxLoadService } from '@engineers/ngx-utils/load-scripts.service';
 import { QuillModule } from 'ngx-quill';
-import { MatTreeModule } from '@angular/material/tree';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { PlatformService } from '@engineers/ngx-utils/platform';
@@ -47,12 +45,11 @@ const routes: Routes = [
   imports: [
     CommonModule,
     RouterModule.forChild(routes),
-    MatIconModule, 
+    MatIconModule,
     MatButtonModule,
     QuillModule.forRoot(),
   ],
   providers: [
-    MetaService,
     NgxLoadService,
     PlatformService,
     // todo: issue: interceptors that defined in the root module (AppModule)

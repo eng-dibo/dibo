@@ -38,6 +38,7 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 import { LazyLoadDirective } from '@engineers/lazy-load';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { MetaService } from '@engineers/ngx-utils/meta.service';
 
 @NgModule({
   declarations: [
@@ -67,7 +68,7 @@ import { InfiniteScrollModule } from 'ngx-infinite-scroll';
     ScrollingModule,
     InfiniteScrollModule,
   ],
-  providers: [],
+  providers: [MetaService],
   bootstrap: [],
 })
 export class NgxContentViewModule {
