@@ -34,6 +34,9 @@ todo:
     [data]="item"
     type="item"
     [options]="options"
+    infiniteScroll
+    (scrolled)="onScrollDown.emit()"
+    (scrolledUp)="onScrollUp.emit()"
   ></ngx-content-article>
 </ng-template>
 
