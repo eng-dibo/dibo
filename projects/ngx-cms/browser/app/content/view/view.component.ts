@@ -18,6 +18,7 @@ import {
 import env from '../../../env';
 // todo: get meta by http.get('/config/browser/meta')
 import meta from '~config/browser/meta';
+import { Title } from '@angular/platform-browser';
 
 import {
   Component,
@@ -78,7 +79,8 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
     private httpService: HttpClient,
     @Optional() @Inject(REQUEST) protected request: Request,
     private platform: PlatformService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private titleService: Title
   ) {
     if (this.platform.isBrowser()) {
       this.showNotificationsDialog();
@@ -162,7 +164,13 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
                 : '') + meta.URL || '/';
 
             this.tags = getMetaTags(this.data, this.params, { baseUrl });
+            // not working
+            this.titleService.setTitle('titleServer');
+            console.log('=========>server:tags', { tags: this.tags });
           }
+
+          // todo: issue: env.mode=prod in server & =dev in browser
+          console.log('=================>env', { env });
 
           if (env.mode === 'development') {
             console.log('[content/view]', {

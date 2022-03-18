@@ -19,7 +19,7 @@ const routes: Routes = [
       ),
   },
   {
-    path: ':type/manage',
+    path: 'articles/manage',
     loadChildren: () =>
       import('./manage/manage.module').then(
         (modules) => modules.ContentManageModule
@@ -27,14 +27,7 @@ const routes: Routes = [
   },
 
   {
-    path: ':type',
-    loadChildren: () =>
-      import('./view/view.module').then((modules) => modules.ContentViewModule),
-  },
-
-  //or: redirectTo: "/articles",
-  {
-    path: '',
+    path: 'articles',
     loadChildren: () =>
       import('./view/view.module').then((modules) => modules.ContentViewModule),
   },
