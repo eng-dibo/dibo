@@ -341,7 +341,9 @@ app.get('*', (req: any, res: any, next: any) => {
         // example: 'articles/@category=^$slug-name'
         if (params.filter && params.filter.includes('category=%5E')) {
           // todo: return cache('articles_categories.json',..)
-          let slug = params.filter.replace('category=%5E', '');
+
+          // example: 'status=approved,category=^slug,key=value' => 'slug'
+          let slug = params.filter.split('category=%5E').pop().split(',')[0];
           return query(`${collection}_categories/:1~_id@slug=${slug}`).then(
             (category) => {
               console.log({
