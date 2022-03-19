@@ -2,10 +2,10 @@
 # if you modified this file, also update .dockerignore
 
 node_modules
-/dist
-/out-tsc
+dist
+out-tsc
 /tmp
-/bazel-out
+bazel-out
 *.log
 *.cache
 *.tmp
@@ -26,7 +26,7 @@ chrome-profiler-events*.json
 speed-measure-plugin*.json
 
 # IDEs and editors
-/.idea
+.idea
 .project
 .classpath
 .c9/
@@ -38,10 +38,10 @@ speed-measure-plugin*.json
 .history/*
 
 # misc
-/.sass-cache
-/connect.lock
-/coverage
-/typings
+.sass-cache
+connect.lock
+coverage
+typings
 
 # System Files
 .DS_Store
