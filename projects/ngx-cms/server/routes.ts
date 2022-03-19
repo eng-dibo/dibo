@@ -165,20 +165,20 @@ app.get(/\/config\/(.+)/, (req: any, res: any) => {
     */
 });
 
-// todo: /backup?filter=db1,db2:coll1,coll2,db3:!coll4
 app.get('/backup', (req: any, res: any) => {
-  let filter: any;
-  if (req.query.filter) {
-    let tmp = JSON.parse(req.query.filter as string);
-    if (tmp instanceof Array) {
-      filter = (db: any, coll: any) => tmp.includes(db);
-    }
-    // todo: else of object; else if string
-  } else {
-    filter = (db: any, coll: any) => {
-      return true;
-    };
-  }
+  // see /restore route for details
+  let filter = req.query.filter
+    ? (db?: string, collection?: string) =>
+        (req.query.filter as string).split(',').includes(db!)
+    : req.query.all === false
+    ? undefined
+    : (db: any, collection: any) => {
+        if (collection) {
+          return supportedCollections.includes(collection);
+        }
+        return true;
+      };
+
   connect()
     // @ts-ignore: error TS2349: This expression is not callable.
     // Each member of the union type ... has signatures, but none of those signatures are compatible with each other.
@@ -224,50 +224,72 @@ app.get('/restore/:hosts?', (req: any, res: any) => {
     });
   }
 
-  connect().then(() =>
-    Promise.all(
-      existingHosts
-        .filter((host) => toRegExp(hosts.split(',')).test(host))
-        .map((host) => {
-          console.log(`> restoring from ${host}`);
+  connect()
+    .then(() =>
+      Promise.all(
+        existingHosts
+          .filter((host) => toRegExp(hosts.split(',')).test(host))
+          .map((host) => {
+            console.log(`> restoring from ${host}`);
 
-          let hostPath = resolve(__dirname, `../temp/db-backup/${host}`);
-          if (!existsSync) {
-            throw `the host ${host} not existing`;
-          }
+            let hostPath = resolve(__dirname, `../temp/db-backup/${host}`);
+            if (!existsSync) {
+              throw `the host ${host} not existing`;
+            }
 
-          // todo: sort by name
-          let backupPath = resolve(hostPath, readdirSync(hostPath)[0]);
-          if (backupPath.length === 0) {
-            console.warn(`no backup files for the host ${host}`);
-            Promise.resolve();
-          }
+            // todo: sort by name
+            let backupPath = resolve(hostPath, readdirSync(hostPath)[0]);
+            if (backupPath.length === 0) {
+              console.warn(`no backup files for the host ${host}`);
+              Promise.resolve();
+            }
 
-          return Promise.all(
-            readdirSync(backupPath).map((file: string) => {
-              let filePath = resolve(`${backupPath}/${file}`);
-              if (extname(filePath) !== '.json') {
-                return;
-              }
-              console.log({ backupPath });
-              return (
-                readFS(filePath)
-                  .then((content: any) => {
-                    restore({ [file.replace('.json', '')]: content });
-                  })
-                  // todo: move .catch() to the top-level of Promise chain
-                  .catch((error) => {
-                    console.log(`[restore] error in restore()`, { error });
-                    throw error;
-                  })
-              );
-            })
-          );
-        })
+            let filter =
+              // filter databases by querystring, example: ?filter=db1,db2
+              // todo: filter collections ?filter=db1,db2:coll1,coll2,db3:!coll4
+              req.query.filter
+                ? (db?: string, collection?: string) =>
+                    (req.query.filter as string).split(',').includes(db!)
+                : // disable filtering
+                req.query.all === false
+                ? undefined
+                : // by default, only restore supportedCollections
+                  (db: any, collection: any) => {
+                    if (db === '__info') {
+                      return false;
+                    }
+                    if (collection) {
+                      // todo: if ?supportedCollections!==false
+                      return supportedCollections.includes(collection);
+                    }
+                    return true;
+                  };
+
+            return Promise.all(
+              readdirSync(backupPath).map((file: string) => {
+                let filePath = resolve(`${backupPath}/${file}`);
+                if (extname(filePath) !== '.json') {
+                  return;
+                }
+                console.log({ backupPath });
+                return (
+                  readFS(filePath)
+                    .then((content: any) => {
+                      restore({ [file.replace('.json', '')]: content }, filter);
+                    })
+                    // todo: move .catch() to the top-level of Promise chain
+                    .catch((error) => {
+                      console.log(`[restore] error in restore()`, { error });
+                      throw error;
+                    })
+                );
+              })
+            );
+          })
+      )
     )
-      .then(() => res.json({ done: true }))
-      .catch((error) => res.json({ error }))
-  );
+    .then(() => res.json({ done: true }))
+    .catch((error) => res.json({ error }));
 });
 
 /*
@@ -313,14 +335,14 @@ app.get('*', (req: any, res: any, next: any) => {
     console.log('[server/routes]', { queryObject });
   }
 
-  /* todo:
-    if (!supportedCollections.includes(collection))
-      return res.json({
-        error: {
-          message:
-            "unknown collection, use /api/v1/collections to list the allowed collections"
-        }
-      }); */
+  if (!supportedCollections.includes(collection)) {
+    return res.json({
+      error: {
+        message:
+          'unknown collection, use /api/v1/collections to list the allowed collections',
+      },
+    });
+  }
 
   // ------------------ /API route validation ------------------//
 
