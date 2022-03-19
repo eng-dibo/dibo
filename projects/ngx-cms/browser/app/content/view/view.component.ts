@@ -40,16 +40,25 @@ import { NotificationsDialogComponent } from '../notifications-dialog/notificati
 
 export interface Params {
   type: string;
-  category?: string;
-  item?: string;
   postType: string;
-  // pass ?refresh=auth to force refreshing the cache
+  category?: Category;
+  item?: string;
+  // todo: pass ?refresh=auth to force refreshing the cache
   // get admin auth from ~config/server,
-  // or get an auth code for each user from db
+  // & get an auth code for each user from db
   refresh?: string;
 }
 
-export type Response = Payload | { error: string };
+export interface PayloadError {
+  error: string;
+}
+
+export interface Category {
+  _id?: string;
+  title?: string;
+  slug?: string;
+  [key: string]: any;
+}
 @Component({
   selector: 'content-view',
   templateUrl: './view.component.html',
@@ -57,14 +66,13 @@ export type Response = Payload | { error: string };
 })
 export class ContentViewComponent implements OnInit, AfterViewInit {
   @ViewChild('quillView') quillView: any;
+  params!: Params;
   tags!: Meta;
   options!: ViewOptions;
-  categories!: Array<any>;
-  category!: any;
+  categories!: Array<Category>;
   data!: Payload;
   // data that fetched by loadMore()
   moreData: Article[] = [];
-  params!: Params;
   limit: number = 10;
   offset: number = 0;
   // stop infiniteScroll when no more data (it already stops when the scrollbar reached the end)
@@ -104,41 +112,67 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    let router = this.route.snapshot;
-    this.params = getParams(router.params, router.queryParams);
+    this.params = getParams(this.route.snapshot);
 
     // prevent invalid routes from requesting data from the server
-    if (!['articles', 'jobs'].includes(this.params.type as string)) {
+    // todo: move this to contentModule (use regex for routes)
+    if (!['articles', 'jobs'].includes(this.params.type)) {
       throw new Error(`path not allowed: /${this.params.type}`);
     }
 
     this.httpService
-      .get<Array<any>>(`${this.params.type}_categories`)
+      .get<Array<Category>>(`${this.params.type}_categories`)
       .subscribe((categories) => {
         // todo: display categories list  .filter(el=>!el.parent)
         this.categories = categories;
 
-        if (this.params.category) {
+        // get category details from category.slug in url
+        // if failed due to invalid category.slug, try to get it after fetching data by data.categories[0] in item mode
+        if (this.params.category && this.params.category.slug) {
           let category = categories.find(
-            (el) => el.slug === this.params.category
+            (el) => el.slug === this.params.category!.slug
           );
+
           if (category) {
-            category.link = `/${this.params.type}/${category.slug}`;
-            this.category = category;
+            this.params.category = category;
+            this.params.category.link = `/${this.params.type}/${this.params.category.slug}`;
           }
         }
 
         let url = getUrl(this.params, {
-          category: this.category,
           limit: this.limit,
+          offset: 0,
         });
+
         if (env.mode === 'development') {
           console.log(`[content/view] fetching from ${url}`);
         }
 
-        this.httpService.get<Response>(url).subscribe((data) => {
+        this.httpService.get<Payload | PayloadError>(url).subscribe((data) => {
           // todo: try & catch
-          this.data = transformData(data as Payload, this.params);
+          this.data = transformData(
+            data as Payload,
+            this.params,
+            this.categories
+          );
+
+          // if category._id couldn't be get due to an invalid category.slug is used in the url
+          // for item mode, consider using item.categories[0] as category
+          // use category._id for loadMore()
+          if (
+            !this.params.category!._id &&
+            !(this.data instanceof Array) &&
+            this.data.categories instanceof Array
+          ) {
+            let category = this.categories.find(
+              (el) => el._id === (this.data as Article).categories[0]
+            );
+
+            if (category) {
+              this.params.category = category;
+              this.params.category.link = `/${this.params.type}/${this.params.category.slug}`;
+            }
+          }
 
           if (this.platform.isServer()) {
             /*
@@ -242,11 +276,11 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
 
     this.offset += this.limit;
     this.httpService
-      .get<Response>(
+      .get<Article[] | PayloadError>(
+        // remove params.item to fetch articles by category
         getUrl(Object.assign(this.params, { item: undefined }), {
           offset: this.offset,
           limit: this.limit,
-          category: this.category,
         })
       )
       .subscribe((data) => {
@@ -254,7 +288,8 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
           this.moreData.push(
             ...(transformData(
               data as unknown as Article[],
-              this.params
+              this.params,
+              this.categories
             ) as Article[])
           );
         } else {
@@ -262,4 +297,6 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
         }
       });
   }
+
+  follow(): void {}
 }

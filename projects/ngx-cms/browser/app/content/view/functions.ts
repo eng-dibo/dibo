@@ -1,15 +1,33 @@
-import { Params } from './view.component';
+import { Params, Category } from './view.component';
 import {
   Article,
   Payload,
   Keywords,
   Meta,
 } from '@engineers/ngx-content-view-mat';
-import { html2text, length } from '@engineers/ngx-content-core/pipes-functions';
+import {
+  html2text,
+  length,
+  slug as _slug,
+} from '@engineers/ngx-content-core/pipes-functions';
 import defaultMetaTags from '~config/browser/meta';
 import { replaceAll } from '@engineers/javascript/string';
 
-export function getParams(params: any, query: any): Params {
+export function slug(value: string, options: any = {}) {
+  return _slug(
+    value,
+    Object.assign(
+      {
+        length: 200,
+        allowedChars: ':ar',
+        encode: false,
+      },
+      options
+    )
+  );
+}
+
+export function getParams(router: { params?: any; queryParams?: any }): Params {
   /*
     examples:
       /articles
@@ -18,7 +36,9 @@ export function getParams(params: any, query: any): Params {
       /articles/~item.id
   */
 
-  let type = params.type || 'articles',
+  let params = router.params,
+    query = router.queryParams,
+    type = params.type || 'articles',
     category = params.category,
     item = params.item;
 
@@ -29,7 +49,7 @@ export function getParams(params: any, query: any): Params {
 
   return {
     type,
-    category,
+    category: { slug: category },
     // get last part of a string https://stackoverflow.com/a/6165387/12577650
     // using '=' (i.e /slug=id) will redirect to /slug
     item: item && item.indexOf('~') !== -1 ? item.split('~').pop() : item,
@@ -39,29 +59,22 @@ export function getParams(params: any, query: any): Params {
 }
 
 export interface GetUrlOptions {
-  category?: any;
   limit?: number;
   offset?: number;
 }
 export function getUrl(params: any, options: GetUrlOptions = {}): string {
-  let opts = Object.assign(
-    {
-      limit: 10,
-    },
-    options || {}
-  );
-  let url = params.type;
+  let url = `${params.type}/`;
   if (params.item) {
-    // todo: ~_id,title,subtitle,slug,summary,author,cover,categories,updatedAt
-    url += `/${params.item}`;
+    // todo: ~_id,title,subtitle,summary,author,cover,categories,updatedAt
+    url += params.item;
   } else {
-    url += `/${opts.offset}:${opts.limit}@status=approved`;
-    if (params.category) {
-      url += opts.category
+    url += `${options.offset || 0}:${options.limit || 10}@status=approved`;
+    if (params.category.slug) {
+      url += params.category._id
         ? // get articles where category in article.categories[]
-          `,categories=${opts.category._id}`
+          `,categories=${params.category._id}`
         : // get articles in a category by its slug name
-          `,category=${encodeURIComponent('^' + params.category)}`;
+          `,category=${encodeURIComponent('^' + params.category.slug)}`;
     }
   }
 
@@ -72,7 +85,11 @@ export function getUrl(params: any, options: GetUrlOptions = {}): string {
   return url;
 }
 
-export function transformData(data: Payload, params: Params): Payload {
+export function transformData(
+  data: Payload,
+  params: Params,
+  categories?: Category[]
+): Payload {
   if (!data) {
     throw new Error('[transformData] no data');
   }
@@ -80,18 +97,22 @@ export function transformData(data: Payload, params: Params): Payload {
     // ex: the url fetched via a ServiceWorker
     data = JSON.parse(data);
   } else if (!(data instanceof Array) && data.error) {
-    throw Error('[view] error while fetching data');
+    // todo: cause
+    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error/Error#rethrowing_an_error_with_a_cause
+    throw new Error(
+      '[view] error while fetching data' /*, {cause:data.error}*/
+    );
   }
 
   if (data instanceof Array) {
     data = data
-      .map((item: Article) => adjustArticle(item, params, 'list'))
+      .map((item: Article) => adjustArticle(item, params, categories, 'list'))
       // randomize (shuffle) data[]
       .sort(() => 0.5 - Math.random()) as Article[];
   } else if (!data.error && data.content) {
     // data may be doesn't 'content' property
     // for example article_categories
-    data = adjustArticle(data as Article, params, 'item');
+    data = adjustArticle(data as Article, params, categories, 'item');
   }
 
   return data;
@@ -144,10 +165,21 @@ export function getMetaTags(
 export function adjustArticle(
   item: Article,
   params: Params,
+  categories?: Array<Category>,
   type: 'item' | 'list' = 'item'
 ): Article {
   item.id = item._id;
   item.summary = summary(item.content);
+
+  // todo: param.category || item.categories[0] || config.general
+  let category;
+  if (item.categories && item.categories.length > 0 && categories) {
+    category = categories.find((el) => el._id === item.categories[0]);
+  }
+  item.slug = category ? category.slug || slug(category.title!) : 'general';
+  item.slug += '/' + slug(item.title);
+  item.link = `/${params.type}/${item.slug}~${item.id}`;
+
   if (item.cover) {
     // if the layout changed, change the attribute sizes, for example if a side menu added.
     // todo: i<originalSize/250
@@ -169,31 +201,14 @@ export function adjustArticle(
     };
   }
 
-  if (!item.link) {
-    item.link = `/${params.type}/${item.slug}~${item.id}`;
-  }
-
-  item.author = {
-    name: 'author name',
-    image: 'assets/avatar-female.png',
-    link: '',
-  };
-
   if (type === 'item' && params.type === 'jobs') {
     item.content += `<div id='contacts'>${item.contacts}</div>`;
   }
 
   if (type === 'list') {
     item.content = item.summary;
-    delete item.summary;
   }
 
-  delete item.status;
-  delete item.categories;
-  delete item._id;
-  // todo: remove from database
-  delete item.type;
-  // delete item.keywords;
   return item;
 }
 

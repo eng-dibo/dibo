@@ -1,12 +1,12 @@
-<ng-container *ngIf="category">
+<ng-container *ngIf="params.category && params.category.title">
   <!-- todo: tooltip=category.description -->
   <h1>
-    <a href="{{ category.link }}">{{ category.title }}</a>
+    <a href="{{ params.category.link || '#' }}">{{ params.category.title }}</a>
   </h1>
   <!-- todo: implement this button-->
   <!-- save following[category.ids] in localStorage-->
   <!-- todo: tooltip = get a notification when a new article in this category-->
-  <button mat-raised-button color="primary">
+  <button mat-raised-button color="primary" (click)="follow()">
     <mat-icon>notifications</mat-icon>follow
   </button>
 </ng-container>
