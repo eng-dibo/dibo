@@ -411,21 +411,26 @@ export function backup(
  */
 export function restore(
   backupData: BackupData,
+  filter: BackupFilter = () => true,
   chunkSize: number = 50
 ): Promise<void> {
   // convert backupData format to [ { dbName, collName, ...collection } ] to use Promise.all()
   //todo: return Promise.all(Object.keys(backupData).map(...))
   // todo: return promise<{dbName:report}>
   let backupDataArray: Array<Obj> = [];
-  Object.keys(backupData).forEach((dbName: string) => {
-    Object.keys(backupData[dbName]).forEach((collectionName: string) => {
-      backupDataArray.push({
-        dbName,
-        collectionName,
-        ...backupData[dbName][collectionName],
-      });
+  Object.keys(backupData)
+    .filter((dbName: string) => filter(dbName))
+    .forEach((dbName: string) => {
+      Object.keys(backupData[dbName])
+        .filter((collectionName: string) => filter(dbName,collectionName))
+        .forEach((collectionName: string) => {
+          backupDataArray.push({
+            dbName,
+            collectionName,
+            ...backupData[dbName][collectionName],
+          });
+        });
     });
-  });
 
   // insert all backupData then fulfil the promise
   // todo: use info to create indexes (if collection doesn't exist)
