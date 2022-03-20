@@ -87,8 +87,9 @@ export class NgxContentViewComponent implements OnInit {
     );
   }
 
+  // todo: issue: `ngOnChanges` doesn't work in SSR
   ngOnChanges(changes: any): void {
-    if (changes.meta) {
+    if (changes.meta && this.meta) {
       // addTags() may causes duplication
       // The Meta tags are equal only if values of all the attributes are equal
       // updateTags() inserts the tag if matching meta element is not found
