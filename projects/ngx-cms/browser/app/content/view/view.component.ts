@@ -16,8 +16,6 @@ import {
   Article,
 } from '@engineers/ngx-content-view-mat';
 import env from '../../../env';
-// todo: get meta by http.get('/config/browser/meta')
-import meta from '~config/browser/meta';
 
 import {
   Component,
@@ -145,7 +143,7 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
         });
 
         if (env.mode === 'development') {
-          console.log(`[content/view] fetching from ${url}`);
+          console.info(`[content/view] fetching from ${url}`);
         }
 
         this.httpService.get<Payload | PayloadError>(url).subscribe((data) => {
@@ -155,6 +153,10 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
             this.params,
             this.categories
           );
+
+          if (env.mode === 'development') {
+            console.info('[content/view]: data', this.data);
+          }
 
           // if category._id couldn't be get due to an invalid category.slug is used in the url
           // for item mode, consider using item.categories[0] as category
@@ -174,37 +176,41 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
             }
           }
 
-          if (this.platform.isServer()) {
-            /*
-                  set met tags in server only, no need to re-set them again in the browser
-                  meta tags are existing in the source code only if set in the server,
-                  Angular displays only source code that exists in index.html
-                  to get baseUrl:
-                    - in browser: use location or document.baseURI
-                    - in server:
-                       - @Inject(DOCUMENT) -> doesn't have .baseURI (this.document.baseURI)
-                       - @Inject(REQUEST) -> this.request.hostname          
-                */
+          this.httpService
+            .get<Meta>('config/browser/meta')
+            .subscribe((defaultTags) => {
+              /*              
+             meta tags are existing in the source code only if set in the server,
+             Angular displays only source code that exists in index.html
+             to get baseUrl:
+               - in browser: use location or document.baseURI
+               - in server:
+               - @Inject(DOCUMENT) -> doesn't have .baseURI (this.document.baseURI)
+               - @Inject(REQUEST) -> this.request.hostname          
+           */
 
-            // todo: get baseUrl in server & browser
-            // todo: issue: titleService and metaService doesn't work in lazy-loaded modules
-            // https://github.com/angular/angular/issues/45388
-            let baseUrl =
-              (this.request
-                ? // @ts-ignore
-                  `${this.request.protocol}://${this.request.hostname}`
-                : '') + meta.URL || '/';
+              // todo: get baseUrl in server & browser
+              // todo: issue: titleService and metaService doesn't work in lazy-loaded modules
+              // https://github.com/angular/angular/issues/45388
+              let baseUrl =
+                (this.request
+                  ? // @ts-ignore
+                    `${this.request.protocol}://${this.request.hostname}`
+                  : '') + defaultTags.URL || '/';
 
-            this.tags = getMetaTags(this.data, this.params, { baseUrl });
-          }
+              this.tags = getMetaTags(
+                this.data,
+                this.params,
+                Object.assign({ baseUrl }, defaultTags)
+              );
 
-          if (env.mode === 'development') {
-            console.log('[content/view]', {
-              data,
-              params: this.params,
-              tags: this.tags,
+              if (env.mode === 'development') {
+                console.info('[content/view]: tags', {
+                  defaultTags,
+                  tags: this.tags,
+                });
+              }
             });
-          }
         });
       });
 
@@ -250,10 +256,12 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
   showNotificationsDialog() {
     if ('Notification' in window) {
       if (env.mode === 'development') {
-        console.log({ notification: Notification.permission });
+        console.info(`[content/view]: notification ${Notification.permission}`);
       }
       if (Notification.permission === 'default') {
-        console.log('requesting the permission to allow push notifications');
+        console.info(
+          '[content/view] requesting the permission to allow push notifications'
+        );
         this.dialog
           .open(NotificationsDialogComponent)
           .afterClosed()

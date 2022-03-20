@@ -10,7 +10,6 @@ import {
   length,
   slug as _slug,
 } from '@engineers/ngx-content-core/pipes-functions';
-import defaultMetaTags from '~config/browser/meta';
 import { replaceAll } from '@engineers/javascript/string';
 
 export function slug(value: string, options: any = {}) {
@@ -122,12 +121,12 @@ export function getMetaTags(
   data: Payload,
   params: Params,
   // override tags from `data`
-  tags: any = {}
+  defaultMetaTags: Meta = {}
 ): Meta {
   if (!data) {
-    return {};
+    return defaultMetaTags;
   }
-  let metaTags;
+  let metaTags: Meta;
   if (!(data instanceof Array)) {
     if (data.keywords && defaultMetaTags.baseUrl) {
       data.keywords = adjustKeywords(data.keywords, defaultMetaTags);
@@ -141,14 +140,18 @@ export function getMetaTags(
       author: data?.author?.name,
       description: summary(data.content, { lineBreak: '\n', length: 500 }),
       image: data?.cover || defaultMetaTags?.image,
-      ...tags,
+      ...defaultMetaTags,
       // todo: pass twitter:creator, twitter:creator:id
       // todo: expires
     };
   }
   // todo: category link, title
   else {
-    metaTags = { ...defaultMetaTags, url: defaultMetaTags.url + params.type };
+    metaTags = {
+      ...defaultMetaTags,
+      url: defaultMetaTags.url + params.type,
+      title: defaultMetaTags.name,
+    };
   }
 
   // todo: if(jobs)description=..
