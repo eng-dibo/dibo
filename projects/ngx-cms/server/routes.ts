@@ -141,6 +141,9 @@ app.get(/\/image\/([^/-]+)-([^/-]+)-([^/]+)/, (req: any, res: any) => {
     .catch((error: any) => res.json({ error }));
 });
 
+// todo: use import('~config/*').then() from browser directly
+// add '~config' to browser/webpack -> 'ESM ../../config/*'
+// in this case, config/*  must be added to express.static()
 app.get(/\/config\/(.+)/, (req: any, res: any) => {
   let nativeRequire = require('@engineers/webpack/native-require');
   let file = req.params[0];
