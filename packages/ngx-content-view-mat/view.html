@@ -1,10 +1,3 @@
-<div
-  *ngIf="board"
-  class="alert"
-  [ngClass]="'alert-' +board.status || ''"
-  [innerHTML]="board.message"
-></div>
-
 <!--
 todo:
 - adjust pipes by the data provider
@@ -15,7 +8,6 @@ todo:
   so we temporary stopped <share-buttons>
  -->
 <ng-container *ngIf="content">
-  <!-- *ngTemplateOutlet="!data===null?noContent:type==.." -->
   <ng-container
     *ngTemplateOutlet="type=='item'?itemBlock:options.layout=='list'?listBlock:gridBlock; context:{data:content}"
   ></ng-container>
@@ -25,7 +17,7 @@ todo:
 <mat-spinner
   strokeWidth="10"
   diameter="200"
-  *ngIf="!content && !board"
+  *ngIf="!content"
   style="margin: auto"
 ></mat-spinner>
 
@@ -37,6 +29,8 @@ todo:
     infiniteScroll
     (scrolled)="onScrollDown.emit()"
     (scrolledUp)="onScrollUp.emit()"
+    [ngClass]="item.error?'alert alert-error':''"
+    style="display: block"
   ></ngx-content-article>
 </ng-template>
 
@@ -88,10 +82,4 @@ todo:
       <!-- todo: add cancel btn -->
     </mat-list-item>
   </mat-list>
-</ng-template>
-
-<!-- todo: handle noContent by parent element: if(!data)-->
-<ng-template #noContent
-  >{{options.noContent || 'No content!'}} <br />
-  <a href="{{options.back || '/'}}">Back</a>
 </ng-template>

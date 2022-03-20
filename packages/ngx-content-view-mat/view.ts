@@ -25,14 +25,8 @@ export interface ViewOptions extends ArticleOptions {
   layout?: string;
   // the link in case of no content
   back?: string;
-  // noContent text; todo: html code
-  noContent?: string;
 }
 
-export interface Board {
-  message: string;
-  status: 'ok' | 'error' | 'warning';
-}
 @Component({
   selector: 'ngx-content-view',
   templateUrl: './view.html',
@@ -55,7 +49,6 @@ export class NgxContentViewComponent implements OnInit {
   @Output() onScrollDown = new EventEmitter<void>();
   @Output() onScrollUp = new EventEmitter<void>();
   content: Payload;
-  board: Board;
 
   constructor(private metaService: MetaService) {}
 
@@ -73,16 +66,14 @@ export class NgxContentViewComponent implements OnInit {
     toObservable(this.data).subscribe(
       (data: Payload) => {
         this.type = data instanceof Array ? 'list' : 'item';
-        this.content = data;
+        this.content =
+          !(data instanceof Array) && data.error
+            ? this.createError(data.error)
+            : data;
       },
 
       (error) => {
-        this.board = {
-          status: 'error',
-          message:
-            ((typeof error === 'string' ? error : error.message) || 'error!') +
-            `<br /><a href="/">go to homepage</a>`,
-        };
+        this.content = this.createError(error);
       }
     );
   }
@@ -97,5 +88,13 @@ export class NgxContentViewComponent implements OnInit {
       // https://www.tektutorialshub.com/angular/meta-service-in-angular-add-update-meta-tags-example/
       this.metaService.updateTags(this.meta as Meta);
     }
+  }
+
+  createError(error: any): Article {
+    return {
+      title: 'Error',
+      content: error.message + `<hr /><a href="/">go to homepage</a>`,
+      error,
+    };
   }
 }

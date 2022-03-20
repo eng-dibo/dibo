@@ -5,18 +5,18 @@ interface Obj {
 }
 
 export interface Article extends Obj {
-  id: string;
-  title: string;
+  id?: string;
+  title?: string;
   subtitle?: string;
-  content: string;
+  content?: string;
   // todo: if(keywords:string)keywords=keywords.split(',').map(text=>({text}))
   keywords?: Keywords[];
   cover?: Image;
   // todo: img?: string | Image
   author?: { name?: string; image?: string; link?: string };
   link?: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
   // whether to display the copy button
   copyButton?: boolean;
 }

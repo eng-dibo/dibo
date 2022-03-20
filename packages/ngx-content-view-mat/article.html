@@ -3,7 +3,7 @@
     <div *ngIf="data.author && data.author.image" mat-card-avatar>
       <img src="{{data.author.image}}" alt="{{data.author.name}}" />
     </div>
-    <mat-card-title dir="auto">
+    <mat-card-title dir="auto" *ngIf="data.title">
       <a href="{{data.link || '#'}}">
         <!--todo: options.titleLength -->
         <!--todo: dynamic element (html tag) ex: <{{options.titleTag || 'h1'}}> -->
