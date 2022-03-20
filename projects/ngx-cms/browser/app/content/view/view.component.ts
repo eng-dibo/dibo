@@ -281,6 +281,9 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
   }
 
   loadMore(): void {
+    if (!(this.data instanceof Array) && this.data.error) {
+      this.infiniteScroll = false;
+    }
     if (!this.infiniteScroll) {
       return;
     }
