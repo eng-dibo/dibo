@@ -147,70 +147,73 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
         }
 
         this.httpService.get<Payload | PayloadError>(url).subscribe((data) => {
-          // todo: try & catch
-          this.data = transformData(
-            data as Payload,
-            this.params,
-            this.categories
-          );
-
-          if (env.mode === 'development') {
-            console.info('[content/view]: data', this.data);
-          }
-
-          // if category._id couldn't be get due to an invalid category.slug is used in the url
-          // for item mode, consider using item.categories[0] as category
-          // use category._id for loadMore()
-          if (
-            !this.params.category!._id &&
-            !(this.data instanceof Array) &&
-            this.data.categories instanceof Array
-          ) {
-            let category = this.categories.find(
-              (el) => el._id === (this.data as Article).categories[0]
+          try {
+            this.data = transformData(
+              data as Payload,
+              this.params,
+              this.categories
             );
 
-            if (category) {
-              this.params.category = category;
-              this.params.category.link = `/${this.params.type}/${this.params.category.slug}`;
+            if (env.mode === 'development') {
+              console.info('[content/view]: data', this.data);
             }
-          }
 
-          this.httpService
-            .get<Meta>('config/browser/meta')
-            .subscribe((defaultTags) => {
-              /*              
-             meta tags are existing in the source code only if set in the server,
-             Angular displays only source code that exists in index.html
-             to get baseUrl:
-               - in browser: use location or document.baseURI
-               - in server:
-               - @Inject(DOCUMENT) -> doesn't have .baseURI (this.document.baseURI)
-               - @Inject(REQUEST) -> this.request.hostname          
-           */
-
-              // todo: get baseUrl in server & browser
-              // todo: issue: titleService and metaService doesn't work in lazy-loaded modules
-              // https://github.com/angular/angular/issues/45388
-              let baseUrl =
-                (this.request
-                  ? // @ts-ignore
-                    `${this.request.protocol}://${this.request.hostname}`
-                  : '') + defaultTags.URL || '/';
-
-              this.tags = getMetaTags(
-                this.data,
-                this.params,
-                Object.assign({ baseUrl }, defaultTags)
+            // if category._id couldn't be get due to an invalid category.slug is used in the url
+            // for item mode, consider using item.categories[0] as category
+            // use category._id for loadMore()
+            if (
+              !this.params.category!._id &&
+              !(this.data instanceof Array) &&
+              this.data.categories instanceof Array
+            ) {
+              let category = this.categories.find(
+                (el) => el._id === (this.data as Article).categories[0]
               );
 
-              if (env.mode === 'development') {
-                console.info('[content/view]: tags', {
-                  defaultTags,
-                  tags: this.tags,
-                });
+              if (category) {
+                this.params.category = category;
+                this.params.category.link = `/${this.params.type}/${this.params.category.slug}`;
               }
-            });
+            }
+
+            this.httpService
+              .get<Meta>('config/browser/meta')
+              .subscribe((defaultTags) => {
+                /*              
+               meta tags are existing in the source code only if set in the server,
+               Angular displays only source code that exists in index.html
+               to get baseUrl:
+                 - in browser: use location or document.baseURI
+                 - in server:
+                 - @Inject(DOCUMENT) -> doesn't have .baseURI (this.document.baseURI)
+                 - @Inject(REQUEST) -> this.request.hostname          
+             */
+
+                // todo: get baseUrl in server & browser
+                // todo: issue: titleService and metaService doesn't work in lazy-loaded modules
+                // https://github.com/angular/angular/issues/45388
+                let baseUrl =
+                  (this.request
+                    ? // @ts-ignore
+                      `${this.request.protocol}://${this.request.hostname}`
+                    : '') + defaultTags.URL || '/';
+
+                this.tags = getMetaTags(
+                  this.data,
+                  this.params,
+                  Object.assign({ baseUrl }, defaultTags)
+                );
+
+                if (env.mode === 'development') {
+                  console.info('[content/view]: tags', {
+                    defaultTags,
+                    tags: this.tags,
+                  });
+                }
+              });
+          } catch (error) {
+            this.data = { error };
+          }
         });
       });
 

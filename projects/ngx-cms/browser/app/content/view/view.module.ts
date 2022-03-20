@@ -12,6 +12,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { ApiInterceptor } from '../../http.interceptor';
 import { UniversalInterceptor } from '@engineers/ngx-universal-express/universal-interceptor';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 const routes: Routes = [
   // example: /articles/category.title/[item.slug]~id
@@ -35,6 +36,7 @@ const routes: Routes = [
     MatIconModule,
     MatTooltipModule,
     MatButtonModule,
+    MatProgressSpinnerModule,
   ],
   providers: [
     {

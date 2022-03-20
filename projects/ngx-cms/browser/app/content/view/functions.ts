@@ -138,7 +138,9 @@ export function getMetaTags(
       url: data.link,
       title: data.title,
       author: data?.author?.name,
-      description: summary(data.content, { lineBreak: '\n', length: 500 }),
+      description: data.content
+        ? summary(data.content, { lineBreak: '\n', length: 500 })
+        : data.title,
       image: data?.cover || defaultMetaTags?.image,
       ...defaultMetaTags,
       // todo: pass twitter:creator, twitter:creator:id
@@ -172,7 +174,7 @@ export function adjustArticle(
   type: 'item' | 'list' = 'item'
 ): Article {
   item.id = item._id;
-  item.summary = summary(item.content);
+  item.summary = item.content ? summary(item.content) : item.title;
 
   // todo: param.category || item.categories[0] || config.general
   let category;
@@ -180,7 +182,7 @@ export function adjustArticle(
     category = categories.find((el) => el._id === item.categories[0]);
   }
   item.slug = category ? category.slug || slug(category.title!) : 'general';
-  item.slug += '/' + slug(item.title);
+  item.slug += '/' + slug(item.title || '');
   item.link = `/${params.type}/${item.slug}~${item.id}`;
 
   if (item.cover) {
