@@ -13,6 +13,9 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { ApiInterceptor } from '../../http.interceptor';
 import { UniversalInterceptor } from '@engineers/ngx-universal-express/universal-interceptor';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ShareButtonsModule } from 'ngx-sharebuttons/buttons';
+import { ShareButtonsConfig } from 'ngx-sharebuttons';
+import { ShareIconsModule } from 'ngx-sharebuttons/icons';
 
 const routes: Routes = [
   // example: /articles/category.title/[item.slug]~id
@@ -21,6 +24,24 @@ const routes: Routes = [
   { path: ':category', component: ContentViewComponent },
   { path: '', component: ContentViewComponent },
 ];
+
+let shareButtonsConfig: ShareButtonsConfig = {
+  include: [
+    'facebook',
+    'twitter',
+    'linkedin',
+    'pinterest',
+    'whatsapp',
+    'telegram',
+    'messenger',
+    'reddit',
+    'sms',
+    'copy',
+  ],
+  theme: 'modern-dark',
+  gaTracking: true,
+  // todo: twitterAccount: 'twitterUsername',
+};
 
 @NgModule({
   declarations: [
@@ -37,6 +58,11 @@ const routes: Routes = [
     MatTooltipModule,
     MatButtonModule,
     MatProgressSpinnerModule,
+    ShareIconsModule,
+    // todo: issue: configs are ignored if configured in a lazy-loaded module, but works if configured in AppModule
+    // https://github.com/MurhafSousli/ngx-sharebuttons/issues/597
+    // after solving this issue remove configs from `<share-buttons>` component
+    ShareButtonsModule.withConfig(shareButtonsConfig),
   ],
   providers: [
     {

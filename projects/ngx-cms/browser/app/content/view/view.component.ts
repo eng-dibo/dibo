@@ -292,7 +292,7 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
     this.httpService
       .get<Article[] | PayloadError>(
         // remove params.item to fetch articles by category
-        getUrl(Object.assign(this.params, { item: undefined }), {
+        getUrl(Object.assign({}, this.params, { item: undefined }), {
           offset: this.offset,
           limit: this.limit,
         })

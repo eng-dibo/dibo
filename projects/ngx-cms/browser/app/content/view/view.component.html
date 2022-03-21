@@ -1,16 +1,3 @@
-<ng-container *ngIf="params.category && params.category.title">
-  <!-- todo: tooltip=category.description -->
-  <h1>
-    <a href="{{ params.category.link || '#' }}">{{ params.category.title }}</a>
-  </h1>
-  <!-- todo: implement this button-->
-  <!-- save following[category.ids] in localStorage-->
-  <!-- todo: tooltip = get a notification when a new article in this category-->
-  <button mat-raised-button color="primary" (click)="follow()">
-    <mat-icon>notifications</mat-icon>follow
-  </button>
-</ng-container>
-
 <!-- tags are set in ngOnChanges lifecycle, no need to add in *ngIf -->
 <ngx-content-view
   *ngIf="data && options"
@@ -18,7 +5,44 @@
   [options]="options"
   [meta]="tags"
   (onScrollDown)="loadMore()"
-></ngx-content-view>
+>
+  <share-buttons
+    actions
+    *ngIf="params.item"
+    show="10"
+    showText="true"
+    theme="modern-dark"
+    [include]="[
+      'facebook',
+      'twitter',
+      'linkedin',
+      'pinterest',
+      'whatsapp',
+      'telegram',
+      'messenger',
+      'reddit',
+      'sms',
+      'copy'
+    ]"
+    gaTracking="true"
+  ></share-buttons>
+
+  <ng-container *ngIf="params.category && params.category.title" before-content>
+    <!-- todo: tooltip=category.description -->
+    <h1>
+      <a href="{{ params.category.link || '#' }}">{{
+        params.category.title
+      }}</a>
+    </h1>
+    <!-- todo: implement this button-->
+    <!-- save following[category.ids] in localStorage-->
+    <!-- todo: tooltip = get a notification when a new article in this category-->
+    <button mat-raised-button color="primary" (click)="follow()">
+      <mat-icon>notifications</mat-icon>follow
+    </button>
+    <hr />
+  </ng-container>
+</ngx-content-view>
 
 <ngx-content-view
   *ngIf="moreData && moreData.length > 0 && options"
@@ -29,14 +53,13 @@
 ></ngx-content-view>
 
 <mat-spinner
+  *ngIf="!data"
   strokeWidth="10"
   diameter="200"
-  *ngIf="!data"
   style="margin: auto"
 ></mat-spinner>
 
 <button
-  *ngIf="params"
   mat-mini-fab
   color="primary"
   routerLink="/{{ params.type }}/editor"
