@@ -1,12 +1,16 @@
 <mat-card>
   <mat-card-header>
-    <div *ngIf="data.author && data.author.image" mat-card-avatar>
-      <img src="{{data.author.image}}" alt="{{data.author.name}}" />
-    </div>
+    <img
+      *ngIf="data.author && data.author.image"
+      mat-card-avatar
+      src="{{data.author.image}}"
+      alt="{{data.author.name}}"
+    />
+
     <mat-card-title dir="auto" *ngIf="data.title">
       <a href="{{data.link || '#'}}">
-        <!--todo: options.titleLength -->
-        <!--todo: dynamic element (html tag) ex: <{{options.titleTag || 'h1'}}> -->
+        <!--todo: opts.titleLength -->
+        <!--todo: dynamic element (html tag) ex: <{{opts.titleTag || 'h1'}}> -->
         <h1 *ngIf="type=='item'">{{data.title | length:200}}</h1>
         <h3 *ngIf="type!='item'">{{data.title | length:200}}</h3>
       </a></mat-card-title
@@ -21,13 +25,22 @@
       <!--todo: a pipe to convert timestamp or Date to string -->
       <span>{{data.createdAt || data.updatedAt }}</span>
     </mat-card-subtitle>
-    <span
-      *ngIf="this.options.copyButton!==false"
-      class="material-icons"
-      style="cursor: pointer"
-      (click)="copy()"
-      >content_copy</span
-    >
+
+    <div class="quick-actions">
+      <ng-container *ngIf="options && opts.quickActions">
+        <ng-container *ngFor="let item of opts.quickActions">
+          <span
+            *ngIf="item.action"
+            class="material-icons"
+            style="cursor: pointer"
+            (click)="item.action()"
+          >
+            {{item.icon}}
+          </span>
+        </ng-container>
+      </ng-container>
+    </div>
+    <ng-content select="[header]"></ng-content>
   </mat-card-header>
 
   <!--
@@ -38,14 +51,14 @@
     -->
   <mat-card-content dir="auto">
     <!-- todo:
-       - <img  [debug]="options.dev"
+       - <img  [debug]="opts.dev"
             [errorImage]="siteLogo or placeholder?text=siteName"
             [scrollTarget]="$cdk-virtual-scroll-viewport"
             (onStateChange)="onStateChange($event)" />
        - if(!data.cover.lazy) remove attribute lazyLoad
        - ng-lazyload-image hooks
       -->
-
+    <ng-content select="[before-cover]"></ng-content>
     <img
       *ngIf="data.cover"
       mat-card-image
@@ -65,18 +78,18 @@
        if(quillView)use <quill-view>
        else use <div *ngIf="type=='list'" class="content" [innerHtml]="data.content"></div>
       -->
+    <ng-content select="[before-content]"></ng-content>
     <quill-view-html
       *ngIf="data.content"
       #quillView
       [content]="data.content | hypernate"
       theme="snow"
     ></quill-view-html>
+    <ng-content select="[after-content]"></ng-content>
   </mat-card-content>
   <!-- todo: use content[] to add content segments, ex: for jobs we need to add: expiration alert -> content -> contacts -->
   <mat-card-actions>
-    <!-- todo:
-      <share-buttons show="5"></share-buttons>
-    -->
+    <ng-content select="[actions]"></ng-content>
   </mat-card-actions>
 
   <mat-chip-list aria-label="keywords" *ngIf="data.keywords">
@@ -91,6 +104,9 @@
       <span *ngIf="!item.link">{{item.text}}</span>
     </mat-chip>
   </mat-chip-list>
+  <mat-card-footer>
+    <ng-content select="[footer]"></ng-content>
+  </mat-card-footer>
 </mat-card>
 
 <!-- <mat-card-actions>

@@ -31,7 +31,30 @@ todo:
     (scrolledUp)="onScrollUp.emit()"
     [ngClass]="item.error?'alert alert-error':''"
     style="display: block"
-  ></ngx-content-article>
+  >
+    <!-- forward ng-content from the parent component to the grand child <ngx-content-article> -->
+    <ng-container header>
+      <ng-content select="[header]"></ng-content>
+    </ng-container>
+    <ng-container before-cover>
+      <ng-content select="[before-cover]"></ng-content>
+    </ng-container>
+    <ng-container before-content>
+      <ng-content select="[before-content]"></ng-content>
+    </ng-container>
+    <ng-container after-content>
+      <ng-content select="[after-content]"></ng-content>
+      <ng-container actions>
+        <ng-content select="[actions]"></ng-content>
+      </ng-container>
+    </ng-container>
+    <ng-container footer>
+      <ng-content select="[footer]"></ng-content>
+    </ng-container>
+    <ng-container>
+      <ng-content></ng-content>
+    </ng-container>
+  </ngx-content-article>
 </ng-template>
 
 <ng-template #gridBlock let-data="data">
@@ -47,7 +70,29 @@ todo:
       [data]="item"
       type="list"
       [options]="options"
-    ></ngx-content-article>
+    >
+      <ng-container header>
+        <ng-content select="[header]"></ng-content>
+      </ng-container>
+      <ng-container before-cover>
+        <ng-content select="[before-cover]"></ng-content>
+      </ng-container>
+      <ng-container before-content>
+        <ng-content select="[before-content]"></ng-content>
+      </ng-container>
+      <ng-container after-content>
+        <ng-content select="[after-content]"></ng-content>
+        <ng-container actions>
+          <ng-content select="[actions]"></ng-content>
+        </ng-container>
+      </ng-container>
+      <ng-container footer>
+        <ng-content select="[footer]"></ng-content>
+      </ng-container>
+      <ng-container>
+        <ng-content></ng-content>
+      </ng-container>
+    </ngx-content-article>
   </div>
 
   <!-- todo: *cdkVirtualFor not work, temporary remove cdk scroll

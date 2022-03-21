@@ -94,7 +94,16 @@ mat-card-subtitle {
 mat-card-subtitle span {
   margin: 10px;
 }
+
+mat-card-footer {
+  margin: 0;
+}
 /* remove text-align:left because it prevent dir="auto" */
 .ql-editor {
   text-align: inherit !important;
+}
+
+.quick-actions {
+  margin-left: auto;
+  margin-right: 0;
 }

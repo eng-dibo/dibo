@@ -27,7 +27,6 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
 import { HighlightModule } from 'ngx-highlightjs';
 import { QuillModule } from 'ngx-quill';
-// import { ShareButtonsModule } from 'ngx-sharebuttons/buttons';
 import {
   FontAwesomeModule,
   FaIconLibrary,
@@ -60,7 +59,6 @@ import { MetaService } from '@engineers/ngx-utils/meta.service';
     MatButtonModule,
     HighlightModule,
     QuillModule.forRoot(),
-    //  ShareButtonsModule,
     FontAwesomeModule,
     HttpClientModule,
     NgxContentCoreModule,
