@@ -37,10 +37,19 @@ export default function (options?: GCloudConfig): void {
   }
 
   if (!_execSync(`gcloud auth list --format="value(account)"`).toString()) {
-    console.log('login to gcloud');
-    // todo: auto auth in ci (i.e: github actions), without a user action
-    // or config/gcloud.auth= ${auth_key}
-    execSync('gcloud auth login');
+    try {
+      execSync(
+        'gcloud auth activate-service-account --key-file=./config/server/gcloud-service-account.json'
+      );
+      console.log('gcloud service account activated');
+      // todo: if !permissions throw error
+      // check permissions for container registry
+      // https://cloud.google.com/container-registry/docs/access-control#grant
+    } catch (err) {
+      console.log('login to gcloud');
+      execSync('gcloud auth login --no-launch-browser');
+    }
+
     // no need to run `gcloud init`
   }
 
