@@ -97,7 +97,8 @@ export class MetaService {
    * @param tags
    * @returns the final tags
    */
-  prepare(tags: Meta = {}): MetaDefinition[] {
+  prepare(_tags: Meta = {}): MetaDefinition[] {
+    let tags = Object.assign({}, _tags);
     if (tags.baseUrl && tags.baseUrl.substr(-1) !== '/') {
       tags.baseUrl += '/';
     }
@@ -223,13 +224,13 @@ export class MetaService {
 
     // set meta tags, remove null values
     // tags.map((tag: any) => this.prepare(tag));
-    let _tags: MetaDefinition[] = [];
+    let tagsArray: MetaDefinition[] = [];
     for (let key in tags) {
       if (tags.hasOwnProperty(key)) {
-        _tags.push(this.convert(key, tags[key]));
+        tagsArray.push(this.convert(key, tags[key]));
       }
     }
-    return _tags;
+    return tagsArray;
 
     // todo: icon, refresh:url | [url,time],
   }
@@ -268,7 +269,6 @@ export class MetaService {
   updateTags(tags: Meta = {}): HTMLMetaElement[] {
     // todo: retrieve all existing tags and prepare(allTags) then updateTags(tags) and return allTags
     tags = this.prepare(tags);
-    console.log({ tags });
 
     let result: HTMLMetaElement[] = [];
     tags.forEach((tag: MetaDefinition) => {
