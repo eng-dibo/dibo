@@ -13,11 +13,10 @@ todo:
   ></ng-container>
 </ng-container>
 
-<!-- todo: move the loading spinner implementation to the parent component -->
 <mat-spinner
+  *ngIf="!content"
   strokeWidth="10"
   diameter="200"
-  *ngIf="!content"
   style="margin: auto"
 ></mat-spinner>
 

@@ -33,6 +33,7 @@ import { PlatformService } from '@engineers/ngx-utils/platform';
 import { MatDialog } from '@angular/material/dialog';
 import { AppInstallDialogComponent } from '../app-install-dialog/app-install-dialog.component';
 import { NotificationsDialogComponent } from '../notifications-dialog/notifications-dialog.component';
+import { forkJoin } from 'rxjs';
 
 // todo: import module & interfaces from packages/content/ngx-content-view/index.ts
 
@@ -107,115 +108,6 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
 
       // todo: listen to app uninstall event, encourage the user to reinstall it again
     }
-  }
-
-  ngOnInit(): void {
-    this.params = getParams(this.route.snapshot);
-
-    // prevent invalid routes from requesting data from the server
-    // todo: move this to contentModule (use regex for routes)
-    if (!['articles', 'jobs'].includes(this.params.type)) {
-      throw new Error(`path not allowed: /${this.params.type}`);
-    }
-
-    this.httpService
-      .get<Array<Category>>(`${this.params.type}_categories`)
-      .subscribe((categories) => {
-        // todo: display categories list  .filter(el=>!el.parent)
-        this.categories = categories;
-
-        // get category details from category.slug in url
-        // if failed due to invalid category.slug, try to get it after fetching data by data.categories[0] in item mode
-        if (this.params.category && this.params.category.slug) {
-          let category = categories.find(
-            (el) => el.slug === this.params.category!.slug
-          );
-
-          if (category) {
-            this.params.category = category;
-            this.params.category.link = `/${this.params.type}/${this.params.category.slug}`;
-          }
-        }
-
-        let url = getUrl(this.params, {
-          limit: this.limit,
-          offset: 0,
-        });
-
-        if (env.mode === 'development') {
-          console.info(`[content/view] fetching from ${url}`);
-        }
-
-        this.httpService.get<Payload | PayloadError>(url).subscribe((data) => {
-          try {
-            this.data = transformData(
-              data as Payload,
-              this.params,
-              this.categories
-            );
-
-            if (env.mode === 'development') {
-              console.info('[content/view]: data', this.data);
-            }
-
-            // if category._id couldn't be get due to an invalid category.slug is used in the url
-            // for item mode, consider using item.categories[0] as category
-            // use category._id for loadMore()
-            if (
-              !this.params.category!._id &&
-              !(this.data instanceof Array) &&
-              this.data.categories instanceof Array
-            ) {
-              let category = this.categories.find(
-                (el) => el._id === (this.data as Article).categories[0]
-              );
-
-              if (category) {
-                this.params.category = category;
-                this.params.category.link = `/${this.params.type}/${this.params.category.slug}`;
-              }
-            }
-
-            this.httpService
-              .get<Meta>('config/browser/meta')
-              .subscribe((defaultTags) => {
-                /*              
-               meta tags are existing in the source code only if set in the server,
-               Angular displays only source code that exists in index.html
-               to get baseUrl:
-                 - in browser: use location or document.baseURI
-                 - in server:
-                 - @Inject(DOCUMENT) -> doesn't have .baseURI (this.document.baseURI)
-                 - @Inject(REQUEST) -> this.request.hostname          
-             */
-
-                // todo: get baseUrl in server & browser
-                // todo: issue: titleService and metaService doesn't work in lazy-loaded modules
-                // https://github.com/angular/angular/issues/45388
-                let baseUrl =
-                  (this.request
-                    ? // @ts-ignore
-                      `${this.request.protocol}://${this.request.hostname}`
-                    : '') + defaultTags.URL || '/';
-
-                this.tags = getMetaTags(
-                  this.data,
-                  this.params,
-                  Object.assign({ baseUrl }, defaultTags)
-                );
-
-                if (env.mode === 'development') {
-                  console.info('[content/view]: tags', {
-                    defaultTags,
-                    tags: this.tags,
-                  });
-                }
-              });
-          } catch (error) {
-            this.data = { error };
-          }
-        });
-      });
 
     this.options = {
       layout: 'grid',
@@ -239,8 +131,106 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
         return;
       },
     };
+  }
 
-    // this.data$.subscribe(x => console.log("this.data:", x));
+  ngOnInit(): void {
+    this.params = getParams(this.route.snapshot);
+
+    // prevent invalid routes from requesting data from the server
+    // todo: move this to contentModule (use regex for routes)
+    if (!['articles', 'jobs'].includes(this.params.type)) {
+      throw new Error(`path not allowed: /${this.params.type}`);
+    }
+
+    // todo: display categories list  .filter(el=>!el.parent)
+
+    let url = getUrl(this.params, {
+      limit: this.limit,
+      offset: 0,
+    });
+
+    if (env.mode === 'development') {
+      console.info(`[content/view] fetching from ${url}`);
+    }
+
+    forkJoin([
+      this.httpService.get<Payload | PayloadError>(url),
+      this.httpService.get<Array<Category>>(`${this.params.type}_categories`),
+      this.httpService.get<Meta>('config/browser/meta'),
+    ]).subscribe(([data, categories, defaultTags]) => {
+      try {
+        data = transformData(data as Payload, this.params, this.categories);
+
+        // get category details from category.slug in url
+
+        if (this.params.category && this.params.category.slug) {
+          let category = categories.find(
+            (el) => el.slug === this.params.category!.slug
+          );
+
+          if (category) {
+            this.params.category = category;
+            this.params.category.link = `/${this.params.type}/${this.params.category.slug}`;
+          }
+        }
+
+        // if category._id couldn't be get due to an invalid category.slug is used in the url
+        // for item mode, consider using item.categories[0] as category
+        // use category._id for loadMore()
+        if (
+          !this.params.category!._id &&
+          !(data instanceof Array) &&
+          data.categories instanceof Array
+        ) {
+          let category = categories.find(
+            (el) => el._id === (data as Article).categories[0]
+          );
+
+          if (category) {
+            this.params.category = category;
+            this.params.category.link = `/${this.params.type}/${this.params.category.slug}`;
+          }
+        }
+
+        /*              
+               meta tags are existing in the source code only if set in the server,
+               Angular displays only source code that exists in index.html
+               to get baseUrl:
+                 - in browser: use location or document.baseURI
+                 - in server:
+                 - @Inject(DOCUMENT) -> doesn't have .baseURI (this.document.baseURI)
+                 - @Inject(REQUEST) -> this.request.hostname          
+             */
+
+        // todo: get baseUrl in server & browser
+        // todo: issue: titleService and metaService doesn't work in lazy-loaded modules
+        // https://github.com/angular/angular/issues/45388
+        let baseUrl =
+          (this.request
+            ? // @ts-ignore
+              `${this.request.protocol}://${this.request.hostname}`
+            : '') + defaultTags.URL || '/';
+
+        this.tags = getMetaTags(
+          data,
+          this.params,
+          Object.assign({ baseUrl }, defaultTags)
+        );
+
+        if (env.mode === 'development') {
+          console.info('[content/view]: tags', {
+            params: this.params,
+            data,
+            defaultTags,
+            tags: this.tags,
+          });
+        }
+        this.data = data;
+      } catch (error) {
+        this.data = { error };
+        throw error;
+      }
+    });
   }
   ngAfterViewInit(): void {
     // todo: use HighlightJS for `<code>..</code>`

@@ -63,30 +63,30 @@ export class NgxContentViewComponent implements OnInit {
       this.options || {}
     );
 
-    toObservable(this.data).subscribe(
-      (data: Payload) => {
-        this.type = data instanceof Array ? 'list' : 'item';
-        this.content =
-          !(data instanceof Array) && data.error
-            ? this.createError(data.error)
-            : data;
-      },
+    if (this.data) {
+      toObservable(this.data).subscribe(
+        (data: Payload) => {
+          this.type = data instanceof Array ? 'list' : 'item';
+          let content =
+            !(data instanceof Array) && data.error
+              ? this.createError(data.error)
+              : data;
 
-      (error) => {
-        this.content = this.createError(error);
-      }
-    );
-  }
+          if (!this.meta && this.type === 'item') {
+            this.meta = content;
+          }
 
-  // todo: issue: `ngOnChanges` doesn't work in SSR
-  ngOnChanges(changes: any): void {
-    if (changes.meta && this.meta) {
-      // addTags() may causes duplication
-      // The Meta tags are equal only if values of all the attributes are equal
-      // updateTags() inserts the tag if matching meta element is not found
-      // updateTag() replaces only the first instance of the search criteria
-      // https://www.tektutorialshub.com/angular/meta-service-in-angular-add-update-meta-tags-example/
-      this.metaService.updateTags(this.meta as Meta);
+          if (this.meta) {
+            this.metaService.updateTags(this.meta as Meta);
+          }
+
+          this.content = content;
+        },
+
+        (error) => {
+          this.content = this.createError(error);
+        }
+      );
     }
   }
 
