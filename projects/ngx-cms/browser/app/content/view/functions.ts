@@ -142,7 +142,6 @@ export function getMetaTags(
         ? summary(data.content, { lineBreak: '\n', length: 500 })
         : data.title,
       image: data?.cover || defaultMetaTags?.image,
-      ...defaultMetaTags,
       // todo: pass twitter:creator, twitter:creator:id
       // todo: expires
     };

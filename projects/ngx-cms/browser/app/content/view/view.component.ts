@@ -34,6 +34,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { AppInstallDialogComponent } from '../app-install-dialog/app-install-dialog.component';
 import { NotificationsDialogComponent } from '../notifications-dialog/notifications-dialog.component';
 import { forkJoin } from 'rxjs';
+import { DOCUMENT } from '@angular/common';
 
 // todo: import module & interfaces from packages/content/ngx-content-view/index.ts
 
@@ -85,7 +86,8 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
     private httpService: HttpClient,
     @Optional() @Inject(REQUEST) protected request: Request,
     private platform: PlatformService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    @Inject(DOCUMENT) private document: Document
   ) {
     if (this.platform.isBrowser()) {
       this.showNotificationsDialog();
@@ -192,24 +194,7 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
           }
         }
 
-        /*              
-               meta tags are existing in the source code only if set in the server,
-               Angular displays only source code that exists in index.html
-               to get baseUrl:
-                 - in browser: use location or document.baseURI
-                 - in server:
-                 - @Inject(DOCUMENT) -> doesn't have .baseURI (this.document.baseURI)
-                 - @Inject(REQUEST) -> this.request.hostname          
-             */
-
-        // todo: get baseUrl in server & browser
-        // todo: issue: titleService and metaService doesn't work in lazy-loaded modules
-        // https://github.com/angular/angular/issues/45388
-        let baseUrl =
-          (this.request
-            ? // @ts-ignore
-              `${this.request.protocol}://${this.request.hostname}`
-            : '') + defaultTags.URL || '/';
+        let baseUrl = defaultTags.baseUrl || this.document.location.origin;
 
         this.tags = getMetaTags(
           data,
@@ -218,7 +203,7 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
         );
 
         if (env.mode === 'development') {
-          console.info('[content/view]: tags', {
+          console.info('[content/view]', {
             params: this.params,
             data,
             defaultTags,

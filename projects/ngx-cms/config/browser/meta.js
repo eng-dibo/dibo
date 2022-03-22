@@ -1,6 +1,7 @@
 module.exports = {
   name: "site name",
-  baseUrl: "/",
+  // only set baseUrl if it is different than the current host
+  baseUrl: undefined,
   // page's canonical link (different for each page)
   url: "/",
   description: "",
