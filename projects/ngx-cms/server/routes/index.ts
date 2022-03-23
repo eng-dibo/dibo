@@ -9,6 +9,7 @@ import restoreRoute from './restore';
 import pushNotificationsRoute from './push-notifications';
 import postCollectionRoute from './post-collection';
 import dataRoute from './data';
+import rssRoute from './rss';
 
 // api version, increased every time there is a breaking change
 // todo: add auth token & validate the requests
@@ -28,6 +29,7 @@ app.get('/restore/:hosts?', restoreRoute);
 app.get('/restore/:hosts?', restoreRoute);
 app.post('/push_notifications/:action', pushNotificationsRoute);
 app.post('/:collection', upload.single('cover[]'), postCollectionRoute);
+app.get(/^\/rss(\/.+)?/, rssRoute);
 
 // keep this after all routes
 app.get('*', dataRoute);

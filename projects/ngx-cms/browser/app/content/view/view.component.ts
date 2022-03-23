@@ -33,6 +33,7 @@ import { AppInstallDialogComponent } from '../app-install-dialog/app-install-dia
 import { NotificationsDialogComponent } from '../notifications-dialog/notifications-dialog.component';
 import { forkJoin } from 'rxjs';
 import { DOCUMENT } from '@angular/common';
+import { NgxLoadService } from '@engineers/ngx-utils/load-scripts.service';
 
 // todo: import module & interfaces from packages/content/ngx-content-view/index.ts
 
@@ -84,7 +85,8 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
     private httpService: HttpClient,
     private platform: PlatformService,
     private dialog: MatDialog,
-    @Inject(DOCUMENT) private document: Document
+    @Inject(DOCUMENT) private document: Document,
+    private loadService: NgxLoadService
   ) {
     if (this.platform.isBrowser()) {
       this.showNotificationsDialog();
@@ -134,6 +136,12 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.params = getParams(this.route.snapshot);
+    // todo: create route: /rss
+    this.loadService.load(
+      `/api/v1/rss/${this.params.type}/:100@status=approved`,
+      { type: 'application/rss+xml' },
+      'link'
+    );
 
     // prevent invalid routes from requesting data from the server
     // todo: move this to contentModule (use regex for routes)
