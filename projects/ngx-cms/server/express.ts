@@ -12,6 +12,7 @@ import cors from 'cors';
 import routes from './routes';
 import redirect from '@engineers/express-redirect-middleware';
 import { resolve } from 'path';
+import { apiVersion } from './routes';
 
 let mode = process.env.NODE_ENV || 'production';
 
@@ -70,17 +71,17 @@ export function server(): ReturnType<typeof expressServer> {
       // access the server API from client-side (i.e: Angular)
       app.use(cors());
 
-      // deprecated api version
+      // invalid or deprecated api version
       app.use(/^\/api\/v(\d)\/(.+)/, (req, res, next) => {
-        if (req.params[0] !== '1') {
+        if (req.params[0] !== apiVersion.toString()) {
           next(
-            `api version ${req.params[0]} is invalid or deprecated, use /api/v1`
+            `api version ${req.params[0]} is invalid or deprecated, use /api/v${apiVersion}`
           );
         } else {
           next();
         }
       });
-      app.use('/api/v1', routes);
+      app.use(`/api/v${apiVersion}`, routes);
 
       return app;
     },

@@ -1,9 +1,9 @@
 import { test, expect, beforeAll, afterAll } from '@jest/globals';
-import app, { query } from './routes';
-import { connect, getModel } from './mongoose';
+import app, { query } from './index';
+import { connect, getModel } from '../mongoose';
 // todo: use '~'
-import { mongoose } from '../../../packages/mongoose';
-import { uri } from '../../../packages/mongoose/test/config';
+import { mongoose } from '../../../../packages/mongoose';
+import { uri } from '../../../../packages/mongoose/test/config';
 
 // todo: afterAll() -> delete db
 beforeAll(() => {
