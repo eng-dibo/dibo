@@ -22,13 +22,11 @@ import {
   OnInit,
   AfterViewInit,
   ViewChild,
-  Optional,
   Inject,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { getParams, getUrl, transformData, getMetaTags } from './functions';
-import { REQUEST } from '@nguniversal/express-engine/tokens';
 import { PlatformService } from '@engineers/ngx-utils/platform';
 import { MatDialog } from '@angular/material/dialog';
 import { AppInstallDialogComponent } from '../app-install-dialog/app-install-dialog.component';
@@ -84,7 +82,6 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
   constructor(
     private route: ActivatedRoute,
     private httpService: HttpClient,
-    @Optional() @Inject(REQUEST) protected request: Request,
     private platform: PlatformService,
     private dialog: MatDialog,
     @Inject(DOCUMENT) private document: Document
@@ -161,7 +158,8 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
       this.httpService.get<Meta>('config/browser/meta'),
     ]).subscribe(([data, categories, defaultTags]) => {
       try {
-        data = transformData(data as Payload, this.params, this.categories);
+        this.categories = categories;
+        data = transformData(data as Payload, this.params, categories);
 
         // get category details from category.slug in url
 
