@@ -26,35 +26,42 @@ export function slug(value: string, options: any = {}) {
   );
 }
 
-export function getParams(router: { params?: any; queryParams?: any }): Params {
-  /*
-    examples:
-      /articles
-      /articles/category.slug
-      /articles/category.slug/item.slug~item.id
-      /articles/~item.id
-  */
-
-  let params = router.params,
-    query = router.queryParams,
-    type = params.type || 'articles',
-    category = params.category,
-    item = params.item;
-
-  if (category && category.startsWith('~')) {
-    item = category;
-    category = null;
+export function getParams(url: string): Params {
+  let [link, query] = url.split('?');
+  let type, item, category;
+  if (link === '/') {
+    type = 'articles';
   }
 
-  return {
-    type,
-    category: { slug: category },
-    // get last part of a string https://stackoverflow.com/a/6165387/12577650
-    // using '=' (i.e /slug=id) will redirect to /slug
-    item: item && item.indexOf('~') !== -1 ? item.split('~').pop() : item,
-    refresh: query.refresh,
-    postType: type.slice(-1) === 's' ? type.slice(0, -1) : type,
-  };
+  // example: articles or articles/
+  let typeMatch = link.match(/^\/([^/]+\/?)$/);
+  if (typeMatch) {
+    return { type: typeMatch[1] };
+  }
+
+  // example: articles/category.slug/item.slug~item.id
+  let itemMatch = link.match(/^\/(.+)\/(.+)\/.+~(.+)$/);
+  if (itemMatch) {
+    return {
+      type: itemMatch[1],
+      category: { slug: itemMatch[2] },
+      item: itemMatch[3],
+    };
+  }
+
+  // example: articles/~item.id
+  let itemShortMach = link.match(/^\/([^/]+)\/~(.+)$/);
+  if (itemShortMach) {
+    return { type: itemShortMach[1], item: itemShortMach[2] };
+  }
+
+  // example: articles/category.slug
+  let categoryMatch = link.match(/^\/(.+)\/[^~][^/]+$/);
+  if (categoryMatch) {
+    return { type: categoryMatch[1], category: { slug: categoryMatch[2] } };
+  }
+
+  return { type: 'articles' };
 }
 
 export interface GetUrlOptions {

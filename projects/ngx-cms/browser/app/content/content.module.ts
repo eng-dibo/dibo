@@ -27,14 +27,12 @@ const routes: Routes = [
   },
 
   {
-    path: ':type',
-    loadChildren: () =>
-      import('./view/view.module').then((modules) => modules.ContentViewModule),
-  },
-
-  //or: redirectTo: "/articles",
-  {
-    path: '',
+    matcher: (segments: any, group: any, route: any) => {
+      return segments.length === 0 ||
+        ['articles', 'jobs'].includes(segments[0].path)
+        ? { consumed: segments }
+        : null;
+    },
     loadChildren: () =>
       import('./view/view.module').then((modules) => modules.ContentViewModule),
   },

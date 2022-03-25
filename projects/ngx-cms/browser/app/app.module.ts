@@ -34,6 +34,7 @@ const appRoutes: Routes = [
 
   {
     path: '',
+    pathMatch: 'full',
     loadChildren: () =>
       import('./content/content.module').then(
         (modules) => modules.ContentModule

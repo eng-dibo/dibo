@@ -17,13 +17,7 @@ import { ShareButtonsModule } from 'ngx-sharebuttons/buttons';
 import { ShareButtonsConfig } from 'ngx-sharebuttons';
 import { ShareIconsModule } from 'ngx-sharebuttons/icons';
 
-const routes: Routes = [
-  // example: /articles/category.title/[item.slug]~id
-  { path: ':category/:item', component: ContentViewComponent },
-  // example: /articles/category.title~id
-  { path: ':category', component: ContentViewComponent },
-  { path: '', component: ContentViewComponent },
-];
+const routes: Routes = [{ path: '**', component: ContentViewComponent }];
 
 let shareButtonsConfig: ShareButtonsConfig = {
   include: [

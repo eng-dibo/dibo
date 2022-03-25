@@ -24,7 +24,7 @@ import {
   ViewChild,
   Inject,
 } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { getParams, getUrl, transformData, getMetaTags } from './functions';
 import { PlatformService } from '@engineers/ngx-utils/platform';
@@ -39,7 +39,7 @@ import { NgxLoadService } from '@engineers/ngx-utils/load-scripts.service';
 
 export interface Params {
   type: string;
-  postType: string;
+  postType?: string;
   category?: Category;
   item?: string;
   // todo: pass ?refresh=auth to force refreshing the cache
@@ -81,13 +81,27 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
   // to totally remove the adsense code in dev mode, use: <ngx-adsense *ngIf="!dev">
 
   constructor(
-    private route: ActivatedRoute,
+    private router: Router,
     private httpService: HttpClient,
     private platform: PlatformService,
     private dialog: MatDialog,
     @Inject(DOCUMENT) private document: Document,
     private loadService: NgxLoadService
   ) {
+    let params = getParams(this.router.url.trim());
+    this.params = {
+      ...params,
+      postType:
+        params.type.slice(-1) === 's' ? params.type.slice(0, -1) : params.type,
+      category: params.category || {},
+    };
+
+    // prevent invalid routes from requesting data from the server
+    // todo: move this to contentModule (use regex for routes)
+    if (!['articles', 'jobs'].includes(this.params.type)) {
+      throw new Error(`[content/view] path not allowed: /${this.params.type}`);
+    }
+
     if (this.platform.isBrowser()) {
       this.showNotificationsDialog();
 
@@ -135,19 +149,12 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.params = getParams(this.route.snapshot);
     // todo: create route: /rss
     this.loadService.load(
       `/api/v1/rss/${this.params.type}/:100@status=approved`,
       { type: 'application/rss+xml' },
       'link'
     );
-
-    // prevent invalid routes from requesting data from the server
-    // todo: move this to contentModule (use regex for routes)
-    if (!['articles', 'jobs'].includes(this.params.type)) {
-      throw new Error(`path not allowed: /${this.params.type}`);
-    }
 
     // todo: display categories list  .filter(el=>!el.parent)
 
