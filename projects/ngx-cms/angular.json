@@ -27,7 +27,7 @@
             "index": "browser/index.html",
             "main": "browser/main.ts",
             "polyfills": "browser/polyfills.ts",
-            "tsConfig": "tsconfig.json",
+            "tsConfig": "browser/tsconfig.json",
             "aot": true,
             "assets": ["browser/favicon.ico", "browser/assets"],
             "styles": [
@@ -67,6 +67,32 @@
               ]
             }
           }
+        },
+        "server": {
+          "builder": "@angular-builders/custom-webpack:server",
+          "options": {
+            "customWebpackConfig": {
+              "path": "server/webpack.config.ts"
+            },
+            "outputPath": "../../dist/ngx-cms/core/server",
+            "main": "server/express.ts",
+            "tsConfig": "server/tsconfig.json"
+          },
+          "configurations": {
+            "production": {
+              "outputHashing": "media",
+              "fileReplacements": [
+                {
+                  "replace": "./browser/env.ts",
+                  "with": "./browser/env.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "sourceMap": false,
+              "extractLicenses": true
+            }
+          },
+          "defaultConfiguration": "production"
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
@@ -112,32 +138,7 @@
             }
           }
         },
-        "server": {
-          "builder": "@angular-builders/custom-webpack:server",
-          "options": {
-            "customWebpackConfig": {
-              "path": "server/webpack.config.ts"
-            },
-            "outputPath": "../../dist/ngx-cms/core/server",
-            "main": "server/express.ts",
-            "tsConfig": "server/tsconfig.json"
-          },
-          "configurations": {
-            "production": {
-              "outputHashing": "media",
-              "fileReplacements": [
-                {
-                  "replace": "./browser/env.ts",
-                  "with": "./browser/env.prod.ts"
-                }
-              ],
-              "optimization": true,
-              "sourceMap": false,
-              "extractLicenses": true
-            }
-          },
-          "defaultConfiguration": "production"
-        },
+
         "serve-ssr": {
           "builder": "@nguniversal/builders:ssr-dev-server",
           "configurations": {
