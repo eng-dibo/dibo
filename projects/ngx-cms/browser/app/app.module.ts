@@ -25,41 +25,32 @@ routes are loaded in the following order:
  -> @NgModule processes before RouterModule.forRoot()
  https://blogs.msmvps.com/deborahk/angular-route-ordering/
  */
-const appRoutes: Routes = [
+const routes: Routes = [
   // to lazy-load a module, use loadChildren
   // https://angular.io/guide/lazy-loading-ngmodules
-  // to make providers[] available mark services as {providedIn: 'root' or 'any'}
+  // to make providers[] available in lazy-loaded modules mark services as {providedIn: 'root' or 'any'}
   // https://angular.io/guide/providers#limiting-provider-scope-by-lazy-loading-modules
   // https://github.com/angular/angular/issues/37441#issuecomment-639737971
 
   {
+    // by default, load the content module
+    // todo: empty path with pathMatch:prefix VS wildcard
     path: '',
-    pathMatch: 'full',
     loadChildren: () =>
       import('./content/content.module').then(
         (modules) => modules.ContentModule
       ),
   },
-];
-
-// import after importing all feature modules
-const endRoutes: Routes = [
-  // the home page, if not defined in another feature module
-  { path: '', component: AppComponent, pathMatch: 'full' },
+  // default routes, if no other route matched
   { path: '**', component: ErrorComponent },
 ];
+
 const enableTracing = false; // env.mode === 'development';
 
 @NgModule({
   declarations: [AppComponent, ErrorComponent],
   imports: [
-    RouterModule.forRoot(appRoutes, {
-      initialNavigation: 'enabled' as InitialNavigation,
-      enableTracing,
-    }),
     BrowserModule.withServerTransition({ appId: 'serverApp' }),
-    // ContentModule,
-    RouterModule.forRoot(endRoutes, { enableTracing }),
     BrowserAnimationsModule,
     MatToolbarModule,
     MatTooltipModule,
@@ -69,6 +60,13 @@ const enableTracing = false; // env.mode === 'development';
       // Register the ServiceWorker as soon as the app is stable
       // or after 30 seconds (whichever comes first).
       registrationStrategy: 'registerWhenStable:30000',
+    }),
+
+    // keep router module after all other feature modules,
+    // so the default routes doesn't override other routes defined by feature modules
+    RouterModule.forRoot(routes, {
+      initialNavigation: 'enabled' as InitialNavigation,
+      enableTracing,
     }),
   ],
   providers: [
