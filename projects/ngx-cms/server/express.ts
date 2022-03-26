@@ -72,10 +72,10 @@ export function server(): ReturnType<typeof expressServer> {
       app.use(cors());
 
       // invalid or deprecated api version
-      app.use(/^\/api\/v(\d)\/(.+)/, (req, res, next) => {
-        if (req.params[0] !== apiVersion.toString()) {
+      app.use('/api/:version', (req, res, next) => {
+        if (req.params.version !== `v${apiVersion.toString()}`) {
           next(
-            `api version ${req.params[0]} is invalid or deprecated, use /api/v${apiVersion}`
+            `${req.originalUrl} is an invalid or deprecated request, use /api/v${apiVersion}`
           );
         } else {
           next();
