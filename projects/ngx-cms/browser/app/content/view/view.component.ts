@@ -238,34 +238,48 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
    * display a dialog to the user to install the PWA app
    */
   showInstallDialog(ev: any) {
-    this.dialog.open(AppInstallDialogComponent, { data: ev });
+    window.addEventListener('load', () => {
+      setTimeout(
+        () => this.dialog.open(AppInstallDialogComponent, { data: ev }),
+        10000
+      );
+    });
   }
 
   /**
    * display a dialog to the user to grant the permission for push notifications
    */
   showNotificationsDialog() {
-    if ('Notification' in window) {
-      if (env.mode === 'development') {
-        console.info(`[content/view]: notification ${Notification.permission}`);
+    window.addEventListener('load', () => {
+      if ('Notification' in window) {
+        if (env.mode === 'development') {
+          console.info(
+            `[content/view]: notification ${Notification.permission}`
+          );
+        }
+        if (Notification.permission === 'default') {
+          console.info(
+            '[content/view] requesting the permission to allow push notifications'
+          );
+          // show the dialog after 10 seconds
+          setTimeout(
+            () =>
+              this.dialog
+                .open(NotificationsDialogComponent)
+                .afterClosed()
+                .subscribe((result) => {
+                  // todo: check Notification.permission
+                }),
+            10000
+          );
+        } else if (Notification.permission === 'denied') {
+          // todo: instruct the user to allow notifications (footer)
+          console.error('notifications permission denied');
+        }
+      } else {
+        console.warn("this browser doesn't support Notifications api");
       }
-      if (Notification.permission === 'default') {
-        console.info(
-          '[content/view] requesting the permission to allow push notifications'
-        );
-        this.dialog
-          .open(NotificationsDialogComponent)
-          .afterClosed()
-          .subscribe((result) => {
-            // todo: check Notification.permission
-          });
-      } else if (Notification.permission === 'denied') {
-        // todo: instruct the user to allow notifications (footer)
-        console.error('notifications permission denied');
-      }
-    } else {
-      console.warn("this browser doesn't support Notifications api");
-    }
+    });
   }
 
   loadMore(): void {
