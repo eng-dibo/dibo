@@ -23,11 +23,12 @@ export class UniversalInterceptor implements HttpInterceptor {
   ): Observable<HttpEvent<any>> {
     let serverReq: HttpRequest<any> = req;
     if (this.request) {
-      let newUrl = `${this.request.protocol}://${this.request.get('host')}`;
-      if (!req.url.startsWith('/')) {
-        newUrl += '/';
-      }
-      newUrl += req.url;
+      let newUrl = /^(?:https?:)/.test(req.url)
+        ? req.url
+        : `${this.request.protocol}://${this.request.get('host')}${
+            !req.url.startsWith('/') ? '/' : ''
+          }${req.url}`;
+
       // req is immutable, you have to clone it and modify the cloned object
       // use req.clone({url}) -> equivalent to `{...req, url: 'newUrl'}`
       serverReq = req.clone({ url: newUrl });
