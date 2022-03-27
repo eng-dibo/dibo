@@ -18,40 +18,38 @@ export default (req: any, res: any, next: any) => {
   let tmp = `${TEMP}/${queryUrl}.xml`;
   cache(
     tmp,
-    () => {
-      let queryObject = parse(queryUrl);
-      let { collection } = queryObject;
-      let baseUrl = `${req.protocol}://${req.hostname}`;
-      let nativeRequire = require('@engineers/webpack/native-require');
-      let defaultTags = nativeRequire(
-        resolve(__dirname, '../../config/browser/meta')
-      );
+    () =>
+      getData(queryUrl, req.query.refresh ? -1 : 3).then((data) => {
+        if (!(data instanceof Array)) {
+          Promise.reject({ error: { message: 'data error' } });
+        }
 
-      let rss = new Rss({
-        title: defaultTags.name || 'ngx-cms',
-        description: defaultTags.description,
-        site_url: defaultTags.baseUrl || baseUrl,
-        // or this.route.snapshot.url (toString)
-        feed_url: req.path,
-        generator: 'ngx-cms platform',
-        image_url: `${baseUrl}/assets/site-image/${collection}.webp`,
-        language: 'ar,en',
-        pubDate: new Date().toUTCString(),
-        // cache thi feed for 1d
-        ttl: 24 * 60,
-        // todo: add categories
-        categories: [],
-      });
+        let queryObject = parse(queryUrl);
+        let { collection } = queryObject;
+        let baseUrl = `${req.protocol}://${req.hostname}`;
+        let nativeRequire = require('@engineers/webpack/native-require');
+        let defaultTags = nativeRequire(
+          resolve(__dirname, '../../config/browser/meta')
+        );
 
-      return connect()
-        .then(() =>
-          Promise.all([getData(queryUrl), query(`${collection}_categories`)])
-        )
-        .then(([data, categories]) => {
-          if (!(data instanceof Array)) {
-            Promise.reject({ error: { message: 'data error' } });
-          }
+        let rss = new Rss({
+          // todo: if(@category=*) use category.title
+          title: defaultTags.name || 'ngx-cms',
+          description: defaultTags.description,
+          site_url: defaultTags.baseUrl || baseUrl,
+          // or this.route.snapshot.url (toString)
+          feed_url: req.path,
+          generator: 'ngx-cms platform',
+          image_url: `${baseUrl}/assets/site-image/${collection}.webp`,
+          language: 'ar,en',
+          pubDate: new Date().toUTCString(),
+          // cache thi feed for 1d
+          ttl: 24 * 60,
+          // todo: add categories
+          categories: [],
+        });
 
+        return query(`${collection}_categories`).then((categories) => {
           // todo: transform(data)
           // - add item.link=categories[0]/slug/..
           data.forEach((item: any) => {
@@ -69,6 +67,8 @@ export default (req: any, res: any, next: any) => {
 
             // todo: add more options
             let itemOptions = Object.assign({}, item, {
+              // for some reason, rss.item() needs properties to be set explicity
+              title: item.title,
               description: item.content
                 ? // todo: summary(el.content, { lineBreak: '\n', length: 500 })
                   item.content
@@ -89,7 +89,7 @@ export default (req: any, res: any, next: any) => {
           });
           return rss.xml({ indent: false });
         });
-    },
+      }),
     { age: req.query.refresh ? -1 : 3 }
   )
     .then((feed) => {
