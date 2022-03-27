@@ -184,7 +184,11 @@ export function adjustArticle(
 
   // todo: param.category || item.categories[0] || config.general
   let category;
-  if (item.categories && item.categories.length > 0 && categories) {
+  if (
+    item.categories &&
+    item.categories.length > 0 &&
+    categories instanceof Array
+  ) {
     category = categories.find((el) => el._id === item.categories[0]);
   }
   item.slug = category ? category.slug || slug(category.title!) : 'general';
