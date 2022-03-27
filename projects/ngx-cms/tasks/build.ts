@@ -147,7 +147,8 @@ export function buildPackage(): void {
       // use regex with global flag to replace all occurrences
       // https://chaseadams.io/posts/replace-multiple-instances-of-pattern-in-javascript/
       start: rootPkg.scripts.serve.replace(/..\/..\/dist\/ngx-cms\//g, './'),
-      deploy: 'node deploy',
+      deploy:
+        'node -r dotenv/config deploy dotenv_config_path=./config/server/.env',
       postinstall: 'ngcc',
     },
     private: true,

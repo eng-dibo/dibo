@@ -4,10 +4,12 @@ export interface GCloudConfig {
   GCM: GCM;
 }
 export interface CloudRun {
-  name: string;
-  platform: string;
-  region: string;
-  allowUnauthenticated: boolean;
+  name: string | undefined;
+  platform: string | undefined;
+  region: string | undefined;
+  allowUnauthenticated: boolean | undefined;
+  // container image name
+  image: string | undefined;
 }
 
 export interface GCM {

@@ -10,21 +10,24 @@ import setup from './setup';
  * @param options overrides gcloudConfig
  */
 // todo: detect if gcloud not installed, run task: setup
-export default function (options?: GCloudConfig): void {
-  let opts: GCloudConfig = Object.assign(
+export default function (options: GCloudConfig = {}): void {
+  let opts: GCloudConfig = Object.assign({}, gcloudConfig || {}, options);
+
+  opts.cloudRun = Object.assign(
+    {},
     {
-      runInstance: {
-        name: 'cms-run',
-        platform: 'managed',
-        region: 'europe-west1',
-        allowUnauthenticated: true,
-      },
+      name: 'cms-run',
+      platform: 'managed',
+      region: 'europe-west1',
+      allowUnauthenticated: true,
     },
-    gcloudConfig || {},
-    options || {}
+    gcloudConfig.cloudRun || {},
+    options.cloudRun || {}
   );
 
-  let image = `gcr.io/${gcloudConfig.projectId}/ngx-cms`;
+  let image = `gcr.io/${opts.projectId}/${
+    opts.cloudRun.image || opts.cloudRun.name
+  }`;
 
   console.log(`> building the image ${image} ...`);
   execSync(`docker build . -t ${image}`);
