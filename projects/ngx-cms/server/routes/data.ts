@@ -53,19 +53,14 @@ export function getData(queryUrl: string, age = 3): Promise<any> {
           // todo: return cache('articles_categories.json',..)
 
           // example: 'status=approved,category=^slug,key=value' => 'slug'
-          let slug = params.filter.split('category=%5E').pop().split(',')[0];
+          let slug = decodeURIComponent(
+            params.filter.split('category=%5E').pop().split(',')[0]
+          );
           return query(`${collection}_categories/:1~_id@slug=${slug}`).then(
-            (category) => {
-              console.log({
-                category,
-                url: `${collection}/${category._id}`,
-              });
-              return category.length > 0
+            (category) =>
+              category.length > 0
                 ? query(`${collection}/@categories=${category[0]._id}`)
-                : Promise.reject(
-                    `category ${decodeURIComponent(slug)} not found`
-                  );
-            }
+                : Promise.reject(`[server] category ${slug} not found`)
           );
         } else {
           return query(queryObject);
