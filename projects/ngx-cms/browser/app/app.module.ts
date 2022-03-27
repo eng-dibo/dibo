@@ -12,6 +12,7 @@ import { ApiInterceptor } from './http.interceptor';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { ContentViewModule } from './content/view/view.module';
+import { ContentViewComponent } from './content/view/view.component';
 import env from '../env';
 
 /*
@@ -34,13 +35,28 @@ const routes: Routes = [
   // https://github.com/angular/angular/issues/37441#issuecomment-639737971
 
   {
-    matcher: (segments: any, group: any, route: any) => {
-      return segments.length === 0 ||
-        ['articles', 'jobs'].includes(segments[0].path)
+    // todo: a temporary workaround for https://github.com/angular/angular/issues/45453
+    // load ContentViewComponent non-lazily
+    // add ContentViewModule to modules, remove it's routes
+    // match / and 'articles|jobs/*' but not 'articles|jobs/editor|manage/*'
+    matcher: (segments: any, group: any, route: any) =>
+      segments.length === 0 ||
+      (['articles', 'jobs'].includes(segments[0].path) &&
+        (segments.length === 1 ||
+          !['editor', 'manage'].includes(segments[1].path)))
+        ? { consumed: segments }
+        : null,
+    component: ContentViewComponent,
+  },
+  {
+    matcher: (segments: any, group: any, route: any) =>
+      segments.length === 0 || ['articles', 'jobs'].includes(segments[0].path)
         ? // todo: params.type=segments[0].path
-          { consumed: segments }
-        : null;
-    },
+          // set consumed as an empty array, so routes in content.modules get the full segments array
+          // if you set `consumed: [segments[0]]`, routes in content.modules receive the segments after /articles only
+          // if you set `consumed: segments`, they receive an empty segments[]
+          { consumed: [] }
+        : null,
     loadChildren: () =>
       import('./content/content.module').then(
         (modules) => modules.ContentModule
@@ -66,8 +82,6 @@ const enableTracing = false; // env.mode === 'development';
       // or after 30 seconds (whichever comes first).
       registrationStrategy: 'registerWhenStable:30000',
     }),
-    // todo: a temporary workaround for https://github.com/angular/angular/issues/45453
-    // load ContentViewComponent non-lazily
     ContentViewModule,
     // keep router module after all other feature modules,
     // so the default routes doesn't override other routes defined by feature modules
