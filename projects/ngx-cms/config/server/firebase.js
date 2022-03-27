@@ -1,9 +1,10 @@
+// todo: merge with gcloud.js
 const { existsSync } = require("fs");
 const { resolve } = require("path");
 
 let serviceAccount;
-if (process.env.firebase_serviceAccount) {
-  serviceAccount = process.env.firebase_serviceAccount;
+if (process.env.gcloud_serviceAccount) {
+  serviceAccount = process.env.gcloud_serviceAccount;
   // don't use `firebase.json` because import 'config/firebase' will import it instead of firebase.ts
 } else if (existsSync(resolve(__dirname, "./gcloud-service-account.json"))) {
   // todo: or use env:GOOGLE_APPLICATION_CREDENTIALS=Path.resolve("./gcloud-$app.json")
@@ -23,15 +24,16 @@ module.exports = {
   // get serviceAccount from gcloud (or firebase) console
   // firebase -> project settings -> service accounts -> generate
   serviceAccount,
-  appId: process.env.firebase_appId,
-  apiKey: process.env.firebase_apiKey,
+  appId: process.env.gcloud_appId,
+  apiKey: process.env.gcloud_apiKey,
   // Cloud Messaging
-  messagingSenderId: process.env.firebase_messagingSenderId,
-  measurementId: process.env.firebase_measurementId,
-  authDomain: process.env.firebase_authDomain,
-  databaseURL: process.env.firebase_databaseURL,
+  messagingSenderId: process.env.gcloud_messagingSenderId,
+  measurementId: process.env.gcloud_measurementId,
+  authDomain: process.env.gcloud_authDomain,
+  databaseURL: process.env.gcloud_databaseURL,
   // keep it blank to get from serviceAccount.projectId
-  projectId: process.env.firebase_projectId,
+  projectId: process.env.gcloud_projectId,
   // default: $projectId.appspot.com
-  storageBucket: process.env.firebase_storageBucket,
+  storageBucket: process.env.gcloud_storageBucket,
+  storageRoot: process.env.gcloud_storageRoot,
 };

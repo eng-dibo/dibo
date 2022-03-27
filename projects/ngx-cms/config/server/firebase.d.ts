@@ -1,4 +1,3 @@
-// todo: add types for module.exports={}
 declare const Config: {
   serviceAccount: string;
   appId: string | undefined;
@@ -9,5 +8,6 @@ declare const Config: {
   databaseURL: string | undefined;
   projectId: string | undefined;
   storageBucket: string | undefined;
+  storageRoot: string | undefined;
 };
 export default Config;

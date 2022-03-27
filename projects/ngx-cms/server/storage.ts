@@ -10,17 +10,22 @@ import { objectType } from '@engineers/javascript/objects';
 // todo: if(dev) use filesystem
 // todo: if path:URl remove protocol i.e: `file://`
 
-let app = init({ name: 'ngxCms', ...firebaseConfig });
-let storage = new Storage({ app, bucket: firebaseConfig.storageBucket });
-// the parent folder where all files saved
-// todo: change to ngx-cms
-let bucket = 'almogtama3.com';
+let app = init({
+  name: firebaseConfig.projectId || 'ngxCms',
+  ...firebaseConfig,
+});
+
+let bucket = firebaseConfig.storageBucket || app.options.storageBucket;
+let storage = new Storage({ app, bucket });
 
 export function read(
   path: PathLike,
   options?: ReadOptions | BufferEncoding
 ): Promise<Buffer | string | Array<any> | { [key: string]: any } | boolean> {
-  return storage.download(`${bucket}/${path.toString()}`, options);
+  if (firebaseConfig.storageRoot) {
+    path = `${firebaseConfig.storageRoot}/${path}`;
+  }
+  return storage.download(`${path.toString()}`, options);
 }
 
 // export function writeFileSync(path: PathLike | number, data: string | NodeJS.ArrayBufferView, options?: WriteFileOptions): void;
@@ -29,14 +34,21 @@ export function write(
   data: any,
   options?: WriteFileOptions
 ): Promise<any> {
+  if (firebaseConfig.storageRoot) {
+    path = `${firebaseConfig.storageRoot}/${path}`;
+  }
+
   return storage.write(
-    `${bucket}/${path.toString()}`,
+    `${path.toString()}`,
     ['array', 'object'].includes(objectType(data)) ? JSON.stringify(data) : data
   );
 }
 
 export function remove(path: PathLike): Promise<any> {
-  return storage.delete(`${bucket}/${path.toString()}`);
+  if (firebaseConfig.storageRoot) {
+    path = `${firebaseConfig.storageRoot}/${path}`;
+  }
+  return storage.delete(`${path.toString()}`);
 }
 
 /*

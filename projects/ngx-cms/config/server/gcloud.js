@@ -1,6 +1,6 @@
 module.exports = {
   // todo: use dist/config/server/.env for deploying the production-ready project
-  projectId: process.env.gcloud_projectId || "dibo-cloud",
+  projectId: process.env.gcloud_projectId || "ngx-cms",
   cloudRun: {
     name: "ngx-cms",
     platform: "managed",
