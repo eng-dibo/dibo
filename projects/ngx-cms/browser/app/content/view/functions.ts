@@ -56,7 +56,7 @@ export function getParams(url: string): Params {
   }
 
   // example: articles/category.slug
-  let categoryMatch = link.match(/^\/(.+)\/[^~][^/]+$/);
+  let categoryMatch = link.match(/^\/(.+)\/([^~][^/]+)$/);
   if (categoryMatch) {
     return { type: categoryMatch[1], category: { slug: categoryMatch[2] } };
   }
@@ -75,19 +75,18 @@ export function getUrl(params: any, options: GetUrlOptions = {}): string {
     url += params.item;
   } else {
     url += `${options.offset || 0}:${options.limit || 10}@status=approved`;
-    if (params.category.slug) {
-      url += params.category._id
-        ? // get articles where category in article.categories[]
-          `,categories=${params.category._id}`
-        : // get articles in a category by its slug name
-          `,category=${encodeURIComponent('^' + params.category.slug)}`;
+    if (params.category._id) {
+      // get articles where category in article.categories[]
+      url += `,categories=${params.category._id}`;
+    } else if (params.category.slug) {
+      // get articles in a category by its slug name
+      url += `,category=${encodeURIComponent('^' + params.category.slug)}`;
     }
   }
 
   if (params.refresh) {
     url += `?refresh=${params.refresh}`;
   }
-
   return url;
 }
 
