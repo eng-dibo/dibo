@@ -58,13 +58,19 @@ export function server(): ReturnType<typeof expressServer> {
           subdomain: 'www',
           cb: (oldUrl, newUrl, parts) => {
             if (mode !== 'production') {
-              console.log(`[express] redirecting ${oldUrl} -> ${newUrl}`, {
+              console.info(`[server] redirecting ${oldUrl} -> ${newUrl}`, {
                 parts,
               });
             }
           },
         })
       );
+      app.use((req, res, next) => {
+        if (mode === 'development') {
+          console.info(`[server] ${req.method} ${req.originalUrl}`);
+        }
+        next();
+      });
       app.use(jsonParser());
       app.use(urlParser({ extended: true }));
 

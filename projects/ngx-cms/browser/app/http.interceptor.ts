@@ -31,7 +31,8 @@ export class ApiInterceptor implements HttpInterceptor {
     // todo: only in outgoing requests
     // todo: only API requests (not routerLink)
     let changes = {
-      url: req.url.startsWith('/api/v')
+      // if it doesn't start with /api/v1/ or https:
+      url: /^(?:https?:|\/?api\/v1\/)/.test(req.url)
         ? req.url
         : `/api/v1${req.url.startsWith('/') ? '' : '/'}${req.url}`,
       // use toFormData in POST requests

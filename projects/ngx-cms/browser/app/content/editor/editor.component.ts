@@ -56,6 +56,7 @@ export class ContentEditorComponent implements OnInit {
     private httpService: HttpClient,
     private snackBar: MatSnackBar
   ) {
+    // todo: use snapshot
     this.route.paramMap.subscribe((params) => {
       let type = params.get('type') || 'articles';
       this.params = {

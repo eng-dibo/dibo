@@ -12,14 +12,17 @@ import { UniversalInterceptor } from '@engineers/ngx-universal-express/universal
 
 const routes: Routes = [
   {
-    path: ':type/editor',
+    // todo: modify route.params in editor.component
+    matcher: (segments: any, group: any, route: any) =>
+      segments[1].path === 'editor' ? { consumed: segments } : null,
     loadChildren: () =>
       import('./editor/editor.module').then(
         (modules) => modules.ContentEditorModule
       ),
   },
   {
-    path: ':type/manage',
+    matcher: (segments: any, group: any, route: any) =>
+      segments[1].path === 'manage' ? { consumed: segments } : null,
     loadChildren: () =>
       import('./manage/manage.module').then(
         (modules) => modules.ContentManageModule
@@ -27,12 +30,10 @@ const routes: Routes = [
   },
 
   {
-    matcher: (segments: any, group: any, route: any) => {
-      return segments.length === 0 ||
-        ['articles', 'jobs'].includes(segments[0].path)
+    matcher: (segments: any, group: any, route: any) =>
+      segments.length === 0 || ['articles', 'jobs'].includes(segments[0].path)
         ? { consumed: segments }
-        : null;
-    },
+        : null,
     loadChildren: () =>
       import('./view/view.module').then((modules) => modules.ContentViewModule),
   },
