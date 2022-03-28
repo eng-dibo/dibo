@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import shortId from 'shortid';
 import { Obj, chunk } from '@engineers/javascript/objects';
+import { replaceAll } from '@engineers/javascript/string';
 import { parse, Operation } from '@engineers/databases/operations';
 import { Admin } from 'mongodb';
 
@@ -237,17 +238,25 @@ export function query(
     if (params.filter) {
       if (params.filter.includes('=')) {
         // example: 'collection/@k1=v1,k2=v2'
-        let obj: { [key: string]: string } = {};
-        params.filter.split(',').forEach((el: string) => {
-          let [key, value] = el.split('=');
-          obj[decodeURIComponent(key)] = decodeURIComponent(value);
-        });
-        params.filter = obj;
+        params.filter = stringToObject(params.filter);
       } else {
         // example: 'collection/@{k1:"v1", k2:"v2"}'
         params.filter = JSON.parse(decodeURIComponent(params.filter));
       }
     }
+    if (params.fields) {
+      if (params.fields.includes('=')) {
+        // example: collection/~field1=1,_id=-1
+        params.fields = stringToObject(params.fields);
+      } else if (params.fields.startsWith('%7B')) {
+        // example: collection/~{field1:1, _id:-1}
+        params.fields = JSON.parse(decodeURIComponent(params.fields));
+      } else {
+        // example: collection/~field1,-_id (exclude _id)
+        params.fields = replaceAll(params.fields, ',', ' ');
+      }
+    }
+
     args = [params.filter, params.fields, params];
     delete params.filter;
     delete params.fields;
@@ -422,7 +431,7 @@ export function restore(
     .filter((dbName: string) => filter(dbName))
     .forEach((dbName: string) => {
       Object.keys(backupData[dbName])
-        .filter((collectionName: string) => filter(dbName,collectionName))
+        .filter((collectionName: string) => filter(dbName, collectionName))
         .forEach((collectionName: string) => {
           backupDataArray.push({
             dbName,
@@ -481,4 +490,13 @@ export function restore(
   ).then(() => {
     /*void*/
   });
+}
+
+function stringToObject(value: string) {
+  let obj: { [key: string]: string } = {};
+  value.split(',').forEach((el: string) => {
+    let [key, value] = el.split('=');
+    obj[decodeURIComponent(key)] = decodeURIComponent(value);
+  });
+  return obj;
 }
