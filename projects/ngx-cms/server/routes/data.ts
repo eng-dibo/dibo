@@ -22,7 +22,7 @@ import { TEMP } from '.';
  * - articles/@category=^$slug-name -> get articles from a category by its slug
  */
 export function getData(queryUrl: string, age = 3): Promise<any> {
-  let queryObject = parse(queryUrl);
+  let queryObject = parse(decodeURIComponent(queryUrl));
   let { operation, database, collection, portions, params } = queryObject;
 
   if (!prod) {
@@ -40,6 +40,7 @@ export function getData(queryUrl: string, age = 3): Promise<any> {
   // todo: add query to file cache ex: articles_index?filter={status:approved}
   let tmp = `${TEMP}/${queryUrl}.json`;
 
+  return connect().then(() => query(queryObject));
   return cache(
     tmp,
     () =>
