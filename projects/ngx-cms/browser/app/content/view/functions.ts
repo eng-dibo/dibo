@@ -82,6 +82,8 @@ export function getUrl(params: any, options: GetUrlOptions = {}): string {
       // get articles in a category by its slug name
       url += `,category=${encodeURIComponent('^' + params.category.slug)}`;
     }
+    // sort by createdAt or updatedAt (descending)
+    url += `%3Fsort=createdAt:-1`;
   }
 
   if (params.refresh) {
