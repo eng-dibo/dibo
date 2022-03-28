@@ -257,6 +257,18 @@ export function query(
       }
     }
 
+    if (params.sort) {
+      if (params.sort.includes(':')) {
+        // example: collection/?sort=field:1,field:-1
+        params.sort = stringToObject(
+          replaceAll(params.sort, ':', '=') as string
+        );
+      } else if (params.sort.startsWith('%7B')) {
+        // example: collection/?sort={field1:1, _id:-1}
+        params.sort = JSON.parse(decodeURIComponent(params.sort));
+      }
+    }
+
     args = [params.filter, params.fields, params];
     delete params.filter;
     delete params.fields;
