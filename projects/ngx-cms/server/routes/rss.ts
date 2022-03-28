@@ -6,7 +6,11 @@ import Rss from 'rss';
 import { forkJoin, of } from 'rxjs';
 import { connect, query } from '~server/database';
 import { parse } from '@engineers/databases/operations';
-import { slug } from '@engineers/ngx-content-core/pipes-functions';
+import {
+  slug,
+  html2text,
+  length,
+} from '@engineers/ngx-content-core/pipes-functions';
 import cache from '@engineers/nodejs/cache';
 import { TEMP } from '.';
 
@@ -24,19 +28,20 @@ export default (req: any, res: any, next: any) => {
           Promise.reject({ error: { message: 'data error' } });
         }
 
-        let queryObject = parse(queryUrl);
-        let { collection } = queryObject;
-        let baseUrl = `${req.protocol}://${req.hostname}`;
         let nativeRequire = require('@engineers/webpack/native-require');
         let defaultTags = nativeRequire(
           resolve(__dirname, '../../config/browser/meta')
         );
+        let queryObject = parse(queryUrl);
+        let { collection } = queryObject;
+        let baseUrl =
+          defaultTags.baseUrl || `${req.protocol}://${req.hostname}`;
 
         let rss = new Rss({
           // todo: if(@category=*) use category.title
           title: defaultTags.name || 'ngx-cms',
           description: defaultTags.description,
-          site_url: defaultTags.baseUrl || baseUrl,
+          site_url: baseUrl,
           // or this.route.snapshot.url (toString)
           feed_url: req.path,
           generator: 'ngx-cms platform',
@@ -59,34 +64,41 @@ export default (req: any, res: any, next: any) => {
                 (el: any) => el._id === item.categories[0]
               );
             }
-            item.slug = category
-              ? category.slug || slug(category.title!)
-              : 'general';
-            item.slug += '/' + slug(item.title || '');
-            item.url = `/${collection}/${item.slug}~${item._id}`;
+            let itemSlug = `${category ? category.slug : '' || ''}/${slug(
+              item.title || '',
+              { allowedChars: ':ar' }
+            )}`;
 
             // todo: add more options
             let itemOptions = Object.assign({}, item, {
+              guid: item._id,
               // for some reason, rss.item() needs properties to be set explicity
               title: item.title,
+              url: `/${collection}/${itemSlug}~${item._id}`,
               description: item.content
-                ? // todo: summary(el.content, { lineBreak: '\n', length: 500 })
-                  item.content
+                ? length(html2text(item.content, { lineBreak: 'n' }), 500)
                 : item.title!,
               date: new Date(
                 item.updatedAt || item.createdAt || ''
               ).toUTCString(),
+              // todo: get author.name from _id
               author: item.author?.name,
               // todo: add item categories
               categories: [],
               enclosure: {
                 url: item.cover
-                  ? `/api/v1/image/${collection}-cover-${item._id}/${item.slug}.webp`
+                  ? `/api/v1/image/${collection}-cover-${item._id}/${itemSlug}.webp`
                   : undefined,
               },
+              custom_elements: [
+                // use description for content summary, and content:encoded for full content
+                { 'content:encoded': `<![CDATA[${item.content}]]>` },
+              ],
             });
+
             rss.item(itemOptions);
           });
+
           return rss.xml({ indent: false });
         });
       }),
