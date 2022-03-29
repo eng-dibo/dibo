@@ -40,7 +40,6 @@ export function getData(queryUrl: string, age = 3): Promise<any> {
   // todo: add query to file cache ex: articles_index?filter={status:approved}
   let tmp = `${TEMP}/${queryUrl}.json`;
 
-  return connect().then(() => query(queryObject));
   return cache(
     tmp,
     () =>
@@ -50,13 +49,12 @@ export function getData(queryUrl: string, age = 3): Promise<any> {
         // get articles from a category by its slug instead of its _id
         // prefix slug name with '^'
         // example: 'articles/@category=^$slug-name'
-        if (params.filter && params.filter.includes('category=%5E')) {
+        if (params.filter && params.filter.includes('category=^')) {
           // todo: return cache('articles_categories.json',..)
 
           // example: 'status=approved,category=^slug,key=value' => 'slug'
-          let slug = decodeURIComponent(
-            params.filter.split('category=%5E').pop().split(',')[0]
-          );
+          let slug = params.filter.split('category=^').pop().split(',')[0];
+
           return query(`${collection}_categories/:1~_id@slug=${slug}`).then(
             (category) =>
               category.length > 0
