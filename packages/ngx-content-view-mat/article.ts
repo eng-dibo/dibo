@@ -1,4 +1,5 @@
 import { Component, Input, ElementRef } from '@angular/core';
+import { replaceAll } from '@engineers/javascript/string';
 
 interface Obj {
   [key: string]: any;
@@ -88,9 +89,11 @@ export class NgxContentArticleComponent {
   }
 
   copy(card?: HTMLElement) {
-    // clone the node element, so any modification (such as removing links)
+    // todo: clone the node element, so any modification (such as removing links)
     // doesn't affect the original element
-    card = (card || this.el.nativeElement).cloneNode(true) as HTMLElement;
+    // this removes line breaks from card.innerText
+    // card = (card || this.el.nativeElement).cloneNode(true) as HTMLElement;
+    card = card || (this.el.nativeElement as HTMLElement);
     let data: string | undefined;
 
     if (this.options && this.options!.copyAction) {
@@ -126,9 +129,6 @@ export class NgxContentArticleComponent {
             : '',
           intro;
 
-        // remove links from intro (or content)
-        content.querySelectorAll('a').forEach((el: HTMLElement) => el.remove());
-
         if (headers.length > 0) {
           // intro is all elements before the first header
           let els = [];
@@ -142,7 +142,22 @@ export class NgxContentArticleComponent {
           intro = content?.innerText?.trim();
         }
 
-        intro = intro.substr(0, 500).replace('\n\n', '\n');
+        // remove links from intro, to prevent wrong link preview on social platforms
+        // from @engineers/ngx-content-core/pipes-functions
+        // except: doesn't exist inside <a>
+        let unallowedUrlChars = ` "'\`\n<>[\\]`;
+        let tdl = 'com|net|org';
+        let linkPattern = new RegExp(
+          `((?:(?:ftp|http)s?)+:\/\/[^ ${unallowedUrlChars}]+` +
+            `|[^ ${unallowedUrlChars}\\/]+\\.(?:${tdl})(?:\.[a-z]{2}){0,1})` +
+            `(?::\d+)?` +
+            `(?:\/[^ ${unallowedUrlChars}]+)*`,
+          'gi'
+        );
+
+        intro = (
+          replaceAll(intro.replace(linkPattern, ''), '\n\n', '\n') as string
+        ).substr(0, 500);
 
         // todo: use template, example: options.template='{{titleText}}\n{{link}}'
         data = `${titleText}\n\n${intro}\n\n${headersText}\n\n👇👇\n${link}`;
