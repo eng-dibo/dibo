@@ -15,8 +15,7 @@ export interface Options {
 }
 
 @Directive({
-  // ,[src]
-  selector: '[data-src],[data-srcset]',
+  selector: '[data-src],[data-srcset],[data-lazy]',
 })
 export class LazyLoadDirective {
   @Input('options') options: Options;
@@ -42,7 +41,7 @@ export class LazyLoadDirective {
             entries.forEach((entry) => {
               if (entry.isIntersecting) {
                 if (this.dataSrcSet && this.dataSrcSet.length > 0) {
-                  // too: renderer2.setProperty VS renderer2.setAttribute
+                  // todo: renderer2.setProperty VS renderer2.setAttribute
                   this.renderer.setProperty(
                     this.element,
                     'srcset',
@@ -51,7 +50,13 @@ export class LazyLoadDirective {
                 } else if (this.dataSrc && this.dataSrc.length > 0) {
                   this.renderer.setProperty(this.element, 'src', this.dataSrc);
                 }
-
+                // set data-lazy="intersecting", so the consumer can perform actions in response of this value
+                // example: `<div data-lazy><div *ngIf="parent.getAttribute(data-lazy)==='isIntersecting'"></div></div>W
+                this.renderer.setAttribute(
+                  this.element,
+                  'data-lazy',
+                  'isIntersecting'
+                );
                 this.observer.unobserve(this.element);
               }
             }),
