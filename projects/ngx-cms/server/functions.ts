@@ -8,7 +8,7 @@ import { resolve } from 'path';
 
 export let dev = process.env.NODE_ENV === 'development';
 
-// relative to /dist/$project/core/server
+// relative to /dist/$project/server
 export const TEMP = resolve(__dirname, '..');
 
 export let json = {

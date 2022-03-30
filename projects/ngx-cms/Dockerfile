@@ -3,7 +3,7 @@
 
 FROM node:lts
 WORKDIR /ngx-cms
-# set NODE_ENV for files that uses process.env.NODE_ENV, such as core/main.js, config/*
+# set NODE_ENV for files that uses process.env.NODE_ENV, such as server/main.js, config/*
 ENV NODE_ENV="production"
 
 # copy package*.json only, so `RUN npm install` execuds only when package*.json modified.

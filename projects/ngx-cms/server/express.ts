@@ -21,13 +21,13 @@ export function server(): ReturnType<typeof expressServer> {
   // todo: move to expressServer.msg
   console.info(`the server is working in ${mode} mode`);
 
-  // relative to dist/ngx-cms/core/server
+  // relative to dist/ngx-cms/server
   // this may be have different values for different compilation scenarios
   // for instance, with `ts-node server/express.ts`, __dirname = '/server'
   // also `jest` transpiles .ts files on the fly, but doesn't output to 'dist' folder
-  let distFolder = resolve(__dirname, '../..'),
-    browserDir = distFolder + '/core/browser',
-    tempDir = distFolder + '/core/temp',
+  let distFolder = resolve(__dirname, '..'),
+    browserDir = distFolder + '/browser',
+    tempDir = distFolder + '/temp',
     configDir = distFolder + '/config/browser';
 
   return expressServer({

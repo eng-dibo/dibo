@@ -9,7 +9,7 @@ import webpackMerge from 'webpack-merge';
 // https://stackoverflow.com/questions/70354709/webpack-externals-for-browser
 let config: Configuration = webpackMerge(baseConfig, {
   output: {
-    path: resolve(__dirname, '../../../dist/ngx-cms/core/browser'),
+    path: resolve(__dirname, '../../../dist/ngx-cms/browser'),
     filename: '[name].js',
   },
 });

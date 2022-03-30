@@ -1,7 +1,7 @@
 // require() is not defined in browser
 // await import() expects a js module, not json
 // https://sebhastian.com/javascript-require-is-not-defined/
-// paths are relative to the site root (i.e core/browser)
+// paths are relative to the site root (i.e /browser)
 import info from "./info.json" assert { type: "json" };
 export let googleAnalytics = "";
 

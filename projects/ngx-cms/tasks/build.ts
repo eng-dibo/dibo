@@ -77,7 +77,7 @@ export function buildBrowser(mode: Mode = 'production'): void {
   console.log(`> build browser: ${cmd}`);
 
   execSync(cmd);
-  write(`${destination}/core/browser/info.json`, { mode, time });
+  write(`${destination}/browser/info.json`, { mode, time });
 }
 
 export function buildServer(mode: Mode = 'production'): void {
@@ -88,7 +88,7 @@ export function buildServer(mode: Mode = 'production'): void {
   console.log(`> build server: ${cmd}`);
 
   execSync(cmd);
-  write(`${destination}/core/server/info.json`, { mode, time });
+  write(`${destination}/server/info.json`, { mode, time });
 }
 
 export function buildConfig(): void {
@@ -142,7 +142,7 @@ export function buildPackage(): void {
   let pkg = {
     name: rootPkg.name,
     version: rootPkg.version,
-    main: './core/server/main.js',
+    main: './server/main.js',
     scripts: {
       // use regex with global flag to replace all occurrences
       // https://chaseadams.io/posts/replace-multiple-instances-of-pattern-in-javascript/
@@ -226,11 +226,11 @@ export function optimize() {
   // todo: minify js files using terser
 
   /*['browser', 'server'].forEach((dir) =>
-    readdirSync(`${destination}/core/${dir}`)
+    readdirSync(`${destination}/${dir}`)
       // todo:
       .filter((el) => el.endsWith('.js'))
       .forEach((el) => {
-        let path = `${destination}/core/${dir}/${el}`;
+        let path = `${destination}/${dir}/${el}`;
         console.log(`> minifying: ${dir}/${el}`);
         execSync(
           `terser ${path} --output ${path} --compress --mangle --keep-fnames`
@@ -240,7 +240,7 @@ export function optimize() {
 
   // transform index.html (lazy-load resources, and move them after 'load' event)
   // DOMParser() is not available in nodejs, so we use `jsdom`
-  let browserPath = `${destination}/core/browser`,
+  let browserPath = `${destination}/browser`,
     indexPath = `${browserPath}/index.html`,
     content = read(indexPath) as string;
 
@@ -320,8 +320,6 @@ export function optimize() {
   // the hashes for modified files is changed, so we need to rebuild ngsw-config with the new hashes
   // install @angular/service-worker to use ngsw-config (or use npx ngsw-config)
   // paths are relative to CWD
-  // todo: using the absolute (`${destination}/core/browser`) path causes error
-  execSync(
-    `ngsw-config ../../dist/ngx-cms/core/browser browser/ngsw-config.json`
-  );
+  // todo: using the absolute (`${destination}/browser`) path causes error
+  execSync(`ngsw-config ../../dist/ngx-cms/browser browser/ngsw-config.json`);
 }

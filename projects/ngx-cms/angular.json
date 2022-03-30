@@ -23,7 +23,7 @@
             "customWebpackConfig": {
               "path": "browser/webpack.config.ts"
             },
-            "outputPath": "../../dist/ngx-cms/core/browser",
+            "outputPath": "../../dist/ngx-cms/browser",
             "index": "browser/index.html",
             "main": "browser/main.ts",
             "polyfills": "browser/polyfills.ts",

@@ -11,7 +11,7 @@ let config: Configuration = webpackMerge(baseConfig, {
     // express: resolve(__dirname, './express.ts'),
   },
   output: {
-    path: resolve(__dirname, '../../../dist/ngx-cms/core/server'),
+    path: resolve(__dirname, '../../../dist/ngx-cms/server'),
     // todo: use the original filename, i.e: express not main
     filename: '[name].js',
   },
@@ -38,7 +38,7 @@ let config: Configuration = webpackMerge(baseConfig, {
       externals(
         arguments,
         [/^~{1,2}config\/(.*)/],
-        'commonjs2 ../../config/{{$1}}'
+        'commonjs2 ../config/{{$1}}'
       );
     },
   ],

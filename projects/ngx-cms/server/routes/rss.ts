@@ -30,7 +30,7 @@ export default (req: any, res: any, next: any) => {
 
         let nativeRequire = require('@engineers/webpack/native-require');
         let defaultTags = nativeRequire(
-          resolve(__dirname, '../../config/browser/meta')
+          resolve(__dirname, '../config/browser/meta')
         );
         let queryObject = parse(queryUrl);
         let { collection } = queryObject;
