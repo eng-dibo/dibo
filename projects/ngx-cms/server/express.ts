@@ -58,7 +58,10 @@ export function server(): ReturnType<typeof expressServer> {
             );
           }),
         { age: 24 * 30 }
-      ).then((content) => res.send(content));
+      ).then((content) => res.send(content)).catch(error=>{
+        console.error('[server] render error',error)
+        res.json({error})
+      });
     },
     transform: (app) => {
       // to use req.protocol in case of using a proxy in between (ex: cloudflare, heroku, ..),
