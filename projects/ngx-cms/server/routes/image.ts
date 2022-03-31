@@ -32,7 +32,7 @@ export default (req: any, res: any) => {
   // use { encoding: undefined } so read() and cache() returns Buffer instead of string
   // otherwise resize(data) consider data: string as a file path
   cache(localPath, () => read(filePath, { encoding: undefined }), {
-    age: 24,
+    age: 24 * 30,
     encoding: undefined,
   })
     .then((data) => {
@@ -55,7 +55,7 @@ export default (req: any, res: any) => {
             //   - allowBiggerImageDim: false,
             //   - allowBiggerFileSize: false,
           }),
-        { age: 24, encoding: undefined }
+        { age: 24 * 30, encoding: undefined }
       );
     })
     .then((data: any) => {

@@ -102,7 +102,7 @@ export default (req: any, res: any, next: any) => {
           return rss.xml({ indent: false });
         });
       }),
-    { age: req.query.refresh ? -1 : 3 }
+    { age: req.query.refresh ? -1 : 24 * 30 }
   )
     .then((feed) => {
       res.set('Content-Type', 'text/xml');

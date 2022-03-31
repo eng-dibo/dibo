@@ -189,6 +189,7 @@ export default (req: any, res: any) => {
     .then((_data: any) => {
       res.json(_data);
       // force remove the cached index.json
+      // todo: fix cache paths to be compatible with ./data=>queryUrl (example /collection/:10)
       if (existsSync(`${TEMP}/${collection}/index.json`)) {
         unlinkSync(`${TEMP}/${collection}/index.json`);
       }

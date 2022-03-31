@@ -21,7 +21,7 @@ import { TEMP } from '.';
  * - articles/:50?limit=10 -> query overrides portions
  * - articles/@category=^$slug-name -> get articles from a category by its slug
  */
-export function getData(queryUrl: string, age = 3): Promise<any> {
+export function getData(queryUrl: string, age = 24 * 30): Promise<any> {
   let queryObject = parse(decodeURIComponent(queryUrl));
   let { operation, database, collection, portions, params } = queryObject;
 
