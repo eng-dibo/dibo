@@ -13,6 +13,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { ContentViewModule } from './content/view/view.module';
 import { ContentViewComponent } from './content/view/view.component';
+import { TransferHttpCacheModule } from '@nguniversal/common';
 import env from '../env';
 
 /*
@@ -83,6 +84,8 @@ const enableTracing = false; // env.mode === 'development';
       registrationStrategy: 'registerWhenStable:30000',
     }),
     ContentViewModule,
+    // https://andremonteiro.pt/caching-server-side-requests-ng-universal
+    TransferHttpCacheModule,
     // keep router module after all other feature modules,
     // so the default routes doesn't override other routes defined by feature modules
     RouterModule.forRoot(routes, {
