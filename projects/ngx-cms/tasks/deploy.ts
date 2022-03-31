@@ -1,4 +1,5 @@
 import gcloudConfig, { GCloudConfig } from '~config/server/gcloud';
+import cloudFlareConfig from '~config/server/cloudflare';
 import { execSync } from '@engineers/nodejs/process';
 import { execSync as _execSync } from 'child_process';
 import setup from './setup';
