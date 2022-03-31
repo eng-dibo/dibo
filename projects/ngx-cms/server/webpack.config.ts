@@ -1,15 +1,23 @@
-import { resolve } from 'path';
+import { resolve } from 'node:path';
 import baseConfig from '~webpack.config';
 import { Configuration } from 'webpack';
 import webpackMerge from 'webpack-merge';
 import externals, { node } from '@engineers/webpack/externals';
+import { getEntries } from '@engineers/nodejs/fs-sync';
 
-// merge with 'webpackMerge' so arrays are merged
+let entry = {};
+/*
+// see externals(~server)
+let pattern = new RegExp(`${__dirname}\/(.+)\.ts$`);
+// express.ts already added by angular.server.options.main
+getEntries(__dirname, /(?<!\.config|\.spec|\/express|\/main)\.ts$/).forEach((file) => {
+    entry[file.match(pattern)[1]] = file;
+  });
+  */
+
+// merge using 'webpackMerge', so arrays are merged
 let config: Configuration = webpackMerge(baseConfig, {
-  entry: {
-    // use angular.server.options.main
-    // express: resolve(__dirname, './express.ts'),
-  },
+  entry,
   output: {
     path: resolve(__dirname, '../../../dist/ngx-cms/server'),
     // todo: use the original filename, i.e: express not main
@@ -41,6 +49,15 @@ let config: Configuration = webpackMerge(baseConfig, {
         'commonjs2 ../config/{{$1}}'
       );
     },
+    /*
+    // use require('./other-file') instead of bundling all server files into a single file
+    // add each file to entry to be compiles separately
+    // todo: does it better for reducing the cost of cpu usage?
+    // https://cloud.google.com/compute/docs/cpu-platforms
+    function () {
+      externals(arguments, [/^~server\/(.*)/], 'commonjs2 ./{{$1}}');
+    },
+    */
   ],
 });
 
