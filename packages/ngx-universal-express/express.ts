@@ -21,7 +21,7 @@ import 'zone.js/dist/zone-node';
 // use a version compilable with @angular/common
 // ex: for @angular/common@11.x.x -> install @nguniversal/express-engine@^11
 import { ngExpressEngine } from '@nguniversal/express-engine';
-import express, { Express } from 'express';
+import express, { Express, Request, Response } from 'express';
 import { APP_BASE_HREF } from '@angular/common';
 import { Server } from 'http';
 
@@ -66,6 +66,9 @@ export interface AppOptions {
   // allow the consumer to modify app (ex: adding routes)
   // before the final route (i.e: "*") added.
   transform?: (app: Express) => Express | undefined;
+  // a custom render function for regular routes, default: (req,res)=>res.render(..)
+  // todo: (req:Request, res:Response)=>void
+  render: any;
 }
 
 /**
@@ -91,6 +94,12 @@ export function server(options: AppOptions): Express {
     staticMaxAge: '1y',
     staticFiles: ['*.*'],
     indexFile: 'index.html',
+    render: (req: Request, res: Response) => {
+      res.render(appOptions.indexFile as string, {
+        req,
+        providers: [{ provide: APP_BASE_HREF, useValue: req.baseUrl }],
+      });
+    },
   };
 
   let appOptions: AppOptions = Object.assign({}, defaultOptions, options);
@@ -123,12 +132,7 @@ export function server(options: AppOptions): Express {
   }
 
   // All regular routes use the Universal engine, must be after all other routes
-  app.get('*', (req, res) => {
-    res.render(appOptions.indexFile as string, {
-      req,
-      providers: [{ provide: APP_BASE_HREF, useValue: req.baseUrl }],
-    });
-  });
+  app.get('*', appOptions.render);
 
   return app;
 }
