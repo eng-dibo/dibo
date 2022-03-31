@@ -13,6 +13,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { TransferHttpCacheModule } from '@nguniversal/common';
 import env from '../env';
+import { ContentViewModule } from './content/view/view.module';
+import { ContentViewComponent } from './content/view/view.component';
 
 /*
 routes are loaded in the following order:
@@ -33,6 +35,20 @@ const routes: Routes = [
   // https://angular.io/guide/providers#limiting-provider-scope-by-lazy-loading-modules
   // https://github.com/angular/angular/issues/37441#issuecomment-639737971
 
+  {
+    // todo: a temporary workaround for https://github.com/angular/angular/issues/45453
+    // load ContentViewComponent non-lazily
+    // add ContentViewModule to modules, remove it's routes
+    // match / and 'articles|jobs/*' but not 'articles|jobs/editor|manage/*'
+    matcher: (segments: any, group: any, route: any) =>
+      segments.length === 0 ||
+      (['articles', 'jobs'].includes(segments[0].path) &&
+        (segments.length === 1 ||
+          !['editor', 'manage'].includes(segments[1].path)))
+        ? { consumed: segments }
+        : null,
+    component: ContentViewComponent,
+  },
   {
     matcher: (segments: any, group: any, route: any) =>
       segments.length === 0 || ['articles', 'jobs'].includes(segments[0].path)
@@ -67,6 +83,7 @@ const enableTracing = false; // env.mode === 'development';
       // or after 30 seconds (whichever comes first).
       registrationStrategy: 'registerWhenStable:30000',
     }),
+    ContentViewModule,
     // https://andremonteiro.pt/caching-server-side-requests-ng-universal
     TransferHttpCacheModule,
     // keep router module after all other feature modules,
