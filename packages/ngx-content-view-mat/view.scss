@@ -11,11 +11,14 @@ h3 {
   margin: 0;
 }
 
-// by default image is stretched to be full width, we give it it's original width
 .mat-card-image {
   display: block;
   margin: auto;
+  // by default image is stretched to be full width, we give it it's original width
   //width: unset;
+}
+.mat-card-image:first-child {
+  margin-top: 10px;
 }
 
 .masonry {
@@ -88,11 +91,7 @@ dir-auto {
 }
 
 mat-card-subtitle {
-  padding: 15px 0;
-}
-
-mat-card-subtitle span {
-  margin: 10px;
+  text-align: center;
 }
 
 mat-card-footer {
