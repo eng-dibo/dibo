@@ -45,9 +45,7 @@ let shareButtonsConfig: ShareButtonsConfig = {
   ],
   imports: [
     CommonModule,
-    // todo: temporary disable routes
-    // see app.module 'load ContentViewComponent non-lazily'
-    RouterModule.forChild([] /*routes*/),
+    RouterModule.forChild(routes),
     NgxContentViewModule,
     MatDialogModule,
     MatIconModule,
