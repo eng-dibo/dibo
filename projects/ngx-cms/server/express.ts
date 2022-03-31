@@ -41,7 +41,8 @@ export function server(): ReturnType<typeof expressServer> {
     // todo: use system.temp
     staticDirs: [browserDir, tempDir, configDir],
     render: (req: Request, res: Response) => {
-      let tmp = `${TEMP}${req.path === '/' ? 'index' : req.path}.html`;
+      // todo: remove `slug` to shorten cache file name
+      let tmp = `${TEMP}${req.path === '/' ? '/index' : req.path}.html`;
       cache(
         tmp,
         () =>
@@ -58,10 +59,12 @@ export function server(): ReturnType<typeof expressServer> {
             );
           }),
         { age: 24 * 30 }
-      ).then((content) => res.send(content)).catch(error=>{
-        console.error('[server] render error',error)
-        res.json({error})
-      });
+      )
+        .then((content) => res.send(content))
+        .catch((error) => {
+          console.error('[server] render error', error);
+          res.json({ error });
+        });
     },
     transform: (app) => {
       // to use req.protocol in case of using a proxy in between (ex: cloudflare, heroku, ..),

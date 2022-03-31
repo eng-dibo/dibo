@@ -21,6 +21,7 @@ export default (req: any, res: any) => {
     name = req.params[1],
     id = req.params[2],
     filePath = `${collection}/${id}/${name}.webp`,
+    // todo: `${TEMP}/${req.url}.webp` -> error: name is too long
     localPath = `${TEMP}/${collection}/item/${id}/${name}.webp`;
 
   if (!id || !collection) {
