@@ -13,8 +13,12 @@ import routes from './routes';
 import redirect from '@engineers/express-redirect-middleware';
 import { resolve } from 'path';
 import { apiVersion } from './routes';
+import { APP_BASE_HREF } from '@angular/common';
+import { Request, Response } from 'express';
+import cache from '@engineers/nodejs/cache';
 
 let mode = process.env.NODE_ENV || 'production';
+export const TEMP = resolve(__dirname, '../temp');
 
 // The Express app is exported so that it can be used by serverless Functions.
 export function server(): ReturnType<typeof expressServer> {
@@ -36,6 +40,26 @@ export function server(): ReturnType<typeof expressServer> {
     // TEMP: cache files, created at runtime
     // todo: use system.temp
     staticDirs: [browserDir, tempDir, configDir],
+    render: (req: Request, res: Response) => {
+      let tmp = `${TEMP}${req.path === '/' ? 'index' : req.path}.html`;
+      cache(
+        tmp,
+        () =>
+          new Promise((resolve, reject) => {
+            res.render(
+              'index.html',
+              {
+                req,
+                providers: [{ provide: APP_BASE_HREF, useValue: req.baseUrl }],
+              },
+              (err: any, content: string) => {
+                err ? reject(err) : resolve(content);
+              }
+            );
+          }),
+        { age: 24 * 30 }
+      ).then((content) => res.send(content));
+    },
     transform: (app) => {
       // to use req.protocol in case of using a proxy in between (ex: cloudflare, heroku, ..),
       // without it express may always returns req.protocol="https" even if GET/ https://***
