@@ -54,7 +54,7 @@ export default (req: any, res: any, next: any) => {
           categories: [],
         });
 
-        return query(`${collection}_categories`).then((categories) => {
+        return query(`${collection}_categories`).then((categories:any) => {
           // todo: transform(data)
           // - add item.link=categories[0]/slug/..
           data.forEach((item: any) => {
