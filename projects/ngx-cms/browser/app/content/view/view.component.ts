@@ -69,6 +69,7 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
   tags!: Meta;
   options!: ViewOptions;
   categories!: Array<Category>;
+  itemCategories!: Array<Category>;
   data!: Payload;
   // data that fetched by loadMore()
   moreData: Article[] = [];
@@ -173,37 +174,33 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
       this.httpService.get<Meta>('config/browser/meta'),
     ]).subscribe(([data, categories, defaultTags]) => {
       try {
-        this.categories = categories;
         data = transformData(data as Payload, this.params, categories);
 
         // get category details from category.slug in url
-
-        if (this.params.category && this.params.category.slug) {
-          let category = categories.find(
-            (el) => el.slug === this.params.category!.slug
-          );
-
-          if (category) {
-            this.params.category = category;
-            this.params.category.link = `/${this.params.type}/${this.params.category.slug}`;
-          }
-        }
-
         // if category._id couldn't be get due to an invalid category.slug is used in the url
         // for item mode, consider using item.categories[0] as category
         // use category._id for loadMore()
-        if (
-          !this.params.category!._id &&
-          !(data instanceof Array) &&
-          data.categories instanceof Array
-        ) {
-          let category = categories.find(
-            (el) => el._id === (data as Article).categories[0]
-          );
-
-          if (category) {
-            this.params.category = category;
-            this.params.category.link = `/${this.params.type}/${this.params.category.slug}`;
+        if (categories) {
+          this.categories = categories;
+          if (!(data instanceof Array) && data.categories instanceof Array) {
+            this.itemCategories = categories
+              .filter(
+                (el: Category) =>
+                  (data as Article).categories.includes(el._id) && !el.parent
+              )
+              .map((el: Category) => ({
+                ...el,
+                link: `/${this.params.type}/${el.slug}`,
+              }));
+          } else if (this.params.category?.slug) {
+            let category = categories!.find(
+              (el: Category) => el.slug === this.params.category!.slug
+            );
+            if (category) {
+              this.itemCategories = [
+                { ...category, link: `/${this.params.type}/${category.slug}` },
+              ];
+            }
           }
         }
 

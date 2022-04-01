@@ -27,21 +27,27 @@
     gaTracking="true"
   ></share-buttons>
 
-  <ng-container *ngIf="params.category && params.category.title" before-content>
+  <ng-container
+    *ngIf="itemCategories && itemCategories.length > 0"
+    after-content
+  >
+    <hr />
+    <h2><mat-icon>volunteer_activism</mat-icon> Selected for you</h2>
     <!-- todo: tooltip=category.description -->
-    <h1>
-      <a href="{{ params.category.link || '#' }}">{{
-        params.category.title
-      }}</a>
-    </h1>
-    <!-- todo: implement this button-->
-    <!-- save following[category.ids] in localStorage-->
-    <!-- todo: tooltip = get a notification when a new article in this category-->
-    <button mat-raised-button color="primary" (click)="follow()">
-      <mat-icon>notifications</mat-icon>follow
-    </button>
+    <div *ngFor="let category of itemCategories">
+      <mat-icon>thumb_up</mat-icon>&nbsp;
+      <a href="{{ category.link || '#' }}">{{ category.title }}</a
+      >&nbsp;&nbsp;
+      <!-- todo: implement this button-->
+      <!-- save following[category.ids] in localStorage-->
+      <!-- todo: tooltip = get a notification when a new article in this category-->
+      <button mat-icon-button color="primary" (click)="follow()">
+        <mat-icon>notifications</mat-icon>follow
+      </button>
+    </div>
     <hr />
   </ng-container>
+  itemCategories= {{ itemCategories | json }}
 </ngx-content-view>
 
 <ngx-content-view
