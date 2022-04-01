@@ -8,6 +8,9 @@ import basicArticleFields from './article-fields';
 import { FormGroup } from '@angular/forms';
 import { FormlyFieldConfig } from '@ngx-formly/core';
 import { map } from 'rxjs/operators';
+import Quill from 'quill';
+// @ts-ignore: Could not find a declaration file
+import QuillMarkdown from 'quilljs-markdown';
 
 export interface Params {
   type: string;
@@ -222,6 +225,8 @@ export class ContentEditorComponent implements OnInit {
           }
 
           if (this.params.type === 'articles' && el.key === 'content') {
+            Quill.register({ 'modules/QuillMarkdown': QuillMarkdown }, true);
+
             el.type = 'quill';
             el.templateOptions.modules = {
               toolbar: [
@@ -237,8 +242,13 @@ export class ContentEditorComponent implements OnInit {
                 ['link', 'image', 'video'],
                 ['clean'],
               ],
+              // todo: `#` -> h2 (instead of h1)
+              QuillMarkdown: {},
               // ,syntax: true //->install highlight.js or ngx-highlight
             };
+            // todo: html description
+            // '<a href="https://www.markdownguide.org/">markdown</a> is supported'
+            el.templateOptions.description = 'markdown is supported';
           }
 
           return el;
