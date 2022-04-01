@@ -6,7 +6,9 @@
       alt="{{ meta?.name }} Logo"
       src="/assets/icons/icon-72x72.png"
     />
-    <span [matTooltip]="meta.description || ''">{{ meta.name }}</span>
+    <span *ngIf="meta" [matTooltip]="meta.description || ''">{{
+      meta.name
+    }}</span>
   </a>
 
   <ng-container *ngFor="let item of toolbar">
