@@ -222,7 +222,13 @@ export function query(
       ? (schema as mongoose.Model<any>)
       : model(collection, schema);
 
-  if (params && params.id) {
+      // change the primary key for mongodb (should be implemented by the function consumer)
+      if(params.id && !params._id){
+        params._id=params.id
+        delete params.id
+      }
+
+  if (params && params._id) {
     if (operation === 'find') {
       operation = 'findById';
     } else if (['update', 'delete', 'replace'].includes(operation)) {
@@ -273,7 +279,7 @@ export function query(
     delete params.filter;
     delete params.fields;
   } else if (operation === 'findById') {
-    args = [params.id];
+    args = [params._id];
   } else {
     // todo: args for other operations
     // https://mongoosejs.com/docs/api/model.html
@@ -292,7 +298,8 @@ export function query(
 
   // .exec() converts mongoose.Query to promise
   // todo: return mongooseQuery[lean ? 'lean' : 'exec']();
-  return mongooseQuery.exec();
+return mongooseQuery.exec();
+  
 }
 
 /**
