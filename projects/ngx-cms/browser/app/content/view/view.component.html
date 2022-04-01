@@ -67,8 +67,8 @@
 <button
   mat-mini-fab
   color="primary"
-  routerLink="/{{ params.type }}/editor"
-  matTooltip="{{ 'add a new ' + params.postType }}"
+  routerLink="/{{ params.type }}/editor/{{ params.item }}"
+  matTooltip="{{ params.item ? 'edit' : 'add a new ' + params.postType }}"
   class="floating"
 >
   <mat-icon>add</mat-icon>
