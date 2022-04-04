@@ -37,7 +37,7 @@ export function getData(queryUrl: string, age = 24 * 30): Promise<any> {
     });
   }
 
-  // todo: add query to file cache ex: articles_index?filter={status:approved}
+  // todo: add querystring to the cache file ex: articles_index?filter={status:approved}
   // todo: cache find* operations only
   let tmp = `${TEMP}/${queryUrl}.json`;
 
@@ -57,7 +57,7 @@ export function getData(queryUrl: string, age = 24 * 30): Promise<any> {
           let slug = params.filter.split('category=^').pop().split(',')[0];
 
           return query(`${collection}_categories/:1~_id@slug=${slug}`).then(
-            (category:any) =>
+            (category: any) =>
               category.length > 0
                 ? query(`${collection}/@categories=${category[0]._id}`)
                 : Promise.reject(`[server] category ${slug} not found`)
