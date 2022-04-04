@@ -31,7 +31,8 @@ import { PlatformService } from '@engineers/ngx-utils/platform';
 import { MatDialog } from '@angular/material/dialog';
 import { AppInstallDialogComponent } from '../app-install-dialog/app-install-dialog.component';
 import { NotificationsDialogComponent } from '../notifications-dialog/notifications-dialog.component';
-import { forkJoin } from 'rxjs';
+import { concat } from 'rxjs';
+import { toArray } from 'rxjs/operators';
 import { DOCUMENT } from '@angular/common';
 import { NgxLoadService } from '@engineers/ngx-utils/load-scripts.service';
 
@@ -168,64 +169,91 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
       console.info(`[content/view] fetching from ${url}`);
     }
 
-    forkJoin([
+    // todo: forkJoin is better than concat here, because it runs all requests in parallel
+    // but this causes an issue in the server, the function `connect()` runs for the second request
+    // before it established in the first one.
+    // this causes the issue `cannot perform .. before establishing the connection`
+
+    // concat(observables).pipe(toArray()) makes a typescript issue
+    // result is Array<Payload | undefined | Category[] | meta>
+    // instead of Array<Payload | undefined, Category[], meta>
+
+    concat(
       this.httpService.get<Payload | PayloadError>(url),
       this.httpService.get<Array<Category>>(`${this.params.type}_categories`),
-      this.httpService.get<Meta>('config/browser/meta'),
-    ]).subscribe(([data, categories, defaultTags]) => {
-      try {
-        data = transformData(data as Payload, this.params, categories);
+      // todo: import(~config/..)
+      this.httpService.get<Meta>('config/browser/meta')
+    )
+      .pipe(
+        // combine all results into an array instead of emitting one by one
+        toArray()
+      )
+      .subscribe((result: any) => {
+        // todo: fix: https://stackoverflow.com/questions/71730120/type-definition-for-rxjs-concat
+        // https://stackblitz.com/edit/rxjs-dqg3jk?devtoolsheight=60&file=index.ts
+        let [data, categories, defaultTags]: [
+          Payload | PayloadError,
+          Array<Category>,
+          Meta
+        ] = result;
+        // console.log({ data, categories, defaultTags });
 
-        // get category details from category.slug in url
-        // if category._id couldn't be get due to an invalid category.slug is used in the url
-        // for item mode, consider using item.categories[0] as category
-        // use category._id for loadMore()
-        if (categories) {
-          this.categories = categories;
-          if (!(data instanceof Array) && data.categories instanceof Array) {
-            this.itemCategories = categories
-              .filter(
-                (el: Category) =>
-                  (data as Article).categories.includes(el._id) && !el.parent
-              )
-              .map((el: Category) => ({
-                ...el,
-                link: `/${this.params.type}/${el.slug}`,
-              }));
-          } else if (this.params.category?.slug) {
-            let category = categories!.find(
-              (el: Category) => el.slug === this.params.category!.slug
-            );
-            if (category) {
-              this.itemCategories = [
-                { ...category, link: `/${this.params.type}/${category.slug}` },
-              ];
+        try {
+          data = transformData(data as Payload, this.params, categories);
+
+          // get category details from category.slug in url
+          // if category._id couldn't be get due to an invalid category.slug is used in the url
+          // for item mode, consider using item.categories[0] as category
+          // use category._id for loadMore()
+          if (categories) {
+            this.categories = categories;
+            if (!(data instanceof Array) && data.categories instanceof Array) {
+              this.itemCategories = categories
+                .filter(
+                  (el: Category) =>
+                    (data as Article).categories.includes(el._id) && !el.parent
+                )
+                .map((el: Category) => ({
+                  ...el,
+                  link: `/${this.params.type}/${el.slug}`,
+                }));
+            } else if (this.params.category?.slug) {
+              let category = categories!.find(
+                (el: Category) => el.slug === this.params.category!.slug
+              );
+              if (category) {
+                this.itemCategories = [
+                  {
+                    ...category,
+                    link: `/${this.params.type}/${category.slug}`,
+                  },
+                ];
+              }
             }
           }
-        }
 
-        let baseUrl = defaultTags.baseUrl || this.document.location.origin;
+          let baseUrl = defaultTags.baseUrl || this.document.location.origin;
 
-        this.tags = getMetaTags(
-          data,
-          this.params,
-          Object.assign({ baseUrl }, defaultTags)
-        );
-
-        if (env.mode === 'development') {
-          console.info('[content/view]', {
-            params: this.params,
+          this.tags = getMetaTags(
             data,
-            defaultTags,
-            tags: this.tags,
-          });
+            this.params,
+            Object.assign({ baseUrl }, defaultTags)
+          );
+
+          if (env.mode === 'development') {
+            console.info('[content/view]', {
+              params: this.params,
+              data,
+              defaultTags,
+              tags: this.tags,
+            });
+          }
+          this.data = data;
+        } catch (error) {
+          this.data = { error };
+          throw error;
         }
-        this.data = data;
-      } catch (error) {
-        this.data = { error };
-        throw error;
-      }
-    });
+      });
   }
   ngAfterViewInit(): void {
     // todo: use HighlightJS for `<code>..</code>`
