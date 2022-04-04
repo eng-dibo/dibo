@@ -7,10 +7,10 @@ import { slug } from '@engineers/ngx-content-core/pipes-functions';
 import { prod } from '~config/server';
 import { supportedCollections } from './supported-collections';
 import { write } from '~server/storage';
-import { write as writeFs } from '@engineers/nodejs/fs';
+import { write as writeFs, remove } from '@engineers/nodejs/fs';
 import { connect, getModel, query } from '~server/database';
 import cache from '@engineers/nodejs/cache';
-import { existsSync, unlinkSync } from 'node:fs';
+import { existsSync, unlink } from 'node:fs';
 import shortId from 'shortid';
 import { TEMP } from '.';
 
@@ -188,21 +188,24 @@ export default (req: any, res: any) => {
     })
     .then((_data: any) => {
       res.json(_data);
-      // force remove the cached index.json
-      // todo: fix cache paths to be compatible with ./data=>queryUrl (example /collection/:10)
-      if (existsSync(`${TEMP}/${collection}/index.json`)) {
-        unlinkSync(`${TEMP}/${collection}/index.json`);
+      // purge the cache
+      function purge(path: string): void {
+        if (existsSync(`${TEMP}/${path}`)) {
+          unlink(`${TEMP}/${path}`, () => {});
+        }
       }
 
-      if (existsSync(`${TEMP}/index.json`)) {
-        unlinkSync(`${TEMP}/index.json`);
-      }
+      // todo: also purge the rendered .html file from cache (collection/category/slug-~id.html)
+      // also index files, such as $collection/0:10**
+      purge(`${collection}/${_data._id}.json`);
+      purge(`${collection}/${_data._id}.html`);
+      purge(`${collection}/index.html`);
+      remove(`${TEMP}/${collection}/images/${_data._id}`);
 
       if (!prod) {
         console.log(
           `[server/api] post: ${collection}`,
-          timer(`post ${req.url}`, true),
-          _data
+          timer(`post ${req.url}`, true)
         );
       }
     })

@@ -42,7 +42,14 @@ export function server(): ReturnType<typeof expressServer> {
     staticDirs: [browserDir, tempDir, configDir],
     render: (req: Request, res: Response) => {
       // todo: remove `slug` to shorten cache file name
-      let tmp = `${TEMP}${req.path === '/' ? '/index' : req.path}.html`;
+      let tmp = `${TEMP}${
+        req.path === '/'
+          ? '/index'
+          : req.path.indexOf('~')
+          ? req.path.substring(req.path.lastIndexOf('~') + 1)
+          : req.path
+      }.html`;
+
       cache(
         tmp,
         () =>
@@ -62,7 +69,7 @@ export function server(): ReturnType<typeof expressServer> {
       )
         .then((content) => res.send(content))
         .catch((error) => {
-          console.error('[server] render error', error);
+          console.error('[server] render', error);
           res.json({ error });
         });
     },
@@ -118,6 +125,11 @@ export function server(): ReturnType<typeof expressServer> {
         }
       });
       app.use(`/api/v${apiVersion}`, routes);
+
+      // prevent non-existing static files from reaching the regular route, i.e app.get('*')
+      app.use('*.*', (req: any, res: any) => {
+        throw new Error(`static file ${req.originalUrl} not found`);
+      });
 
       return app;
     },
