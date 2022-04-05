@@ -20,5 +20,5 @@
   "js/ts.implicitProjectConfig.experimentalDecorators": true,
   "editor.minimap.enabled": false,
   "editor.dragAndDrop": true,
-  "cSpell.words": ["adsense", "formly", "gcloud", "prerender"]
+  "cSpell.words": ["adsense", "formly", "gcloud", "postback", "prerender"]
 }
