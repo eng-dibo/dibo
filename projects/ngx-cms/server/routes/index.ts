@@ -10,6 +10,7 @@ import pushNotificationsRoute from './push-notifications';
 import postCollectionRoute from './post-collection';
 import dataRoute from './data';
 import rssRoute from './rss';
+import messengerRoute, { verify as messengerVerifyRoute } from './messenger';
 
 // api version, increased every time there is a breaking change
 // todo: add auth token & validate the requests
@@ -30,6 +31,8 @@ app.get('/restore/:hosts?', restoreRoute);
 app.post('/push_notifications/:action', pushNotificationsRoute);
 app.post('/:collection', upload.single('cover[]'), postCollectionRoute);
 app.get(/^\/rss(\/.+)?/, rssRoute);
+app.get('/messenger', messengerVerifyRoute);
+app.post('/messenger', messengerRoute);
 
 // keep this after all routes
 app.get('*', dataRoute);
