@@ -2,11 +2,11 @@ import { queryToObject } from '@engineers/javascript/url';
 
 export interface Operation {
   operation: string;
-  database: string;
+  database?: string;
   collection: string;
   item?: string;
-  portions: Array<string>;
-  params: { [key: string]: any };
+  portions?: Array<any>;
+  params?: { [key: string]: any };
 }
 
 /**
