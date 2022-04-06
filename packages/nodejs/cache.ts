@@ -21,6 +21,11 @@ export interface CacheOptions extends ReadOptions {
  *               - the nearest valid cache file in files[] array in order
  *  - cacheSync
  *
+ * steps:
+ *  - search for a valid cache from the givin files
+ *  - if no valid cache found, run dataSource() to fetch the new data
+ *  - if dataSource() failed, search for a valid cache that doesn't exceed maxAge
+ *
  */
 export default function (
   files: PathLike | PathLike[],
@@ -56,7 +61,11 @@ export default function (
   }
 
   // search for a valid cache
-  return readCache(cacheFiles, opts.age)
+  return (
+    opts.age && opts.age > 0
+      ? readCache(cacheFiles, opts.age)
+      : Promise.reject()
+  )
     .catch(() => {
       // if there is no valid file, run dataSource()
       let file: PathLike = cacheFiles[0];
@@ -72,7 +81,7 @@ export default function (
       });
     })
     .catch((error: any) => {
-      if (opts.age && opts.maxAge && opts.maxAge > opts.age) {
+      if (!opts.maxAge || opts.maxAge > (opts.age || -1)) {
         return readCache(cacheFiles, opts.maxAge);
       }
 
