@@ -260,7 +260,7 @@ export function query(
 
     // example: collection/?sort=field:1,field:-1
     // example: collection/?sort={field1:1, _id:-1}
-    params.sort = stringToObject(params.sort, ':');
+    params.sort = stringToObject(params.sort, ',', ':');
 
     args = [params.filter, params.fields, params];
     delete params.filter;
@@ -516,7 +516,8 @@ export function restore(
  */
 function stringToObject(
   value?: string,
-  delimiter = '='
+  pairsDelimiter = ',',
+  keyValueDelimiter = '='
 ): { [key: string]: any } {
   if (!value) return {};
   let obj: { [key: string]: string } = {};
@@ -524,10 +525,10 @@ function stringToObject(
   if (value.startsWith('%7B')) {
     // example: '{k1:"v1", k2:"v2"}'
     obj = JSON.parse(decodeURIComponent(value));
-  } else if (value.includes(delimiter)) {
+  } else if (value.includes(keyValueDelimiter)) {
     // example: 'k1=v1,k2=v2'
-    value.split(',').forEach((el: string) => {
-      let [key, value] = el.split('=');
+    value.split(pairsDelimiter).forEach((el: string) => {
+      let [key, value] = el.split(keyValueDelimiter);
       obj[decodeURIComponent(key)] = decodeURIComponent(value);
     });
   } else {
