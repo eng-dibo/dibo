@@ -7,10 +7,7 @@ import {
 } from '@engineers/nodejs/fs-sync';
 import { write } from '@engineers/nodejs/fs';
 
-export interface CacheFSOptions extends CacheOptions, ReadOptions {
-  // the maximum file's age (in hours) to get in case of fetching data failed
-  maxAge?: number;
-}
+export interface CacheFSOptions extends CacheOptions, ReadOptions {}
 function getCache(entries: PathLike[], options: CacheOptions = {}): any {
   for (let filePath of entries) {
     // note: without {encoding: undefined} option, read() will return a string instead of Buffer
@@ -37,7 +34,7 @@ function setCache(entry: any, data: any, options: CacheOptions = {}) {
 export default (
   files: PathLike | PathLike[],
   dataSource: () => any,
-  options?: CacheOptions | BufferEncoding
+  options?: CacheFSOptions | BufferEncoding
 ) => {
   let opts: CacheFSOptions = Object.assign(
     {},
