@@ -68,14 +68,6 @@ export function parse(url: string): Operation {
     let params = queryToObject(_params || '');
 
     // parse portions and add known portions syntax to params
-    // update:users/1/{name: "example"} -> params:{ data:{name: "example"} }
-    // portions must be parsed  from last to first,
-    // because it may be or may be not deleted after parsing and added to params
-    if (['update', 'insert'].includes(operation) && portions && portions[1]) {
-      params.data = portions[1];
-      portions.pop();
-    }
-
     // find/skip:limit~fields@conditions
     // consumer has to determine when to use something like findOne, findMany, ...
     if (
