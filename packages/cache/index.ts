@@ -42,32 +42,46 @@ export default function (
   let cacheEntries: any[] = entries instanceof Array ? entries : [entries];
 
   let data: any;
+  let cacheData: Promise<any>;
+
+  // control.get() may be not promise and throw an error
+  // we need to handle the thrown error inside try & catch block
+  // otherwise make sure control.get() returns a promise
+  try {
+    cacheData =
+      opts.age && opts.age > 0
+        ? toPromise(control.get(cacheEntries, opts))
+        : Promise.reject();
+  } catch (err) {
+    cacheData = Promise.reject(err);
+  }
 
   // search for a valid cache (only if opts.age>0)
-  return (
-    opts.age && opts.age > 0
-      ? control.get(cacheEntries, opts)
-      : Promise.reject()
-  )
+
+  return cacheData
     .catch(() => {
       // if there is no valid file, run dataSource()
       let entry = cacheEntries[0];
       data = dataSource();
 
-      return (isPromise(data) ? data : Promise.resolve(data)).then(
-        (_data: any) => {
-          if (opts.refreshCache !== false) {
-            control.set(entry, _data, opts);
-          }
-          return _data;
+      return toPromise(data).then((_data: any) => {
+        if (opts.refreshCache !== false) {
+          control.set(entry, _data, opts);
         }
-      );
+        return _data;
+      });
     })
     .catch((error: any) => {
       if (!opts.maxAge || opts.maxAge > (opts.age || -1)) {
-        return control.get(cacheEntries, { ...opts, age: opts.maxAge });
+        return toPromise(
+          control.get(cacheEntries, { ...opts, age: opts.maxAge })
+        );
       }
 
       throw error;
     });
+}
+
+function toPromise<T>(value: T | Promise<T>): Promise<T> {
+  return isPromise(value) ? (value as Promise<T>) : Promise.resolve(value);
 }
