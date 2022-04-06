@@ -1,5 +1,5 @@
 import { test, expect, beforeEach, afterAll } from '@jest/globals';
-import cache from './cache';
+import cache from './cache-fs';
 import { write, remove } from './fs';
 import { resolve } from './fs-sync';
 
