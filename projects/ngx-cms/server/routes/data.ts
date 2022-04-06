@@ -58,7 +58,7 @@ export function getData(
         // get articles from a category by its slug instead of its _id
         // prefix slug name with '^'
         // example: 'articles/@category=^$slug-name'
-        if (params.filter && params.filter.includes('category=^')) {
+        if (params && params.filter && params.filter.includes('category=^')) {
           // todo: return cache('articles_categories.json',..)
 
           // example: 'status=approved,category=^slug,key=value' => 'slug'

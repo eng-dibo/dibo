@@ -55,12 +55,12 @@ export function getModel(
   if (!schemaObj) {
     // schemaName is the same as collection name (except for [collection]_categories)
     // ex: articles_categories, jobs_categories
-    let schemaName = collection.indexOf('_categories')
-      ? 'categories'
-      : collection;
+    let schemaName =
+      collection.indexOf('_categories') > -1 ? 'categories' : collection;
     schemaObj =
       schemaName in models ? models[schemaName as keyof typeof models] : {};
   }
+
   return model(collection, schemaObj, { strict: false });
 }
 
