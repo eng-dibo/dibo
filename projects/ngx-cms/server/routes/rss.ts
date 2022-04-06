@@ -10,7 +10,7 @@ import {
   html2text,
   length,
 } from '@engineers/ngx-content-core/pipes-functions';
-import cache from '@engineers/nodejs/cache';
+import cache from '@engineers/nodejs/cache-fs';
 import { TEMP } from '.';
 import { Request, Response } from 'express';
 

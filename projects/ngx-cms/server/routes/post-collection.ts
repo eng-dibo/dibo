@@ -9,7 +9,7 @@ import { supportedCollections } from './supported-collections';
 import { write } from '~server/storage';
 import { write as writeFs, remove } from '@engineers/nodejs/fs';
 import { connect, getModel, query } from '~server/database';
-import cache from '@engineers/nodejs/cache';
+import cache from '@engineers/nodejs/cache-fs';
 import { existsSync, unlink } from 'node:fs';
 import shortId from 'shortid';
 import { TEMP } from '.';

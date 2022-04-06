@@ -1,7 +1,7 @@
 import { parse } from '@engineers/databases/operations';
 import { timer } from '@engineers/javascript/time';
 import { query } from '~server/database';
-import cache from '@engineers/nodejs/cache';
+import cache from '@engineers/nodejs/cache-fs';
 import { prod } from '~config/server';
 import { supportedCollections } from './supported-collections';
 import { connect } from '~server/database';

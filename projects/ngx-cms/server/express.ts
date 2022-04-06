@@ -15,7 +15,7 @@ import { resolve } from 'path';
 import { apiVersion } from './routes';
 import { APP_BASE_HREF } from '@angular/common';
 import { Request, Response } from 'express';
-import cache from '@engineers/nodejs/cache';
+import cache from '@engineers/nodejs/cache-fs';
 
 let mode = process.env.NODE_ENV || 'production';
 export const TEMP = resolve(__dirname, '../temp');

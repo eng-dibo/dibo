@@ -1,6 +1,6 @@
 import { timer } from '@engineers/javascript/time';
 import { TEMP } from '.';
-import cache from '@engineers/nodejs/cache';
+import cache from '@engineers/nodejs/cache-fs';
 import { read } from '~server/storage';
 import { resize } from '@engineers/graphics';
 import { prod } from '~config/server';
