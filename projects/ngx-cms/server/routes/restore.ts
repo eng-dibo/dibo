@@ -7,9 +7,10 @@ import { restore } from '@engineers/mongoose';
 import { connect } from '~server/database';
 import { supportedCollections } from './supported-collections';
 import { read as readFS } from '@engineers/nodejs/fs';
+import { Request, Response } from 'express';
 
 // add/remove data or drop a database
-export default (req: any, res: any) => {
+export default (req: Request, res: Response): any => {
   let hosts = req.params.hosts;
   let existingHosts = readdirSync(resolve(__dirname, `../temp/db-backup`));
 

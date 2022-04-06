@@ -13,9 +13,10 @@ import cache from '@engineers/nodejs/cache';
 import { existsSync, unlink } from 'node:fs';
 import shortId from 'shortid';
 import { TEMP } from '.';
+import { Request, Response } from 'express';
 
 // todo: change to /api/v1/collection/itemType[/id]
-export default (req: any, res: any) => {
+export default (req: Request, res: Response): any => {
   let collection = req.params.collection;
   if (!supportedCollections.includes(collection)) {
     return res.json({

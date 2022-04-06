@@ -6,6 +6,7 @@ import { prod } from '~config/server';
 import { supportedCollections } from './supported-collections';
 import { connect } from '~server/database';
 import { TEMP } from '.';
+import { Request, Response } from 'express';
 
 /**
  * database operation (using operation syntax @engineers/databases/operations.parse())
@@ -104,7 +105,7 @@ export function getData(queryUrl: string, age = 24 * 30): Promise<any> {
   );
 }
 
-export default (req: any, res: any, next: any) => {
+export default (req: Request, res: Response): void => {
   timer(`get ${req.url}`);
 
   // todo: ?refresh=AUTH_TOKEN

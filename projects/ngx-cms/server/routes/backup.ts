@@ -4,13 +4,14 @@ import { connect } from '~server/database';
 import { supportedCollections } from './supported-collections';
 import { backup } from '@engineers/mongoose';
 import { write as writeFs } from '@engineers/nodejs/fs';
+import { Request, Response } from 'express';
 
-export default (req: any, res: any) => {
+export default (req: Request, res: Response): any => {
   // see /restore route for details
   let filter = req.query.filter
     ? (db?: string, collection?: string) =>
         (req.query.filter as string).split(',').includes(db!)
-    : req.query.all === false
+    : (req.query.all as any) === false
     ? undefined
     : (db: any, collection: any) => {
         if (collection) {

@@ -1,3 +1,4 @@
+import { Request, Response } from 'express';
 export let supportedCollections = [
   'articles',
   'jobs',
@@ -10,4 +11,4 @@ export let supportedCollections = [
   'push_notifications',
 ];
 
-export default (req: any, res: any) => res.json(supportedCollections);
+export default (req: Request, res: Response) => res.json(supportedCollections);

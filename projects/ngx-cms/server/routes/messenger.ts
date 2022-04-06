@@ -78,7 +78,7 @@ export function verify(req: Request, res: Response): void {
   }
 }
 
-export default (req: Request, res: Response) => {
+export default (req: Request, res: Response): void => {
   let body = req.body;
   if (body.object === 'page') {
     // body.entry is an Array

@@ -40,7 +40,7 @@ export function server(): ReturnType<typeof expressServer> {
     // TEMP: cache files, created at runtime
     // todo: use system.temp
     staticDirs: [browserDir, tempDir, configDir],
-    render: (req: Request, res: Response) => {
+    render: (req: Request, res: Response): void => {
       // todo: remove `slug` to shorten cache file name
       let tmp = `${TEMP}${
         req.path === '/'

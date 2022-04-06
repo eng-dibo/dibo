@@ -4,6 +4,7 @@ import cache from '@engineers/nodejs/cache';
 import { read } from '~server/storage';
 import { resize } from '@engineers/graphics';
 import { prod } from '~config/server';
+import { Request, Response } from 'express';
 
 /**
  * saves the article's cover image to filesystem
@@ -13,7 +14,7 @@ import { prod } from '~config/server';
 // example: <img src="/images/articles-cover-$topicId/slug-text.png?size=250" />
 // todo: change to /api/v1/articles/image/$articleId-$imageName (move to the previous app.get(); execlude from ngsw cache)
 // todo:  /api/v1/$collection/image=$name-$id/slug-text?size
-export default (req: any, res: any) => {
+export default (req: Request, res: Response): any => {
   timer('/image');
 
   // todo: use system.temp folder

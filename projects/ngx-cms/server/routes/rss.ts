@@ -3,8 +3,7 @@ import { resolve } from 'node:path';
 import { prod } from '~config/server';
 import { getData } from './data';
 import Rss from 'rss';
-import { forkJoin, of } from 'rxjs';
-import { connect, query } from '~server/database';
+import { query } from '~server/database';
 import { parse } from '@engineers/databases/operations';
 import {
   slug,
@@ -13,8 +12,9 @@ import {
 } from '@engineers/ngx-content-core/pipes-functions';
 import cache from '@engineers/nodejs/cache';
 import { TEMP } from '.';
+import { Request, Response } from 'express';
 
-export default (req: any, res: any, next: any) => {
+export default (req: Request, res: Response): void => {
   // todo: cache req.path.xml
   timer(`get ${req.url}`);
   let queryUrl =
@@ -54,7 +54,7 @@ export default (req: any, res: any, next: any) => {
           categories: [],
         });
 
-        return query(`${collection}_categories`).then((categories:any) => {
+        return query(`${collection}_categories`).then((categories: any) => {
           // todo: transform(data)
           // - add item.link=categories[0]/slug/..
           data.forEach((item: any) => {
