@@ -1,4 +1,4 @@
-import { parse } from '@engineers/databases/operations';
+import { parse, Operation } from '@engineers/databases/operations';
 import { timer } from '@engineers/javascript/time';
 import { query } from '~server/database';
 import cache from '@engineers/nodejs/cache-fs';
@@ -22,8 +22,15 @@ import { Request, Response } from 'express';
  * - articles/:50?limit=10 -> query overrides portions
  * - articles/@category=^$slug-name -> get articles from a category by its slug
  */
-export function getData(queryUrl: string, age = 24 * 30): Promise<any> {
-  let queryObject = parse(decodeURIComponent(queryUrl));
+export function getData(
+  queryUrl: string | Operation,
+  age = 24 * 30
+): Promise<any> {
+  let queryObject =
+    typeof queryUrl === 'string'
+      ? parse(decodeURIComponent(queryUrl))
+      : queryUrl;
+
   let { operation, database, collection, portions, params } = queryObject;
 
   if (!prod) {
