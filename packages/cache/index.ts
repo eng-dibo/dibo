@@ -72,10 +72,16 @@ export default function (
       });
     })
     .catch((error: any) => {
+      // if dataSource() failed, search for an existing cache that doesn't exceed maxAge
       if (!opts.maxAge || opts.maxAge > (opts.age || -1)) {
-        return toPromise(
-          control.get(cacheEntries, { ...opts, age: opts.maxAge })
-        );
+        try {
+          return toPromise(
+            control.get(cacheEntries, { ...opts, age: opts.maxAge })
+          );
+        } catch (err) {
+          // if no valid cache, don't throw an error
+          // the outer function will throw an error for dataSource failing
+        }
       }
 
       throw error;
