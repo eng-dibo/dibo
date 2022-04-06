@@ -11,6 +11,7 @@ import postCollectionRoute from './post-collection';
 import dataRoute from './data';
 import rssRoute from './rss';
 import messengerRoute, { verify as messengerVerifyRoute } from './messenger';
+import sequenceRoute, { register as sequenceRegisterRoute } from './sequence';
 
 // api version, increased every time there is a breaking change
 // todo: add auth token & validate the requests
@@ -23,8 +24,8 @@ export const TEMP = resolve(__dirname, '../temp');
 // todo: get collections from db, then collections.map(el=>/*rename or remove*/), save to ./temp/supportedCollections.json
 
 app.get('/collections', supportedCollectionsRoute);
-app.get(/\/image\/([^/-]+)-([^/-]+)-([^/]+)/, imageRoute);
-app.get(/\/config\/(.+)/, configRoute);
+app.get(/^\/image\/([^/-]+)-([^/-]+)-([^/]+)/, imageRoute);
+app.get(/^\/config\/(.+)/, configRoute);
 app.get('/backup', backupRoute);
 app.get('/restore/:hosts?', restoreRoute);
 app.get('/restore/:hosts?', restoreRoute);
@@ -33,6 +34,8 @@ app.post('/:collection', upload.single('cover[]'), postCollectionRoute);
 app.get(/^\/rss(\/.+)?/, rssRoute);
 app.get('/messenger', messengerVerifyRoute);
 app.post('/messenger', messengerRoute);
+app.get(/^\/sequence\/([^\/]+)\/(.+)/, sequenceRegisterRoute);
+app.get(/^\/sequence\/([^\/]+)/, sequenceRoute);
 
 // keep this after all routes
 app.get('*', dataRoute);

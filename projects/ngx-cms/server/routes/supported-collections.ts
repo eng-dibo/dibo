@@ -9,6 +9,7 @@ export let supportedCollections = [
   'persons',
   'languages',
   'push_notifications',
+  'sequences',
 ];
 
 export default (req: Request, res: Response) => res.json(supportedCollections);
