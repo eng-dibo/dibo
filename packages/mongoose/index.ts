@@ -222,11 +222,16 @@ export function query(
       ? (schema as mongoose.Model<any>)
       : model(collection, schema);
 
-      // change the primary key for mongodb (should be implemented by the function consumer)
-      if(params.id && !params._id){
-        params._id=params.id
-        delete params.id
-      }
+  // change the primary key for mongodb (should be implemented by the function consumer)
+  if (params.id && !params._id) {
+    params._id = params.id;
+    delete params.id;
+  }
+
+  if (operation === 'insert') {
+    // todo: operation= data instanceof Array? insertMany: create
+    operation = 'create';
+  }
 
   if (params && params._id) {
     if (operation === 'find') {
@@ -239,41 +244,19 @@ export function query(
   let args: Array<any>;
   if (operation === 'find') {
     // Model.find(filter, projection, options)
-    // filter is an object, it must be stringified and encoded
-    // i.e: `encodeURIComponent(JSON.stringify({ field: 'value' }))`
-    if (params.filter) {
-      if (params.filter.includes('=')) {
-        // example: 'collection/@k1=v1,k2=v2'
-        params.filter = stringToObject(params.filter);
-      } else {
-        // example: 'collection/@{k1:"v1", k2:"v2"}'
-        params.filter = JSON.parse(decodeURIComponent(params.filter));
-      }
-    }
+    params.filter = stringToObject(params.filter);
     if (params.fields) {
-      if (params.fields.includes('=')) {
-        // example: collection/~field1=1,_id=-1
+      try {
         params.fields = stringToObject(params.fields);
-      } else if (params.fields.startsWith('%7B')) {
-        // example: collection/~{field1:1, _id:-1}
-        params.fields = JSON.parse(decodeURIComponent(params.fields));
-      } else {
+      } catch (e) {
         // example: collection/~field1,-_id (exclude _id)
         params.fields = replaceAll(params.fields, ',', ' ');
       }
     }
 
-    if (params.sort) {
-      if (params.sort.includes(':')) {
-        // example: collection/?sort=field:1,field:-1
-        params.sort = stringToObject(
-          replaceAll(params.sort, ':', '=') as string
-        );
-      } else if (params.sort.startsWith('%7B')) {
-        // example: collection/?sort={field1:1, _id:-1}
-        params.sort = JSON.parse(decodeURIComponent(params.sort));
-      }
-    }
+    // example: collection/?sort=field:1,field:-1
+    // example: collection/?sort={field1:1, _id:-1}
+    params.sort = stringToObject(params.sort, ':');
 
     args = [params.filter, params.fields, params];
     delete params.filter;
@@ -281,11 +264,20 @@ export function query(
   } else if (operation === 'findById') {
     args = [params._id];
   } else {
+    // example: `update:users/_id=1,username=newUserName/upsert=true
+    // UserModel.update({_id:1, username: newUserName}, {upsert: true})
+
     // todo: args for other operations
     // https://mongoosejs.com/docs/api/model.html
     // also methods other than Model methods such as mongoose.prototype.connect()
     // example: query('connect:mongodb://uri')
-    args = [params];
+    args = (portions || []).map((el) => {
+      try {
+        return stringToObject(el);
+      } catch (e) {
+        return el;
+      }
+    });
   }
 
   // example: contentModel.find(...params)
@@ -296,10 +288,11 @@ export function query(
     // ~fix:  (contentModel[..] as contentModel.method )()
     contentModel[operation as keyof typeof contentModel](...args);
 
-  // .exec() converts mongoose.Query to promise
-  // todo: return mongooseQuery[lean ? 'lean' : 'exec']();
-return mongooseQuery.exec();
-  
+  // mongooseQuery.exec() converts mongoose.Query to promise
+  // but doesn't work with some operations like 'create'
+  // to get the result as a plain object use .lean()
+  // query(..).then(data=>data.lean())
+  return Promise.resolve(mongooseQuery);
 }
 
 /**
@@ -511,11 +504,30 @@ export function restore(
   });
 }
 
-function stringToObject(value: string) {
+/**
+ * converts a string into a plain object
+ * @param value accepts two formats: `key=value` or `JSON.stringify({...}}`
+ * @returns
+ */
+function stringToObject(
+  value?: string,
+  delimiter = '='
+): { [key: string]: any } {
+  if (!value) return {};
   let obj: { [key: string]: string } = {};
-  value.split(',').forEach((el: string) => {
-    let [key, value] = el.split('=');
-    obj[decodeURIComponent(key)] = decodeURIComponent(value);
-  });
+
+  if (value.startsWith('%7B')) {
+    // example: '{k1:"v1", k2:"v2"}'
+    obj = JSON.parse(decodeURIComponent(value));
+  } else if (value.includes(delimiter)) {
+    // example: 'k1=v1,k2=v2'
+    value.split(',').forEach((el: string) => {
+      let [key, value] = el.split('=');
+      obj[decodeURIComponent(key)] = decodeURIComponent(value);
+    });
+  } else {
+    throw new Error('[mongoose] stringToObject: invalid value');
+  }
+
   return obj;
 }
