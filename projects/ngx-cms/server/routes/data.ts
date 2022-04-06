@@ -101,7 +101,7 @@ export function getData(queryUrl: string, age = 24 * 30): Promise<any> {
         */
       }),
 
-    { age }
+    { age, refreshCache: ['find', 'findOne'].includes(operation) }
   );
 }
 
