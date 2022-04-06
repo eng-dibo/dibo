@@ -121,7 +121,7 @@ export default (req: Request, res: Response): any => {
       .then((_data: any) => write(fileStoragePath, _data))
       .then((file: any) => {
         console.log(`[server/api] cover uploaded`);
-        writeFs(`${TEMP}/media/${data._id}/cover.webp`, req.file.buffer);
+        writeFs(`${TEMP}/media/${data._id}/cover.webp`, req.file!.buffer);
       });
   }
 

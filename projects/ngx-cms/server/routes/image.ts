@@ -2,7 +2,7 @@ import { timer } from '@engineers/javascript/time';
 import { TEMP } from '.';
 import cache from '@engineers/nodejs/cache-fs';
 import { read } from '~server/storage';
-import { resize } from '@engineers/graphics';
+import { resize, Size } from '@engineers/graphics';
 import { prod } from '~config/server';
 import { Request, Response } from 'express';
 
@@ -42,7 +42,7 @@ export default (req: Request, res: Response): any => {
         return data;
       }
 
-      let size = req.query.size,
+      let size = req.query.size as Size | Size[],
         resizedPath = `${localPath.replace('.webp', '')}_${size}.webp`;
 
       return cache(
@@ -50,7 +50,7 @@ export default (req: Request, res: Response): any => {
         () =>
           resize(data, size, {
             format:
-              req.headers?.accept.indexOf('image/webp') !== -1
+              req.headers?.accept?.indexOf('image/webp') !== -1
                 ? 'webp'
                 : 'jpeg',
             // todo: add this options to resize()

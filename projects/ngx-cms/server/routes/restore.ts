@@ -56,7 +56,7 @@ export default (req: Request, res: Response): any => {
                 ? (db?: string, collection?: string) =>
                     (req.query.filter as string).split(',').includes(db!)
                 : // disable filtering
-                req.query.all === false
+                !req.query.all
                 ? undefined
                 : // by default, only restore supportedCollections
                   (db: any, collection: any) => {
