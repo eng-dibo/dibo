@@ -40,10 +40,9 @@ export default function (
 ): Promise<any> {
   let opts: CacheOptions = Object.assign({}, options || {});
   let cacheEntries: any[] = entries instanceof Array ? entries : [entries];
-
-  let data: any;
   let cacheData: Promise<any>;
 
+  // search for a valid cache (only if opts.age>0)
   // control.get() may be not promise and throw an error
   // we need to handle the thrown error inside try & catch block
   // otherwise make sure control.get() returns a promise
@@ -56,36 +55,33 @@ export default function (
     cacheData = Promise.reject(err);
   }
 
-  // search for a valid cache (only if opts.age>0)
-
-  return cacheData
-    .catch(() => {
+  return (
+    cacheData
       // if there is no valid file, run dataSource()
-      let entry = cacheEntries[0];
-      data = dataSource();
-
-      return toPromise(data).then((_data: any) => {
-        if (opts.refreshCache !== false) {
-          control.set(entry, _data, opts);
+      .catch(() =>
+        toPromise(dataSource()).then((_data: any) => {
+          if (opts.refreshCache !== false) {
+            control.set(cacheEntries[0], _data, opts);
+          }
+          return _data;
+        })
+      )
+      .catch((error: any) => {
+        // if dataSource() failed, search for an existing cache that doesn't exceed maxAge
+        if (!opts.maxAge || opts.maxAge > (opts.age || -1)) {
+          try {
+            return toPromise(
+              control.get(cacheEntries, { ...opts, age: opts.maxAge })
+            );
+          } catch (err) {
+            // if no valid cache, don't throw an error
+            // the outer function will throw an error for dataSource failing
+          }
         }
-        return _data;
-      });
-    })
-    .catch((error: any) => {
-      // if dataSource() failed, search for an existing cache that doesn't exceed maxAge
-      if (!opts.maxAge || opts.maxAge > (opts.age || -1)) {
-        try {
-          return toPromise(
-            control.get(cacheEntries, { ...opts, age: opts.maxAge })
-          );
-        } catch (err) {
-          // if no valid cache, don't throw an error
-          // the outer function will throw an error for dataSource failing
-        }
-      }
 
-      throw error;
-    });
+        throw error;
+      })
+  );
 }
 
 function toPromise<T>(value: T | Promise<T>): Promise<T> {
