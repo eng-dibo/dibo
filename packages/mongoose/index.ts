@@ -228,9 +228,12 @@ export function query(
     delete params.id;
   }
 
+  // operation aliases
   if (operation === 'insert') {
     // todo: operation= data instanceof Array? insertMany: create
     operation = 'create';
+  } else if (operation === 'delete') {
+    operation = 'remove';
   }
 
   if (params && params._id) {
