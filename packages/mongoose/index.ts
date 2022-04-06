@@ -209,7 +209,7 @@ export function query(
   if (typeof url === 'string') {
     url = parse(url);
   }
-  let { operation, database, collection, portions, params } = url;
+  let { operation = 'find', database, collection, portions, params } = url;
 
   // consumer doesn't have to extract the collection from the url
   if (typeof schema === 'function') {
@@ -223,7 +223,7 @@ export function query(
       : model(collection, schema);
 
   // change the primary key for mongodb (should be implemented by the function consumer)
-  if (params.id && !params._id) {
+  if (params && params.id && !params._id) {
     params._id = params.id;
     delete params.id;
   }
@@ -232,7 +232,8 @@ export function query(
   if (operation === 'insert') {
     // todo: operation= data instanceof Array? insertMany: create
     operation = 'create';
-  } else if (operation === 'delete') {
+  } else if (operation === 'delete' && !params?._id) {
+    // remove is deprecated, use deleteOne, deleteMany
     operation = 'remove';
   }
 
@@ -245,7 +246,7 @@ export function query(
   }
 
   let args: Array<any>;
-  if (operation === 'find') {
+  if (operation === 'find' && params) {
     // Model.find(filter, projection, options)
     params.filter = stringToObject(params.filter);
     if (params.fields) {
@@ -264,7 +265,7 @@ export function query(
     args = [params.filter, params.fields, params];
     delete params.filter;
     delete params.fields;
-  } else if (operation === 'findById') {
+  } else if (operation === 'findById' && params) {
     args = [params._id];
   } else {
     // example: `update:users/_id=1,username=newUserName/upsert=true
@@ -283,6 +284,7 @@ export function query(
     });
   }
 
+  console.log({ operation, args });
   // example: contentModel.find(...params)
   // todo: some mongodb function have multiple parameters
   let mongooseQuery: mongoose.Query<any[], any> =
