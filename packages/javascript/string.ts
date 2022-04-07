@@ -164,19 +164,20 @@ export function stringToObject(
   keyValueDelimiter = '='
 ): { [key: string]: any } {
   if (!value) return {};
+  value = decodeURIComponent(value);
   let obj: { [key: string]: string } = {};
 
-  if (value.startsWith('%7B') || value.startsWith('%5B')) {
+  if (value.startsWith('{') || value.startsWith('[')) {
     // example: '{k1:"v1", k2:"v2"}' or '["value"]'
-    obj = JSON.parse(decodeURIComponent(value));
+    obj = JSON.parse(value);
   } else if (value.includes(keyValueDelimiter)) {
     // example: 'k1=v1,k2=v2'
     value.split(pairsDelimiter).forEach((el: string) => {
       let [key, value] = el.split(keyValueDelimiter);
-      obj[decodeURIComponent(key)] = decodeURIComponent(value);
+      obj[key] = value;
     });
   } else {
-    throw new Error('[javascript] stringToObject: invalid value');
+    throw new Error(`[javascript] stringToObject: invalid value: ${value}`);
   }
 
   return obj;
