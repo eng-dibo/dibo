@@ -10,7 +10,10 @@ import pushNotificationsRoute from './push-notifications';
 import postCollectionRoute from './post-collection';
 import dataRoute from './data';
 import rssRoute from './rss';
-import messengerRoute, { verify as messengerVerifyRoute } from './messenger';
+import messengerRoute, {
+  verify as messengerVerifyRoute,
+  query as messengerQueryRoute,
+} from './messenger';
 import sequenceRoute, { register as sequenceRegisterRoute } from './sequence';
 
 // api version, increased every time there is a breaking change
@@ -33,6 +36,7 @@ app.post('/push_notifications/:action', pushNotificationsRoute);
 app.get(/^\/rss(\/.+)?/, rssRoute);
 app.get('/messenger', messengerVerifyRoute);
 app.post('/messenger', messengerRoute);
+app.post(/^\/messenger\/(.+)/, messengerQueryRoute);
 app.get(/^\/sequence\/([^\/]+)\/(.+)/, sequenceRegisterRoute);
 app.get(/^\/sequence\/([^\/]+)/, sequenceRoute);
 

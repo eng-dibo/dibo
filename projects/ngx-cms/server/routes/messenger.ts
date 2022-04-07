@@ -3,62 +3,89 @@
 // https://developers.facebook.com/docs/messenger-platform
 import messengerConfig from '~config/server/messenger';
 import { Request, Response } from 'express';
-import https from 'node:https';
 import querystring from 'node:querystring';
-
-const host = 'https://graph.facebook.com';
-const endpoint = '/v2.6/me/messages';
+import _request from '@engineers/nodejs/https';
 
 /**
- *
- * @param id sender psid
- * @param received_message
+ * make http request to graph.facebook
+ * @param url
+ * @param data
+ * @returns
  */
-export function handleMessage(id: string, message: any) {
-  let response: any;
-  if (message.text) {
-    // Create the payload for a basic text message
-    response = {
-      text: `received: "${message.text}"`,
-    };
-  }
+export function request(url: string, data?: any, options?: any) {
+  let endpoint = 'https://graph.facebook.com/v13.0';
 
-  // Sends the response message
-  send(id, response);
-}
-
-export function handlePostback(id: string, message: any) {}
-
-export function send(id: string, response: any) {
-  let payload = {
-    recipient: {
-      id: id,
-    },
-    message: response,
-  };
-
-  let options = {
-    protocol: 'https:',
-    host,
-    path: `${endpoint}/${querystring.stringify({
+  return _request(
+    `${endpoint}/${url}?${querystring.stringify({
       access_token: messengerConfig.access_token,
     })}`,
-    method: 'POST',
+    data
+  );
+}
+
+/**
+ * send messages via messenger platform
+ * @param id PSID (~user id)
+ * @param response
+ * @returns
+ */
+export function send(id: string, message: any): Promise<any> {
+  let payload = {
+    recipient: { id },
+    message,
   };
 
-  let req = https.request(options, function (res) {
-    res.setEncoding('utf8');
-    res.on('data', function (chunk) {
-      console.log(chunk);
+  return request('me/messages', payload);
+}
+/**
+ * responds to webhook events from messenger platform
+ * @param req
+ * @param res
+ */
+/*
+to test the webhook make a curl request
+use https://reqbin.com/curl  to make curl requests online
+
+```
+curl -i -X POST -H 'Content-Type: application/json' -d '{"object":"page","entry":[{"id":43674671559,"time":1460620433256,"messaging":[{"sender":{"id":123456789},"recipient":{"id":987654321},"timestamp":1460620433123,"message":{"mid":"mid.1460620432888:f8e3412003d2d1cd93","seq":12604,"text":"Testing Chat Bot .."}}]}]}' {{host}}/api/v1/messenger
+```
+ replace {{host}} with your server's host
+*/
+export default function webhook(req: Request, res: Response): void {
+  let body = req.body;
+  if (body.object === 'page') {
+    // body.entry is an Array
+    body.entry.forEach((entry: any) => {
+      // entry.messaging is an array of only one element
+      let payload = entry.messaging[0],
+        id = payload.sender.id;
+
+      handleMessage(id, payload)
+        .then((response) => res.json(response))
+        .catch((error) => res.status(error.code).json({ error }));
     });
-  });
+  } else {
+    // Returns a '404 Not Found' if event is not from a page subscription
+    res.sendStatus(404);
+    res.json({ body });
+  }
+}
 
-  req.on('error', function (error) {
-    console.error(`> [messenger] error:`, error);
-  });
+/**
+ * make arbitrary queries
+ * @example post:$pageId/subscribed_apps
+ *          url: without endpoint or access_token
+ */
+// todo: authentication
+export function query(req: Request, res: Response): void {
+  let [fullMatch, method, url, data] = req.params[0].match(
+    // method:url;data
+    /(?:([^:\/]+):)?(.+)(?:;(.+))?/
+  ) as RegExpMatchArray;
 
-  req.write(JSON.stringify(payload));
-  req.end();
+  request(url, data, { method })
+    .then((response) => res.json(response))
+    .catch((error) => res.json({ error }));
 }
 
 // verify webhook
@@ -78,25 +105,19 @@ export function verify(req: Request, res: Response): void {
   }
 }
 
-export default (req: Request, res: Response): void => {
-  let body = req.body;
-  if (body.object === 'page') {
-    // body.entry is an Array
-    body.entry.forEach((entry: any) => {
-      // entry.messaging is an array of only one element
-      let payload = entry.messaging[0],
-        id = payload.sender.id;
+export function handleMessage(id: string, payload: any): Promise<any> {
+  let response: any;
+  if (payload.postback) {
+  } else if (payload.message) {
+    let message = payload.message;
+    // basic text message
+    if (message.text) {
+      response = {
+        text: `received: "${message.text}"`,
+      };
+    }
+  }
 
-      if (payload.message) {
-        handleMessage(id, payload.message);
-      } else if (payload.postback) {
-        handlePostback(id, payload.postback);
-      }
-    });
-  } /* else {
-    // Returns a '404 Not Found' if event is not from a page subscription
-    res.sendStatus(404);
-  }*/
-
-  res.json({ body });
-};
+  // Sends the response message
+  return send(id, response);
+}
