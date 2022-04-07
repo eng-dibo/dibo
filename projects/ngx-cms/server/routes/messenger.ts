@@ -5,6 +5,7 @@ import messengerConfig from '~config/server/messenger';
 import { Request, Response } from 'express';
 import querystring from 'node:querystring';
 import _request from '@engineers/nodejs/https';
+import { stringToObject } from '@engineers/javascript/string';
 
 /**
  * make http request to graph.facebook
@@ -80,10 +81,10 @@ export default function webhook(req: Request, res: Response): void {
 export function query(req: Request, res: Response): void {
   let [fullMatch, method, url, data] = req.params[0].match(
     // method:url;data
-    /(?:([^:\/]+):)?(.+)(?:;(.+))?/
+    /(?:([^:\/]+):)?([^;]+)(?:;(.+))?/
   ) as RegExpMatchArray;
 
-  request(url, data, { method })
+  request(url, stringToObject(data), { method })
     .then((response) => res.json(response))
     .catch((error) => res.json({ error }));
 }
@@ -93,15 +94,12 @@ export function verify(req: Request, res: Response): void {
   let mode = req.query['hub.mode'],
     token = req.query['hub.verify_token'],
     challenge = req.query['hub.challenge'];
-
-  if (mode && token) {
-    // Checks the mode and token sent is correct
-    if (mode === 'subscribe' && token === messengerConfig.verify_token) {
-      res.send(challenge);
-    } else {
-      // Responds with '403 Forbidden' if verify tokens do not match
-      res.sendStatus(403);
-    }
+  // Checks the mode and token sent is correct
+  if (mode === 'subscribe' && token === messengerConfig.verify_token) {
+    res.send(challenge);
+  } else {
+    // Responds with '403 Forbidden' if verify tokens do not match
+    res.sendStatus(403);
   }
 }
 

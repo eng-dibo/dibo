@@ -36,7 +36,7 @@ app.post('/push_notifications/:action', pushNotificationsRoute);
 app.get(/^\/rss(\/.+)?/, rssRoute);
 app.get('/messenger', messengerVerifyRoute);
 app.post('/messenger', messengerRoute);
-app.post(/^\/messenger\/(.+)/, messengerQueryRoute);
+app.get(/^\/messenger\/(.+)/, messengerQueryRoute);
 app.get(/^\/sequence\/([^\/]+)\/(.+)/, sequenceRegisterRoute);
 app.get(/^\/sequence\/([^\/]+)/, sequenceRoute);
 
