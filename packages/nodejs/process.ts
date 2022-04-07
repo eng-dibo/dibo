@@ -292,8 +292,7 @@ export async function runTask(
   // let task = argv.slice(2)[0], params = argv.slice(3);
 
   let parsedArgs = parseArgv(args),
-    task = parsedArgs.cmd[0],
-    options = parsedArgs.options;
+    task = parsedArgs.cmd.shift();
 
   if (!task) {
     throw new Error('task not provided!');
@@ -302,8 +301,16 @@ export async function runTask(
   }
 
   try {
-    console.log(`>> running the task: ${task}`);
-    await tasks[task](options);
+    let optionsString = '';
+    for (let key in parsedArgs.options) {
+      optionsString += `--${key}=${parsedArgs.options[key]} `;
+    }
+    console.log(
+      `>> running the task: ${task} ${parsedArgs.cmd.join(
+        ' '
+      )} ${optionsString}`
+    );
+    await tasks[task](...parsedArgs.cmd, parsedArgs.options);
     console.log('>> Done');
   } catch (error: any) {
     error.task = task;
