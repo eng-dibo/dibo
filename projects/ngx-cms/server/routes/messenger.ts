@@ -93,10 +93,10 @@ export default (req: Request, res: Response): void => {
         handlePostback(id, payload.postback);
       }
     });
-
-    res.send('EVENT_RECEIVED');
-  } else {
+  } /* else {
     // Returns a '404 Not Found' if event is not from a page subscription
     res.sendStatus(404);
-  }
+  }*/
+
+  res.json({ body });
 };

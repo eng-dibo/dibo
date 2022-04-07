@@ -30,7 +30,6 @@ app.get('/backup', backupRoute);
 app.get('/restore/:hosts?', restoreRoute);
 app.get('/restore/:hosts?', restoreRoute);
 app.post('/push_notifications/:action', pushNotificationsRoute);
-app.post('/:collection', upload.single('cover[]'), postCollectionRoute);
 app.get(/^\/rss(\/.+)?/, rssRoute);
 app.get('/messenger', messengerVerifyRoute);
 app.post('/messenger', messengerRoute);
@@ -39,5 +38,6 @@ app.get(/^\/sequence\/([^\/]+)/, sequenceRoute);
 
 // keep this after all routes
 app.get('*', dataRoute);
+app.post('/:collection', upload.single('cover[]'), postCollectionRoute);
 
 export default app;
