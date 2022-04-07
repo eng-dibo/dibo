@@ -153,6 +153,35 @@ export function toNumber(value: string | number): number | string {
   return value;
 }
 
+/**
+ * converts an object-like string into a plain object
+ * @param value accepts two formats: `key=value` or `JSON.stringify({...}}`
+ * @returns
+ */
+export function stringToObject(
+  value?: string,
+  pairsDelimiter = ',',
+  keyValueDelimiter = '='
+): { [key: string]: any } {
+  if (!value) return {};
+  let obj: { [key: string]: string } = {};
+
+  if (value.startsWith('%7B') || value.startsWith('%5B')) {
+    // example: '{k1:"v1", k2:"v2"}' or '["value"]'
+    obj = JSON.parse(decodeURIComponent(value));
+  } else if (value.includes(keyValueDelimiter)) {
+    // example: 'k1=v1,k2=v2'
+    value.split(pairsDelimiter).forEach((el: string) => {
+      let [key, value] = el.split(keyValueDelimiter);
+      obj[decodeURIComponent(key)] = decodeURIComponent(value);
+    });
+  } else {
+    throw new Error('[javascript] stringToObject: invalid value');
+  }
+
+  return obj;
+}
+
 /* todo:
   export interface String {
     replaceAll(
