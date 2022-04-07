@@ -23,9 +23,12 @@ export interface GenerateOptions {
 /**
  * generates build files such as package.json, readme.md, etc.
  */
-export default function generate(options: GenerateOptions = {}): Promise<void> {
-  if (options.name) {
-    let { name, target, ...pkg } = options;
+export default function generate(
+  name: string,
+  options: GenerateOptions = {}
+): Promise<void> {
+  if (arguments.length === 2) {
+    let { target, ...pkg } = options;
     return create(name, target, pkg);
   } else {
     return updatePackages().then(() => updateReadMe());
