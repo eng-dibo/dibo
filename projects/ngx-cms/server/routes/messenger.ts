@@ -63,7 +63,10 @@ export default function webhook(req: Request, res: Response): void {
 
       handleMessage(id, payload)
         .then((response) => res.json(response))
-        .catch((error) => res.status(error.code).json({ error }));
+        .catch((error) => {
+          console.error('[server/routes/messenger] handleMessage:', { error });
+          res.status(error.code).json({ error });
+        });
     });
   } else {
     // Returns a '404 Not Found' if event is not from a page subscription
@@ -84,9 +87,18 @@ export function query(req: Request, res: Response): void {
     /(?:([^:\/]+):)?([^;]+)(?:;(.+))?/
   ) as RegExpMatchArray;
 
-  request(url, stringToObject(data), { method })
-    .then((response) => res.json(response))
-    .catch((error) => res.json({ error }));
+  try {
+    let dataObj = stringToObject(data);
+    request(url, dataObj, { method })
+      .then((response) => res.json(response))
+      .catch((error) => {
+        console.error('[server/routes/messenger] query:', { error });
+        res.status(500).json({ error });
+      });
+  } catch (error) {
+    console.error('[server/routes/messenger] query:', { error });
+    res.status(500).json({ error });
+  }
 }
 
 // verify webhook
