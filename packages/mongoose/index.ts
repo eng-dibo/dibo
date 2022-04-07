@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import shortId from 'shortid';
 import { Obj, chunk } from '@engineers/javascript/objects';
-import { replaceAll } from '@engineers/javascript/string';
+import { replaceAll, stringToObject } from '@engineers/javascript/string';
 import { parse, Operation } from '@engineers/databases/operations';
 import { Admin } from 'mongodb';
 
@@ -507,33 +507,4 @@ export function restore(
   ).then(() => {
     /*void*/
   });
-}
-
-/**
- * converts a string into a plain object
- * @param value accepts two formats: `key=value` or `JSON.stringify({...}}`
- * @returns
- */
-function stringToObject(
-  value?: string,
-  pairsDelimiter = ',',
-  keyValueDelimiter = '='
-): { [key: string]: any } {
-  if (!value) return {};
-  let obj: { [key: string]: string } = {};
-
-  if (value.startsWith('%7B')) {
-    // example: '{k1:"v1", k2:"v2"}'
-    obj = JSON.parse(decodeURIComponent(value));
-  } else if (value.includes(keyValueDelimiter)) {
-    // example: 'k1=v1,k2=v2'
-    value.split(pairsDelimiter).forEach((el: string) => {
-      let [key, value] = el.split(keyValueDelimiter);
-      obj[decodeURIComponent(key)] = decodeURIComponent(value);
-    });
-  } else {
-    throw new Error('[mongoose] stringToObject: invalid value');
-  }
-
-  return obj;
 }
