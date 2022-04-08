@@ -284,7 +284,6 @@ export function query(
     });
   }
 
-  console.log({ operation, args });
   // example: contentModel.find(...params)
   // todo: some mongodb function have multiple parameters
   let mongooseQuery: mongoose.Query<any[], any> =
