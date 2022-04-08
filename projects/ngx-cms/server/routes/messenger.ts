@@ -9,6 +9,7 @@ import { stringToObject } from '@engineers/javascript/string';
 import { connect, query as dbQuery } from '~server/database';
 import cache from '@engineers/nodejs/cache-fs';
 import { TEMP } from '.';
+import { unlinkSync, existsSync } from 'node:fs';
 
 /**
  * make http request to graph.facebook
@@ -100,7 +101,7 @@ incoming request example:
  */
 export default function webhook(req: Request, res: Response): void {
   let body = req.body;
-  console.log({ body });
+
   if (body.object === 'page') {
     // body.entry is an Array
     body.entry.forEach((entry: any) => {
@@ -118,9 +119,9 @@ export default function webhook(req: Request, res: Response): void {
         });
     });
   } else {
-    // Returns a '404 Not Found' if event is not from a page subscription
-    res.sendStatus(404);
-    res.json({ body });
+    res.status(500).json({ body });
+    // log the incoming event to inspect it
+    console.log('invalid messenger webhook event', body);
   }
 }
 
@@ -163,7 +164,7 @@ export function verify(req: Request, res: Response): void {
   )
     .then((config) => {
       // Checks the mode and token sent is correct
-      if (mode === 'subscribe' && token === config.verify_token) {
+      if (config && mode === 'subscribe' && token === config.verify_token) {
         res.json(challenge);
       } else {
         throw new Error('verification failed');
@@ -178,26 +179,26 @@ export function verify(req: Request, res: Response): void {
 
 /**
  * adds the app to a new page
+ * see config/server/models.messenger for more
  *
- * @example:  /setup/page=$pageId,access_token=$token,welcome=welcome%20{{user_first_name}}
+ * @example:  messenger/setup/page=$pageId,access_token=$token,greeting=welcome%20{{user_first_name}},welcome=conversation%20started
+ * access_token is required for the first time only, other properties except pageId are optional
  */
 export function setup(req: Request, res: Response): void {
   try {
     let config = stringToObject(req.params.config);
     if (!config.page) {
       throw new Error(`parameter page (page id) is required`);
-    } else if (!config.access_token) {
-      throw new Error(`parameter access_token is required`);
     }
 
     config._id = config.page;
     delete config.page;
 
-    if (config.welcome) {
-      if (typeof config.welcome === 'string') {
-        config.welcome = [{ locale: 'default', text: config.welcome }];
+    if (config.greeting) {
+      if (typeof config.greeting === 'string') {
+        config.greeting = [{ locale: 'default', text: config.greeting }];
       }
-      config.welcome = { greeting: config.welcome };
+      config.greeting = { greeting: config.greeting };
     }
 
     if (config.menu) {
@@ -207,12 +208,35 @@ export function setup(req: Request, res: Response): void {
       config.userLevelMenu = { persistent_menu: config.userLevelMenu };
     }
 
+    if (config.welcome) {
+      if (typeof config.welcome === 'string') {
+        // welcome is a plain text message
+        config.welcome = { text: config.welcome };
+      }
+    }
+
+    let tmp = `${TEMP}/messenger/${config._id}.json`;
     connect()
+      .then(() =>
+        // access_token is required for the first time only.
+        // when updating the page's configs, access_token is optional
+        config.access_token
+          ? undefined
+          : cache(tmp, () => dbQuery(`messenger/${config._id}`)).then(
+              (result) => {
+                if (!result || !result.access_token) {
+                  throw new Error('parameter access_token is required');
+                }
+              }
+            )
+      )
       .then(() =>
         dbQuery(
           `updateOne:messenger/_id=${config._id}/${req.params.config}/upsert=true`
         )
       )
+      // purge the cache
+      .then(() => existsSync(tmp) && unlinkSync(tmp))
       .then(() =>
         // persistent menu requires adding a 'get started' button
         // https://developers.facebook.com/docs/messenger-platform/send-messages/persistent-menu/
@@ -224,14 +248,14 @@ export function setup(req: Request, res: Response): void {
       )
       .then(() =>
         Promise.all(
-          ['welcome', 'menu', 'userLevelMenu']
+          ['greeting', 'menu', 'userLevelMenu']
             .filter((el) => config[el])
             .map((el) =>
               request(config._id, 'me/messenger_profile', config[el])
             )
         )
       )
-      .then((result) => res.json(result))
+      .then((result) => res.json({ success: true }))
       .catch((error) => {
         console.log({ error });
         res.status(500).json({ error });
@@ -249,6 +273,19 @@ export function handleMessage(
 ): Promise<any> {
   let response: any;
   if (payload.postback) {
+    // todo: check payload.referral.ref to redirect the conversation to another block
+    // instead of displaying the welcome message
+    if (payload.referral.ref) {
+    } else if (payload.postback.payload === 'get_started') {
+      return cache(`${TEMP}/messenger/${objectId}.json`, () =>
+        connect().then(() => dbQuery(`messenger/${objectId}`))
+      ).then((config) =>
+        config && config.welcome
+          ? send(objectId, psid, { message: config.welcome })
+          : // no action required
+            Promise.resolve()
+      );
+    }
   } else if (payload.message) {
     let message = payload.message;
     // basic text message
