@@ -25,9 +25,7 @@ export function request(
   options?: any
 ) {
   let endpoint = 'https://graph.facebook.com/v13.0';
-  return cache(`${TEMP}/messenger/${objectId}.json`, () =>
-    connect().then(() => dbQuery(`messenger/${objectId}`))
-  ).then((config) =>
+  return getConfig(objectId).then((config) =>
     _request(
       `${endpoint}/${url}?${querystring.stringify({
         access_token: config.access_token,
@@ -159,9 +157,8 @@ export function verify(req: Request, res: Response): void {
   let mode = req.query['hub.mode'],
     token = req.query['hub.verify_token'],
     challenge = req.query['hub.challenge'];
-  cache(`${TEMP}/messenger/${messengerConfig.page}.json`, () =>
-    connect().then(() => dbQuery(`messenger/${messengerConfig.page}`))
-  )
+
+  getConfig(messengerConfig.page)
     .then((config) => {
       // Checks the mode and token sent is correct
       if (config && mode === 'subscribe' && token === config.verify_token) {
@@ -215,20 +212,17 @@ export function setup(req: Request, res: Response): void {
       }
     }
 
-    let tmp = `${TEMP}/messenger/${config._id}.json`;
     connect()
       .then(() =>
         // access_token is required for the first time only.
         // when updating the page's configs, access_token is optional
         config.access_token
           ? undefined
-          : cache(tmp, () => dbQuery(`messenger/${config._id}`)).then(
-              (result) => {
-                if (!result || !result.access_token) {
-                  throw new Error('parameter access_token is required');
-                }
+          : getConfig(config._id).then((result) => {
+              if (!result || !result.access_token) {
+                throw new Error('parameter access_token is required');
               }
-            )
+            })
       )
       .then(() =>
         dbQuery(
@@ -236,7 +230,10 @@ export function setup(req: Request, res: Response): void {
         )
       )
       // purge the cache
-      .then(() => existsSync(tmp) && unlinkSync(tmp))
+      .then(() => {
+        let tmp = `${TEMP}/messenger/${config._id}.json`;
+        existsSync(tmp) && unlinkSync(tmp);
+      })
       .then(() =>
         // persistent menu requires adding a 'get started' button
         // https://developers.facebook.com/docs/messenger-platform/send-messages/persistent-menu/
@@ -277,9 +274,7 @@ export function handleMessage(
     // instead of displaying the welcome message
     if (payload.referral.ref) {
     } else if (payload.postback.payload === 'get_started') {
-      return cache(`${TEMP}/messenger/${objectId}.json`, () =>
-        connect().then(() => dbQuery(`messenger/${objectId}`))
-      ).then((config) =>
+      return getConfig(objectId).then((config) =>
         config && config.welcome
           ? send(objectId, psid, { message: config.welcome })
           : // no action required
@@ -297,4 +292,10 @@ export function handleMessage(
   }
   // Sends the response message
   return send(objectId, psid, response);
+}
+
+export function getConfig(pageId: string | number) {
+  return cache(`${TEMP}/messenger/${pageId}.json`, () =>
+    connect().then(() => dbQuery(`messenger/${pageId}`))
+  );
 }
