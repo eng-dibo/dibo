@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { parse } from '@engineers/databases/operations';
-import { query } from '~server/database';
-import { connect } from '~server/database';
+import { connect, query } from '~server/database';
 
 /**
  * subscribe to a sequence to get some data each time, based on the registered query
