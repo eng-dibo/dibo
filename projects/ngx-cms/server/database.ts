@@ -57,11 +57,16 @@ export function getModel(
     // ex: articles_categories, jobs_categories
     let schemaName =
       collection.indexOf('_categories') > -1 ? 'categories' : collection;
-    schemaObj =
-      schemaName in models ? models[schemaName as keyof typeof models] : {};
+
+    if (schemaName in models) {
+      schemaObj = models[schemaName as keyof typeof models];
+    }
   }
 
-  return model(collection, schemaObj, { strict: false });
+  return schemaObj
+    ? model(collection, schemaObj)
+    : // disable validation for non existing schemas
+      model(collection, {}, { strict: false, validateBeforeSave: false });
 }
 
 /*
