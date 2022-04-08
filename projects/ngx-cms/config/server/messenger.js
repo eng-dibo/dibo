@@ -1,7 +1,7 @@
 module.exports = {
-  // page access token
+  // the App page (i.e the page that is created just for the app)
   // https://developers.facebook.com/docs/messenger-platform/getting-started/quick-start
-  access_token: process.env.messenger_access_token,
+  page: process.env.page,
 
   // webhook verify token
   // https://developers.facebook.com/docs/messenger-platform/getting-started/webhook-setup

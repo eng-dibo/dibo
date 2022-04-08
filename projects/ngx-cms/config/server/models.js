@@ -1,6 +1,7 @@
 // data models
 const shortId = require("shortid");
 const mongoose = require("mongoose");
+let mixed = mongoose.Schema.Types.Mixed;
 
 /*
 //replace '-' with '@', because it will be used as a separator between the id and the slug,
@@ -205,4 +206,18 @@ module.exports.push_notifications = {
   endpoint: String,
   expirationTime: String,
   keys: { p256dh: String, auth: String },
+};
+
+module.exports.messenger = {
+  // page id
+  _id: String,
+  // the access_token for this page
+  access_token: String,
+  // the welcome screen
+  // https://developers.facebook.com/docs/messenger-platform/discovery/welcome-screen/
+  welcome: mixed,
+  // the persistent menu
+  // https://developers.facebook.com/docs/messenger-platform/send-messages/persistent-menu/
+  menu: [mixed],
+  userLevelMenu: [mixed],
 };
