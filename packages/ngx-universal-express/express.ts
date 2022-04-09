@@ -1,20 +1,9 @@
-/*
+/**
 creates the express server
 
 usage example:
-import { server as expressServer,run } from "@engineers/ngx-universal-express/express";
-export function server() {
-  let app = expressServer({ dist: join(__dirname, "../browser", serverModule:AppServerModule ) });
-  app.get('/path', (req,res)=>{...})
-  return app
-}
+
  */
-/*
-//imports for serverModule()
-import { enableProdMode } from "@angular/core";
-import { NgModule } from "@angular/core";
-import { ServerModule } from "@angular/platform-server";
-*/
 
 // imports for server()
 import 'zone.js/dist/zone-node';
@@ -22,34 +11,7 @@ import 'zone.js/dist/zone-node';
 // ex: for @angular/common@11.x.x -> install @nguniversal/express-engine@^11
 import { ngExpressEngine } from '@nguniversal/express-engine';
 import express, { Express, Request, Response } from 'express';
-import { APP_BASE_HREF } from '@angular/common';
 import { Server } from 'http';
-
-/*
-export interface ServerModuleOptions {
-  //bootstrap component (AppComponent)
-  //todo: type = component
-  bootstrap: any;
-  //App module (from app.module.ts)
-  browserModule: any;
-  prod?: boolean;
-}
-export function serverModule(options: ServerModuleOptions): any {
-  let defaultOptions = {
-    prod: true
-  };
-  if (options.prod) {
-    enableProdMode();
-  }
-  @NgModule({
-    imports: [options.browserModule, ServerModule],
-    bootstrap: [options.bootstrap]
-  })
-  //todo: return class AppServerModule
-  return  class AppServerModule {}
-  //export { renderModule, renderModuleFactory } from "@angular/platform-server";
-}
-*/
 
 export interface AppOptions {
   browserDir: string;
@@ -61,14 +23,6 @@ export interface AppOptions {
   staticDirs?: string[];
   staticMaxAge?: string;
   staticFiles?: string[];
-  indexFile?: string;
-  prod?: boolean;
-  // allow the consumer to modify app (ex: adding routes)
-  // before the final route (i.e: "*") added.
-  transform?: (app: Express) => Express | undefined;
-  // a custom render function for regular routes, default: (req,res)=>res.render(..)
-  // todo: (req:Request, res:Response)=>void
-  render: any;
 }
 
 /**
@@ -77,7 +31,11 @@ export interface AppOptions {
  * @param cb a callback to modify the app, ex: add express routes (i.e app.get(..))
  * @returns the created Express server.
  *
- * The Express server() is exported so that it can be used by serverless Functions.
+ * @example
+ * import { server ,run } from "@engineers/ngx-universal-express/express";
+ * let app = server({ dist: join(__dirname, "../browser", serverModule:AppServerModule ) });
+ * app.get('/path', (req,res)=>{...})
+ * run(app)
  */
 export function server(options: AppOptions): Express {
   let app: Express = express();
@@ -93,13 +51,6 @@ export function server(options: AppOptions): Express {
     staticDirs: [options.browserDir],
     staticMaxAge: '1y',
     staticFiles: ['*.*'],
-    indexFile: 'index.html',
-    render: (req: Request, res: Response) => {
-      res.render(appOptions.indexFile as string, {
-        req,
-        providers: [{ provide: APP_BASE_HREF, useValue: req.baseUrl }],
-      });
-    },
   };
 
   let appOptions: AppOptions = Object.assign({}, defaultOptions, options);
@@ -126,14 +77,6 @@ export function server(options: AppOptions): Express {
     });
   }
 
-  if (appOptions.transform && typeof appOptions.transform === 'function') {
-    // app may be changed by reference, transform() doesn't have to return it.
-    app = appOptions.transform(app) || app;
-  }
-
-  // All regular routes use the Universal engine, must be after all other routes
-  app.get('*', appOptions.render);
-
   return app;
 }
 
@@ -152,14 +95,13 @@ export interface RunOptions {
 export function run(expressServer: Express, options: RunOptions = {}): Server {
   let defaultOptions = {
     port: process.env.PORT || 4200,
-    host: 'http://localhost',
-    onListen: (port?: string | number, host?: string) => {
+    onListen: (port?: string | number) => {
       // todo: provide logger (ex: winston)
-      console.log(`Node Express server is listening on ${host}:${port}`);
+      console.log(`Node Express server is listening on port ${port}`);
     },
-    onError: (error: any, port?: string | number, host?: string) => {
+    onError: (error: any, port?: string | number) => {
       console.error(
-        `error: Node Express server cannot listen on ${host}:${port}`,
+        `error: Node Express server cannot listen on ${port}`,
         error
       );
     },

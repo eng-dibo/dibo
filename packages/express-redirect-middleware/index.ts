@@ -1,5 +1,6 @@
 import { fromUrl, parseDomain, ParseResultListed } from 'parse-domain';
 import url from 'url';
+import { Request, Response, NextFunction, RequestHandler } from 'express';
 
 export interface Options {
   // force a specified protocol, if !protocol: keep the original protocol
@@ -22,8 +23,8 @@ export interface Options {
  * @returns
  */
 // todo: testing (use supertest)
-export default function (options?: Options): any {
-  return (req: any, res: any, next: any) => {
+export default function (options?: Options): RequestHandler {
+  return (req: Request, res: Response, next: NextFunction) => {
     let parts: ParseResultListed = parseDomain(
       // fromUrl() gets the punycode of the domain,
       // use url.domainToUnicode() to convert it back to unicode
