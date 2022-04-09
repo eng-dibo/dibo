@@ -1,0 +1,177 @@
+{
+  "$schema": "../../node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "social-control": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        },
+        "@schematics/angular:application": {
+          "strict": true
+        }
+      },
+      "root": "",
+      "sourceRoot": "browser",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-builders/custom-webpack:browser",
+          "options": {
+            "customWebpackConfig": {
+              "path": "browser/webpack.config.ts"
+            },
+            "outputPath": "../../dist/social-control/browser",
+            "index": "browser/index.html",
+            "main": "browser/main.ts",
+            "polyfills": "browser/polyfills.ts",
+            "tsConfig": "browser/tsconfig.json",
+            "aot": true,
+            "assets": ["browser/favicon.ico", "browser/assets"],
+            "styles": [
+              "../../node_modules/@angular/material/prebuilt-themes/deeppurple-amber.css",
+              "browser/styles.scss"
+            ],
+            "scripts": [],
+            "serviceWorker": true,
+            "ngswConfigPath": "browser/ngsw-config.json"
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "./browser/env.ts",
+                  "with": "./browser/env.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                }
+              ]
+            }
+          }
+        },
+        "server": {
+          "builder": "@angular-builders/custom-webpack:server",
+          "options": {
+            "customWebpackConfig": {
+              "path": "server/webpack.config.ts"
+            },
+            "outputPath": "../../dist/social-control/core/server",
+            "main": "server/express.ts",
+            "tsConfig": "server/tsconfig.json"
+          },
+          "configurations": {
+            "production": {
+              "outputHashing": "media",
+              "fileReplacements": [
+                {
+                  "replace": "./browser/env.ts",
+                  "with": "./browser/env.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "sourceMap": false,
+              "extractLicenses": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "social-control:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "social-control:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "social-control:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "browser/test.ts",
+            "polyfills": "browser/polyfills.ts",
+            "tsConfig": "tsconfig.spec.json",
+            "karmaConfig": "karma.conf.js",
+            "assets": ["browser/favicon.ico", "browser/assets"],
+            "styles": [
+              "../../node_modules/@angular/material/prebuilt-themes/deeppurple-amber.css",
+              "browser/styles.scss"
+            ],
+            "scripts": []
+          }
+        },
+        "e2e": {
+          "builder": "@angular-devkit/build-angular:protractor",
+          "options": {
+            "protractorConfig": "e2e/protractor.conf.js",
+            "devServerTarget": "social-control:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "social-control:serve:production"
+            }
+          }
+        },
+
+        "serve-ssr": {
+          "builder": "@nguniversal/builders:ssr-dev-server",
+          "configurations": {
+            "development": {
+              "browserTarget": "social-control:build:development",
+              "serverTarget": "social-control:server:development"
+            },
+            "production": {
+              "browserTarget": "social-control:build:production",
+              "serverTarget": "social-control:server:production"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "prerender": {
+          "builder": "@nguniversal/builders:prerender",
+          "options": {
+            "routes": ["/"]
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "social-control:build:production",
+              "serverTarget": "social-control:server:production"
+            },
+            "development": {
+              "browserTarget": "social-control:build:development",
+              "serverTarget": "social-control:server:development"
+            }
+          },
+          "defaultConfiguration": "production"
+        }
+      }
+    }
+  },
+  "defaultProject": "social-control"
+}

@@ -1,0 +1,12 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../../dist/social-control/server",
+    "target": "es2019",
+    "types": ["node"]
+  },
+  "files": ["main.ts", "express.ts"],
+  "angularCompilerOptions": {
+    "entryModule": "./main#AppServerModule"
+  }
+}

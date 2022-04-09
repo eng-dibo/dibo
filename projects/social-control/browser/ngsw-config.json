@@ -1,0 +1,53 @@
+{
+  "$schema": "./node_modules/@angular/service-worker/config/schema.json",
+  "index": "/index.html",
+  "assetGroups": [
+    {
+      "name": "app",
+      "installMode": "prefetch",
+      "resources": {
+        "files": ["/manifest.webmanifest", "/favicon.ico", "/index.html"]
+      }
+    },
+    {
+      "name": "assets",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "resources": {
+        "files": [
+          "/assets/**",
+          "/*.(eot|svg|cur|jpeg|jpg|png|webp|gif|otf|ttf|woff|woff2|ani|json|js|css|scss|apng|avif)",
+          "//via.placeholder.com/*"
+        ]
+      }
+    }
+  ],
+  "dataGroups": [
+    {
+      "name": "api",
+      "urls": ["/api/**", "/*", "!/**/*.*"],
+      "version": 1,
+      "cacheConfig": {
+        "maxSize": 100,
+        "maxAge": "30d",
+        "strategy": "freshness",
+        "timeout": "20s"
+      }
+    },
+    {
+      "name": "static",
+      "urls": [
+        "//fonts.googleapis.com/*",
+        "//www.googletagmanager.com/*",
+        "//pagead2.googlesyndication.com/",
+        "//googleads.g.doubleclick.net/*"
+      ],
+      "version": 1,
+      "cacheConfig": {
+        "maxSize": 100,
+        "maxAge": "1d",
+        "strategy": "performance"
+      }
+    }
+  ]
+}
