@@ -37,6 +37,7 @@ export function request(
 
 /**
  * send messages via messenger platform
+ * https://developers.facebook.com/docs/messenger-platform/reference/send-api/
  * @param id PSID (~user id)
  * @param response
  * @returns
@@ -44,11 +45,13 @@ export function request(
 export function send(
   objectId: string,
   psid: string,
-  message: any
+  message: any,
+  args?: { [key: string]: any }
 ): Promise<any> {
   let payload = {
     recipient: { id: psid },
     message,
+    ...args,
   };
 
   return request(objectId, 'me/messages', payload);
@@ -158,20 +161,12 @@ export function verify(req: Request, res: Response): void {
     token = req.query['hub.verify_token'],
     challenge = req.query['hub.challenge'];
 
-  getConfig(messengerConfig.page)
-    .then((config) => {
-      // Checks the mode and token sent is correct
-      if (config && mode === 'subscribe' && token === config.verify_token) {
-        res.json(challenge);
-      } else {
-        throw new Error('verification failed');
-      }
-    })
-    .catch((error) => {
-      // Responds with '403 Forbidden'
-      console.log({ error });
-      res.status(403).json({ error });
-    });
+  // Checks the mode and token sent is correct
+  if (mode === 'subscribe' && token === messengerConfig.verify_token) {
+    res.send(challenge);
+  } else {
+    res.status(500).send(`verification failed: mode=${mode}, token=${token}`);
+  }
 }
 
 /**
@@ -191,25 +186,14 @@ export function setup(req: Request, res: Response): void {
     config._id = config.page;
     delete config.page;
 
-    if (config.greeting) {
-      if (typeof config.greeting === 'string') {
-        config.greeting = [{ locale: 'default', text: config.greeting }];
-      }
-      config.greeting = { greeting: config.greeting };
+    if (typeof config.greeting === 'string') {
+      config.greeting = [{ locale: 'default', text: config.greeting }];
     }
 
-    if (config.menu) {
-      config.menu = { persistent_menu: config.menu };
-    }
-    if (config.userLevelMenu) {
-      config.userLevelMenu = { persistent_menu: config.userLevelMenu };
-    }
-
-    if (config.welcome) {
-      if (typeof config.welcome === 'string') {
-        // welcome is a plain text message
-        config.welcome = { text: config.welcome };
-      }
+    if (typeof config.welcome === 'string') {
+      // welcome is a plain text message
+      // it may be any message template or an array of messages
+      config.welcome = { text: config.welcome };
     }
 
     connect()
@@ -226,7 +210,9 @@ export function setup(req: Request, res: Response): void {
       )
       .then(() =>
         dbQuery(
-          `updateOne:messenger/_id=${config._id}/${req.params.config}/upsert=true`
+          `updateOne:messenger/_id=${config._id}/${JSON.stringify(
+            config
+          )}/upsert=true`
         )
       )
       // purge the cache
@@ -237,7 +223,7 @@ export function setup(req: Request, res: Response): void {
       .then(() =>
         // persistent menu requires adding a 'get started' button
         // https://developers.facebook.com/docs/messenger-platform/send-messages/persistent-menu/
-        config.menu || config.userLevelMenu
+        config.menu
           ? request(config._id, 'me/messenger_profile', {
               get_started: { payload: 'get_started' },
             })
@@ -245,17 +231,20 @@ export function setup(req: Request, res: Response): void {
       )
       .then(() =>
         Promise.all(
-          ['greeting', 'menu', 'userLevelMenu']
+          ['greeting', 'menu']
             .filter((el) => config[el])
-            .map((el) =>
-              request(config._id, 'me/messenger_profile', config[el])
-            )
+            .map((el) => {
+              if (el === 'menu') return { persistent_menu: config[el] };
+              else if (el === 'greeting') return { greeting: config[el] };
+              return config[el];
+            })
+            .map((el) => request(config._id, 'me/messenger_profile', el))
         )
       )
-      .then((result) => res.json({ success: true }))
+      .then((result) => res.json(config))
       .catch((error) => {
-        console.log({ error });
-        res.status(500).json({ error });
+        console.log({ error, config });
+        res.status(500).json({ error, config });
       });
   } catch (error) {
     console.log({ error });
@@ -272,11 +261,11 @@ export function handleMessage(
   if (payload.postback) {
     // todo: check payload.referral.ref to redirect the conversation to another block
     // instead of displaying the welcome message
-    if (payload.referral.ref) {
+    if (payload.referral && payload.referral.ref) {
     } else if (payload.postback.payload === 'get_started') {
       return getConfig(objectId).then((config) =>
         config && config.welcome
-          ? send(objectId, psid, { message: config.welcome })
+          ? send(objectId, psid, config.welcome)
           : // no action required
             Promise.resolve()
       );

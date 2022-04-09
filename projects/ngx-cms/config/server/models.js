@@ -215,7 +215,7 @@ module.exports.messenger = {
   access_token: String,
   // the greeting message that displays before the conversation starts
   // https://developers.facebook.com/docs/messenger-platform/discovery/welcome-screen/
-  greeting: mixed,
+  greeting: [{ locale: String, text: String }],
   // the first message or block of messages that be sent to the user
   // when he clicks the get started button
   // could be any message template
@@ -223,5 +223,4 @@ module.exports.messenger = {
   // the persistent menu
   // https://developers.facebook.com/docs/messenger-platform/send-messages/persistent-menu/
   menu: [mixed],
-  userLevelMenu: [mixed],
 };
