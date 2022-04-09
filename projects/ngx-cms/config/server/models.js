@@ -208,11 +208,15 @@ module.exports.push_notifications = {
   keys: { p256dh: String, auth: String },
 };
 
-module.exports.messenger = {
+// todo: implement login system
+module.exports.messenger_persons = {};
+
+module.exports.messenger_pages = {
   // page id
   _id: String,
   // the access_token for this page
   access_token: String,
+  user: { type: String, ref: "messenger_persons" },
   // the greeting message that displays before the conversation starts
   // https://developers.facebook.com/docs/messenger-platform/discovery/welcome-screen/
   greeting: [{ locale: String, text: String }],
@@ -223,4 +227,11 @@ module.exports.messenger = {
   // the persistent menu
   // https://developers.facebook.com/docs/messenger-platform/send-messages/persistent-menu/
   menu: [mixed],
+};
+
+module.exports.messenger_blocks = {
+  // keep _id short to be used as postback for buttons
+  _id: { type: String, default: shortId.generate },
+  items: [{ service: { type: String, default: "message" }, payload: [mixed] }],
+  user: { type: String, ref: "messenger_persons" },
 };

@@ -10,7 +10,9 @@ export let supportedCollections = [
   'languages',
   'push_notifications',
   'sequences',
-  'messenger',
+  'messenger_persons',
+  'messenger_pages',
+  'messenger_blocks',
 ];
 
 export default (req: Request, res: Response) => res.json(supportedCollections);

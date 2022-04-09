@@ -14,6 +14,7 @@ import messengerRoute, {
   verify as messengerVerifyRoute,
   query as messengerQueryRoute,
   setup as messengerSetupRoute,
+  blocks as messengerBlocksRoute,
 } from './messenger';
 import sequenceRoute, { register as sequenceRegisterRoute } from './sequence';
 
@@ -38,6 +39,9 @@ app.get(/^\/rss(\/.+)?/, rssRoute);
 app.post('/messenger', messengerRoute);
 app.get('/messenger', messengerVerifyRoute);
 app.get('/messenger/setup/:config', messengerSetupRoute);
+app.get('/messenger/blocks/:id/:payload', messengerBlocksRoute);
+app.get('/messenger/blocks/:payload', messengerBlocksRoute);
+// keep this after all /messenger routes
 app.get(/^\/messenger\/(.+)/, messengerQueryRoute);
 app.get(/^\/sequence\/([^\/]+)\/(.+)/, sequenceRegisterRoute);
 app.get(/^\/sequence\/([^\/]+)/, sequenceRoute);
