@@ -6,7 +6,7 @@ import { Request, Response } from 'express';
 import querystring from 'node:querystring';
 import _request from '@engineers/nodejs/https';
 import { stringToObject } from '@engineers/javascript/string';
-import { connect, query as dbQuery } from '~server/database';
+import { query as dbQuery } from '~server/database';
 import cache from '@engineers/nodejs/cache-fs';
 import { TEMP } from '.';
 import { unlinkSync, existsSync } from 'node:fs';
@@ -196,18 +196,16 @@ export function setup(req: Request, res: Response): void {
       config.welcome = { text: config.welcome };
     }
 
-    connect()
-      .then(() =>
-        // access_token is required for the first time only.
-        // when updating the page's configs, access_token is optional
-        config.access_token
-          ? undefined
-          : getConfig(config._id).then((result) => {
-              if (!result || !result.access_token) {
-                throw new Error('parameter access_token is required');
-              }
-            })
-      )
+    // access_token is required for the first time only.
+    // when updating the page's configs, access_token is optional
+    (config.access_token
+      ? Promise.resolve()
+      : getConfig(config._id).then((result) => {
+          if (!result || !result.access_token) {
+            throw new Error('parameter access_token is required');
+          }
+        })
+    )
       .then(() =>
         // todo: add user
         dbQuery(
@@ -286,7 +284,7 @@ export function handleMessage(
 
 export function getConfig(pageId: string | number) {
   return cache(`${TEMP}/messenger/${pageId}.json`, () =>
-    connect().then(() => dbQuery(`messenger/${pageId}`))
+    dbQuery(`messenger/${pageId}`)
   );
 }
 
