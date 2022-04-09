@@ -45,9 +45,19 @@ export function getData(
     });
   }
 
-  // todo: add querystring to the cache file ex: articles_index?filter={status:approved}
-  // todo: cache find* operations only
-  let tmp = `${TEMP}/${queryUrl}.json`;
+  // stringify queryUrl to use it as cache name
+  if (typeof queryUrl !== 'string') {
+    let tmpQuery = '';
+    for (let key in params) {
+      tmpQuery += `${key}=${params[key]}`;
+    }
+    queryObject = queryUrl;
+    queryUrl = `${operation}:${database ? database + '.' : ''}${collection}/${(
+      portions || []
+    ).join('/')}${params ? '?' + tmpQuery : ''}`;
+  }
+
+  let tmp = `${TEMP}/${queryUrl.replace(/^\/?find.*:/, '')}.json`;
 
   return cache(
     tmp,
@@ -107,8 +117,8 @@ export function getData(
           }
         */
       }),
-
-    { age, refreshCache: ['find', 'findOne'].includes(operation) }
+    //  cache find* operations only
+    { age, refreshCache: /^find/.test(operation) }
   );
 }
 
