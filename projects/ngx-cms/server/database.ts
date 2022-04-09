@@ -30,8 +30,13 @@ export function disconnect(): Promise<void> {
   return mongoose.disconnect();
 }
 
-export function query(url: string | Operation): ReturnType<typeof _query> {
-  return _query(url, (collection: string) => getModel(collection));
+export function query(
+  url: string | Operation,
+  uri?: Uri
+): ReturnType<typeof _query> {
+  return connect(uri).then(() =>
+    _query(url, (collection: string) => getModel(collection))
+  );
 }
 
 export function insert() {}
