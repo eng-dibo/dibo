@@ -25,15 +25,14 @@ export const TEMP = resolve(__dirname, '../temp');
 app.get('/collections', supportedCollectionsRoute);
 app.get('/backup', backupRoute);
 app.get('/restore/:hosts?', restoreRoute);
-app.post('/messenger/webhook', messengerWebhookRoute);
-app.get('/messenger/webhook', messengerVerifyRoute);
-app.get('/messenger/setup/:config', messengerSetupRoute);
-app.get('/messenger/actions/:id/:payload', messengerActionsRoute);
-app.get('/messenger/actions/:payload', messengerActionsRoute);
-// keep this after all /messenger routes
-app.get(/^\/messenger\/(.+)/, messengerActionsRoute);
-
+app.post('/webhook', messengerWebhookRoute);
+app.get('/webhook', messengerVerifyRoute);
+app.get('/setup/:config', messengerSetupRoute);
+app.get('/actions/:id/:payload', messengerActionsRoute);
+app.get('/actions/:payload', messengerActionsRoute);
+// perform arbitrary database queries
+app.get('/db/*', dataRoute);
 // keep this after all routes
-app.get('*', dataRoute);
+app.get('*', messengerActionsRoute);
 
 export default app;

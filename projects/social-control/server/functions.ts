@@ -81,7 +81,7 @@ export function handleMessage(
 }
 
 export function getConfig(pageId: string | number) {
-  return cache(`${TEMP}/messenger/${pageId}.json`, () =>
-    dbQuery(`messenger/${pageId}`)
+  return cache(`${TEMP}/pages/${pageId}.json`, () =>
+    dbQuery(`pages/${pageId}`)
   );
 }

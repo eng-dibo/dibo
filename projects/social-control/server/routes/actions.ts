@@ -32,8 +32,8 @@ export default (req: Request, res: Response) => {
 
   dbQuery(
     id
-      ? `updateOne:messenger_blocks/_id=${id}/${payloadString}`
-      : `insert:messenger_blocks/${payloadString}`
+      ? `updateOne:actions/_id=${id}/${payloadString}`
+      : `insert:actions/${payloadString}`
   )
     .then((result) => res.json(result))
     .catch((error: any) => {

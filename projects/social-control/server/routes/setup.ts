@@ -8,7 +8,7 @@ import { request, getConfig, handleMessage } from '~server/functions';
  * adds the app to a new page
  * see config/server/models.messenger for more
  *
- * @example:  messenger/setup/page=$pageId,access_token=$token,greeting=welcome%20{{user_first_name}},welcome=conversation%20started
+ * @example:  setup/page=$pageId,access_token=$token,greeting=welcome%20{{user_first_name}},welcome=conversation%20started
  * access_token is required for the first time only, other properties except pageId are optional
  */
 export default (req: Request, res: Response): void => {
@@ -44,14 +44,14 @@ export default (req: Request, res: Response): void => {
       .then(() =>
         // todo: add user
         dbQuery(
-          `updateOne:messenger/_id=${config._id}/${JSON.stringify(
+          `updateOne:pages/_id=${config._id}/${JSON.stringify(
             config
           )}/upsert=true`
         )
       )
       // purge the cache
       .then(() => {
-        let tmp = `${TEMP}/messenger/${config._id}.json`;
+        let tmp = `${TEMP}/pages/${config._id}.json`;
         existsSync(tmp) && unlinkSync(tmp);
       })
       .then(() =>
