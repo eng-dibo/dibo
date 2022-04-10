@@ -260,7 +260,7 @@ export class ContentEditorComponent implements OnInit {
   onSubmit(stepper: any): void {
     // todo: data.files=this.upload() or: submit().subscribe(data=>upload())
     // todo: data.files= {cover: #cover.files.data}
-    // todo: send base64 data from data.content to firebase storage
+    // todo: send base64 data from data.content to gcloud storage
     // this.form = form;
 
     this.response = {

@@ -1,29 +1,28 @@
-import Storage from '@engineers/firebase-admin/storage';
-import init from '@engineers/firebase-admin/init';
-import firebaseConfig from '~config/server/firebase';
+import Storage from '@engineers/gcloud-storage';
+import { storageBucket, storageRoot } from '~config/server/gcloud';
 import deasync from 'deasync';
 import { ReadOptions } from '@engineers/nodejs/fs-sync';
-import { PathLike, WriteFileOptions } from 'fs';
+import { PathLike, WriteFileOptions } from 'node:fs';
 import { objectType } from '@engineers/javascript/objects';
+import { resolve } from 'node:path';
 
 // all functions must have the same signature as @engineers/nodejs/fs.read(), write()
-// todo: if(dev) use filesystem
 // todo: if path:URl remove protocol i.e: `file://`
 
-let app = init({
-  name: firebaseConfig.projectId || 'ngxCms',
-  ...firebaseConfig,
+let storage = new Storage({
+  bucket: storageBucket,
+  keyFilename: resolve(
+    __dirname,
+    '../config/server/gcloud-service-account.json'
+  ),
 });
-
-let bucket = firebaseConfig.storageBucket || app.options.storageBucket;
-let storage = new Storage({ app, bucket });
 
 export function read(
   path: PathLike,
   options?: ReadOptions | BufferEncoding
 ): Promise<Buffer | string | Array<any> | { [key: string]: any } | boolean> {
-  if (firebaseConfig.storageRoot) {
-    path = `${firebaseConfig.storageRoot}/${path}`;
+  if (storageRoot) {
+    path = `${storageRoot}/${path}`;
   }
   return storage.download(`${path.toString()}`, options);
 }
@@ -34,8 +33,8 @@ export function write(
   data: any,
   options?: WriteFileOptions
 ): Promise<any> {
-  if (firebaseConfig.storageRoot) {
-    path = `${firebaseConfig.storageRoot}/${path}`;
+  if (storageRoot) {
+    path = `${storageRoot}/${path}`;
   }
 
   return storage.write(
@@ -45,8 +44,8 @@ export function write(
 }
 
 export function remove(path: PathLike): Promise<any> {
-  if (firebaseConfig.storageRoot) {
-    path = `${firebaseConfig.storageRoot}/${path}`;
+  if (storageRoot) {
+    path = `${storageRoot}/${path}`;
   }
   return storage.delete(`${path.toString()}`);
 }

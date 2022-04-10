@@ -20,7 +20,8 @@
     "prerender": "ng run ngx-cms:prerender",
     "setup": "npm run task -- setup",
     "postinstall": "",
-    "kill-port:linux": "fuser -k 4200/tcp"
+    "kill-port:linux": "fuser -k 4200/tcp",
+    "declarations": "npx -p typescript tsc config/**/*.js --declaration --allowJs --emitDeclarationOnly --esModuleInterop"
   },
   "private": false,
   "main": "../../dist/ngx-cms/server/express.js",

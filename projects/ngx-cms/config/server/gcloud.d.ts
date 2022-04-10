@@ -1,21 +1,18 @@
-export interface GCloudConfig {
-  projectId: string;
-  cloudRun: CloudRun;
-  GCM: GCM;
+export var apiKey: string;
+export var measurementId: string;
+export var storageBucket: string;
+export var storageRoot: string;
+export var databaseURL: string;
+export namespace cloudRun {
+    const name: string;
+    const platform: string;
+    const region: string;
+    const allowUnauthenticated: boolean;
+    const image: string;
 }
-export interface CloudRun {
-  name: string | undefined;
-  platform: string | undefined;
-  region: string | undefined;
-  allowUnauthenticated: boolean | undefined;
-  // container image name
-  image: string | undefined;
+export namespace gcloudMessaging {
+    const id: string;
+    const subject: string;
 }
-
-export interface GCM {
-  id: string;
-  subject: string;
-}
-
-declare const config: GCloudConfig;
-export default config;
+export let serviceAccount: any;
+export let projectId: string;

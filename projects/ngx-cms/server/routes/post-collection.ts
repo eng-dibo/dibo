@@ -49,7 +49,7 @@ export default (req: Request, res: Response): any => {
 
   // todo: replace content then return insertData()
   /*
-      1- handle base46 data, then: upload images to firebase, then resize
+      1- handle base46 data, then: upload images to gcloud storage, then resize
       2- insert data to db
       3- upload cover image then resize it
        */
