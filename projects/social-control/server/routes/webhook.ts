@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import messengerConfig from '~config/server/messenger';
+import { handleMessage } from '~server/functions';
 /**
  * responds to webhook events from messenger platform
  */

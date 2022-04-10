@@ -2,6 +2,8 @@ import { Request, Response } from 'express';
 import { stringToObject } from '@engineers/javascript/string';
 import { TEMP } from '.';
 import { unlinkSync, existsSync } from 'node:fs';
+import { query as dbQuery } from '~server/database';
+import { request, getConfig, handleMessage } from '~server/functions';
 /**
  * adds the app to a new page
  * see config/server/models.messenger for more
@@ -33,7 +35,7 @@ export default (req: Request, res: Response): void => {
     // when updating the page's configs, access_token is optional
     (config.access_token
       ? Promise.resolve()
-      : getConfig(config._id).then((result) => {
+      : getConfig(config._id).then((result: any) => {
           if (!result || !result.access_token) {
             throw new Error('parameter access_token is required');
           }

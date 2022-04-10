@@ -18,7 +18,7 @@ export default function (options: GCloudConfig = {}): void {
   opts.cloudRun = Object.assign(
     {},
     {
-      name: 'cms-run',
+      name: 'social-control',
       platform: 'managed',
       region: 'europe-west1',
       allowUnauthenticated: true,

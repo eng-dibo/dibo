@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { stringToObject } from '@engineers/javascript/string';
 import { query as dbQuery } from '~server/database';
+import { request } from '~server/functions';
 /**
  * make arbitrary queries
  * @example post:$pageId/subscribed_apps
@@ -16,12 +17,12 @@ export default (req: Request, res: Response): void => {
   try {
     let dataObj = stringToObject(data);
     request(objectId, url, dataObj, { method })
-      .then((response) => res.json(response))
-      .catch((error) => {
+      .then((response: any) => res.json(response))
+      .catch((error: any) => {
         console.error('[server/routes/messenger] query:', { error });
         res.status(500).json({ error });
       });
-  } catch (error) {
+  } catch (error: any) {
     console.error('[server/routes/messenger] query:', { error });
     res.status(500).json({ error });
   }

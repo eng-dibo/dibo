@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { stringToObject } from '@engineers/javascript/string';
+import { query as dbQuery } from '~server/database';
 /**
  * add/modify blocks
  * a block is a set of services (message, subscription to a json api or rss, ...)
@@ -35,7 +36,7 @@ export default (req: Request, res: Response) => {
       : `insert:messenger_blocks/${payloadString}`
   )
     .then((result) => res.json(result))
-    .catch((error) => {
+    .catch((error: any) => {
       console.error(error);
       res.status(500).json({ error, payload });
     });

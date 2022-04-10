@@ -2,10 +2,7 @@ module.exports = {
   // todo: use dist/config/server/.env for deploying the production-ready project
   projectId: process.env.gcloud_projectId || "social-control",
   cloudRun: {
-    name:
-      process.env.gcloud_cloudRun_name ||
-      process.env.gcloud_projectId ||
-      "social-control",
+    name: process.env.gcloud_cloudRun_name || "social-control",
     platform: process.env.gcloud_cloudRun_platform || "managed",
     region: process.env.gcloud_cloudRun_region || "europe-west1",
     allowUnauthenticated: true,

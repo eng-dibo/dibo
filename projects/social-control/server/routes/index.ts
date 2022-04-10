@@ -3,7 +3,6 @@
 // https://developers.facebook.com/docs/messenger-platform
 
 import { Router } from 'express';
-import { upload } from '~server/functions';
 import { resolve } from 'node:path';
 import supportedCollectionsRoute from './supported-collections';
 import backupRoute from './backup';
@@ -14,7 +13,7 @@ import messengerWebhookRoute, {
 import messengerQueryRoute from './query';
 import messengerSetupRoute from './setup';
 import messengerActionsRoute from './actions';
-import dataRouteRoute from './dataRoute';
+import dataRoute from './data';
 
 // api version, increased every time there is a breaking change
 // todo: add auth token & validate the requests
@@ -29,7 +28,7 @@ app.get('/restore/:hosts?', restoreRoute);
 app.post('/messenger/webhook', messengerWebhookRoute);
 app.get('/messenger/webhook', messengerVerifyRoute);
 app.get('/messenger/setup/:config', messengerSetupRoute);
-app.get('/messenger/actions/:id/:payload', messengerBlocksRoute);
+app.get('/messenger/actions/:id/:payload', messengerActionsRoute);
 app.get('/messenger/actions/:payload', messengerActionsRoute);
 // keep this after all /messenger routes
 app.get(/^\/messenger\/(.+)/, messengerActionsRoute);

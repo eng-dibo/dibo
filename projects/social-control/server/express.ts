@@ -100,7 +100,7 @@ export function server(): ReturnType<typeof expressServer> {
   app.use(`/api/v${apiVersion}`, routes);
 
   // prevent non-existing static files from reaching the regular route, i.e app.get('*')
-  app.use('*.*', (req: Request, res: Responsen) => {
+  app.use('*.*', (req: Request, res: Response) => {
     throw new Error(`static file ${req.originalUrl} not found`);
   });
 
