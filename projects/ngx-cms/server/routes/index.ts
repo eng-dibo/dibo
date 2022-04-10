@@ -10,12 +10,6 @@ import pushNotificationsRoute from './push-notifications';
 import postCollectionRoute from './post-collection';
 import dataRoute from './data';
 import rssRoute from './rss';
-import messengerRoute, {
-  verify as messengerVerifyRoute,
-  query as messengerQueryRoute,
-  setup as messengerSetupRoute,
-  blocks as messengerBlocksRoute,
-} from './messenger';
 import sequenceRoute, { register as sequenceRegisterRoute } from './sequence';
 
 // api version, increased every time there is a breaking change
@@ -36,13 +30,6 @@ app.get('/restore/:hosts?', restoreRoute);
 app.get('/restore/:hosts?', restoreRoute);
 app.post('/push_notifications/:action', pushNotificationsRoute);
 app.get(/^\/rss(\/.+)?/, rssRoute);
-app.post('/messenger', messengerRoute);
-app.get('/messenger', messengerVerifyRoute);
-app.get('/messenger/setup/:config', messengerSetupRoute);
-app.get('/messenger/blocks/:id/:payload', messengerBlocksRoute);
-app.get('/messenger/blocks/:payload', messengerBlocksRoute);
-// keep this after all /messenger routes
-app.get(/^\/messenger\/(.+)/, messengerQueryRoute);
 app.get(/^\/sequence\/([^\/]+)\/(.+)/, sequenceRegisterRoute);
 app.get(/^\/sequence\/([^\/]+)/, sequenceRoute);
 

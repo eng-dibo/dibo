@@ -1,6 +1,7 @@
 import { connect as _connect, model, mongoose, Uri } from '@engineers/mongoose';
 import { Obj } from '@engineers/javascript/objects';
-import { models, db } from '~config/server';
+import { db } from '~config/server';
+import * as models from '~server/models';
 import cache from '@engineers/nodejs/cache-fs';
 import { Categories } from '~browser/formly-categories-material/functions';
 import { timer } from '@engineers/javascript/time';
