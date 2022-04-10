@@ -3,4 +3,3 @@ module.exports.prod = process.env.NODE_ENV === "production";
 module.exports.AUTH = "";
 module.exports.db = require("./database");
 module.exports.firebaseConfig = require("./firebase");
-module.exports.models = require("./models");

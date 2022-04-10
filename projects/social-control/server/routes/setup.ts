@@ -6,7 +6,7 @@ import { query as dbQuery } from '~server/database';
 import { request, getConfig, handleMessage } from '~server/functions';
 /**
  * adds the app to a new page
- * see config/server/models.messenger for more
+ * see ~server/models.pages for more
  *
  * @example:  setup/page=$pageId,access_token=$token,greeting=welcome%20{{user_first_name}},welcome=conversation%20started
  * access_token is required for the first time only, other properties except pageId are optional

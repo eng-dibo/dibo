@@ -1,17 +1,17 @@
-// data models
-const shortId = require("shortid");
-const mongoose = require("mongoose");
+import shortId from 'shortid';
+import mongoose from 'mongoose';
+
 let mixed = mongoose.Schema.Types.Mixed;
 
 // todo: implement login system
-module.exports.persons = {};
+export let persons = {};
 
-module.exports.pages = {
+export let pages = {
   // page id
   _id: String,
   // the access_token for this page
   access_token: String,
-  user: { type: String, ref: "persons" },
+  user: { type: String, ref: 'persons' },
   // the greeting message that displays before the conversation starts
   // https://developers.facebook.com/docs/messenger-platform/discovery/welcome-screen/
   greeting: [{ locale: String, text: String }],
@@ -24,7 +24,7 @@ module.exports.pages = {
   menu: [mixed],
 };
 
-module.exports.actions = {
+export let actions = {
   // keep _id short to be used as postback for buttons
   _id: { type: String, default: shortId.generate },
   // display name, displayed to the user when selecting an action
@@ -34,12 +34,12 @@ module.exports.actions = {
   // example: {service: 'message', dataSource:{url}, payload:{title: '<% data.pageTitle.toLowerCase() %>'  } }}
   items: [
     {
-      service: { type: String, default: "message" },
+      service: { type: String, default: 'message' },
       payload: [mixed],
       dataSource: mixed,
     },
   ],
-  user: { type: String, ref: "persons" },
+  user: { type: String, ref: 'persons' },
   // use labels to easily manage and search bocks, and automatically run actions based on labels
   labels: [String],
 };
