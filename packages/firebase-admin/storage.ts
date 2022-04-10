@@ -1,3 +1,5 @@
+// todo: change to '@google-cloud/storage'
+// https://cloud.google.com/storage/docs/samples/storage-list-buckets#storage_list_buckets-nodejs
 import { storage, app as _app } from 'firebase-admin';
 
 // todo: use 'firebase/storage'
@@ -32,6 +34,7 @@ export interface DeleteOptions {
 
 /**
  * firebase storage functions, such as upload() and download()
+ * @deprecated use @engineers/gcloud-storage
  */
 // todo: extends Bucket
 // super(storage: Storage, name: string, options?: BucketOptions);
