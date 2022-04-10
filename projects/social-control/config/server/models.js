@@ -232,6 +232,9 @@ module.exports.messenger_pages = {
 module.exports.messenger_blocks = {
   // keep _id short to be used as postback for buttons
   _id: { type: String, default: shortId.generate },
+  // display name, displayed to the user when selecting a block
+  // if empty, the field _id used
+  name: String,
   items: [{ service: { type: String, default: "message" }, payload: [mixed] }],
   user: { type: String, ref: "messenger_persons" },
 };
