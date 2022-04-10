@@ -1,6 +1,7 @@
 {
   "name": "social-control",
   "version": "0.0.1",
+  "description": "control and manage social media accounts",
   "scripts": {
     "start": "npm run build && npm run serve",
     "start:dev": "npm run build:dev && npm run serve:dev",
