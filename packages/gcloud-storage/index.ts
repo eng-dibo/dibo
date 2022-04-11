@@ -49,6 +49,9 @@ export default class {
   // constructor();
   constructor(options: StorageOptions) {
     this.storage = new Storage(options);
+    if (!options.bucket.endsWith('.appspot.com')) {
+      options.bucket += '.appspot.com';
+    }
     this.bucket = this.storage.bucket(options.bucket);
   }
 
