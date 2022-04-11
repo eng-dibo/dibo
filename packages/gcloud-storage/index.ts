@@ -39,6 +39,7 @@ export interface DeleteOptions {
 export default class {
   public storage: Storage;
   public bucket: Bucket;
+  private rootPath: string;
 
   /**
    * creates a new bucket
@@ -49,6 +50,12 @@ export default class {
   // constructor();
   constructor(options: StorageOptions) {
     this.storage = new Storage(options);
+
+    if (options.bucket.includes('/')) {
+      let parts = options.bucket.split('/');
+      options.bucket = parts.shift() as string;
+      this.rootPath = parts.join('/');
+    }
     if (!options.bucket.endsWith('.appspot.com')) {
       options.bucket += '.appspot.com';
     }
@@ -70,7 +77,15 @@ export default class {
     if (typeof options === 'string') {
       options = { destination: options };
     }
-    return this.bucket.upload(file, options);
+    let opts: UploadOptions = Object.assign(
+      {} as any,
+      typeof options === 'string' ? { destination: options } : options || {}
+    );
+
+    if (this.rootPath && options?.destination) {
+      opts.destination = `${this.rootPath}/${opts.destination}`;
+    }
+    return this.bucket.upload(file, opts);
   }
 
   /**
@@ -136,13 +151,52 @@ export default class {
     content: string | Buffer,
     options?: SaveOptions
   ): Promise<void> {
+    if (this.rootPath) {
+      path = `${this.rootPath}/${path}`;
+    }
     return this.bucket.file(path).save(content, options);
   }
 
+  // https://stackoverflow.com/a/64539948/12577650
   delete(path: string, options?: DeleteOptions): Promise<any> {
-    // https://stackoverflow.com/a/64539948/12577650
+    if (this.rootPath) {
+      path += `/${this.rootPath}`;
+    }
     return this.bucket.file(path).delete(options);
     // or: return this.bucket.deleteFiles(query?: DeleteFilesOptions);
+  }
+
+  /**
+   * download all files from a directory that match the provided filter
+   * @param destination the local path to download the files to
+   * @param dir the directory to be downloaded
+   * @param filter
+   * @param options limit the downloaded files (paginating behavior)
+   * @returns
+   */
+  downloadAll(
+    destination: string,
+    dir?: string,
+    filter?: RegExp | ((file: string) => boolean),
+    options = { start: 0, end: undefined }
+  ) {
+    if (!filter) {
+      filter = (file) => true;
+    } else if (filter instanceof RegExp) {
+      filter = (file) => (filter as RegExp).test(file);
+    }
+    return this.bucket
+      .getFiles({ prefix: dir })
+      .then((files) => files.filter(filter as any))
+      .then((files) =>
+        Promise.all(
+          files[0].slice(options.start, options.end).map((file: File) =>
+            this.download(file, {
+              destination: `${destination}/${file.name}`,
+            }).then((result) => ({ [file.name]: result }))
+          )
+        )
+      );
   }
 
   // todo: read(file:string):Buffer
