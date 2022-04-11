@@ -23,7 +23,10 @@ module.exports.storageRoot = process.env.gcloud_storageRoot || undefined;
 module.exports.databaseURL =
   process.env.gcloud_databaseURL || `https://${projectId}.firebaseio.com`;
 module.exports.cloudRun = {
-  name: process.env.gcloud_cloudRun_name || "ngx-cms",
+  name:
+    process.env.gcloud_cloudRun_name || process.env.gcloud_cloudRun_image
+      ? process.env.gcloud_cloudRun_image.replace(/\./, "-")
+      : "ngx-cms",
   platform: process.env.gcloud_cloudRun_platform || "managed",
   region: process.env.gcloud_cloudRun_region || "europe-west1",
   allowUnauthenticated: true,
