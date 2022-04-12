@@ -9,7 +9,7 @@ import { resolve } from 'node:path';
 // all functions must have the same signature as @engineers/nodejs/fs.read(), write()
 // todo: if path:URl remove protocol i.e: `file://`
 
-let storage = new Storage({
+export let storage = new Storage({
   bucket: storageBucket,
   keyFilename: resolve(
     __dirname,
@@ -21,9 +21,6 @@ export function read(
   path: PathLike,
   options?: ReadOptions | BufferEncoding
 ): Promise<Buffer | string | Array<any> | { [key: string]: any } | boolean> {
-  if (storageRoot) {
-    path = `${storageRoot}/${path}`;
-  }
   return storage.download(`${path.toString()}`, options);
 }
 
@@ -33,10 +30,6 @@ export function write(
   data: any,
   options?: WriteFileOptions
 ): Promise<any> {
-  if (storageRoot) {
-    path = `${storageRoot}/${path}`;
-  }
-
   return storage.write(
     `${path.toString()}`,
     ['array', 'object'].includes(objectType(data)) ? JSON.stringify(data) : data
@@ -44,9 +37,6 @@ export function write(
 }
 
 export function remove(path: PathLike): Promise<any> {
-  if (storageRoot) {
-    path = `${storageRoot}/${path}`;
-  }
   return storage.delete(`${path.toString()}`);
 }
 

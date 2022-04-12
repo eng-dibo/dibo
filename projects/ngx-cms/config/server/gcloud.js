@@ -17,9 +17,9 @@ module.exports.projectId = projectId;
 // run `npx -p typescript tsc config/**/*.js --declaration --allowJs --emitDeclarationOnly --esModuleInterop`
 module.exports.apiKey = process.env.gcloud_apiKey || undefined;
 module.exports.measurementId = process.env.gcloud_measurementId || undefined;
+//format: $bucketName.appspot.com/root/path
 module.exports.storageBucket =
   process.env.gcloud_storageBucket || `${projectId}.appspot.com`;
-module.exports.storageRoot = process.env.gcloud_storageRoot || undefined;
 module.exports.databaseURL =
   process.env.gcloud_databaseURL || `https://${projectId}.firebaseio.com`;
 module.exports.cloudRun = {
