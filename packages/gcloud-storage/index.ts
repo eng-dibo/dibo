@@ -108,7 +108,9 @@ export default class {
     options?: DownloadOptions | string
   ): Promise<Buffer | string | Array<any> | { [key: string]: any } | boolean> {
     if (typeof file === 'string') {
-      file = this.bucket.file(file);
+      file = this.bucket.file(
+        this.rootPath ? `${this.rootPath}/${file}` : file
+      );
     }
 
     let defaultOptions = {
@@ -144,6 +146,42 @@ export default class {
   }
 
   /**
+   * download all files from a directory that match the provided filter
+   * @param destination the local path to download the files to
+   * @param dir the directory to be downloaded
+   * @param filter
+   * @param options limit the downloaded files (paginating behavior)
+   * @returns
+   */
+  downloadAll(
+    destination: string,
+    dir?: string,
+    filter?: RegExp | ((file: string) => boolean),
+    options = { start: 0, end: undefined }
+  ) {
+    let results: { [key: string]: boolean } = {};
+    if (!filter) {
+      filter = (file) => true;
+    } else if (filter instanceof RegExp) {
+      filter = (file) => (filter as RegExp).test(file);
+    }
+    return this.bucket
+      .getFiles({ prefix: dir })
+      .then((files) => files[0].filter((file) => (filter as any)(file.name)))
+      .then((files) =>
+        Promise.all(
+          files.slice(options.start, options.end).map((file: File) =>
+            this.download(file, {
+              destination: `${destination}/${file.name}`,
+            }).then((result) => {
+              results[file.name] = result as boolean;
+            })
+          )
+        ).then(() => results)
+      );
+  }
+
+  /**
    * writes a content to a file in the bucket
    */
   write(
@@ -164,39 +202,6 @@ export default class {
     }
     return this.bucket.file(path).delete(options);
     // or: return this.bucket.deleteFiles(query?: DeleteFilesOptions);
-  }
-
-  /**
-   * download all files from a directory that match the provided filter
-   * @param destination the local path to download the files to
-   * @param dir the directory to be downloaded
-   * @param filter
-   * @param options limit the downloaded files (paginating behavior)
-   * @returns
-   */
-  downloadAll(
-    destination: string,
-    dir?: string,
-    filter?: RegExp | ((file: string) => boolean),
-    options = { start: 0, end: undefined }
-  ) {
-    if (!filter) {
-      filter = (file) => true;
-    } else if (filter instanceof RegExp) {
-      filter = (file) => (filter as RegExp).test(file);
-    }
-    return this.bucket
-      .getFiles({ prefix: dir })
-      .then((files) => files.filter(filter as any))
-      .then((files) =>
-        Promise.all(
-          files[0].slice(options.start, options.end).map((file: File) =>
-            this.download(file, {
-              destination: `${destination}/${file.name}`,
-            }).then((result) => ({ [file.name]: result }))
-          )
-        )
-      );
   }
 
   // todo: read(file:string):Buffer
