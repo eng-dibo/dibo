@@ -12,6 +12,7 @@
     "test": "jest",
     "test:all": "npm t -- --coverage --only-changed=false",
     "release": "semantic-release -e semantic-release-monorepo",
+    "release:local": "semantic-release -e semantic-release-monorepo --no-ci",
     "vscode": "export project=$PWD && npm run docker:stop --prefix=projects/vscode && npm run docker:run --prefix=projects/vscode",
     "task": "ts-node  -r tsconfig-paths/register ./tasks/index.ts",
     "tasks:build": "webpack --entry=./tasks/index.ts  --output-path=./tasks/tasks~~.js",
