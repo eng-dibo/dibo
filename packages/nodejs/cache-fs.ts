@@ -4,8 +4,8 @@ import {
   resolve,
   ReadOptions,
   read as readSync,
-} from '@engineers/nodejs/fs-sync';
-import { write } from '@engineers/nodejs/fs';
+} from './fs-sync';
+import { write } from './fs';
 
 export interface CacheFSOptions extends CacheOptions, ReadOptions {}
 function getCache(entries: PathLike[], options: CacheOptions = {}): any {
