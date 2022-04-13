@@ -32,7 +32,7 @@ export default function generate(
     return create(name, target, pkg);
   } else {
     return updatePackages().then(() =>
-      Promise.all([updateReadMe(), addTsconfig()])
+      Promise.all([updateReadMe(), addTsconfig(), webpackConfig()])
     );
   }
 }
@@ -112,7 +112,7 @@ function updatePackages(): Promise<void> {
                   rootData
                 );
                 pkg.scripts = pkg.scripts || {};
-                pkg.scripts.build = pkg.scripts.build || 'tsc';
+                pkg.scripts.build = pkg.scripts.build || 'webpack';
                 pkg.scripts._publish =
                   pkg.scripts._publish ||
                   'npm run build && npm publish --access=public';
@@ -191,5 +191,41 @@ function addTsconfig(): Promise<void> {
     )
     .then((dirs) =>
       dirs.map((dir) => writeFileSync(`${dir}/tsconfig.json`, tsconfig))
+    );
+}
+
+export function webpackConfig(): Promise<void> {
+  let webpack = `
+  import webpackMerge from 'webpack-merge';
+  import { Configuration } from 'webpack';
+  import baseConfig from '~~webpack.config';
+  import { resolve } from 'node:path';
+  import { getEntries, read } from '@engineers/nodejs/fs-sync';
+  
+  let tsConfig = read(resolve(__dirname, 'tsconfig.json'));
+  let entry:{[key:string]:string} = {};
+  let pattern = new RegExp(\`\${__dirname}\/(.+)\.ts$\`);
+  getEntries(__dirname, /(?<!\.config|\.spec)\.ts$/).forEach((file) => {
+    entry[file.match(pattern)[1]] = file;
+  });
+  
+  export default webpackMerge(baseConfig, {
+    entry,
+    output: {
+      path: resolve(__dirname, tsConfig.compilerOptions.outDir),
+    },
+  });
+`;
+
+  return Promise.all(
+    ['packages', 'projects'].map((dir) => getEntries(dir, 'dirs', 0))
+  )
+    .then((entries: Array<Array<string>>) =>
+      entries[0]
+        .concat(entries[1])
+        .filter((dir) => !existsSync(`${dir}/webpack.config.ts`))
+    )
+    .then((dirs) =>
+      dirs.map((dir) => writeFileSync(`${dir}/webpack.config.ts`, webpack))
     );
 }
