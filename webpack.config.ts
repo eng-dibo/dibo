@@ -40,6 +40,7 @@ let config: Configuration = {
 
   output: {
     path: resolve(__dirname, './dist'),
+    filename: '[name].js',
     library: undefined,
     libraryTarget: 'commonjs2',
   },
