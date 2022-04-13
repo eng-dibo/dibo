@@ -11,12 +11,13 @@
     "lint": "prettier --write . && eslint --fix --config .eslintrc.js --ext .js,.ts",
     "test": "jest",
     "test:all": "npm t -- --coverage --only-changed=false",
-    "semantic-release": "semantic-release",
+    "release": "semantic-release -e semantic-release-monorepo",
     "vscode": "export project=$PWD && npm run docker:stop --prefix=projects/vscode && npm run docker:run --prefix=projects/vscode",
     "task": "ts-node  -r tsconfig-paths/register ./tasks/index.ts",
     "tasks:build": "webpack --entry=./tasks/index.ts  --output-path=./tasks/tasks~~.js",
     "postinstall": "ngcc",
-    "build:packages": "npm run build -w packages"
+    "build:packages": "npm run build -w packages",
+    "generate": "npm run task -- generate"
   },
   "lint-staged": {
     "*": "npm run lint"

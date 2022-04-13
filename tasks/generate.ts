@@ -102,6 +102,7 @@ function updatePackages(): Promise<void> {
                   {
                     name: '@engineers/' + basename(dirname(entry)),
                     version: '0.0.1',
+                    release: 'semantic-release -e semantic-release-monorepo',
                   },
                   content,
                   rootData
