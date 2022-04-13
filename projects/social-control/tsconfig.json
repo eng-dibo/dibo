@@ -2,7 +2,7 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "baseUrl": ".",
-    "outDir": "../../dist/social-control",
+    "outDir": "dist",
     "allowJs": false,
     "paths": {
       "~*": ["./*"],

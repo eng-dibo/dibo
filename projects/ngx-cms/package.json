@@ -8,7 +8,7 @@
   "scripts": {
     "start": "npm run build && npm run serve",
     "start:dev": "npm run build:dev && npm run serve:dev",
-    "deploy": "npm run deploy --prefix=../../dist/ngx-cms",
+    "deploy": "npm run deploy --prefix=./dist",
     "build:deploy": "npm run build && npm run deploy",
     "task": "ts-node  -r tsconfig-paths/register ./tasks/index.ts",
     "build": "npm run task -- build",
@@ -17,8 +17,8 @@
     "build:browser:dev": "npm run task -- build --mode=development --targets=browser",
     "build:server": "npm run task -- build --mode=production --targets=server",
     "build:server:dev": "npm run task -- build --mode=development --targets=server",
-    "serve": "node -r dotenv/config  ../../dist/ngx-cms/server/main.js --start dotenv_config_path=../../dist/ngx-cms/config/server/.env -- --inspect",
-    "serve:ts": "ts-node -r dotenv/config  ../../dist/ngx-cms/server/main.js --start dotenv_config_path=../../dist/ngx-cms/config/server/.env -- --inspect",
+    "serve": "node -r dotenv/config  ./dist/server/main.js --start dotenv_config_path=./dist/config/server/.env -- --inspect",
+    "serve:ts": "ts-node -r dotenv/config  ./dist/server/main.js --start dotenv_config_path=./dist/config/server/.env -- --inspect",
     "serve:dev": "cross-env NODE_ENV=development npm run serve",
     "serve:ng": "ng serve",
     "prerender": "ng run ngx-cms:prerender",
@@ -26,10 +26,10 @@
     "postinstall": "",
     "kill-port:linux": "fuser -k 4200/tcp",
     "declarations": "npx -p typescript tsc config/**/*.js --declaration --allowJs --emitDeclarationOnly --esModuleInterop",
-    "_publish": "npm run build && npm publish --access=public"
+    "_publish": "npm publish --access=public --dry-run"
   },
   "private": false,
-  "main": "../../dist/ngx-cms/server/express.js",
+  "main": "./dist/server/express.js",
   "dependencies": {
     "@angular/animations": "^13.1.2",
     "@angular/cdk": "^13.1.2",

@@ -1,7 +1,7 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "outDir": "../../../dist/ngx-cms/browser",
+    "outDir": "../dist/browser",
     "types": []
   },
   "files": ["main.ts", "polyfills.ts"]

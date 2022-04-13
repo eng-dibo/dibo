@@ -3,9 +3,11 @@ import baseConfig from '~webpack.config';
 import { Configuration } from 'webpack';
 import webpackMerge from 'webpack-merge';
 import externals, { node } from '@engineers/webpack/externals';
-import { getEntries } from '@engineers/nodejs/fs-sync';
+import { getEntries, read } from '@engineers/nodejs/fs-sync';
 
 let entry = {};
+let tsConfig = read(resolve(__dirname, 'tsconfig.json'));
+
 /*
 // see externals(~server)
 let pattern = new RegExp(`${__dirname}\/(.+)\.ts$`);
@@ -19,7 +21,7 @@ getEntries(__dirname, /(?<!\.config|\.spec|\/express|\/main)\.ts$/).forEach((fil
 let config: Configuration = webpackMerge(baseConfig, {
   entry,
   output: {
-    path: resolve(__dirname, '../../../dist/ngx-cms/server'),
+    path: resolve(__dirname, tsConfig.compilerOptions.outDir),
     // todo: use the original filename, i.e: express not main
     filename: '[name].js',
   },

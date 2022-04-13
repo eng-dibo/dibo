@@ -2,8 +2,8 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "baseUrl": ".",
-    "outDir": "../../dist/ngx-cms",
-    // causes issue with `ts-node ../../dist/server/main.js`
+    "outDir": "dist",
+    // causes issue with `ts-node ./dist/server/main.js`
     "allowJs": false,
     "paths": {
       "~*": ["./*"],

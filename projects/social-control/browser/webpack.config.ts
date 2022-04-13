@@ -4,12 +4,15 @@ import { resolve } from 'path';
 import baseConfig from '../webpack.config';
 import { Configuration } from 'webpack';
 import webpackMerge from 'webpack-merge';
+import { read } from '@engineers/nodejs/fs-sync';
+
+let tsConfig = read(resolve(__dirname, 'tsconfig.json'));
 
 // todo: add ~config to externals[]
 // https://stackoverflow.com/questions/70354709/webpack-externals-for-browser
 let config: Configuration = webpackMerge(baseConfig, {
   output: {
-    path: resolve(__dirname, '../../../dist/social-control/browser'),
+    path: path: resolve(__dirname, tsConfig.compilerOptions.outDir),
     filename: '[name].js',
   },
 });

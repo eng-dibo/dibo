@@ -23,7 +23,7 @@
             "customWebpackConfig": {
               "path": "browser/webpack.config.ts"
             },
-            "outputPath": "../../dist/social-control/browser",
+            "outputPath": "./dist/browser",
             "index": "browser/index.html",
             "main": "browser/main.ts",
             "polyfills": "browser/polyfills.ts",
@@ -74,7 +74,7 @@
             "customWebpackConfig": {
               "path": "server/webpack.config.ts"
             },
-            "outputPath": "../../dist/social-control/core/server",
+            "outputPath": "./dist/core/server",
             "main": "server/express.ts",
             "tsConfig": "server/tsconfig.json"
           },

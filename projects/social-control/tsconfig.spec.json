@@ -2,7 +2,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "../../dist/social-control/spec",
+    "outDir": "./dist/spec",
     "types": ["jasmine"]
   },
   "files": ["browser/test.ts", "browser/polyfills.ts"],

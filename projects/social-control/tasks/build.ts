@@ -11,7 +11,7 @@ import {
   appendFileSync,
 } from 'node:fs';
 import { basename, resolve } from 'node:path';
-import { rootPath, projectPath, destination } from './index';
+import { rootPath, projectPath, dist } from './index';
 import webpack from 'webpack';
 import webpackMerge from 'webpack-merge';
 import baseConfig from '~~webpack.config';
@@ -77,7 +77,7 @@ export function buildBrowser(mode: Mode = 'production'): void {
   console.log(`> build browser: ${cmd}`);
 
   execSync(cmd);
-  write(`${destination}/browser/info.json`, { mode, time });
+  write(`${dist}/browser/info.json`, { mode, time });
 }
 
 export function buildServer(mode: Mode = 'production'): void {
@@ -88,14 +88,14 @@ export function buildServer(mode: Mode = 'production'): void {
   console.log(`> build server: ${cmd}`);
 
   execSync(cmd);
-  write(`${destination}/server/info.json`, { mode, time });
+  write(`${dist}/server/info.json`, { mode, time });
 }
 
 export function buildConfig(): void {
   console.log(`> build config`);
 
   ['browser', 'server'].forEach((target) => {
-    mkdir([`${destination}/config/${target}`]);
+    mkdir([`${dist}/config/${target}`]);
 
     let files = readdirSync(`${projectPath}/config/${target}`),
       // user-specific files (i.e file!!.ext, file!!) overrides project files (i.e file.ext)
@@ -113,19 +113,19 @@ export function buildConfig(): void {
       .forEach((el) =>
         copyFileSync(
           `${projectPath}/config/${target}/${el}`,
-          `${destination}/config/${target}/${basename(el).replace('!!', '')}`
+          `${dist}/config/${target}/${basename(el).replace('!!', '')}`
         )
       );
   });
 
   // generating VAPID keys for push notifications (should be generated only once)
-  let gcloudConfig = require(`${destination}/config/server/gcloud`);
+  let gcloudConfig = require(`${dist}/config/server/gcloud`);
   let GCM = gcloudConfig.GCM,
-    vapidPath = resolve(`${destination}/config/server/vapid.json`);
+    vapidPath = resolve(`${dist}/config/server/vapid.json`);
   if (GCM && GCM.id && !existsSync(vapidPath)) {
     console.log('> generating VAPID keys');
     // set .env to be used by config/server/*.js (.env is created in buildConfig())
-    dotEnv.config({ path: `${destination}/config/server/.env` });
+    dotEnv.config({ path: `${dist}/config/server/.env` });
     let vapidKeys = webPush.generateVAPIDKeys();
     write(vapidPath, vapidKeys);
   }
@@ -171,14 +171,14 @@ export function buildPackage(): void {
     homepage: rootPkg.homepage,
     funding: rootPkg.funding,
   };
-  write(`${destination}/package.json`, pkg);
+  write(`${dist}/package.json`, pkg);
 
   // copy the required files to build the container image
   [`${projectPath}/Dockerfile`, `${rootPath}/package-lock.json`].forEach(
-    (file) => copyFileSync(file, `${destination}/${basename(file)}`)
+    (file) => copyFileSync(file, `${dist}/${basename(file)}`)
   );
   // todo: compile ./deploy to $dist by webpack
-  // change $projectPath/package.scripts.deploy to execute $destination/package.scripts.deploy
+  // change $projectPath/package.scripts.deploy to execute $dist/package.scripts.deploy
 
   webpack(
     webpackMerge(baseConfig, {
@@ -186,7 +186,7 @@ export function buildPackage(): void {
         deploy: resolve(__dirname, './deploy.ts'),
       },
       output: {
-        path: destination,
+        path: dist,
         libraryTarget: 'commonjs',
       },
       resolve: {
@@ -208,10 +208,7 @@ export function buildPackage(): void {
     if (!err) {
       // call the default function, i.e deploy()
       // todo: pass options from cli (see ./index.ts -> runTask())
-      appendFileSync(
-        `${destination}/deploy.js`,
-        '\n\nmodule.exports.default();'
-      );
+      appendFileSync(`${dist}/deploy.js`, '\n\nmodule.exports.default();');
     }
   });
 }
@@ -229,11 +226,11 @@ export function optimize() {
   // todo: minify js files using terser
 
   /*['browser', 'server'].forEach((dir) =>
-    readdirSync(`${destination}/${dir}`)
+    readdirSync(`${dist}/${dir}`)
       // todo:
       .filter((el) => el.endsWith('.js'))
       .forEach((el) => {
-        let path = `${destination}/${dir}/${el}`;
+        let path = `${dist}/${dir}/${el}`;
         console.log(`> minifying: ${dir}/${el}`);
         execSync(
           `terser ${path} --output ${path} --compress --mangle --keep-fnames`
@@ -243,7 +240,7 @@ export function optimize() {
 
   // transform index.html (lazy-load resources, and move them after 'load' event)
   // DOMParser() is not available in nodejs, so we use `jsdom`
-  let browserPath = `${destination}/browser`,
+  let browserPath = `${dist}/browser`,
     indexPath = `${browserPath}/index.html`,
     content = read(indexPath) as string;
 
@@ -323,7 +320,7 @@ export function optimize() {
   // the hashes for modified files is changed, so we need to rebuild ngsw-config with the new hashes
   // install @angular/service-worker to use ngsw-config (or use npx ngsw-config)
   // paths are relative to CWD
-  // todo: using the absolute (`${destination}/browser`) path causes error
+  // todo: using the absolute (`${dist}/browser`) path causes error
   execSync(
     `ngsw-config ../../dist/social-control/browser browser/ngsw-config.json`
   );
