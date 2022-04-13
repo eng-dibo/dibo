@@ -5,7 +5,7 @@ an open-source CMS platform built with [Angular](https://angular.io/).
 - SEO friendly
 - uses the most recent technologies to provide a very fast and lite platform.
 - support multi-languages sites.
-- automatic deployment to many platform including [Firebase](firebase.google.com), [Heroku](heroku.com), and other.
+- automatic deployment to many platform including [Google cloud platform](cloud.google.com) [Firebase](firebase.google.com), [Heroku](heroku.com), and other.
 - supports serverless mode, ssr mode, prerendering.
 - uses PWA to create a native-like apps that works in mobiles and pcs.
 - supports push notifications.
@@ -39,16 +39,19 @@ read our [contributing guide](https://github.com/eng-dibo/dibo/blob/main/CONTRIB
 
 - check out these useful packages that created by [@engineers organization](https://www.npmjs.com/org/engineers)
 
+  - [cache](https://github.com/eng-dibo/dibo/tree/main/packages/cache)
   - [databases](https://github.com/eng-dibo/dibo/tree/main/packages/databases)
   - [dibo-system](https://github.com/eng-dibo/dibo/tree/main/packages/dibo-system)
+  - [dom](https://github.com/eng-dibo/dibo/tree/main/packages/dom)
   - [express-redirect-middleware](https://github.com/eng-dibo/dibo/tree/main/packages/express-redirect-middleware)
   - [firebase-admin](https://github.com/eng-dibo/dibo/tree/main/packages/firebase-admin)
+  - [gcloud-storage](https://github.com/eng-dibo/dibo/tree/main/packages/gcloud-storage)
   - [graphics](https://github.com/eng-dibo/dibo/tree/main/packages/graphics)
   - [javascript](https://github.com/eng-dibo/dibo/tree/main/packages/javascript)
+  - [lazy-load](https://github.com/eng-dibo/dibo/tree/main/packages/lazy-load)
   - [mongoose](https://github.com/eng-dibo/dibo/tree/main/packages/mongoose)
   - [ngx-content-core](https://github.com/eng-dibo/dibo/tree/main/packages/ngx-content-core)
   - [ngx-content-view-mat](https://github.com/eng-dibo/dibo/tree/main/packages/ngx-content-view-mat)
-  - [ngx-forms](https://github.com/eng-dibo/dibo/tree/main/packages/ngx-forms)
   - [ngx-universal-express](https://github.com/eng-dibo/dibo/tree/main/packages/ngx-universal-express)
   - [ngx-utils](https://github.com/eng-dibo/dibo/tree/main/packages/ngx-utils)
   - [nodejs](https://github.com/eng-dibo/dibo/tree/main/packages/nodejs)

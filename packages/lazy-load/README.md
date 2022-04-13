@@ -1,5 +1,7 @@
 # @engineers/lazy-load
 
+lazy load images or any element has 'srs' or 'srcset' attribute
+
 ## install
 
 install the package and it's peer dependencies:
@@ -26,16 +28,19 @@ read our [contributing guide](https://github.com/eng-dibo/dibo/blob/main/CONTRIB
 
 - check out these useful packages that created by [@engineers organization](https://www.npmjs.com/org/engineers)
 
+  - [cache](https://github.com/eng-dibo/dibo/tree/main/packages/cache)
   - [databases](https://github.com/eng-dibo/dibo/tree/main/packages/databases)
   - [dibo-system](https://github.com/eng-dibo/dibo/tree/main/packages/dibo-system)
+  - [dom](https://github.com/eng-dibo/dibo/tree/main/packages/dom)
   - [express-redirect-middleware](https://github.com/eng-dibo/dibo/tree/main/packages/express-redirect-middleware)
   - [firebase-admin](https://github.com/eng-dibo/dibo/tree/main/packages/firebase-admin)
+  - [gcloud-storage](https://github.com/eng-dibo/dibo/tree/main/packages/gcloud-storage)
   - [graphics](https://github.com/eng-dibo/dibo/tree/main/packages/graphics)
   - [javascript](https://github.com/eng-dibo/dibo/tree/main/packages/javascript)
+  - [lazy-load](https://github.com/eng-dibo/dibo/tree/main/packages/lazy-load)
   - [mongoose](https://github.com/eng-dibo/dibo/tree/main/packages/mongoose)
   - [ngx-content-core](https://github.com/eng-dibo/dibo/tree/main/packages/ngx-content-core)
   - [ngx-content-view-mat](https://github.com/eng-dibo/dibo/tree/main/packages/ngx-content-view-mat)
-  - [ngx-forms](https://github.com/eng-dibo/dibo/tree/main/packages/ngx-forms)
   - [ngx-universal-express](https://github.com/eng-dibo/dibo/tree/main/packages/ngx-universal-express)
   - [ngx-utils](https://github.com/eng-dibo/dibo/tree/main/packages/ngx-utils)
   - [nodejs](https://github.com/eng-dibo/dibo/tree/main/packages/nodejs)

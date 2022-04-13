@@ -1,5 +1,6 @@
 {
   "name": "@engineers/ngx-universal-express",
+  "version": "0.0.1",
   "description": "convert Angular projects into universal apps using `expressjs`",
   "dependencies": {
     "@nguniversal/express-engine": "^13.0.1",
@@ -30,5 +31,8 @@
       "type": "patreon",
       "url": "https://www.patreon.com/GoogleDev"
     }
-  ]
+  ],
+  "scripts": {
+    "build": "tsc"
+  }
 }

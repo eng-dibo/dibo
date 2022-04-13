@@ -26,5 +26,8 @@
       "type": "patreon",
       "url": "https://www.patreon.com/GoogleDev"
     }
-  ]
+  ],
+  "scripts": {
+    "build": "tsc"
+  }
 }

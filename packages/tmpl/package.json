@@ -2,7 +2,9 @@
   "name": "@engineers/tmpl",
   "version": "0.0.1",
   "description": "generate files from templates using ejs engine",
-  "scripts": {},
+  "scripts": {
+    "build": "tsc"
+  },
   "private": false,
   "keywords": [
     "ejs",

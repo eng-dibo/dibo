@@ -1,5 +1,6 @@
 {
   "name": "@engineers/express-redirect-middleware",
+  "version": "0.0.1",
   "description": "an express middleware to redirect the request, add https, www. to improve SEO",
   "keywords": [
     "express",
@@ -28,5 +29,8 @@
       "type": "patreon",
       "url": "https://www.patreon.com/GoogleDev"
     }
-  ]
+  ],
+  "scripts": {
+    "build": "tsc"
+  }
 }

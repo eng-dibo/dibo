@@ -1,5 +1,6 @@
 {
   "name": "@engineers/ngx-utils",
+  "version": "0.0.1",
   "description": "tools for Angular",
   "dependencies": {
     "jest-preset-angular": "11.1.1",
@@ -36,5 +37,8 @@
       "type": "patreon",
       "url": "https://www.patreon.com/GoogleDev"
     }
-  ]
+  ],
+  "scripts": {
+    "build": "tsc"
+  }
 }

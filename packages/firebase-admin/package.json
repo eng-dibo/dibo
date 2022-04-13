@@ -1,5 +1,6 @@
 {
   "name": "@engineers/firebase-admin",
+  "version": "0.0.1",
   "description": "tools for firebase-admin SDK",
   "keywords": [
     "firebase",
@@ -37,5 +38,8 @@
       "type": "patreon",
       "url": "https://www.patreon.com/GoogleDev"
     }
-  ]
+  ],
+  "scripts": {
+    "build": "tsc"
+  }
 }

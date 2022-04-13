@@ -1,5 +1,6 @@
 {
   "name": "@engineers/ngx-content-core",
+  "version": "0.0.1",
   "description": "tools for managing the content in Angular.",
   "peerDependencies": {
     "@angular/core": "^13.1.2",
@@ -33,5 +34,8 @@
       "type": "patreon",
       "url": "https://www.patreon.com/GoogleDev"
     }
-  ]
+  ],
+  "scripts": {
+    "build": "tsc"
+  }
 }

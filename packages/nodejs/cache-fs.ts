@@ -1,10 +1,6 @@
 import cache, { CacheOptions } from '@engineers/cache';
 import { PathLike } from 'node:fs';
-import {
-  resolve,
-  ReadOptions,
-  read as readSync,
-} from './fs-sync';
+import { resolve, ReadOptions, read as readSync } from './fs-sync';
 import { write } from './fs';
 
 export interface CacheFSOptions extends CacheOptions, ReadOptions {}

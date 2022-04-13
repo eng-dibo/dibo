@@ -1,5 +1,6 @@
 {
   "name": "@engineers/ngx-content-view-mat",
+  "version": "0.0.1",
   "description": "renders an object into a content using `material design`, built on top of `ngx-content-core`",
   "keywords": [
     "angular",
@@ -46,5 +47,8 @@
       "type": "patreon",
       "url": "https://www.patreon.com/GoogleDev"
     }
-  ]
+  ],
+  "scripts": {
+    "build": "tsc"
+  }
 }

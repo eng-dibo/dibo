@@ -1,4 +1,6 @@
 {
+  "name": "@engineers/lazy-load",
+  "version": "0.0.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/eng-dibo/dibo.git"
@@ -20,12 +22,13 @@
       "url": "https://www.patreon.com/GoogleDev"
     }
   ],
-  "name": "@engineers/lazy-load",
   "description": "lazy load images or any element has 'srs' or 'srcset' attribute",
-  "version": "0.0.1",
   "private": false,
   "peerDependencies": {
     "@angular/core": "^13.1.2",
     "@angular/common": "^13.1.2"
+  },
+  "scripts": {
+    "build": "tsc"
   }
 }

@@ -1,5 +1,6 @@
 {
   "name": "@engineers/nodejs",
+  "version": "0.0.1",
   "description": "nodejs utils",
   "keywords": [
     "nodejs",
@@ -33,5 +34,8 @@
   ],
   "devDependencies": {
     "@types/content-type": "^1.1.5"
+  },
+  "scripts": {
+    "build": "tsc"
   }
 }

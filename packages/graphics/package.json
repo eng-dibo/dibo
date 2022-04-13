@@ -1,5 +1,6 @@
 {
   "name": "@engineers/graphics",
+  "version": "0.0.1",
   "description": "create and modify images via sharp",
   "keywords": [
     "images",
@@ -31,5 +32,8 @@
       "type": "patreon",
       "url": "https://www.patreon.com/GoogleDev"
     }
-  ]
+  ],
+  "scripts": {
+    "build": "tsc"
+  }
 }
