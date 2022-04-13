@@ -168,6 +168,7 @@ function addTsconfig(): Promise<void> {
       baseUrl: '.',
       outDir: './dist',
       allowJs: false,
+      paths: { '~~*': ['../../*'], '@engineers/*': ['../../packages/*'] },
     },
   });
 
