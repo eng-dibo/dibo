@@ -1,8 +1,8 @@
 import { getEntries, read, write } from '@engineers/nodejs/fs';
 import { read as readSync } from '@engineers/nodejs/fs-sync';
 import { filterObjectByKeys, Obj } from '@engineers/javascript/objects';
-import { basename, dirname, resolve } from 'path';
-import { existsSync } from 'fs';
+import { basename, dirname, resolve } from 'node:path';
+import { existsSync, writeFileSync } from 'node:fs';
 import ejs from 'ejs';
 
 let rootPath = resolve(__dirname, '..'),
@@ -31,7 +31,9 @@ export default function generate(
     let { target, ...pkg } = options;
     return create(name, target, pkg);
   } else {
-    return updatePackages().then(() => updateReadMe());
+    return updatePackages().then(() =>
+      Promise.all([updateReadMe(), addTsconfig()])
+    );
   }
 }
 
@@ -81,10 +83,10 @@ function create(
  * paths are relative to cwd()
  */
 function updatePackages(): Promise<void> {
-  let packages = /^(?!node_modules).+?\/package\.json$/;
-
   return Promise.all(
-    ['./packages', './projects'].map((dir) => getEntries(dir, packages))
+    ['./packages', './projects'].map((dir) =>
+      getEntries(dir, /package\.json$/, 1)
+    )
   )
     .then((entries: Array<Array<string>>) =>
       // merge arrays
@@ -95,13 +97,19 @@ function updatePackages(): Promise<void> {
         entries.map((entry: string) => {
           return (
             read(entry)
-              .then((content) =>
-                Object.assign(
-                  { name: '@engineers/' + basename(dirname(entry)) },
+              .then((content) => {
+                let pkg = Object.assign(
+                  {
+                    name: '@engineers/' + basename(dirname(entry)),
+                    version: '0.0.1',
+                  },
                   content,
                   rootData
-                )
-              )
+                );
+                pkg.scripts = pkg.scripts || {};
+                pkg.scripts.build = pkg.scripts.build || 'tsc';
+                return pkg;
+              })
               // file will be linted on commit
               .then((content) => write(entry, content))
           );
@@ -151,4 +159,27 @@ function updateReadMe(): Promise<void> {
       )
     )
     .then();
+}
+
+function addTsconfig(): Promise<void> {
+  let tsconfig = JSON.stringify({
+    extends: '../../tsconfig.json',
+    compilerOptions: {
+      baseUrl: '.',
+      outDir: './dist',
+      allowJs: false,
+    },
+  });
+
+  return Promise.all(
+    ['packages', 'projects'].map((dir) => getEntries(dir, 'dirs', 0))
+  )
+    .then((entries: Array<Array<string>>) =>
+      entries[0]
+        .concat(entries[1])
+        .filter((dir) => !existsSync(`${dir}/tsconfig.json`))
+    )
+    .then((dirs) =>
+      dirs.map((dir) => writeFileSync(`${dir}/tsconfig.json`, tsconfig))
+    );
 }
