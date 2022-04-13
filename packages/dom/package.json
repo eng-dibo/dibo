@@ -2,6 +2,9 @@
   "name": "@engineers/dom",
   "version": "0.0.1",
   "release": "semantic-release -e semantic-release-monorepo",
+  "files": [
+    "dist"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/eng-dibo/dibo.git"
@@ -26,7 +29,8 @@
   "private": false,
   "description": "browser's DOM interpolation tools",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "_publish": "npm run build && npm publish --access=public"
   },
   "devDependencies": {
     "semantic-release": "^19.0.2",

@@ -2,6 +2,9 @@
   "name": "@engineers/gcloud-storage",
   "version": "0.0.1",
   "release": "semantic-release -e semantic-release-monorepo",
+  "files": [
+    "dist"
+  ],
   "description": "google cloud storage",
   "private": false,
   "dependencies": {
@@ -29,7 +32,8 @@
     }
   ],
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "_publish": "npm run build && npm publish --access=public"
   },
   "devDependencies": {
     "semantic-release": "^19.0.2",

@@ -2,6 +2,9 @@
   "name": "@engineers/lazy-load",
   "version": "0.0.1",
   "release": "semantic-release -e semantic-release-monorepo",
+  "files": [
+    "dist"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/eng-dibo/dibo.git"
@@ -30,7 +33,8 @@
     "@angular/core": "^13.1.2"
   },
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "_publish": "npm run build && npm publish --access=public"
   },
   "devDependencies": {
     "semantic-release": "^19.0.2",

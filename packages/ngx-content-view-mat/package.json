@@ -2,6 +2,9 @@
   "name": "@engineers/ngx-content-view-mat",
   "version": "0.0.1",
   "release": "semantic-release -e semantic-release-monorepo",
+  "files": [
+    "dist"
+  ],
   "description": "renders an object into a content using `material design`, built on top of `ngx-content-core`",
   "keywords": [
     "angular",
@@ -50,7 +53,8 @@
     }
   ],
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "_publish": "npm run build && npm publish --access=public"
   },
   "devDependencies": {
     "semantic-release": "^19.0.2",

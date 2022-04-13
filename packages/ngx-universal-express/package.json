@@ -2,6 +2,9 @@
   "name": "@engineers/ngx-universal-express",
   "version": "0.0.1",
   "release": "semantic-release -e semantic-release-monorepo",
+  "files": [
+    "dist"
+  ],
   "description": "convert Angular projects into universal apps using `expressjs`",
   "dependencies": {
     "@nguniversal/express-engine": "^13.0.1",
@@ -34,7 +37,8 @@
     }
   ],
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "_publish": "npm run build && npm publish --access=public"
   },
   "devDependencies": {
     "semantic-release": "^19.0.2",

@@ -2,6 +2,9 @@
   "name": "ngx-cms",
   "version": "0.0.1",
   "release": "semantic-release -e semantic-release-monorepo",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "start": "npm run build && npm run serve",
     "start:dev": "npm run build:dev && npm run serve:dev",
@@ -22,7 +25,8 @@
     "setup": "npm run task -- setup",
     "postinstall": "",
     "kill-port:linux": "fuser -k 4200/tcp",
-    "declarations": "npx -p typescript tsc config/**/*.js --declaration --allowJs --emitDeclarationOnly --esModuleInterop"
+    "declarations": "npx -p typescript tsc config/**/*.js --declaration --allowJs --emitDeclarationOnly --esModuleInterop",
+    "_publish": "npm run build && npm publish --access=public"
   },
   "private": false,
   "main": "../../dist/ngx-cms/server/express.js",

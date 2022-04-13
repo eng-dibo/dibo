@@ -2,6 +2,9 @@
   "name": "@engineers/express-redirect-middleware",
   "version": "0.0.1",
   "release": "semantic-release -e semantic-release-monorepo",
+  "files": [
+    "dist"
+  ],
   "description": "an express middleware to redirect the request, add https, www. to improve SEO",
   "keywords": [
     "express",
@@ -32,7 +35,8 @@
     }
   ],
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "_publish": "npm run build && npm publish --access=public"
   },
   "devDependencies": {
     "semantic-release": "^19.0.2",

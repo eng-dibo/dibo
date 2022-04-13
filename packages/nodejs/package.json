@@ -2,6 +2,9 @@
   "name": "@engineers/nodejs",
   "version": "0.0.1",
   "release": "semantic-release -e semantic-release-monorepo",
+  "files": [
+    "dist"
+  ],
   "description": "nodejs utils",
   "keywords": [
     "nodejs",
@@ -39,6 +42,7 @@
     "semantic-release-monorepo": "^7.0.5"
   },
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "_publish": "npm run build && npm publish --access=public"
   }
 }

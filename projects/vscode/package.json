@@ -2,6 +2,9 @@
   "name": "vscode",
   "version": "0.0.1",
   "release": "semantic-release -e semantic-release-monorepo",
+  "files": [
+    "dist"
+  ],
   "description": "a cloud based visual studio code",
   "scripts": {
     "start": "npm run gcloud:project && npm run gcloud:login && npm run docker:build && npm run docker:push && npm run gcloud:deploy",
@@ -16,7 +19,8 @@
     "kill": "sudo fuser -k 8080/tcp",
     "gcloud:login": "gcloud auth login && gcloud config set project dibo-cloud",
     "gcloud:run": "PORT=8080 && docker run -p 9090:${PORT} -e PORT=${PORT} --rm gcr.io/dibo-cloud/vscode",
-    "build": "tsc"
+    "build": "tsc",
+    "_publish": "npm run build && npm publish --access=public"
   },
   "private": false,
   "devDependencies": {

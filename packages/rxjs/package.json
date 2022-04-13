@@ -2,6 +2,9 @@
   "name": "@engineers/rxjs",
   "version": "0.0.1",
   "release": "semantic-release -e semantic-release-monorepo",
+  "files": [
+    "dist"
+  ],
   "description": "rxjs utils",
   "dependencies": {
     "rxjs": "^7.4.0"
@@ -31,7 +34,8 @@
     }
   ],
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "_publish": "npm run build && npm publish --access=public"
   },
   "devDependencies": {
     "semantic-release": "^19.0.2",
