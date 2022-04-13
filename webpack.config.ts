@@ -43,6 +43,7 @@ let config: Configuration = {
     filename: '[name].js',
     library: undefined,
     libraryTarget: 'commonjs2',
+    clean: true,
   },
   module: {
     // see packages/webpack/native-require.js
