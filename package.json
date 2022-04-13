@@ -18,6 +18,7 @@
     "tasks:build": "webpack --entry=./tasks/index.ts  --output-path=./tasks/tasks~~.js",
     "postinstall": "ngcc",
     "build:packages": "npm run build -w packages",
+    "publish:packages": "npm run _publish -w packages",
     "generate": "npm run task -- generate"
   },
   "lint-staged": {
