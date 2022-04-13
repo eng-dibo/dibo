@@ -38,7 +38,7 @@
     }
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "webpack",
     "_publish": "npm run build && npm publish --access=public"
   },
   "devDependencies": {

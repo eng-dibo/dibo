@@ -7,7 +7,7 @@
   ],
   "description": "generate files from templates using ejs engine",
   "scripts": {
-    "build": "tsc",
+    "build": "webpack",
     "_publish": "npm run build && npm publish --access=public"
   },
   "private": false,
