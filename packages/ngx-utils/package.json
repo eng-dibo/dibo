@@ -7,8 +7,8 @@
     "rxjs": "^7.4.0"
   },
   "peerDependencies": {
-    "@angular/core": "^13.1.2",
     "@angular/common": "^13.1.2",
+    "@angular/core": "^13.1.2",
     "@angular/platform-browser": "^13.1.2",
     "@angular/router": "^13.1.2"
   },
@@ -40,5 +40,9 @@
   ],
   "scripts": {
     "build": "tsc"
+  },
+  "devDependencies": {
+    "semantic-release": "^19.0.2",
+    "semantic-release-monorepo": "^7.0.5"
   }
 }

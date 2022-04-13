@@ -9,8 +9,8 @@
     "resize images"
   ],
   "dependencies": {
-    "sharp": "^0.29.3",
-    "@types/sharp": "^0.29.3"
+    "@types/sharp": "^0.29.3",
+    "sharp": "^0.29.3"
   },
   "repository": {
     "type": "git",
@@ -35,5 +35,9 @@
   ],
   "scripts": {
     "build": "tsc"
+  },
+  "devDependencies": {
+    "semantic-release": "^19.0.2",
+    "semantic-release-monorepo": "^7.0.5"
   }
 }

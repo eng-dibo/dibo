@@ -5,8 +5,8 @@
   "dependencies": {
     "@nguniversal/express-engine": "^13.0.1",
     "express": "^4.17.2",
-    "zone.js": "~0.11.4",
-    "rxjs": "^7.4.0"
+    "rxjs": "^7.4.0",
+    "zone.js": "~0.11.4"
   },
   "peerDependencies": {
     "@angular/common": "^13.1.2"
@@ -34,5 +34,9 @@
   ],
   "scripts": {
     "build": "tsc"
+  },
+  "devDependencies": {
+    "semantic-release": "^19.0.2",
+    "semantic-release-monorepo": "^7.0.5"
   }
 }

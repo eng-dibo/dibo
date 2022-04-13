@@ -8,10 +8,10 @@
     "database"
   ],
   "dependencies": {
+    "@types/shortid": "^0.0.29",
     "mongodb": "^4.4.0",
     "mongoose": "^6.1.6",
-    "shortid": "^2.2.8",
-    "@types/shortid": "^0.0.29"
+    "shortid": "^2.2.8"
   },
   "repository": {
     "type": "git",
@@ -36,5 +36,9 @@
   ],
   "scripts": {
     "build": "tsc"
+  },
+  "devDependencies": {
+    "semantic-release": "^19.0.2",
+    "semantic-release-monorepo": "^7.0.5"
   }
 }

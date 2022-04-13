@@ -33,7 +33,9 @@
     }
   ],
   "devDependencies": {
-    "@types/content-type": "^1.1.5"
+    "@types/content-type": "^1.1.5",
+    "semantic-release": "^19.0.2",
+    "semantic-release-monorepo": "^7.0.5"
   },
   "scripts": {
     "build": "tsc"

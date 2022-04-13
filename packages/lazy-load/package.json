@@ -25,10 +25,14 @@
   "description": "lazy load images or any element has 'srs' or 'srcset' attribute",
   "private": false,
   "peerDependencies": {
-    "@angular/core": "^13.1.2",
-    "@angular/common": "^13.1.2"
+    "@angular/common": "^13.1.2",
+    "@angular/core": "^13.1.2"
   },
   "scripts": {
     "build": "tsc"
+  },
+  "devDependencies": {
+    "semantic-release": "^19.0.2",
+    "semantic-release-monorepo": "^7.0.5"
   }
 }

@@ -10,7 +10,6 @@
     "ejs",
     "template engine"
   ],
-  "peerDependencies": {},
   "repository": {
     "type": "git",
     "url": "https://github.com/eng-dibo/dibo.git"
@@ -32,5 +31,9 @@
       "type": "patreon",
       "url": "https://www.patreon.com/GoogleDev"
     }
-  ]
+  ],
+  "devDependencies": {
+    "semantic-release": "^19.0.2",
+    "semantic-release-monorepo": "^7.0.5"
+  }
 }
