@@ -103,12 +103,20 @@ function updatePackages(): Promise<void> {
                     name: '@engineers/' + basename(dirname(entry)),
                     version: '0.0.1',
                     release: 'semantic-release -e semantic-release-monorepo',
+                    // include only "dist" folder when publishing to npm
+                    // in addition to package.json and readme.md
+                    // the same as tsconfig.compilerOptions.outDir
+                    files: ['dist'],
                   },
                   content,
                   rootData
                 );
                 pkg.scripts = pkg.scripts || {};
                 pkg.scripts.build = pkg.scripts.build || 'tsc';
+                pkg.scripts._publish =
+                  pkg.scripts._publish ||
+                  'npm run build && npm publish --access=public';
+
                 return pkg;
               })
               // file will be linted on commit
