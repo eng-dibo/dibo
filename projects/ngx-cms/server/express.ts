@@ -1,10 +1,7 @@
 // database and storage systems should be separated from the server logic
 // so the developer can change their implementation easily
 
-import {
-  server as expressServer,
-  run,
-} from '@engineers/ngx-universal-express/express';
+import { server as expressServer, run } from '@engineers/ngx-universal-express';
 import { AppServerModule } from './main';
 import { json as jsonParser, urlencoded as urlParser } from 'body-parser';
 import cors from 'cors';
