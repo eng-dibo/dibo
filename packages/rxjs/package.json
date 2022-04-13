@@ -1,6 +1,7 @@
 {
   "name": "@engineers/rxjs",
   "version": "0.0.1",
+  "release": "semantic-release -e semantic-release-monorepo",
   "description": "rxjs utils",
   "dependencies": {
     "rxjs": "^7.4.0"

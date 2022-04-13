@@ -1,6 +1,7 @@
 {
   "name": "@engineers/firebase-admin",
   "version": "0.0.1",
+  "release": "semantic-release -e semantic-release-monorepo",
   "description": "tools for firebase-admin SDK",
   "keywords": [
     "firebase",

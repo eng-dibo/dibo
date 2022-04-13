@@ -1,6 +1,7 @@
 {
   "name": "@engineers/javascript",
   "version": "0.0.1",
+  "release": "semantic-release -e semantic-release-monorepo",
   "description": "javascript utils",
   "keywords": [
     "javascript",

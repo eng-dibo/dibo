@@ -1,6 +1,7 @@
 {
   "name": "@engineers/ngx-content-core",
   "version": "0.0.1",
+  "release": "semantic-release -e semantic-release-monorepo",
   "description": "tools for managing the content in Angular.",
   "peerDependencies": {
     "@angular/core": "^13.1.2",

@@ -1,6 +1,7 @@
 {
   "name": "@engineers/lazy-load",
   "version": "0.0.1",
+  "release": "semantic-release -e semantic-release-monorepo",
   "repository": {
     "type": "git",
     "url": "https://github.com/eng-dibo/dibo.git"

@@ -1,6 +1,7 @@
 {
   "name": "@engineers/express-redirect-middleware",
   "version": "0.0.1",
+  "release": "semantic-release -e semantic-release-monorepo",
   "description": "an express middleware to redirect the request, add https, www. to improve SEO",
   "keywords": [
     "express",

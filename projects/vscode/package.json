@@ -1,6 +1,7 @@
 {
   "name": "vscode",
   "version": "0.0.1",
+  "release": "semantic-release -e semantic-release-monorepo",
   "description": "a cloud based visual studio code",
   "scripts": {
     "start": "npm run gcloud:project && npm run gcloud:login && npm run docker:build && npm run docker:push && npm run gcloud:deploy",

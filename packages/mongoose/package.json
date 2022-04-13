@@ -1,6 +1,7 @@
 {
   "name": "@engineers/mongoose",
   "version": "0.0.1",
+  "release": "semantic-release -e semantic-release-monorepo",
   "description": "automates most of mongoose work",
   "keywords": [
     "mongoose",

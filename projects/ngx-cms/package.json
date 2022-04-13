@@ -1,6 +1,7 @@
 {
   "name": "ngx-cms",
   "version": "0.0.1",
+  "release": "semantic-release -e semantic-release-monorepo",
   "scripts": {
     "start": "npm run build && npm run serve",
     "start:dev": "npm run build:dev && npm run serve:dev",

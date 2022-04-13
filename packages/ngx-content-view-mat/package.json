@@ -1,6 +1,7 @@
 {
   "name": "@engineers/ngx-content-view-mat",
   "version": "0.0.1",
+  "release": "semantic-release -e semantic-release-monorepo",
   "description": "renders an object into a content using `material design`, built on top of `ngx-content-core`",
   "keywords": [
     "angular",

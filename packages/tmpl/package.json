@@ -1,6 +1,7 @@
 {
   "name": "@engineers/tmpl",
   "version": "0.0.1",
+  "release": "semantic-release -e semantic-release-monorepo",
   "description": "generate files from templates using ejs engine",
   "scripts": {
     "build": "tsc"

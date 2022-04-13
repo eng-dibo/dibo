@@ -1,6 +1,7 @@
 {
   "name": "@engineers/databases",
   "version": "0.0.1",
+  "release": "semantic-release -e semantic-release-monorepo",
   "private": false,
   "description": "universal databases operations",
   "repository": {

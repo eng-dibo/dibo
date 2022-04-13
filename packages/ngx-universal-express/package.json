@@ -1,6 +1,7 @@
 {
   "name": "@engineers/ngx-universal-express",
   "version": "0.0.1",
+  "release": "semantic-release -e semantic-release-monorepo",
   "description": "convert Angular projects into universal apps using `expressjs`",
   "dependencies": {
     "@nguniversal/express-engine": "^13.0.1",

@@ -1,6 +1,7 @@
 {
   "name": "@engineers/gcloud-storage",
   "version": "0.0.1",
+  "release": "semantic-release -e semantic-release-monorepo",
   "description": "google cloud storage",
   "private": false,
   "dependencies": {

@@ -1,6 +1,7 @@
 {
   "name": "@engineers/webpack",
   "version": "1.0.0",
+  "release": "semantic-release -e semantic-release-monorepo",
   "private": false,
   "description": "webpack utils and plugins",
   "peerDependencies": {

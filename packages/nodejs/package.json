@@ -1,6 +1,7 @@
 {
   "name": "@engineers/nodejs",
   "version": "0.0.1",
+  "release": "semantic-release -e semantic-release-monorepo",
   "description": "nodejs utils",
   "keywords": [
     "nodejs",

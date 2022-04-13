@@ -1,6 +1,7 @@
 {
   "name": "@engineers/cache",
   "version": "0.0.1",
+  "release": "semantic-release -e semantic-release-monorepo",
   "description": "a cache system, supporting any cache location",
   "private": false,
   "repository": {
