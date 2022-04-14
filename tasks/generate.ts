@@ -243,7 +243,7 @@ export function addSemanticReleaseConfig(
   dirs?: string[] | Promise<string[]>
 ): Promise<void> {
   let content = `
-     let = require("../../release.config.js");
+     let baseConfig= require("../../release.config.js");
      module.exports = baseConfig;
 `;
 
