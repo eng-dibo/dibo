@@ -113,8 +113,6 @@ export function updatePackages(): Promise<void> {
                   {
                     name: '@engineers/' + basename(dirname(entry)),
                     version: '0.0.1',
-                    release: 'semantic-release',
-                    'release:local': 'semantic-release --no-ci',
                     // include only "dist" folder when publishing to npm
                     // in addition to package.json and readme.md
                     // the same as tsconfig.compilerOptions.outDir
@@ -123,11 +121,16 @@ export function updatePackages(): Promise<void> {
                   content,
                   rootData
                 );
-                pkg.scripts = pkg.scripts || {};
-                pkg.scripts.build = pkg.scripts.build || 'webpack';
-                pkg.scripts._publish =
-                  pkg.scripts._publish ||
-                  'npm run build && npm publish --access=public';
+
+                pkg.scripts = Object.assign(
+                  {
+                    build: 'webpack',
+                    _publish: 'npm run build && npm publish --access=public',
+                    release: 'semantic-release',
+                    'release:local': 'semantic-release --no-ci',
+                  },
+                  pkg.scripts || {}
+                );
 
                 return pkg;
               })
