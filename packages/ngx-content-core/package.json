@@ -2,6 +2,7 @@
   "name": "@engineers/ngx-content-core",
   "version": "0.0.1",
   "release": "semantic-release -e semantic-release-monorepo",
+  "release:local": "semantic-release --no-ci",
   "files": [
     "dist"
   ],
