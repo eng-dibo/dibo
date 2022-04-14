@@ -5,12 +5,15 @@
     "dist"
   ],
   "scripts": {
+    "build": "npm run task -- build",
+    "_publish": "npm publish --access=public --dry-run",
+    "release": "semantic-release",
+    "release:local": "semantic-release --no-ci",
     "start": "npm run build && npm run serve",
     "start:dev": "npm run build:dev && npm run serve:dev",
     "deploy": "npm run deploy --prefix=./dist",
     "build:deploy": "npm run build && npm run deploy",
     "task": "ts-node  -r tsconfig-paths/register ./tasks/index.ts",
-    "build": "npm run task -- build",
     "build:dev": "npm run task -- build --mode=development --targets=browser,server,config",
     "build:browser": "npm run task -- build --mode=production --targets=browser",
     "build:browser:dev": "npm run task -- build --mode=development --targets=browser",
@@ -24,10 +27,7 @@
     "setup": "npm run task -- setup",
     "postinstall": "",
     "kill-port:linux": "fuser -k 4200/tcp",
-    "declarations": "npx -p typescript tsc config/**/*.js --declaration --allowJs --emitDeclarationOnly --esModuleInterop",
-    "_publish": "npm publish --access=public --dry-run",
-    "release": "semantic-release",
-    "release:local": "semantic-release --no-ci"
+    "declarations": "npx -p typescript tsc config/**/*.js --declaration --allowJs --emitDeclarationOnly --esModuleInterop"
   },
   "private": false,
   "main": "./dist/server/express.js",
