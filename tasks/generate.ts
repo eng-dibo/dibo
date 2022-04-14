@@ -29,10 +29,22 @@ export default function generate(
 ): Promise<void> {
   if (arguments.length === 2) {
     let { target, ...pkg } = options;
-    return create(name, target, pkg);
+    return create(name, target, pkg).then(() =>
+      Promise.all([
+        updateReadMe([`${rootPath}/${target}/${name}`]),
+        addTsconfig([`${rootPath}/${target}/${name}`]),
+        addWebpackConfig([`${rootPath}/${target}/${name}`]),
+        addSemanticReleaseConfig([`${rootPath}/${target}/${name}`]),
+      ])
+    );
   } else {
     return updatePackages().then(() =>
-      Promise.all([updateReadMe(), addTsconfig(), webpackConfig()])
+      Promise.all([
+        updateReadMe(),
+        addTsconfig(),
+        addWebpackConfig(),
+        addSemanticReleaseConfig(),
+      ])
     );
   }
 }
@@ -40,10 +52,9 @@ export default function generate(
 /**
  * create a new project or package
  * todo: if  package exists update it (i.e use the existing package.json)
- * todo: add jest.config.ts
  * todo: update other readme.md files to add a link to the recently created package
  */
-function create(
+export function create(
   name: string,
   target = 'packages',
   pkgObj: { [key: string]: any }
@@ -82,7 +93,7 @@ function create(
  *
  * paths are relative to cwd()
  */
-function updatePackages(): Promise<void> {
+export function updatePackages(): Promise<void> {
   return Promise.all(
     ['./packages', './projects'].map((dir) =>
       getEntries(dir, /package\.json$/, 1)
@@ -102,7 +113,8 @@ function updatePackages(): Promise<void> {
                   {
                     name: '@engineers/' + basename(dirname(entry)),
                     version: '0.0.1',
-                    release: 'semantic-release -e semantic-release-monorepo',
+                    release: 'semantic-release',
+                    'release:local': 'semantic-release --no-ci',
                     // include only "dist" folder when publishing to npm
                     // in addition to package.json and readme.md
                     // the same as tsconfig.compilerOptions.outDir
@@ -128,11 +140,14 @@ function updatePackages(): Promise<void> {
     .then();
 }
 
-function updateReadMe(): Promise<void> {
-  return Promise.all(
-    ['./packages', './projects'].map((dir) => getEntries(dir, 'dirs', 0))
-  )
-    .then((entries: Array<Array<string>>) => entries[0].concat(entries[1]))
+/**
+ * update readMe.md file in each package
+ * @param dirs packages where to update it's readme.md file
+ */
+export function updateReadMe(
+  dirs?: string[] | Promise<string[]>
+): Promise<void> {
+  return Promise.resolve(dirs || getDirs())
     .then((entries: Array<string>) =>
       Promise.all(
         entries.map((entry: string) => {
@@ -170,8 +185,10 @@ function updateReadMe(): Promise<void> {
     .then();
 }
 
-function addTsconfig(): Promise<void> {
-  let tsconfig = JSON.stringify({
+export function addTsconfig(
+  dirs?: string[] | Promise<string[]>
+): Promise<void> {
+  let content = JSON.stringify({
     extends: '../../tsconfig.json',
     compilerOptions: {
       baseUrl: '.',
@@ -181,21 +198,17 @@ function addTsconfig(): Promise<void> {
     },
   });
 
-  return Promise.all(
-    ['packages', 'projects'].map((dir) => getEntries(dir, 'dirs', 0))
-  )
-    .then((entries: Array<Array<string>>) =>
-      entries[0]
-        .concat(entries[1])
-        .filter((dir) => !existsSync(`${dir}/tsconfig.json`))
-    )
-    .then((dirs) =>
-      dirs.map((dir) => writeFileSync(`${dir}/tsconfig.json`, tsconfig))
-    );
+  return Promise.resolve(dirs || getDirs()).then((dirs) =>
+    dirs
+      .filter((dir) => !existsSync(`${dir}/tsconfig.json`))
+      .map((dir) => writeFileSync(`${dir}/tsconfig.json`, content))
+  );
 }
 
-export function webpackConfig(): Promise<void> {
-  let webpack = `
+export function addWebpackConfig(
+  dirs?: string[] | Promise<string[]>
+): Promise<void> {
+  let content = `
   import webpackMerge from 'webpack-merge';
   import { Configuration } from 'webpack';
   import baseConfig from '~~webpack.config';
@@ -217,15 +230,37 @@ export function webpackConfig(): Promise<void> {
   });
 `;
 
-  return Promise.all(
-    ['packages', 'projects'].map((dir) => getEntries(dir, 'dirs', 0))
-  )
-    .then((entries: Array<Array<string>>) =>
-      entries[0]
-        .concat(entries[1])
-        .filter((dir) => !existsSync(`${dir}/webpack.config.ts`))
-    )
-    .then((dirs) =>
-      dirs.map((dir) => writeFileSync(`${dir}/webpack.config.ts`, webpack))
-    );
+  return Promise.resolve(dirs || getDirs()).then((dirs) =>
+    dirs
+      .filter((dir) => !existsSync(`${dir}/webpack.config.ts`))
+      .map((dir) => writeFileSync(`${dir}/webpack.config.ts`, content))
+  );
 }
+export function addSemanticReleaseConfig(
+  dirs?: string[] | Promise<string[]>
+): Promise<void> {
+  let content = `
+     let = require("../../release.config.js");
+     module.exports = baseConfig;
+`;
+
+  return Promise.resolve(dirs || getDirs()).then((dirs) =>
+    dirs
+      .filter((dir) => !existsSync(`${dir}/release.config.js`))
+      .map((dir) => writeFileSync(`${dir}/release.config.js`, content))
+  );
+}
+
+/**
+ * get a list of packages and/or projects
+ */
+export function getDirs(
+  targets?: string[] = ['./packages', './projects']
+): Promise<Array<string>> {
+  return Promise.all(targets.map((dir) => getEntries(dir, 'dirs', 0))).then(
+    // combine an array of arrays into a single array
+    (results) => results.reduce((acc, current) => acc.concat(current), [])
+  );
+}
+
+// todo: add jest.config.ts
