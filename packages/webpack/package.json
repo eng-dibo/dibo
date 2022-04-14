@@ -1,7 +1,7 @@
 {
   "name": "@engineers/webpack",
   "version": "1.0.0",
-  "release": "semantic-release -e semantic-release-monorepo",
+  "release": "semantic-release",
   "release:local": "semantic-release --no-ci",
   "files": [
     "dist"
