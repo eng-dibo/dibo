@@ -1,15 +1,15 @@
 {
   "name": "@engineers/tmpl",
   "version": "0.0.1",
-  "release": "semantic-release",
-  "release:local": "semantic-release --no-ci",
   "files": [
     "dist"
   ],
   "description": "generate files from templates using ejs engine",
   "scripts": {
     "build": "webpack",
-    "_publish": "npm run build && npm publish --access=public"
+    "_publish": "npm run build && npm publish --access=public",
+    "release": "semantic-release",
+    "release:local": "semantic-release --no-ci"
   },
   "private": false,
   "keywords": [

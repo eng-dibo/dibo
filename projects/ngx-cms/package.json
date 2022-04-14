@@ -1,8 +1,6 @@
 {
   "name": "ngx-cms",
   "version": "0.0.1",
-  "release": "semantic-release",
-  "release:local": "semantic-release --no-ci",
   "files": [
     "dist"
   ],
@@ -27,7 +25,9 @@
     "postinstall": "",
     "kill-port:linux": "fuser -k 4200/tcp",
     "declarations": "npx -p typescript tsc config/**/*.js --declaration --allowJs --emitDeclarationOnly --esModuleInterop",
-    "_publish": "npm publish --access=public --dry-run"
+    "_publish": "npm publish --access=public --dry-run",
+    "release": "semantic-release",
+    "release:local": "semantic-release --no-ci"
   },
   "private": false,
   "main": "./dist/server/express.js",

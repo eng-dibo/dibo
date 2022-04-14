@@ -1,8 +1,6 @@
 {
   "name": "social-control",
   "version": "0.0.1",
-  "release": "semantic-release",
-  "release:local": "semantic-release --no-ci",
   "files": [
     "dist"
   ],
@@ -27,7 +25,9 @@
     "setup": "npm run task -- setup",
     "postinstall": "",
     "kill-port:linux": "fuser -k 4200/tcp",
-    "_publish": "npm publish --access=public --dry-run"
+    "_publish": "npm publish --access=public --dry-run",
+    "release": "semantic-release",
+    "release:local": "semantic-release --no-ci"
   },
   "private": false,
   "main": "./dist/server/express.js",

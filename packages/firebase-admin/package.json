@@ -1,8 +1,6 @@
 {
   "name": "@engineers/firebase-admin",
   "version": "0.0.1",
-  "release": "semantic-release",
-  "release:local": "semantic-release --no-ci",
   "files": [
     "dist"
   ],
@@ -46,7 +44,9 @@
   ],
   "scripts": {
     "build": "webpack",
-    "_publish": "npm run build && npm publish --access=public"
+    "_publish": "npm run build && npm publish --access=public",
+    "release": "semantic-release",
+    "release:local": "semantic-release --no-ci"
   },
   "devDependencies": {
     "semantic-release": "^19.0.2",
