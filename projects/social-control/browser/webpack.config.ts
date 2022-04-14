@@ -12,7 +12,7 @@ let tsConfig = read(resolve(__dirname, 'tsconfig.json'));
 // https://stackoverflow.com/questions/70354709/webpack-externals-for-browser
 let config: Configuration = webpackMerge(baseConfig, {
   output: {
-    path: path: resolve(__dirname, tsConfig.compilerOptions.outDir),
+    path: resolve(__dirname, tsConfig.compilerOptions.outDir),
     filename: '[name].js',
   },
 });
