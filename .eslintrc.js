@@ -26,6 +26,7 @@ module.exports = {
   // including files without extensions such as `Dockerfile`
   // to solve: he extension for the file () is non-standard
   ignorePatterns: ["**/*.*", "**/*"],
+  ignorePath: ".gitignore",
   plugins: [
     "eslint-plugin-import",
     "eslint-plugin-jsdoc",

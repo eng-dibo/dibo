@@ -14,7 +14,6 @@
   "explorer.confirmDelete": false,
   "explorer.decorations.badges": false,
   "git.allowForcePush": true,
-  "tslint.jsEnable": true,
   "editor.codeActionsOnSave": ["source.formatDocument", "source.fixAll.eslint"],
   "angular.enable-strict-mode-prompt": false,
   "js/ts.implicitProjectConfig.experimentalDecorators": true,
