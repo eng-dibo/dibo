@@ -10,7 +10,7 @@
  * export NPM_TOKEN=npm_8Optn***H4x20mwf
  * export GITHUB_TOKEN=ghp_CQX0***16zl
  */
-module.exports = {
+let config = {
   branches: [
     "+([0-9])?(.{+([0-9]),x}).x",
     "main",
@@ -27,7 +27,28 @@ module.exports = {
     "@semantic-release/release-notes-generator",
     "@semantic-release/github",
     "@semantic-release/npm",
+
+    // must be after changelog and npm plugins
+    // example: with @semantic-release/npm.pkgRoot (to sync root package.json with dist/package.json)
+    // https://github.com/semantic-release/npm#examples
+    "@semantic-release/git",
   ],
 
   extends: ["semantic-release-monorepo"],
+};
+module.exports = config;
+
+/**
+ * replaces plugins options, keeping the same order
+ */
+module.exports.replace = function (key, value) {
+  let index = config.plugins.indexOf(key);
+
+  if (~index) {
+    config.plugins[index] = value;
+  } else {
+    config.plugins.push(value);
+  }
+  // for multiple replaces
+  return config;
 };
