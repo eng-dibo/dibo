@@ -185,6 +185,7 @@ export function buildPackage(): void {
       output: {
         path: dist,
         libraryTarget: 'commonjs',
+        clean: false,
       },
       resolve: {
         alias: {
