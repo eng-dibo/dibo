@@ -6,6 +6,7 @@
   ],
   "scripts": {
     "build": "npm run task -- build",
+    "postbuild": "cp package.json dist",
     "_publish": "npm publish --access=public --dry-run",
     "release": "semantic-release",
     "release:local": "semantic-release --no-ci",

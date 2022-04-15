@@ -125,6 +125,7 @@ export function updatePackages(): Promise<void> {
                 pkg.scripts = Object.assign(
                   {
                     build: 'webpack',
+                    postbuild: 'cp package.json dist',
                     _publish: 'npm run build && npm publish --access=public',
                     release: 'semantic-release',
                     'release:local': 'semantic-release --no-ci',
@@ -242,15 +243,20 @@ export function addWebpackConfig(
 export function addSemanticReleaseConfig(
   dirs?: string[] | Promise<string[]>
 ): Promise<void> {
-  let content = `
-     let baseConfig= require("../../release.config.js");
-     module.exports = baseConfig;
-`;
-
   return Promise.resolve(dirs || getDirs()).then((dirs) =>
     dirs
       .filter((dir) => !existsSync(`${dir}/release.config.js`))
-      .map((dir) => writeFileSync(`${dir}/release.config.js`, content))
+      .map((dir) => {
+        let file = `release.${
+          dir.startsWith('projects/') ? 'app' : 'package'
+        }.config.js`;
+
+        let content = `
+          let baseConfig= require("../../${file}");
+          module.exports = baseConfig;
+        `;
+        writeFileSync(`${dir}/release.config.js`, content);
+      })
   );
 }
 

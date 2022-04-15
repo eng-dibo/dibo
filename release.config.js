@@ -20,6 +20,14 @@ module.exports = {
     { name: "beta", prerelease: true },
     { name: "alpha", prerelease: true },
   ],
+  // default plugins
+  // todo: run `npm run build` before publishing via @semantic-release/npm or @semantic-release/githu
+  plugins: [
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator",
+    "@semantic-release/github",
+    "@semantic-release/npm",
+  ],
 
   extends: ["semantic-release-monorepo"],
 };

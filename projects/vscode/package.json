@@ -7,6 +7,7 @@
   "description": "a cloud based visual studio code",
   "scripts": {
     "build": "tsc",
+    "postbuild": "cp package.json dist",
     "_publish": "npm run build && npm publish --access=public",
     "release": "semantic-release",
     "release:local": "semantic-release --no-ci",
