@@ -41,5 +41,9 @@
   "devDependencies": {
     "semantic-release": "^19.0.2",
     "semantic-release-monorepo": "^7.0.5"
+  },
+  "dependencies": {
+    "@engineers/nodejs": "latest",
+    "@engineers/javascript": "latest"
   }
 }

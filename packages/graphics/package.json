@@ -13,7 +13,8 @@
   ],
   "dependencies": {
     "@types/sharp": "^0.29.3",
-    "sharp": "^0.29.3"
+    "sharp": "^0.29.3",
+    "@engineers/nodejs": "latest"
   },
   "repository": {
     "type": "git",

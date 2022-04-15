@@ -9,7 +9,9 @@
     "@nguniversal/express-engine": "^13.0.1",
     "express": "^4.17.2",
     "rxjs": "^7.4.0",
-    "zone.js": "~0.11.4"
+    "zone.js": "~0.11.4",
+    "@engineers/ngx-utils": "latest",
+    "@engineers/nodejs": "latest"
   },
   "peerDependencies": {
     "@angular/common": "^13.1.2"

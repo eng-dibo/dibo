@@ -14,7 +14,10 @@
     "@types/shortid": "^0.0.29",
     "mongodb": "^4.4.0",
     "mongoose": "^6.1.6",
-    "shortid": "^2.2.8"
+    "shortid": "^2.2.8",
+    "@engineers/javascript": "latest",
+    "@engineers/databases": "latest",
+    "@engineers/nodejs": "latest"
   },
   "repository": {
     "type": "git",

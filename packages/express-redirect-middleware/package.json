@@ -10,7 +10,8 @@
     "SEO"
   ],
   "dependencies": {
-    "parse-domain": "^4.1.0"
+    "parse-domain": "^4.1.0",
+    "@engineers/nodejs": "latest"
   },
   "repository": {
     "type": "git",

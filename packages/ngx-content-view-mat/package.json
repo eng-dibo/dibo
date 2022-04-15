@@ -21,7 +21,13 @@
     "ngx-infinite-scroll": "^10.0.1",
     "ngx-quill": "^16.1.1",
     "ngx-sharebuttons": "^9.0.0",
-    "rxjs": "^7.4.0"
+    "rxjs": "^7.4.0",
+    "@engineers/javascript": "latest",
+    "@engineers/ngx-content-core": "latest",
+    "@engineers/ngx-utils": "latest",
+    "@engineers/lazy-load": "latest",
+    "@engineers/rxjs": "latest",
+    "@engineers/nodejs": "latest"
   },
   "peerDependencies": {
     "@angular/cdk": "^13.1.2",
