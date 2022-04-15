@@ -26,7 +26,7 @@ export interface GenerateOptions {
 export default function generate(
   name: string,
   options: GenerateOptions = {}
-): Promise<void> {
+): Promise<(void | void[])[]> {
   if (arguments.length === 2) {
     let { target, ...pkg } = options;
     return create(name, target, pkg).then(() =>
@@ -127,6 +127,9 @@ export function updatePackages(): Promise<void> {
                     build: 'webpack',
                     postbuild: 'cp package.json dist',
                     _publish: 'npm run build && npm publish --access=public',
+                    // build the package just before it is about to be published and released
+                    // no need to build all packages before running `npm run release`
+                    prepublishOnly: 'npm run build',
                     release: 'semantic-release',
                     'release:local': 'semantic-release --no-ci',
                   },
@@ -191,7 +194,7 @@ export function updateReadMe(
 
 export function addTsconfig(
   dirs?: string[] | Promise<string[]>
-): Promise<void> {
+): Promise<void[]> {
   let content = JSON.stringify({
     extends: '../../tsconfig.json',
     compilerOptions: {
@@ -211,7 +214,7 @@ export function addTsconfig(
 
 export function addWebpackConfig(
   dirs?: string[] | Promise<string[]>
-): Promise<void> {
+): Promise<void[]> {
   let content = `
   import webpackMerge from 'webpack-merge';
   import { Configuration } from 'webpack';
@@ -242,7 +245,7 @@ export function addWebpackConfig(
 }
 export function addSemanticReleaseConfig(
   dirs?: string[] | Promise<string[]>
-): Promise<void> {
+): Promise<void[]> {
   return Promise.resolve(dirs || getDirs()).then((dirs) =>
     dirs
       .filter((dir) => !existsSync(`${dir}/release.config.js`))
@@ -264,7 +267,7 @@ export function addSemanticReleaseConfig(
  * get a list of packages and/or projects
  */
 export function getDirs(
-  targets?: string[] = ['./packages', './projects']
+  targets: string[] = ['./packages', './projects']
 ): Promise<Array<string>> {
   return Promise.all(targets.map((dir) => getEntries(dir, 'dirs', 0))).then(
     // combine an array of arrays into a single array
