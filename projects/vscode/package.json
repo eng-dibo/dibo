@@ -9,6 +9,7 @@
     "build": "tsc",
     "postbuild": "cp package.json dist",
     "_publish": "npm run build && npm publish --access=public",
+    "prepublishOnly": "npm run build",
     "release": "semantic-release",
     "release:local": "semantic-release --no-ci",
     "start": "npm run gcloud:project && npm run gcloud:login && npm run docker:build && npm run docker:push && npm run gcloud:deploy",
