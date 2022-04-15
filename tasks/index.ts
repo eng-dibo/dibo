@@ -17,5 +17,6 @@ example:
 */
 import { runTask } from '@engineers/nodejs/process';
 import generate from './generate';
+import link from './link-local-dependencies';
 
-runTask({ generate });
+runTask({ generate, link });

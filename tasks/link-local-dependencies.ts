@@ -1,0 +1,39 @@
+import { getEntries, read, write } from '@engineers/nodejs/fs-sync';
+import { resolve } from 'node:path';
+
+/**
+ * searches for local dependencies in all .ts files of each local package
+ * and adds them to its package.json dependencies
+ * local dependencies are those who live in this monorepo and starts with `@engineers/*`
+ */
+export default function linkLocalDependencies(): void {
+  let rootPath = resolve(__dirname, '..');
+  let packages = getEntries('packages', 'dirs', 0);
+  packages.forEach((packageName) => {
+    let files = getEntries(
+      packageName,
+      (file) => file.endsWith('.ts') && !file.includes('node_modules')
+    );
+
+    files.forEach((file) => {
+      let content = read(resolve(rootPath, file));
+      // pattern: @engineers/ followed by anything except "/", "'" or line break
+      let matches = (content as string).matchAll(
+        / from '(@engineers\/[^\/\n']+)/g
+      );
+
+      let packagePath = resolve(rootPath, `${packageName}/package.json`);
+      let pkg: any = read(packagePath);
+      pkg.dependencies = pkg.dependencies || {};
+
+      [...matches].forEach((match) => {
+        pkg.dependencies[match[1]] = 'latest';
+      });
+
+      // if Promises used, don't write multiple times in parallel to the same package.json
+      // instead save all matches per each packageName in a Set<string>
+      // and then write the final result at once
+      write(packagePath, pkg);
+    });
+  });
+}
