@@ -25,12 +25,18 @@ let config = {
   plugins: [
     "@semantic-release/commit-analyzer",
     "@semantic-release/release-notes-generator",
+    "@semantic-release/changelog",
     "@semantic-release/github",
-    "@semantic-release/npm",
+    // use pkgRoot to flatten the package (i.e put dist contents in the package's root)
+    // when using the option { pkgRoot: 'dist' }, use `@semantic-release/git` to update the source package.json
+    // or use @semantic-release/exec:prepareCmd after it to sync package.json to the root
+    // example: https://github.com/semantic-release/npm#examples
+    // keep it after all other plugins but before `@semantic-release/git` to publish the final changes to npm
+    ["@semantic-release/npm", { pkgRoot: "dist" }],
 
-    // must be after changelog and npm plugins
-    // example: with @semantic-release/npm.pkgRoot (to sync root package.json with dist/package.json)
-    // https://github.com/semantic-release/npm#examples
+    // keep it after all other plugins to commit all changes made by other plugins
+    // todo: set assets to commit all changed files `{ assets: ["**/*.*"] }`
+    // todo: exclude .gitignore contents https://github.com/semantic-release/git/issues/347
     "@semantic-release/git",
   ],
 
@@ -39,16 +45,18 @@ let config = {
 module.exports = config;
 
 /**
- * replaces plugins options, keeping the same order
+ * replaces plugins options, keeping the same order, or add a new one if not existing
  */
 module.exports.replace = function (key, value) {
-  let index = config.plugins.indexOf(key);
+  let index = config.plugins.findIndex((el) => {
+    return typeof el === "string" ? el === key : el[0] === key;
+  });
 
   if (~index) {
     config.plugins[index] = value;
   } else {
     config.plugins.push(value);
   }
-  // for multiple replaces
+  // for chaining multiple replaces i.e: config.replace(..).replace(..)
   return config;
 };
