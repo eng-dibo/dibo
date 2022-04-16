@@ -21,7 +21,7 @@
     "publish:packages": "npm run _publish -w packages",
     "generate": "npm run task -- generate",
     "link": "npm run task -- link",
-    "delete-tags": "git fetch && npm run delete-tags:local && npm run delete-tags:remote",
+    "delete-tags": "git fetch && npm run delete-tags:remote && npm run delete-tags:local",
     "delete-tags:local": "git tag | xargs git tag -d",
     "delete-tags:remote": "git tag |  xargs git push --delete origin"
   },
