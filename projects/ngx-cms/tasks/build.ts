@@ -97,25 +97,22 @@ export function buildConfig(): void {
   ['browser', 'server'].forEach((target) => {
     mkdir([`${dist}/config/${target}`]);
 
-    let files = readdirSync(`${projectPath}/config/${target}`),
-      // user-specific files (i.e file!!.ext, file!!) overrides project files (i.e file.ext)
-      userFiles = files.filter((el) => /!!(\..+)?$/.test(el));
-
-    files
-      .filter(
-        (el) =>
-          // get the corresponding project files to any existing user-specific files
-          !userFiles.map((el) => el.replace('!!', '')).includes(el) &&
-          lstatSync(`${projectPath}/config/${target}/${el}`).isFile()
-        // todo: exclude files used for building (i.e config files)
+    readdirSync(`${projectPath}/config/${target}`).forEach((el) =>
+      copyFileSync(
+        `${projectPath}/config/${target}/${el}`,
+        `${dist}/config/${target}/${basename(el).replace('!!', '')}`
       )
-      .concat(userFiles)
-      .forEach((el) =>
+    );
+
+    // userFiles override original config files
+    if (existsSync(`${projectPath}/config!!/${target}`)) {
+      readdirSync(`${projectPath}/config!!/${target}`).forEach((el) =>
         copyFileSync(
-          `${projectPath}/config/${target}/${el}`,
+          `${projectPath}/config!!/${target}/${el}`,
           `${dist}/config/${target}/${basename(el).replace('!!', '')}`
         )
       );
+    }
   });
 
   // generating VAPID keys for push notifications (should be generated only once)
