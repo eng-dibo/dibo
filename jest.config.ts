@@ -1,6 +1,6 @@
 // https://jestjs.io/docs/cli
 import type { Config } from '@jest/types';
-import { pathsToModuleNameMapper } from 'ts-jest/utils';
+import { pathsToModuleNameMapper } from 'ts-jest';
 import stripJsonComments from 'strip-json-comments';
 import fs from 'fs';
 

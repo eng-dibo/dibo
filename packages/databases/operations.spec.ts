@@ -99,8 +99,8 @@ let operations = {
     operation: 'update',
     database: undefined,
     collection: 'users',
-    portions: [],
-    params: { id: 'selector', data: 'data' },
+    portions: ['data'],
+    params: { id: 'selector' },
   },
   'users/:10?limit=20': {
     operation: 'find',

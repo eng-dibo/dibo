@@ -15,6 +15,8 @@ import { uri as _uri } from './test/config';
 import shortId from 'shortid';
 
 // only run tests if credentials provided
+// add this ip to `network access` in atlas settings
+// the cluster may need to be resumed after long inactivity
 
 let uri = Object.assign({ host: '127.0.0.1', dbName: 'spec' }, _uri);
 

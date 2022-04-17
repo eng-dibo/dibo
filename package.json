@@ -11,6 +11,7 @@
     "lint": "prettier --write . --ignore-path=.gitignore && eslint --fix --config .eslintrc.js --ext .js,.ts --ignore-path=.gitignore",
     "test": "jest",
     "test:all": "npm t -- --coverage --only-changed=false",
+    "test:all:fails": "npm t -- --coverage --only-changed=false --only-failures",
     "release": "semantic-release",
     "release:local": "semantic-release --no-ci",
     "vscode": "export project=$PWD && npm run docker:stop --prefix=projects/vscode && npm run docker:run --prefix=projects/vscode",
