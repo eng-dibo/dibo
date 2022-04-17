@@ -31,7 +31,6 @@
     "kill-port:linux": "fuser -k 4200/tcp",
     "declarations": "npx -p typescript tsc config/**/*.js --declaration --allowJs --emitDeclarationOnly --esModuleInterop"
   },
-  "private": false,
   "main": "./dist/server/express.js",
   "dependencies": {
     "@angular/animations": "^13.1.2",

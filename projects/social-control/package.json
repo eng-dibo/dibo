@@ -31,7 +31,6 @@
     "postinstall": "",
     "kill-port:linux": "fuser -k 4200/tcp"
   },
-  "private": false,
   "main": "./dist/server/express.js",
   "dependencies": {
     "@angular/animations": "^13.1.2",

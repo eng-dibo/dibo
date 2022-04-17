@@ -1,6 +1,6 @@
 # <%= pkg.name %>
 
-<%- about || pkg.description %>
+<%- pkg.description %>
 
 ## install
 
@@ -11,6 +11,13 @@ npm i <%= pkg.name %><%# todo: peerDependencies.toString() %>
 ```
 
 you can build this package and any of our packages yourself from [source](<%= pkg.homepage.replace('#readme','') %>/tree/main/packages)
+
+<% if(details){ %>
+
+## details
+
+<%- details %>
+<% } %>
 
 ## contributing
 
@@ -25,11 +32,18 @@ read our [contributing guide](<%= pkg.homepage.replace('#readme','') %>/blob/mai
 - [<%= el.type %>](<%= el.url %>)<% })
   %>
 
+## apps by `@engineers`
+
+<% entries.filter(entry=>entry.startsWith('projects/')).forEach(entry=>{ %>
+
+- [<%= entry.replace('projects/','') %>](<%= pkg.homepage.replace('#readme','') %>/tree/main/<%= entry %>)
+  <% }) %>
+
 ## useful packages by `@engineers`
 
 - check out these useful packages that created by [@engineers organization](https://www.npmjs.com/org/engineers)
-  <%# todo: packages.forEach() & npm/$packageName %>
-  <% entries.forEach(el=>{
-  if(el.startsWith('projects/')){ return} %>
-  - [<%= el.replace('packages/','') %>](<%= pkg.homepage.replace('#readme','') %>/tree/main/<%= el %>)
-    <% }) %>
+
+<% entries.filter(entry=>entry.startsWith('projects/')).forEach(entry=>{ %>
+
+- [<%= entry.replace('packages/','') %>](https://www.npmjs.com/package/@engineers/<%= entry.replace('packages/','') %>)
+  <% }) %>
