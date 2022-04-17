@@ -1,26 +1,16 @@
-# @engineers/ngx-utils
+# @engineers/updater
 
-tools for Angular
+
 
 ## install
 
 install the package and it's peer dependencies:
 
 ```
-npm i @engineers/ngx-utils
+npm i @engineers/updater
 ```
 
 you can build this package and any of our packages yourself from [source](https://github.com/eng-dibo/dibo/tree/main/packages)
-
-
-
-## details
-
-- dynamically injects a component into the DOM.
-- dynamically loads resources (js, css, images, ...).
-- manages meta tags.
-- manages routes.
-- rxjs.
 
 
 
