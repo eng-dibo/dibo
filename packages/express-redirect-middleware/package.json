@@ -11,7 +11,7 @@
   ],
   "dependencies": {
     "parse-domain": "^4.1.0",
-    "@engineers/nodejs": "latest"
+    "@engineers/nodejs": "0.0.1"
   },
   "repository": {
     "type": "git",

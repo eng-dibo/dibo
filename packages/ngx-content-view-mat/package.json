@@ -22,12 +22,12 @@
     "ngx-quill": "^16.1.1",
     "ngx-sharebuttons": "^9.0.0",
     "rxjs": "^7.4.0",
-    "@engineers/javascript": "latest",
-    "@engineers/ngx-content-core": "latest",
-    "@engineers/ngx-utils": "latest",
-    "@engineers/lazy-load": "latest",
-    "@engineers/rxjs": "latest",
-    "@engineers/nodejs": "latest"
+    "@engineers/javascript": "0.0.1",
+    "@engineers/ngx-content-core": "0.0.1",
+    "@engineers/ngx-utils": "0.0.1",
+    "@engineers/lazy-load": "0.0.1",
+    "@engineers/rxjs": "0.0.1",
+    "@engineers/nodejs": "0.0.1"
   },
   "peerDependencies": {
     "@angular/cdk": "^13.1.2",

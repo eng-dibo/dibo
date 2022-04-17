@@ -15,9 +15,9 @@
     "mongodb": "^4.4.0",
     "mongoose": "^6.1.6",
     "shortid": "^2.2.8",
-    "@engineers/javascript": "latest",
-    "@engineers/databases": "latest",
-    "@engineers/nodejs": "latest"
+    "@engineers/javascript": "0.0.1",
+    "@engineers/databases": "0.0.1",
+    "@engineers/nodejs": "0.0.1"
   },
   "repository": {
     "type": "git",

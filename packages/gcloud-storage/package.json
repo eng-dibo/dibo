@@ -8,7 +8,7 @@
   "private": false,
   "dependencies": {
     "@google-cloud/storage": "^5.19.0",
-    "@engineers/nodejs": "latest"
+    "@engineers/nodejs": "0.0.1"
   },
   "repository": {
     "type": "git",

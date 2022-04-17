@@ -50,8 +50,8 @@
     "semantic-release-monorepo": "^7.0.5"
   },
   "dependencies": {
-    "@engineers/ngx-utils": "latest",
-    "@engineers/javascript": "latest",
-    "@engineers/nodejs": "latest"
+    "@engineers/ngx-utils": "0.0.1",
+    "@engineers/javascript": "0.0.1",
+    "@engineers/nodejs": "0.0.1"
   }
 }

@@ -10,8 +10,8 @@
     "express": "^4.17.2",
     "rxjs": "^7.4.0",
     "zone.js": "~0.11.4",
-    "@engineers/ngx-utils": "latest",
-    "@engineers/nodejs": "latest"
+    "@engineers/ngx-utils": "0.0.1",
+    "@engineers/nodejs": "0.0.1"
   },
   "peerDependencies": {
     "@angular/common": "^13.1.2"

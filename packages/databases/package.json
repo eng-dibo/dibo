@@ -40,7 +40,7 @@
     "semantic-release-monorepo": "^7.0.5"
   },
   "dependencies": {
-    "@engineers/javascript": "latest",
-    "@engineers/nodejs": "latest"
+    "@engineers/javascript": "0.0.1",
+    "@engineers/nodejs": "0.0.1"
   }
 }

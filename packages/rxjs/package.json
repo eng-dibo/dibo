@@ -7,7 +7,7 @@
   "description": "rxjs utils",
   "dependencies": {
     "rxjs": "^7.4.0",
-    "@engineers/nodejs": "latest"
+    "@engineers/nodejs": "0.0.1"
   },
   "keywords": [
     "rxjs"

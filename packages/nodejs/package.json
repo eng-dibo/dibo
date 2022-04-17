@@ -13,9 +13,9 @@
   "dependencies": {
     "content-type": "^1.0.4",
     "strip-json-comments": "^3.1.1",
-    "@engineers/cache": "latest",
-    "@engineers/javascript": "latest",
-    "@engineers/nodejs": "latest"
+    "@engineers/cache": "1.0.0",
+    "@engineers/javascript": "0.0.1",
+    "@engineers/nodejs": "0.0.1"
   },
   "repository": {
     "type": "git",
