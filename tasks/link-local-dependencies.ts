@@ -19,7 +19,7 @@ export default function linkLocalDependencies(): void {
       let content = read(resolve(rootPath, file));
       // pattern: @engineers/ followed by anything except "/", "'" or line break
       let matches = (content as string).matchAll(
-        / from '(@engineers\/[^\/\n']+)/g
+        / from '@engineers\/([^\/\n']+)/g
       );
 
       let packagePath = resolve(rootPath, `${packageName}/package.json`);
@@ -27,7 +27,11 @@ export default function linkLocalDependencies(): void {
       pkg.dependencies = pkg.dependencies || {};
 
       [...matches].forEach((match) => {
-        pkg.dependencies[match[1]] = 'latest';
+        let linkedPkg = read(
+          resolve(rootPath, `packages/${match[1]}/package.json`)
+        ) as any;
+        pkg.dependencies[`@engineers/${match[1]}`] =
+          linkedPkg.version || 'latest';
       });
 
       // if Promises used, don't write multiple times in parallel to the same package.json
