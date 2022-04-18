@@ -1,1 +1,49 @@
-{"name":"@engineers/webpack","version":"1.0.0","private":false,"files":["dist"],"repository":{"type":"git","url":"https://github.com/eng-dibo/dibo.git"},"homepage":"https://github.com/eng-dibo/dibo#readme","bugs":{"url":"https://github.com/eng-dibo/dibo/issues","email":"sh.eldeeb.2010+github@gmail.com"},"license":"MIT","author":"Sherif Eldeeb <sh.eldeeb.2010+github@gmail.com> (https://github.com/eng-dibo)","funding":[{"type":"paypal","url":"https://paypal.me/group99001"},{"type":"patreon","url":"https://www.patreon.com/GoogleDev"}],"description":"webpack utils and plugins","peerDependencies":{"webpack":"^5.66.0"},"scripts":{"build":"webpack","postbuild":"cp package.json dist","_publish":"npm run build && npm publish --access=public","prepublishOnly":"npm run build","release":"semantic-release","release:local":"semantic-release --no-ci"},"devDependencies":{"semantic-release":"^19.0.2","semantic-release-monorepo":"^7.0.5"},"dependencies":{"@engineers/nodejs":"0.0.1","@engineers/javascript":"0.0.1"}}
+{
+  "name": "@engineers/webpack",
+  "version": "1.0.0",
+  "private": false,
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eng-dibo/dibo.git"
+  },
+  "homepage": "https://github.com/eng-dibo/dibo#readme",
+  "bugs": {
+    "url": "https://github.com/eng-dibo/dibo/issues",
+    "email": "sh.eldeeb.2010+github@gmail.com"
+  },
+  "license": "MIT",
+  "author": "Sherif Eldeeb <sh.eldeeb.2010+github@gmail.com> (https://github.com/eng-dibo)",
+  "funding": [
+    {
+      "type": "paypal",
+      "url": "https://paypal.me/group99001"
+    },
+    {
+      "type": "patreon",
+      "url": "https://www.patreon.com/GoogleDev"
+    }
+  ],
+  "description": "webpack utils and plugins",
+  "peerDependencies": {
+    "webpack": "^5.66.0"
+  },
+  "scripts": {
+    "build": "webpack",
+    "postbuild": "cp package.json dist",
+    "_publish": "npm run build && npm publish --access=public",
+    "prepublishOnly": "npm run build",
+    "release": "semantic-release",
+    "release:local": "semantic-release --no-ci"
+  },
+  "devDependencies": {
+    "semantic-release": "^19.0.2",
+    "semantic-release-monorepo": "^7.0.5"
+  },
+  "dependencies": {
+    "@engineers/nodejs": "0.0.1",
+    "@engineers/javascript": "0.0.1"
+  }
+}

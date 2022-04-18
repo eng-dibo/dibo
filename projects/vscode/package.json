@@ -1,1 +1,54 @@
-{"name":"vscode","version":"0.0.1","private":false,"files":["dist"],"repository":{"type":"git","url":"https://github.com/eng-dibo/dibo.git"},"homepage":"https://github.com/eng-dibo/dibo#readme","bugs":{"url":"https://github.com/eng-dibo/dibo/issues","email":"sh.eldeeb.2010+github@gmail.com"},"license":"MIT","author":"Sherif Eldeeb <sh.eldeeb.2010+github@gmail.com> (https://github.com/eng-dibo)","funding":[{"type":"paypal","url":"https://paypal.me/group99001"},{"type":"patreon","url":"https://www.patreon.com/GoogleDev"}],"description":"a cloud based visual studio code","scripts":{"build":"tsc","postbuild":"cp package.json dist","_publish":"npm run build && npm publish --access=public","prepublishOnly":"npm run build","release":"semantic-release","release:local":"semantic-release --no-ci","start":"npm run gcloud:project && npm run gcloud:login && npm run docker:build && npm run docker:push && npm run gcloud:deploy","docker:build":"docker build . --tag=gcr.io/dibo-cloud/vscode","docker:push":"docker push gcr.io/dibo-cloud/vscode","gcloud:project":"gcloud config set project dibo-cloud","gcloud:deploy":"gcloud run deploy vscode-run --image=gcr.io/dibo-cloud/vscode --platform=managed --port=8080 --region=europe-west1 --allow-unauthenticated","docker:run":"docker run -it --name vscode -p 8080:8080 -v \"$HOME/.config:/home/coder/.config\" -v \"$HOME/.local:/home/coder/.local\" -v \"${project:-$PWD}:/home/coder/project\" -u \"$(id -u):$(id -g)\" -e \"DOCKER_USER=$USER\" gcr.io/dibo-cloud/vscode:latest","docker:view":"docker run -it --rm gcr.io/dibo-cloud/vscode sh","docker:inspect":"docker inspect gcr.io/dibo-cloud/vscode","docker:stop":"docker container stop vscode && docker container rm vscode","kill":"sudo fuser -k 8080/tcp","gcloud:login":"gcloud auth login && gcloud config set project dibo-cloud","gcloud:run":"PORT=8080 && docker run -p 9090:${PORT} -e PORT=${PORT} --rm gcr.io/dibo-cloud/vscode"},"devDependencies":{"semantic-release":"^19.0.2","semantic-release-monorepo":"^7.0.5"}}
+{
+  "name": "vscode",
+  "version": "0.0.1",
+  "private": false,
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eng-dibo/dibo.git"
+  },
+  "homepage": "https://github.com/eng-dibo/dibo#readme",
+  "bugs": {
+    "url": "https://github.com/eng-dibo/dibo/issues",
+    "email": "sh.eldeeb.2010+github@gmail.com"
+  },
+  "license": "MIT",
+  "author": "Sherif Eldeeb <sh.eldeeb.2010+github@gmail.com> (https://github.com/eng-dibo)",
+  "funding": [
+    {
+      "type": "paypal",
+      "url": "https://paypal.me/group99001"
+    },
+    {
+      "type": "patreon",
+      "url": "https://www.patreon.com/GoogleDev"
+    }
+  ],
+  "description": "a cloud based visual studio code",
+  "scripts": {
+    "build": "tsc",
+    "postbuild": "cp package.json dist",
+    "_publish": "npm run build && npm publish --access=public",
+    "prepublishOnly": "npm run build",
+    "release": "semantic-release",
+    "release:local": "semantic-release --no-ci",
+    "start": "npm run gcloud:project && npm run gcloud:login && npm run docker:build && npm run docker:push && npm run gcloud:deploy",
+    "docker:build": "docker build . --tag=gcr.io/dibo-cloud/vscode",
+    "docker:push": "docker push gcr.io/dibo-cloud/vscode",
+    "gcloud:project": "gcloud config set project dibo-cloud",
+    "gcloud:deploy": "gcloud run deploy vscode-run --image=gcr.io/dibo-cloud/vscode --platform=managed --port=8080 --region=europe-west1 --allow-unauthenticated",
+    "docker:run": "docker run -it --name vscode -p 8080:8080 -v \"$HOME/.config:/home/coder/.config\" -v \"$HOME/.local:/home/coder/.local\" -v \"${project:-$PWD}:/home/coder/project\" -u \"$(id -u):$(id -g)\" -e \"DOCKER_USER=$USER\" gcr.io/dibo-cloud/vscode:latest",
+    "docker:view": "docker run -it --rm gcr.io/dibo-cloud/vscode sh",
+    "docker:inspect": "docker inspect gcr.io/dibo-cloud/vscode",
+    "docker:stop": "docker container stop vscode && docker container rm vscode",
+    "kill": "sudo fuser -k 8080/tcp",
+    "gcloud:login": "gcloud auth login && gcloud config set project dibo-cloud",
+    "gcloud:run": "PORT=8080 && docker run -p 9090:${PORT} -e PORT=${PORT} --rm gcr.io/dibo-cloud/vscode"
+  },
+  "devDependencies": {
+    "semantic-release": "^19.0.2",
+    "semantic-release-monorepo": "^7.0.5"
+  }
+}

@@ -1,4 +1,2 @@
-
-          let baseConfig= require("../../release.package.config.js");
-          module.exports = baseConfig;
-        
+let baseConfig = require("../../release.package.config.js");
+module.exports = baseConfig;
