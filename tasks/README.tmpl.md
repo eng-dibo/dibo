@@ -43,7 +43,7 @@ read our [contributing guide](<%= pkg.homepage.replace('#readme','') %>/blob/mai
 
 - check out these useful packages that created by [@engineers organization](https://www.npmjs.com/org/engineers)
 
-<% entries.filter(entry=>entry.startsWith('projects/')).forEach(entry=>{ %>
+<% entries.filter(entry=>entry.startsWith('packages/')).forEach(entry=>{ %>
 
 - [<%= entry.replace('packages/','') %>](https://www.npmjs.com/package/@engineers/<%= entry.replace('packages/','') %>)
   <% }) %>
