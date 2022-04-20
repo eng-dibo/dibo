@@ -34,5 +34,11 @@
     "release": "semantic-release",
     "release:local": "semantic-release --no-ci"
   },
-  "description": "auto update apps"
+  "description": "auto update apps",
+  "devDependencies": {
+    "@types/app-root-path": "^1.2.4"
+  },
+  "dependencies": {
+    "app-root-path": "^3.0.0"
+  }
 }
