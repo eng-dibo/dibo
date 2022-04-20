@@ -24,6 +24,7 @@
     "appspot",
     "formly",
     "gcloud",
+    "hookable",
     "postback",
     "prerender"
   ]
