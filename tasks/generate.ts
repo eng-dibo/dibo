@@ -210,6 +210,24 @@ export function addWebpackConfig(
       .map((dir) => writeFileSync(`${dir}/webpack.config.ts`, content))
   );
 }
+
+export function addJestConfig(
+  dirs?: string[] | Promise<string[]>
+): Promise<void[]> {
+  let content = `
+   import jestConfig from '../../jest.config';
+   export default Object.assign({}, jestConfig, {
+    testMatch: [\`${__dirname}/**/*.spec.ts\`],
+   });
+`;
+
+  return Promise.resolve(dirs || getDirs()).then((dirs) =>
+    dirs
+      .filter((dir) => !existsSync(`${dir}/jest.config.ts`))
+      .map((dir) => writeFileSync(`${dir}/jest.config.ts`, content))
+  );
+}
+
 export function addSemanticReleaseConfig(
   dirs?: string[] | Promise<string[]>
 ): Promise<void[]> {
@@ -241,5 +259,3 @@ export function getDirs(
     (results) => results.reduce((acc, current) => acc.concat(current), [])
   );
 }
-
-// todo: add jest.config.ts
