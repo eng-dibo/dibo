@@ -39,6 +39,7 @@
     "@types/app-root-path": "^1.2.4"
   },
   "dependencies": {
-    "app-root-path": "^3.0.0"
+    "app-root-path": "^3.0.0",
+    "simple-git": "^3.7.0"
   }
 }
