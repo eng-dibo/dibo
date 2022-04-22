@@ -15,6 +15,7 @@ import {
   read,
   remove,
   getEntries,
+  copy,
 } from './fs';
 import { existsSync } from 'node:fs';
 import { objectType } from '@engineers/javascript/objects';
@@ -22,71 +23,66 @@ import { objectType } from '@engineers/javascript/objects';
 let dir = resolve(__dirname, './test!!/fs'),
   file = dir + '/file.txt';
 
-afterEach(() => {
-  return remove(dir);
+// remove $dir before and after each test
+beforeEach(() => remove(dir).then(() => write(file, 'ok')));
+afterEach(() => remove(dir));
+
+test('mkdir', () => {
+  expect(existsSync(`${dir}/mkdir`)).toBeFalsy();
+  return mkdir(`${dir}/mkdir`).then((value) =>
+    expect(existsSync(dir)).toBeTruthy()
+  );
 });
 
-describe('clean state', () => {
-  test('mkdir', () => {
-    expect(existsSync(dir)).toBeFalsy();
-    return mkdir(dir).then((value) => expect(existsSync(dir)).toBeTruthy());
-  });
+test('write', () => {
+  expect(existsSync(`${dir}/write.txt`)).toBeFalsy();
+  return mkdir(dir)
+    .then(() => write(`${dir}/write.txt`, 'ok'))
+    .then(() => {
+      expect(existsSync(`${dir}/write.txt`)).toBeTruthy();
+    });
+});
 
-  test('write', () => {
+test('write in non-existing dir', () => {
+  let file2 = dir + '/non-existing/file.txt';
+  expect(existsSync(file2)).toBeFalsy();
+  return write(file2, 'ok').then(() => {
+    expect(existsSync(file2)).toBeTruthy();
+  });
+});
+
+test('getSize', () =>
+  Promise.all([getSize(file), getSize(dir)]).then((value) =>
+    expect(value).toEqual([2, 4096])
+  ));
+
+test('isDir', () =>
+  Promise.all([isDir(file), isDir(dir)]).then((value) =>
+    expect(value).toEqual([false, true])
+  ));
+
+test('getModifiedTime -> file', () =>
+  Promise.all([getModifiedTime(file), getModifiedTime(dir)]).then((value) => {
+    expect(Math.floor(value[0])).toBeGreaterThanOrEqual(1624906832178);
+    expect(Math.floor(value[1])).toBeGreaterThanOrEqual(1624906832178);
+  }));
+
+test('move', () => {
+  let file2 = dir + '/file2.txt';
+  expect(existsSync(file)).toBeTruthy();
+  expect(existsSync(file2)).toBeFalsy();
+  return move(file, file2).then(() => {
     expect(existsSync(file)).toBeFalsy();
-    return mkdir(dir)
-      .then(() => write(file, 'ok'))
-      .then(() => {
-        expect(existsSync(file)).toBeTruthy();
-      });
-  });
-
-  test('write in non-existing dir', () => {
-    let file2 = dir + '/non-existing/file.txt';
-    expect(existsSync(file2)).toBeFalsy();
-    return write(file2, 'ok').then(() => {
-      expect(existsSync(file2)).toBeTruthy();
-    });
+    expect(existsSync(file2)).toBeTruthy();
   });
 });
 
-describe('auto create files and clean test dir', () => {
-  beforeEach(() => {
-    return write(file, 'ok');
-  });
+test('read', () => {
+  let fileJson = dir + '/file.json',
+    fileArray = dir + '/array.json',
+    fileJsonComments = dir + '/comments.json';
 
-  test('getSize', () =>
-    Promise.all([getSize(file), getSize(dir)]).then((value) =>
-      expect(value).toEqual([2, 4096])
-    ));
-
-  test('isDir', () =>
-    Promise.all([isDir(file), isDir(dir)]).then((value) =>
-      expect(value).toEqual([false, true])
-    ));
-
-  test('getModifiedTime -> file', () =>
-    Promise.all([getModifiedTime(file), getModifiedTime(dir)]).then((value) => {
-      expect(Math.floor(value[0])).toBeGreaterThanOrEqual(1624906832178);
-      expect(Math.floor(value[1])).toBeGreaterThanOrEqual(1624906832178);
-    }));
-
-  test('move', () => {
-    let file2 = dir + '/file2.txt';
-    expect(existsSync(file)).toBeTruthy();
-    expect(existsSync(file2)).toBeFalsy();
-    return move(file, file2).then(() => {
-      expect(existsSync(file)).toBeFalsy();
-      expect(existsSync(file2)).toBeTruthy();
-    });
-  });
-
-  test('read', () => {
-    let fileJson = dir + '/file.json',
-      fileArray = dir + '/array.json',
-      fileJsonComments = dir + '/comments.json';
-
-    let contentJsonComments = `
+  let contentJsonComments = `
     // this file is created to test reading .json files that contains comments
       // to test stripComments()
  
@@ -102,51 +98,60 @@ describe('auto create files and clean test dir', () => {
    }
    `;
 
-    return Promise.all([
-      read(file),
-      write(fileJson, { x: 1, y: 2 }).then(() => read(fileJson)),
-      write(fileArray, [1, 2, 3]).then(() => read(fileArray)),
-      write(fileJsonComments, contentJsonComments).then(() =>
-        read(fileJsonComments)
-      ),
-    ]).then((value) => {
-      let [txt, json, arr, jsonWithComments] = value;
-      expect(txt.length).toEqual(2);
-      expect(txt).toContain('ok');
-      expect(objectType(txt)).toEqual('string');
-      expect(objectType(json)).toEqual('object');
-      expect(objectType(jsonWithComments)).toEqual('object');
-      expect(objectType(arr)).toEqual('array');
-      expect(json).toEqual({ x: 1, y: 2 });
-      expect(jsonWithComments).toEqual({ x: 1, hello: 'ok' });
-      expect(arr).toEqual([1, 2, 3]);
-    });
-  });
-
-  test('remove dir', () => {
-    expect(existsSync(file)).toBeTruthy();
-    expect(existsSync(dir)).toBeTruthy();
-    return remove([dir]).then(() => {
-      expect(existsSync(file)).toBeFalsy();
-      expect(existsSync(dir)).toBeFalsy();
-    });
-  });
-
-  test('remove non-exists path', () => {
-    let file2 = `${dir}/non-existing/file.txt`;
-    return remove(file2).then(() => expect(existsSync(file2)).toBeFalsy());
+  return Promise.all([
+    read(file),
+    write(fileJson, { x: 1, y: 2 }).then(() => read(fileJson)),
+    write(fileArray, [1, 2, 3]).then(() => read(fileArray)),
+    write(fileJsonComments, contentJsonComments).then(() =>
+      read(fileJsonComments)
+    ),
+  ]).then((value) => {
+    let [txt, json, arr, jsonWithComments] = value;
+    expect(txt.length).toEqual(2);
+    expect(txt).toContain('ok');
+    expect(objectType(txt)).toEqual('string');
+    expect(objectType(json)).toEqual('object');
+    expect(objectType(jsonWithComments)).toEqual('object');
+    expect(objectType(arr)).toEqual('array');
+    expect(json).toEqual({ x: 1, y: 2 });
+    expect(jsonWithComments).toEqual({ x: 1, hello: 'ok' });
+    expect(arr).toEqual([1, 2, 3]);
   });
 });
 
-describe.only('getEntries', () => {
+test('remove a dir', () => {
+  expect(existsSync(file)).toBeTruthy();
+  expect(existsSync(dir)).toBeTruthy();
+  return remove([dir]).then(() => {
+    expect(existsSync(file)).toBeFalsy();
+    expect(existsSync(dir)).toBeFalsy();
+  });
+});
+
+test('remove a non-exists path', () => {
+  let file2 = `${dir}/non-existing/file.txt`;
+  return remove(file2).then(() => expect(existsSync(file2)).toBeFalsy());
+});
+
+test('copy a dir', () => {
+  return write(`${dir}/copy-dir/file.txt`, '')
+    .then(() => copy(`${dir}/copy-dir`, `${dir}/copy-dir2`))
+    .then(() => {
+      expect(existsSync(`${dir}/copy-dir2/file.txt`)).toBeTruthy();
+    });
+});
+
+describe('getEntries', () => {
   let entries = ['file.txt', 'file.js'];
   beforeEach(() => {
-    return Promise.all(
-      entries.map((el) => {
-        return write(`${dir}/${el}`, '').then(() =>
-          write(`${dir}/subdir/${el}`, '')
-        );
-      })
+    return remove(dir).then(() =>
+      Promise.all(
+        entries.map((el) => {
+          return write(`${dir}/${el}`, '').then(() =>
+            write(`${dir}/subdir/${el}`, '')
+          );
+        })
+      )
     );
   });
 

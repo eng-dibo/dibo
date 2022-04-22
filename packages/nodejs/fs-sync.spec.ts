@@ -19,6 +19,7 @@ import {
   read,
   write,
   getEntries,
+  copy,
 } from './fs-sync';
 import { objectType } from '@engineers/javascript/objects';
 
@@ -27,112 +28,99 @@ import { existsSync, readFileSync } from 'node:fs';
 let dir = resolve(__dirname, './test!!/fs-sync'),
   file = dir + '/file.txt';
 
-afterEach(() => {
+beforeEach(() => {
   remove(dir);
+  write(file, 'ok');
 });
 
-// run these tests in a clean state, i.e: before creating `dir` or any file
-describe('clean state', () => {
-  test('mkdir', () => {
-    expect(existsSync(dir)).toBeFalsy();
-    mkdir(dir);
-    expect(existsSync(dir)).toBeTruthy();
-  });
+afterEach(() => remove(dir));
 
-  test('write', () => {
-    mkdir(dir);
-    expect(existsSync(file)).toBeFalsy();
-    write(file, 'ok');
-    expect(existsSync(file)).toBeTruthy();
-    expect(readFileSync(file).toString()).toEqual('ok');
-  });
+test('mkdir', () => {
+  expect(existsSync(`${dir}/mkdir`)).toBeFalsy();
+  mkdir(`${dir}/mkdir`);
+  expect(existsSync(`${dir}/mkdir`)).toBeTruthy();
+});
 
-  test('write in non-existing dir', () => {
-    let file2 = dir + '/non-existing/file.txt';
-    expect(existsSync(file2)).toBeFalsy();
-    write(file2, 'ok');
-    expect(existsSync(file2)).toBeTruthy();
-    expect(readFileSync(file2).toString()).toEqual('ok');
+test('write', () => {
+  mkdir(dir);
+  expect(existsSync(`${dir}/write.txt`)).toBeFalsy();
+  write(`${dir}/write.txt`, 'ok');
+  expect(existsSync(`${dir}/write.txt`)).toBeTruthy();
+  expect(readFileSync(`${dir}/write.txt`).toString()).toEqual('ok');
+});
+
+test('write in non-existing dir', () => {
+  let file2 = dir + '/non-existing/file.txt';
+  expect(existsSync(file2)).toBeFalsy();
+  write(file2, 'ok');
+  expect(existsSync(file2)).toBeTruthy();
+  expect(readFileSync(file2).toString()).toEqual('ok');
+});
+
+test('resolve', () => {
+  expect(resolve('/path', 'to/file.js')).toEqual('/path/to/file.js');
+});
+
+test('parsePath', () => {
+  expect(parsePath('/path/to/file.js')).toEqual({
+    type: 'file',
+    dir: '/path/to',
+    file: 'file',
+    extension: 'js',
   });
 });
 
-describe('auto create files and clean test dir', () => {
-  beforeEach(() => {
-    write(file, 'ok');
-  });
+test('getExtension', () => {
+  expect(getExtension('/path/to/file.js')).toEqual('js');
+  expect(getExtension('.gitignore')).toEqual('');
+  expect(getExtension('/path/to/.gitignore')).toEqual('');
+  expect(getExtension('/path/to')).toEqual('');
+});
 
-  test('write to non-existing dir', () => {
-    let file2 = dir + '/non-existing/file.txt';
-    expect(existsSync(file2)).toBeFalsy();
-    write(file2, 'ok');
-    expect(existsSync(file2)).toBeTruthy();
-    expect(readFileSync(file2).toString()).toEqual('ok');
-  });
+test('size units', () => {
+  let size = 1234567890,
+    units = { b: 0, kb: 1, mb: 2, gb: 3 };
+  expect(size / 1024 ** units.mb).toBeCloseTo(1177.3, 0);
+});
 
-  test('resolve', () => {
-    expect(resolve('/path', 'to/file.js')).toEqual('/path/to/file.js');
-  });
+test('getSize', () => {
+  expect(getSize(file)).toEqual(2);
+  expect(getSize(dir)).toBeGreaterThan(4000);
+});
 
-  test('parsePath', () => {
-    expect(parsePath('/path/to/file.js')).toEqual({
-      type: 'file',
-      dir: '/path/to',
-      file: 'file',
-      extension: 'js',
-    });
-  });
+test('isDir', () => {
+  expect(isDir(file)).toEqual(false);
+  expect(isDir(dir)).toEqual(true);
+});
 
-  test('getExtension', () => {
-    expect(getExtension('/path/to/file.js')).toEqual('js');
-    expect(getExtension('.gitignore')).toEqual('');
-    expect(getExtension('/path/to/.gitignore')).toEqual('');
-    expect(getExtension('/path/to')).toEqual('');
-  });
+test('getModifiedTime', () => {
+  expect(Math.floor(getModifiedTime(file))).toBeGreaterThanOrEqual(
+    1624906832178
+  );
+  expect(Math.floor(getModifiedTime(dir))).toBeGreaterThanOrEqual(
+    1624906832178
+  );
+});
 
-  test('size units', () => {
-    let size = 1234567890,
-      units = { b: 0, kb: 1, mb: 2, gb: 3 };
-    expect(size / 1024 ** units.mb).toBeCloseTo(1177.3, 0);
-  });
+test('move', () => {
+  let file2 = dir + '/file2.txt';
+  expect(existsSync(file)).toBeTruthy();
+  expect(existsSync(file2)).toBeFalsy();
+  move(file, file2);
+  expect(existsSync(file)).toBeFalsy();
+  expect(existsSync(file2)).toBeTruthy();
+});
 
-  test('getSize', () => {
-    expect(getSize(file)).toEqual(2);
-    expect(getSize(dir)).toBeGreaterThan(4000);
-  });
+test('read', () => {
+  let fileJson = dir + '/file.json',
+    fileArray = dir + '/array.json',
+    fileJsonComments = dir + '/comments.json';
 
-  test('isDir', () => {
-    expect(isDir(file)).toEqual(false);
-    expect(isDir(dir)).toEqual(true);
-  });
-
-  test('getModifiedTime', () => {
-    expect(Math.floor(getModifiedTime(file))).toBeGreaterThanOrEqual(
-      1624906832178
-    );
-    expect(Math.floor(getModifiedTime(dir))).toBeGreaterThanOrEqual(
-      1624906832178
-    );
-  });
-
-  test('move', () => {
-    let file2 = dir + '/file2.txt';
-    expect(existsSync(file)).toBeTruthy();
-    expect(existsSync(file2)).toBeFalsy();
-    move(file, file2);
-    expect(existsSync(file)).toBeFalsy();
-    expect(existsSync(file2)).toBeTruthy();
-  });
-
-  test('read', () => {
-    let fileJson = dir + '/file.json',
-      fileArray = dir + '/array.json',
-      fileJsonComments = dir + '/comments.json';
-
-    write(fileJson, { x: 1, y: 2 });
-    write(fileArray, [1, 2, 3]);
-    write(
-      fileJsonComments,
-      `// this file is created to test reading .json files that contains comments
+  write(fileJson, { x: 1, y: 2 });
+  write(fileArray, [1, 2, 3]);
+  write(
+    fileJsonComments,
+    `// this file is created to test reading .json files that contains comments
       // to test stripComments()
  
    {
@@ -146,37 +134,42 @@ describe('auto create files and clean test dir', () => {
      "hello": "ok"
    }
    `
-    );
+  );
 
-    let txt = read(file),
-      json = read(fileJson),
-      jsonWithComments = read(fileJsonComments),
-      arr = read(fileArray);
+  let txt = read(file),
+    json = read(fileJson),
+    jsonWithComments = read(fileJsonComments),
+    arr = read(fileArray);
 
-    expect(txt.length).toEqual(2);
-    expect(txt).toContain('ok');
-    expect(objectType(txt)).toEqual('string');
-    expect(objectType(json)).toEqual('object');
-    expect(objectType(jsonWithComments)).toEqual('object');
-    expect(objectType(arr)).toEqual('array');
-    expect(json).toEqual({ x: 1, y: 2 });
-    expect(jsonWithComments).toEqual({ x: 1, hello: 'ok' });
-    expect(arr).toEqual([1, 2, 3]);
-  });
+  expect(txt.length).toEqual(2);
+  expect(txt).toContain('ok');
+  expect(objectType(txt)).toEqual('string');
+  expect(objectType(json)).toEqual('object');
+  expect(objectType(jsonWithComments)).toEqual('object');
+  expect(objectType(arr)).toEqual('array');
+  expect(json).toEqual({ x: 1, y: 2 });
+  expect(jsonWithComments).toEqual({ x: 1, hello: 'ok' });
+  expect(arr).toEqual([1, 2, 3]);
+});
 
-  test('remove dir', () => {
-    expect(existsSync(file)).toBeTruthy();
-    expect(existsSync(dir)).toBeTruthy();
-    remove(dir);
-    expect(existsSync(file)).toBeFalsy();
-    expect(existsSync(dir)).toBeFalsy();
-  });
+test('remove dir', () => {
+  expect(existsSync(file)).toBeTruthy();
+  expect(existsSync(dir)).toBeTruthy();
+  remove(dir);
+  expect(existsSync(file)).toBeFalsy();
+  expect(existsSync(dir)).toBeFalsy();
+});
 
-  test('remove non-exists path', () => {
-    let file2 = `${dir}/non-existing/file.txt`;
-    remove(file2);
-    expect(existsSync(file2)).toBeFalsy();
-  });
+test('remove non-exists path', () => {
+  let file2 = `${dir}/non-existing/file.txt`;
+  remove(file2);
+  expect(existsSync(file2)).toBeFalsy();
+});
+
+test('copy a dir', () => {
+  write(`${dir}/copy-dir/file.txt`, '');
+  copy(`${dir}/copy-dir`, `${dir}/copy-dir2`);
+  expect(existsSync(`${dir}/copy-dir2/file.txt`)).toBeTruthy();
 });
 
 describe('getEntries', () => {

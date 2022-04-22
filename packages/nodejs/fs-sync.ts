@@ -27,6 +27,7 @@ import {
   PathLike,
   WriteFileOptions,
   readFileSync,
+  copyFileSync,
 } from 'node:fs';
 
 // strip-json-comments v4.0.0 supports esm only
@@ -157,11 +158,6 @@ export function move(
   return renameSync(path, newPath);
 }
 
-export interface RemoveOptions {
-  // if true, delete the folder content, but not the folder itself, default=false
-  keepDir?: boolean;
-}
-
 /**
  * delete files or folders recursively
  * https://stackoverflow.com/a/32197381
@@ -172,42 +168,25 @@ export interface RemoveOptions {
 
 export function remove(
   path: PathLike | PathLike[],
-  options: RemoveOptions = {}
+  // if true, delete the folder content, but not the folder itself, default=false
+  keepDir = false
 ): void {
-  if (!path) {
-    throw new Error('path not provided');
-  }
-  if (path instanceof Array) {
-    // todo: if(options.notExists ==='stop')
-    // path.map((p: PathLike) => ({ [p.toString()]: remove(p, options) }));
-    return path.forEach((p: PathLike) => remove(p, options));
-  }
+  return recursive(path, (file, type) =>
+    type === 'file' ? unlinkSync(file) : !keepDir ? rmdirSync(file) : undefined
+  );
+}
 
-  path = resolve(path.toString());
-  let opts = Object.assign({}, { keepDir: false }, options);
-
-  if (!existsSync(path)) {
-    return;
-  }
-
-  if (isDir(path)) {
-    readdirSync(path).forEach((file: string) => {
-      /* let curPath = `${path}/${file}`;
-      if (isDir(curPath)) {
-        remove(curPath, opts);
-      } else {
-        unlinkSync(curPath);
-      }*/
-
-      remove(`${path}/${file}`, opts);
-    });
-
-    if (!opts.keepDir) {
-      rmdirSync(path);
+export function copy(
+  path: PathLike,
+  destination: string,
+  filter: (file: string) => boolean = () => true
+) {
+  return recursive(path, (file, type) => {
+    if (type === 'file' && filter(file)) {
+      mkdir(destination);
+      copyFileSync(file, file.replace(path.toString(), destination));
     }
-  } else {
-    unlinkSync(path);
-  }
+  });
 }
 
 // todo: fix Cannot find module '@engineers/javascript/objects' from 'packages/nodejs/fs-sync.ts'
@@ -370,4 +349,36 @@ export function getEntries(
   });
 
   return result;
+}
+
+/**
+ * recursively apply a function to a directory and all subdirectories
+ */
+export function recursive(
+  path: PathLike | PathLike[],
+  apply: (path: string, type: 'dir' | 'file') => void,
+  filter: (path: string, type: 'dir' | 'file') => boolean = () => true
+): void {
+  if (!path) {
+    throw new Error('path not provided');
+  }
+  if (path instanceof Array) {
+    return path.forEach((p: PathLike) => recursive(p, apply));
+  }
+
+  path = resolve(path.toString());
+
+  if (!existsSync(path)) {
+    return;
+  }
+
+  if (isDir(path) && filter(path, 'dir')) {
+    readdirSync(path).forEach((file: string) => {
+      recursive(`${path}/${file}`, apply);
+    });
+
+    apply(path, 'dir');
+  } else if (filter(path, 'file')) {
+    apply(path, 'file');
+  }
 }
