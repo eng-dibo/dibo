@@ -5,11 +5,13 @@ import updaterHookable, {
   getRemoteVersion,
   compareVersions,
   download,
+  backupLocalPackage,
   update,
   beforeUpdate,
   afterUpdate,
 } from '.';
 import { remove } from '@engineers/nodejs/fs-sync';
+import { existsSync } from 'node:fs';
 
 let updater;
 let testDir = resolve(__dirname, 'test');
@@ -64,6 +66,8 @@ test('download: from code base - invalid branch', () => {
     download({ ...remote, release: false, branch: 'not-exists' })
   ).rejects.toThrow('Remote branch not-exists not found in upstream origin');
 });
+
+// make sure there is a release with tag 'latest'
 test('download: from a release', () => {
   return expect(
     download(
@@ -71,9 +75,29 @@ test('download: from a release', () => {
       {
         destination: resolve(__dirname, 'test!!/.release'),
       }
-    )
+    ).catch((error) => {
+      if (error.message === 'Not Found') {
+        console.warn(
+          '[download: from a release] to run this test make sure that there is a release with "latest" tag'
+        );
+      } else {
+        throw new Error(error);
+      }
+    })
   ).resolves.not.toThrow();
 });
+
+test('backupLocalPackage', (done) => {
+  backupLocalPackage(resolve(__dirname), resolve(__dirname, 'test!!/.backup'))
+    .then(() => {
+      expect(
+        existsSync(resolve(__dirname, 'test!!/.backup/package.json'))
+      ).toBeTruthy();
+      done();
+    })
+    .catch((error) => done(error));
+});
+
 test.skip('update', (done) => {});
 test.skip('beforeUpdate', (done) => {});
 test.skip('afterUpdate', (done) => {});

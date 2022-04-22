@@ -1,7 +1,7 @@
 import Hookable from '@engineers/hookable';
-import { read } from '@engineers/nodejs/fs';
+import { read, copy } from '@engineers/nodejs/fs';
 import { remove } from '@engineers/nodejs/fs-sync';
-import { resolve } from 'node:path';
+import { dirname, resolve } from 'node:path';
 import { existsSync, lstatSync } from 'node:fs';
 // be sure that 'app-root-path' installed in the root's node_module folder
 // not in any subfolder, otherwise you eed to calculate the relative paths
@@ -98,6 +98,7 @@ export function getLocalVersion(localPath?: string): Promise<string> {
   if (!existsSync(localPath)) {
     Promise.reject(`path ${localPath} not found`);
   }
+  // todo: save results in store{} to be used by other hooks
   return read(localPath).then((content: any) => content.version);
 }
 
@@ -215,7 +216,30 @@ export function download(
     });
   }
 }
-export function backupLocalPackage(localPath?: string): void | Promise<void> {}
+
+// todo: get localPath and localVersion from getLocalVersion hook
+export function backupLocalPackage(
+  localPath?: string,
+  destination?: string
+): Promise<void> {
+  if (!localPath) {
+    localPath = root.toString();
+  }
+
+  if (lstatSync(localPath).isFile()) {
+    localPath = dirname(localPath);
+  }
+  if (!existsSync(localPath)) {
+    Promise.reject(`path ${localPath} not found`);
+  }
+
+  let version = '0.0.0';
+  if (!destination) {
+    destination = resolve(localPath, `.backup/${version}`);
+  }
+  remove(destination);
+  return copy(localPath, destination, (path) => !path.includes('node_module'));
+}
 /**
  * transform and filter the downloaded package and run actions like notify the admin
  */
