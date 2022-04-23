@@ -90,7 +90,7 @@ export interface Obj {
 }
 
 export function getLocalVersionHook(
-  localPath: string,
+  localPath: string | undefined,
   pointName: string,
   store: Obj
 ): Promise<string> {
@@ -99,14 +99,14 @@ export function getLocalVersionHook(
   // save to store, so other hooks can use it
   // todo: if(file)dirname(localPath)
   store['localPath'] = localPath;
-  if (lstatSync(localPath).isDirectory()) {
-    localPath = resolve(localPath, 'package.json');
+  if (lstatSync(localPath!).isDirectory()) {
+    localPath = resolve(localPath!, 'package.json');
   }
-  if (!existsSync(localPath)) {
+  if (!existsSync(localPath!)) {
     Promise.reject(`path ${localPath} not found`);
   }
   // todo: save results in store{} to be used by other hooks
-  return read(localPath).then((content: any) => content.version);
+  return read(localPath!).then((content: any) => content.version);
 }
 
 /**
