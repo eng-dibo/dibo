@@ -232,6 +232,9 @@ export default class Hookable {
       if (!point.handler && point.handler !== false) {
         point.handler = defaultHandler;
       }
+      if (!point.hooks) {
+        point.hooks = [];
+      }
       return point;
     });
   }
@@ -322,6 +325,9 @@ export default class Hookable {
     ).map((point) => {
       if (!point.handler && point.handler !== false) {
         point.handler = defaultHandler;
+      }
+      if (!point.hooks) {
+        point.hooks = [];
       }
       return point;
     });
