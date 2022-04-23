@@ -1,6 +1,6 @@
 import Hookable from '@engineers/hookable';
-import { read, copy } from '@engineers/nodejs/fs';
-import { remove } from '@engineers/nodejs/fs-sync';
+import { read, copy, remove } from '@engineers/nodejs/fs';
+
 import { dirname, resolve } from 'node:path';
 import { existsSync, lstatSync } from 'node:fs';
 // be sure that 'app-root-path' installed in the root's node_module folder
@@ -62,6 +62,7 @@ export default (options: Options): Hookable => {
       ],
     },
     {
+      // todo: add beforeAll() to check if the update should be downloaded
       name: 'download',
       hooks: [
         {
@@ -76,6 +77,7 @@ export default (options: Options): Hookable => {
       hooks: [
         // if the runner runs all hooks in parallel use
         // `{ beforeAll: backupLocalPackage, afterAll: finishUpdate }`
+        // todo: add beforeAll() to check if the update should be installed, remove beforeUpdate
         { name: 'backup', exec: backupLocalPackageHook },
         { name: 'beforeUpdate', exec: beforeUpdateHook },
         { name: 'update', exec: updateHook },
@@ -201,10 +203,6 @@ export function downloadHook(
   if (opts.filter instanceof Array) {
   }
 
-  opts.clean !== false &&
-    existsSync(opts.destination!) &&
-    remove(opts.destination!);
-
   if (remote.token) {
     // todo: `https://${remote.token}@${repo}`
   }
@@ -224,17 +222,24 @@ export function downloadHook(
     }
 
     // todo: use opts.filter to download only selected assets
-    return request(url, undefined, requestOptions)
-      .then((response) => response.tag_name)
-      .then((tag) =>
-        git().clone(
-          `https://${remote.token ? remote.token + '@' : ''}github.com/${
-            remote.repo
-          }`,
-          opts.destination!,
-          [`--branch=${tag}`],
-          (error) => (error ? Promise.reject(error) : Promise.resolve())
-        )
+    return (
+      opts.clean !== false && existsSync(opts.destination!)
+        ? remove(opts.destination!)
+        : Promise.resolve()
+    )
+      .then(() =>
+        request(url, undefined, requestOptions)
+          .then((response) => response.tag_name)
+          .then((tag) =>
+            git().clone(
+              `https://${remote.token ? remote.token + '@' : ''}github.com/${
+                remote.repo
+              }`,
+              opts.destination!,
+              [`--branch=${tag}`],
+              (error) => (error ? Promise.reject(error) : Promise.resolve())
+            )
+          )
       )
       .then(() => {
         /*void*/
@@ -260,12 +265,19 @@ export interface BackupLocalPackageHookOptions {
   destination?: string;
 }
 
+/**
+ * backup the local package before performing the update
+ * @param options
+ * @param pointName
+ * @param store
+ * @returns the backup destination dir
+ */
 // todo: get localPath and localVersion from getLocalVersion hook
 export function backupLocalPackageHook(
   options: BackupLocalPackageHookOptions,
   pointName: string,
   store: Obj
-): Promise<void> {
+): Promise<string> {
   let { localPath, destination } = options;
   if (!localPath) {
     localPath = store.localPatch || root.toString();
@@ -282,8 +294,12 @@ export function backupLocalPackageHook(
   if (!destination) {
     destination = resolve(localPath!, `.backup/${version}`);
   }
-  remove(destination);
-  return copy(localPath!, destination, (path) => !path.includes('node_module'));
+
+  return remove(destination)
+    .then(() =>
+      copy(localPath!, destination!, (path) => !path.includes('node_module'))
+    )
+    .then(() => destination!);
 }
 /**
  * transform and filter the downloaded package and run actions like notify the admin
@@ -302,7 +318,7 @@ export interface UpdateHookOptions {
   filter?: (file: string) => boolean;
 }
 /**
- * the actual update process
+ * the actual update process, copies files from remotePath to localPath
  * @param localPath
  * @param remotePath
  */
@@ -314,9 +330,13 @@ export function updateHook(
   let { localPath, remotePath, filter } = options;
 
   localPath = localPath || store['localPath'] || root.toString();
+  let backupPath = store['update']['backup'];
 
-  remove(localPath!);
-  return copy(remotePath, localPath!, filter);
+  // clean the localPath except remotePath and backupPath
+  return remove(
+    localPath!,
+    (path) => ![remotePath, backupPath].includes(path)
+  ).then(() => copy(remotePath, localPath!, filter));
 }
 /**
  * install dependencies, adjust configs, finish the update process and restart the app
