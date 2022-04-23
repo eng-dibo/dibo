@@ -23,7 +23,7 @@ import {
 } from './fs-sync';
 import { objectType } from '@engineers/javascript/objects';
 
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, utimesSync } from 'node:fs';
 
 let dir = resolve(__dirname, './test!!/fs-sync'),
   file = dir + '/file.txt';
@@ -150,6 +150,12 @@ test('read', () => {
   expect(json).toEqual({ x: 1, y: 2 });
   expect(jsonWithComments).toEqual({ x: 1, hello: 'ok' });
   expect(arr).toEqual([1, 2, 3]);
+});
+
+test('read from an expired cache', () => {
+  let file = dir + '/file.txt';
+  write(file, 'ok');
+  expect(() => read(file, { age: 60 * 60 })).toThrow('expired file');
 });
 
 test('remove dir', () => {

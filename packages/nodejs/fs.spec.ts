@@ -119,6 +119,13 @@ test('read', () => {
   });
 });
 
+test('read from an expired cache', () => {
+  let file = dir + '/file.txt';
+  return expect(
+    write(file, 'ok').then(() => read(file, { age: 60 * 60 }))
+  ).rejects.toThrow('expired file');
+});
+
 test('remove a dir', () => {
   expect(existsSync(file)).toBeTruthy();
   expect(existsSync(dir)).toBeTruthy();

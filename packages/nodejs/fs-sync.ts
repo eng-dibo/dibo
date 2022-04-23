@@ -252,11 +252,10 @@ export function read(
     typeof options === 'string' ? { encoding: options } : options || {}
   );
 
-  // todo: test
   if (
     opts.age &&
     opts.age > 0 &&
-    getModifiedTime(path) + opts.age < Date.now()
+    getModifiedTime(path) + opts.age > Date.now()
   ) {
     throw new Error(`[fs-sync] expired file ${path}`);
   }
