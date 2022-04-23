@@ -1,11 +1,12 @@
-// run 'ngcc' https://thymikee.github.io/jest-preset-angular/docs/guides/angular-ivy/
-import 'jest-preset-angular/ngcc-jest-processor';
 import jestConfig from '../../jest.config';
 
 let config = Object.assign({}, jestConfig, {
   preset: 'jest-preset-angular',
   testMatch: [`${__dirname}/**/*.spec.ts`],
   setupFilesAfterEnv: [`${__dirname}/jest-setup.ts`],
+  // run 'ngcc' https://thymikee.github.io/jest-preset-angular/docs/guides/angular-ivy/
+  // replaces the deprecated: `import 'jest-preset-angular/ngcc-jest-processor'`;
+  globalSetup: 'jest-preset-angular/global-setup',
 });
 
 // transform non-js files with 'jest-preset-angular' to let jest understand their syntax

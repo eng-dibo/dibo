@@ -66,6 +66,13 @@ let config: Config.InitialOptions = {
     '<rootDir>/packages/**/jest.config.ts',
     '<rootDir>/projects/**/jest.config.ts',
   ],
+  /*
+  ignore files inside 'dist' dirs to solve the error:
+  `The name `@engineers/*` was looked up in the Haste module map. 
+   It cannot be resolved, because there exists several different files, or packages`
+   this error occurs when ./dist/package.json has the same name as ./package.json
+  */
+  modulePathIgnorePatterns: ['dist'],
   // todo: exclude /dist
 };
 export default config;
