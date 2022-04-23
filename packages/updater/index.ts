@@ -25,14 +25,6 @@ export interface Remote {
   token?: string;
 }
 
-export interface DownloadOptions {
-  // files to be downloaded
-  filter?: ((file: string) => boolean) | Array<RegExp | string>;
-  destination?: string;
-  // clean the destination before downloading
-  clean?: boolean;
-}
-
 // todo: pass options to each hook
 // each hook has its own options
 // hook= (options)=>function
@@ -53,15 +45,20 @@ export default (options: Options): Hookable => {
       hooks: [
         {
           name: 'getLocalVersion',
-          exec: getLocalVersion,
+          exec: getLocalVersionHook,
           options: options.localPath,
         },
         {
           name: 'getRemoteVersion',
-          exec: getRemoteVersion,
+          exec: getRemoteVersionHook,
           options: options.remote,
         },
-        { name: 'compareVersions', exec: compareVersions },
+        {
+          name: 'compareVersions',
+          exec: compareVersionsHook,
+          // todo: get localVersion from Hookable.store{}
+          options: { localVersion: '', remoteVersion: '' },
+        },
       ],
     },
     {
@@ -69,7 +66,7 @@ export default (options: Options): Hookable => {
       hooks: [
         {
           name: 'download',
-          exec: download,
+          exec: downloadHook,
           options: options.remote,
         },
       ],
@@ -79,20 +76,30 @@ export default (options: Options): Hookable => {
       hooks: [
         // if the runner runs all hooks in parallel use
         // `{ beforeAll: backupLocalPackage, afterAll: finishUpdate }`
-        { name: 'backup', exec: backupLocalPackage },
-        { name: 'beforeUpdate', exec: beforeUpdate },
-        { name: 'update', exec: update },
-        { name: 'finish', exec: afterUpdate },
+        { name: 'backup', exec: backupLocalPackageHook },
+        { name: 'beforeUpdate', exec: beforeUpdateHook },
+        { name: 'update', exec: updateHook },
+        { name: 'finish', exec: afterUpdateHook },
       ],
     },
   ]);
 };
 
-export function getLocalVersion(localPath?: string): Promise<string> {
-  if (!localPath) {
-    // todo: locate the nearest up-level package.json
-    localPath = resolve(root.toString(), 'package.json');
-  } else if (lstatSync(localPath).isDirectory()) {
+export interface Obj {
+  [key: string]: any;
+}
+
+export function getLocalVersionHook(
+  localPath: string,
+  pointName: string,
+  store: Obj
+): Promise<string> {
+  // todo: locate the nearest up-level package.json
+  localPath = localPath || store['localPath'] || root.toString();
+  // save to store, so other hooks can use it
+  // todo: if(file)dirname(localPath)
+  store['localPath'] = localPath;
+  if (lstatSync(localPath).isDirectory()) {
     localPath = resolve(localPath, 'package.json');
   }
   if (!existsSync(localPath)) {
@@ -108,7 +115,11 @@ export function getLocalVersion(localPath?: string): Promise<string> {
  * @param remote
  * @returns
  */
-export function getRemoteVersion(remote: Remote): Promise<string> {
+export function getRemoteVersionHook(
+  remote: Remote,
+  pointName: string,
+  store: Obj
+): Promise<string> {
   let url = `https://raw.githubusercontent.com/${remote.repo}/${
     remote.branch || 'master'
   }/package.json`;
@@ -122,10 +133,21 @@ export function getRemoteVersion(remote: Remote): Promise<string> {
     (content) => JSON.parse(content).version
   );
 }
-export function compareVersions(
-  localVersion: string,
-  remoteVersion: string
+
+export interface CompareVersionsOptions {
+  localVersion: string;
+  remoteVersion: string;
+}
+export function compareVersionsHook(
+  options: CompareVersionsOptions,
+  pointName: string,
+  store: Obj
 ): UpdateType {
+  let { localVersion, remoteVersion } = options;
+
+  localVersion = localVersion || store['checkUpdates']['getLocalVersion'];
+  remoteVersion = remoteVersion || store['checkUpdates']['getRemoteVersion'];
+
   if (
     !/\d+\.\d+\.\d+/.test(localVersion) ||
     !/\d+\.\d+\.\d+/.test(remoteVersion)
@@ -141,23 +163,39 @@ export function compareVersions(
   return;
 }
 
-// use cache()
+export interface DownloadOptions {
+  remote: Remote;
+  // files to be downloaded
+  filter?: ((file: string) => boolean) | Array<RegExp | string>;
+  destination?: string;
+  // clean the destination before downloading
+  clean?: boolean;
+}
+
+// todo: use cache()
 // use post.download to validate the updating, if the update process is not safe stop the process
 // and notify the admin about the new version and whether it could be auto updated
 // or need admin attention and a migration guide
 // use pre.download to decide if the update should be downloaded based on updateType level
-export function download(
-  remote: Remote,
-  options?: DownloadOptions
+export function downloadHook(
+  options: DownloadOptions,
+  pointName: string,
+  store: Obj
 ): Promise<void> {
+  let remoteVersion = store['checkUpdates']['getRemoteVersion'] || '0.0.0';
   let opts: DownloadOptions = Object.assign(
     {
       filter: () => true,
-      // todo: default name =
-      destination: `${process.cwd()}/.remote/${remote.repo}`,
+      // todo: .remote/$repo/{{checkUpdates.store.getRemoteVersion}}
+      destination: `${process.cwd()}/.remote/${
+        options.remote.repo
+      }/v${remoteVersion}`,
+      remoteVersion,
     },
     options || {}
   );
+
+  let { remote } = opts;
 
   // todo: convert to function
   if (opts.filter instanceof Array) {
@@ -217,47 +255,73 @@ export function download(
   }
 }
 
+export interface BackupLocalPackageHookOptions {
+  localPath?: string;
+  destination?: string;
+}
+
 // todo: get localPath and localVersion from getLocalVersion hook
-export function backupLocalPackage(
-  localPath?: string,
-  destination?: string
+export function backupLocalPackageHook(
+  options: BackupLocalPackageHookOptions,
+  pointName: string,
+  store: Obj
 ): Promise<void> {
+  let { localPath, destination } = options;
   if (!localPath) {
-    localPath = root.toString();
+    localPath = store.localPatch || root.toString();
   }
 
-  if (lstatSync(localPath).isFile()) {
-    localPath = dirname(localPath);
+  if (lstatSync(localPath!).isFile()) {
+    localPath = dirname(localPath!);
   }
-  if (!existsSync(localPath)) {
+  if (!existsSync(localPath!)) {
     Promise.reject(`path ${localPath} not found`);
   }
 
   let version = '0.0.0';
   if (!destination) {
-    destination = resolve(localPath, `.backup/${version}`);
+    destination = resolve(localPath!, `.backup/${version}`);
   }
   remove(destination);
-  return copy(localPath, destination, (path) => !path.includes('node_module'));
+  return copy(localPath!, destination, (path) => !path.includes('node_module'));
 }
 /**
  * transform and filter the downloaded package and run actions like notify the admin
  */
-export function beforeUpdate(): Promise<void> {
+export function beforeUpdateHook(
+  options: any,
+  pointName: string,
+  store: Obj
+): Promise<void> {
   return Promise.resolve();
+}
+
+export interface UpdateHookOptions {
+  remotePath: string;
+  localPath?: string;
+  filter?: (file: string) => boolean;
 }
 /**
  * the actual update process
  * @param localPath
  * @param remotePath
  */
-export function update(localPath?: string, remotePath?: string): Promise<void> {
-  return Promise.reject('todo: implement this function');
+export function updateHook(
+  options: UpdateHookOptions,
+  pointName: string,
+  store: Obj
+): Promise<void> {
+  let { localPath, remotePath, filter } = options;
+
+  localPath = localPath || store['localPath'] || root.toString();
+
+  remove(localPath!);
+  return copy(remotePath, localPath!, filter);
 }
 /**
- * install dependencies, finish the update process and restart the app
+ * install dependencies, adjust configs, finish the update process and restart the app
  */
-export function afterUpdate(): Promise<void> {
+export function afterUpdateHook(): Promise<void> {
   return Promise.reject('todo: implement this function');
 }
 
@@ -266,7 +330,7 @@ export function afterUpdate(): Promise<void> {
  * parse a github url
  * @param url
  */
-export function parseGithubUrl(url: string) {
+export function parseGithubUrlHook(url: string) {
   /*
     - may start with https?://github.com/
     - followed by $username/$repo
