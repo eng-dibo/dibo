@@ -100,10 +100,14 @@ export function move(
  */
 export function remove(
   path: PathLike | PathLike[],
+  filter?: (path: string, type: 'dir' | 'file') => boolean,
   keepDir = false
 ): Promise<void> {
-  return recursive(path, (file, type) =>
-    type === 'file' ? unlink(file) : !keepDir ? rmdir(file) : undefined
+  return recursive(
+    path,
+    (file, type) =>
+      type === 'file' ? unlink(file) : !keepDir ? rmdir(file) : undefined,
+    filter
   );
 }
 
@@ -255,7 +259,7 @@ export function recursive(
   if (path instanceof Array) {
     return Promise.all(
       // todo: path.map((p) => ({ [p]: recursive(p as string, apply) }))
-      path.map((p) => recursive(p, apply))
+      path.map((p) => recursive(p, apply, filter))
     ).then((value) => {
       /* a void return, to make it compatible with the return type */
     });
@@ -281,7 +285,7 @@ export function recursive(
               .then((files: any[]) =>
                 Promise.all(
                   files.map((file) => {
-                    return recursive(`${_path}/${file}`, apply);
+                    return recursive(`${_path}/${file}`, apply, filter);
                   })
                 )
               )

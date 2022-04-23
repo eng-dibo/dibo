@@ -168,11 +168,19 @@ export function move(
 
 export function remove(
   path: PathLike | PathLike[],
+  filter?: (path: string, type: 'dir' | 'file') => boolean,
   // if true, delete the folder content, but not the folder itself, default=false
   keepDir = false
 ): void {
-  return recursive(path, (file, type) =>
-    type === 'file' ? unlinkSync(file) : !keepDir ? rmdirSync(file) : undefined
+  return recursive(
+    path,
+    (file, type) =>
+      type === 'file'
+        ? unlinkSync(file)
+        : !keepDir
+        ? rmdirSync(file)
+        : undefined,
+    filter
   );
 }
 
@@ -363,7 +371,7 @@ export function recursive(
     throw new Error('path not provided');
   }
   if (path instanceof Array) {
-    return path.forEach((p: PathLike) => recursive(p, apply));
+    return path.forEach((p: PathLike) => recursive(p, apply, filter));
   }
 
   path = resolve(path.toString());
@@ -372,12 +380,13 @@ export function recursive(
     return;
   }
 
-  if (isDir(path) && filter(path, 'dir')) {
-    readdirSync(path).forEach((file: string) => {
-      recursive(`${path}/${file}`, apply);
-    });
-
-    apply(path, 'dir');
+  if (isDir(path)) {
+    if (filter(path, 'dir')) {
+      readdirSync(path).forEach((file: string) => {
+        recursive(`${path}/${file}`, apply, filter);
+      });
+      apply(path, 'dir');
+    }
   } else if (filter(path, 'file')) {
     apply(path, 'file');
   }
