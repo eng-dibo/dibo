@@ -1,4 +1,6 @@
-import { basename } from 'node:path';
+export interface Obj {
+  [key: string]: any;
+}
 
 /**
  * the element is a lifecyclePoint, a hook or a runner
@@ -23,10 +25,10 @@ export interface LifecyclePoint extends Element {
   hooks: Array<Hook>;
   // a function to be run before handling all hooks
   // the handler decides it's signature
-  beforeAll?: (point: LifecyclePoint) => any;
-  afterAll?: (point: LifecyclePoint) => any;
-  beforeEach?: (point: LifecyclePoint, hook: Hook) => any;
-  afterEach?: (point: LifecyclePoint, hook: Hook) => any;
+  beforeAll?: (point: LifecyclePoint, store: Obj) => any;
+  afterAll?: (point: LifecyclePoint, store: Obj) => any;
+  beforeEach?: (point: LifecyclePoint, hook: Hook, store: Obj) => any;
+  afterEach?: (point: LifecyclePoint, hook: Hook, store: Obj) => any;
 }
 
 export interface Hook extends Element {
@@ -45,9 +47,11 @@ export interface Lifecycle {
   // it also may decide to re-run any point with new arguments, if one failed for example
   // or re-run the whole lifecycle
   runner: Handler;
+  // save arbitrary data
+  store: Obj;
   // runs before all points
-  beforeAll?: () => any;
-  afterAll?: () => any;
+  beforeAll?: (store: Obj) => any;
+  afterAll?: (store: Obj) => any;
   // runs before each point
   beforeEach?: (point: LifecyclePoint) => any;
   afterEach?: (point: LifecyclePoint) => any;
@@ -57,6 +61,7 @@ export default class Hookable {
   private lifecycle: Lifecycle = {
     points: [],
     runner: defaultRunner,
+    store: {},
   };
 
   constructor(points: LifecyclePoint[] = [], runner?: Handler) {
@@ -418,11 +423,11 @@ function checkDuplication<T extends Element>(
 export function defaultRunner(lifecycle: Lifecycle): Promise<void> {
   return new Promise(async (resolve) => {
     // each runner defines it's own store to save arbitrary data between all lifecycle points
-    let store: { [key: string]: any };
 
     // todo: use point.handler() to run all point hooks and point.before*(), point.after*() functions
     if (lifecycle.beforeAll && typeof lifecycle.beforeAll === 'function') {
-      await lifecycle.beforeAll();
+      // todo: add options to before*()/after*()
+      await lifecycle.beforeAll(lifecycle.store);
     }
 
     lifecycle.points.forEach(async (point) => {
@@ -430,11 +435,11 @@ export function defaultRunner(lifecycle: Lifecycle): Promise<void> {
         return;
       }
 
-      await point.handler(point.name);
+      await point.handler(point.name, lifecycle.store);
     });
 
     if (lifecycle.afterAll && typeof lifecycle.afterAll === 'function') {
-      await lifecycle.afterAll();
+      await lifecycle.afterAll(lifecycle.store);
     }
 
     resolve();
@@ -442,24 +447,28 @@ export function defaultRunner(lifecycle: Lifecycle): Promise<void> {
 }
 
 // todo: add this handler to any point that doesn't has one
-export async function defaultHandler(point: LifecyclePoint) {
+export async function defaultHandler(point: LifecyclePoint, store: Obj = {}) {
   if (point.beforeAll && typeof point.beforeAll === 'function') {
-    await point.beforeAll(point);
+    store[point.name]['beforeAll'] = await point.beforeAll(point, store);
   }
 
   for (let hook of point.hooks) {
     if (point.beforeEach && typeof point.beforeEach === 'function') {
-      await point.beforeEach(point, hook);
+      await point.beforeEach(point, hook, store);
     }
 
-    await hook.exec(hook.options, point.name);
+    store[point.name][hook.name] = await hook.exec(
+      hook.options,
+      point.name,
+      store
+    );
 
     if (point.afterEach && typeof point.afterEach === 'function') {
-      await point.afterEach(point, hook);
+      await point.afterEach(point, hook, store);
     }
   }
 
   if (point.afterAll && typeof point.beforeAll === 'function') {
-    await point.afterAll(point);
+    store[point.name]['afterAll'] = await point.afterAll(point, store);
   }
 }
