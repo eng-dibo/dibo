@@ -434,11 +434,10 @@ export function defaultRunner(lifecycle: Lifecycle): Promise<Lifecycle> {
       await lifecycle.beforeAll(lifecycle.store);
     }
     lifecycle.points.forEach(async (point) => {
-      if (!point.handler || !point.hooks || point.hooks.length === 0) {
-        return;
-      }
-
-      lifecycle.store[point.name] = await point.handler(point, lifecycle.store);
+      lifecycle.store[point.name] =
+        point.handler && point.hooks
+          ? await point.handler(point, lifecycle.store)
+          : undefined;
     });
 
     if (lifecycle.afterAll && typeof lifecycle.afterAll === 'function') {
