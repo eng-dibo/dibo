@@ -424,9 +424,9 @@ function checkDuplication<T extends Element>(
  * this runner runs the lifecycle points in sequence
  * wait for async and promise operations
  * @param lifecycle
- * @returns
+ * @returns store
  */
-export function defaultRunner(lifecycle: Lifecycle): Promise<void> {
+export function defaultRunner(lifecycle: Lifecycle): Promise<Obj> {
   return new Promise(async (resolve) => {
     // each runner defines it's own store to save arbitrary data between all lifecycle points
 
@@ -448,7 +448,7 @@ export function defaultRunner(lifecycle: Lifecycle): Promise<void> {
       await lifecycle.afterAll(lifecycle.store);
     }
 
-    resolve();
+    resolve(lifecycle.store);
   });
 }
 
