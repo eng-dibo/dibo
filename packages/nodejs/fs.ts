@@ -26,12 +26,20 @@ import {
 
 import { Abortable } from 'node:events';
 
-import { MoveOptions, resolve, ReadOptions, stripComments } from './fs-sync';
+import {
+  MoveOptions,
+  resolve,
+  ReadOptions,
+  stripComments,
+  Filter as _Filter,
+} from './fs-sync';
 import { dirname, join } from 'node:path';
 import { objectType, Obj } from '@engineers/javascript/objects';
 import stripJsonComments from 'strip-json-comments';
 import { copyFile } from 'fs/promises';
 // todo: import { lstat } from 'fs/promises';
+
+export type Filter = _Filter;
 
 /**
  * get file size asynchronously
@@ -100,7 +108,7 @@ export function move(
  */
 export function remove(
   path: PathLike | PathLike[],
-  filter?: (path: string, type: 'dir' | 'file') => boolean,
+  filter?: Filter,
   keepDir = false
 ): Promise<void> {
   return recursive(
@@ -119,7 +127,7 @@ export function remove(
 export function copy(
   path: PathLike,
   destination: string,
-  filter: (file: string) => boolean = () => true
+  filter: Filter = () => true
 ) {
   return recursive(path, (file, type) =>
     type === 'file' && filter(file)
@@ -250,7 +258,7 @@ export async function getEntries(
 export function recursive(
   path: PathLike | PathLike[],
   apply: (path: string, type: 'dir' | 'file') => void,
-  filter: (path: string, type: 'dir' | 'file') => boolean = () => true
+  filter: Filter = () => true
 ): Promise<void> {
   if (!path) {
     return Promise.reject('path not provided');

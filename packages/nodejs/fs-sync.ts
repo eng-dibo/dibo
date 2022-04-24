@@ -168,7 +168,7 @@ export function move(
 
 export function remove(
   path: PathLike | PathLike[],
-  filter?: (path: string, type: 'dir' | 'file') => boolean,
+  filter?: Filter,
   // if true, delete the folder content, but not the folder itself, default=false
   keepDir = false
 ): void {
@@ -187,7 +187,7 @@ export function remove(
 export function copy(
   path: PathLike,
   destination: string,
-  filter: (file: string) => boolean = () => true
+  filter: Filter = () => true
 ) {
   return recursive(path, (file, type) => {
     if (type === 'file' && filter(file)) {
@@ -358,13 +358,14 @@ export function getEntries(
   return result;
 }
 
+export type Filter = (path: string, type?: 'dir' | 'file') => boolean;
 /**
  * recursively apply a function to a directory and all subdirectories
  */
 export function recursive(
   path: PathLike | PathLike[],
   apply: (path: string, type: 'dir' | 'file') => void,
-  filter: (path: string, type: 'dir' | 'file') => boolean = () => true
+  filter: Filter = () => true
 ): void {
   if (!path) {
     throw new Error('path not provided');
