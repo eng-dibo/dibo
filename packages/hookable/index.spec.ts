@@ -1,11 +1,4 @@
-import {
-  test,
-  expect,
-  describe,
-  jest,
-  beforeAll,
-  beforeEach,
-} from '@jest/globals';
+import { test, expect, jest, beforeAll, beforeEach } from '@jest/globals';
 import Hookable, { LifecyclePoint } from '.';
 
 let hookable: Hookable;
@@ -14,7 +7,12 @@ beforeAll(() => {
   let points: LifecyclePoint[] = [
     {
       name: 'first step',
-      hooks: [{ name: 'hook1', exec: (point) => console.log('hook1 runs') }],
+      hooks: [
+        {
+          name: 'hook1',
+          exec: (options, pointName, store) => console.log('hook1 runs'),
+        },
+      ],
     },
   ];
 

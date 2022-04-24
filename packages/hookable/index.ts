@@ -1,3 +1,5 @@
+import { deepMerge } from '@engineers/javascript/merge';
+
 export interface Obj {
   [key: string]: any;
 }
@@ -40,13 +42,7 @@ export interface Hook extends Element {
 export interface Runner extends Element {}
 export interface Lifecycle {
   points: LifecyclePoint[];
-  // the main handler, handles the whole process and decides what to do in each step
-  // the runner manages lifecycle points and triggers each point.handler function
-  // it may run points in parallel or in sequent or change their running order,
-  // and may pass data between points
-  // it also may decide to re-run any point with new arguments, if one failed for example
-  // or re-run the whole lifecycle
-  runner: Handler;
+
   // save arbitrary data
   store: Obj;
   // runs before all points
@@ -60,16 +56,12 @@ export interface Lifecycle {
 export default class Hookable {
   private lifecycle: Lifecycle = {
     points: [],
-    runner: defaultRunner,
     store: {},
   };
 
-  constructor(points: LifecyclePoint[] = [], runner?: Handler) {
+  constructor(points: LifecyclePoint[] = []) {
     if (points) {
       this.replacePoints(points);
-    }
-    if (runner) {
-      this.lifecycle.runner = runner;
     }
   }
 
@@ -174,12 +166,21 @@ export default class Hookable {
   /* --------- /general methods ----------- */
 
   /**
+   * get an immutable version of the lifecycle
+   * @returns
+   */
+  getLifecycle(): Lifecycle {
+    // todo: always provide an immutable version of lifecycle or point
+    return deepMerge([this.lifecycle]);
+  }
+
+  /**
    * get a lifecycle point by its name
    * @param name
    * @returns
    */
   getPoint(name: string): LifecyclePoint | undefined {
-    return this.get(name, this.getLifecycle());
+    return this.get(name, this.getLifecycle().points);
   }
 
   /**
@@ -205,26 +206,14 @@ export default class Hookable {
   }
 
   /**
-   * get all points of the lifecycle
-   * @returns
-   */
-  getLifecycle(): LifecyclePoint[] {
-    // todo: always provide an immutable version of lifecycle or point
-    return this.lifecycle.points;
-  }
-
-  /**
    * safely adds points to the lifecycle, see add()
    * if any point doesn't hs a handler, the defaultHandler will be attached to it
    * unless it explicity set to false
    * @param points
    * @param force
    */
-  addPoints(
-    points: LifecyclePoint | LifecyclePoint[],
-    replace = false
-  ): LifecyclePoint[] {
-    return this.add<LifecyclePoint>(
+  addPoints(points: LifecyclePoint | LifecyclePoint[], replace = false): this {
+    this.lifecycle.points = this.add<LifecyclePoint>(
       this.lifecycle.points,
       toArray(points),
       replace
@@ -237,6 +226,8 @@ export default class Hookable {
       }
       return point;
     });
+
+    return this;
   }
 
   /**
@@ -248,7 +239,7 @@ export default class Hookable {
     pointName: string,
     hooks: string | Hook | Array<Hook | string>,
     replace = false
-  ): Array<Hook> {
+  ): this {
     let hooksArray: Array<Hook> = toArray(hooks).map((hook) => {
       if (typeof hook === 'string') {
         // example: '@example/my-hook:validate'
@@ -268,9 +259,10 @@ export default class Hookable {
     if (!point) {
       point = { name: pointName, hooks: hooksArray, handler: defaultHandler };
       this.lifecycle.points.push(point);
-      return hooksArray;
+      return this;
     }
-    return this.add<Hook>(point.hooks, hooksArray, replace);
+    point.hooks = this.add<Hook>(point.hooks, hooksArray, replace);
+    return this;
   }
 
   /**
@@ -281,33 +273,38 @@ export default class Hookable {
    * @param pointName
    * @param handler
    */
-  addHandler(pointName: string, handler: Handler): LifecyclePoint {
+  addHandler(pointName: string, handler: Handler): this {
     let point = this.lifecycle.points.find((el) => el.name === pointName);
     if (!point) {
       point = { name: pointName, hooks: [], handler: defaultHandler };
       this.lifecycle.points.push(point);
     }
     point.handler = handler;
-    return point;
+    return this;
   }
 
   /**
    * safely modifies the lifecycle points, see modify()
    */
-  modifyPints(map: (el: LifecyclePoint) => LifecyclePoint): LifecyclePoint[] {
-    return this.modify<LifecyclePoint>(this.lifecycle.points, map);
+  modifyPints(map: (el: LifecyclePoint) => LifecyclePoint): this {
+    this.lifecycle.points = this.modify<LifecyclePoint>(
+      this.lifecycle.points,
+      map
+    );
+    return this;
   }
 
   /**
    * safely modifies hooks of a lifecycle point, see modify()
    * if the lifecycle point does't exist, creates a new one
    */
-  modifyHooks(pointName: string, map: (el: Hook) => Hook): Hook[] {
+  modifyHooks(pointName: string, map: (el: Hook) => Hook): this {
     let point = this.getPoint(pointName);
     if (!point) {
       point = { name: pointName, hooks: [], handler: defaultHandler };
     }
-    return this.modify<Hook>(point.hooks, map);
+    point.hooks = this.modify<Hook>(point.hooks, map);
+    return this;
   }
 
   /**
@@ -316,10 +313,8 @@ export default class Hookable {
    * unless it explicity set to false
    * @param points
    */
-  replacePoints(
-    points: LifecyclePoint | LifecyclePoint[] = []
-  ): LifecyclePoint[] {
-    let newPoints = this.replace<LifecyclePoint>(
+  replacePoints(points: LifecyclePoint | LifecyclePoint[] = []): this {
+    this.lifecycle.points = this.replace<LifecyclePoint>(
       this.lifecycle.points,
       toArray(points)
     ).map((point) => {
@@ -329,15 +324,12 @@ export default class Hookable {
       if (!point.hooks) {
         point.hooks = [];
       }
-      return point;
+      // also copy hooks[] by value using the spread operator or Array.from(hooks)
+      // test: points.map(el=>el) === points -> false
+      return Object.assign({}, { ...point, hooks: [...(point.hooks || [])] });
     });
 
-    // also copy hooks[] by value using the spread operator or Array.from(hooks)
-    // test: points.map(el=>el) === points -> false
-    this.lifecycle.points = newPoints.map((point) =>
-      Object.assign({}, { ...point, hooks: [...(point.hooks || [])] })
-    );
-    return this.lifecycle.points;
+    return this;
   }
 
   /**
@@ -346,26 +338,27 @@ export default class Hookable {
    * @param point
    * @returns
    */
-  replacePoint(pointName: string, point: LifecyclePoint): Lifecycle {
-    this.replaceOne(this.lifecycle.points, pointName, point);
-    return this.lifecycle;
+  replacePoint(pointName: string, point: LifecyclePoint): this {
+    this.lifecycle.points = this.replaceOne(
+      this.lifecycle.points,
+      pointName,
+      point
+    );
+    return this;
   }
 
   /**
    * totally replaces hooks of a lifecycle point, see replace()
    * if the point does'nt exist, creates a new one
    */
-  replaceHooks(pointName: string, newHooks: Hook | Hook[] = []): Hook[] {
+  replaceHooks(pointName: string, newHooks: Hook | Hook[] = []): this {
     let point = this.getPoint(pointName);
     if (!point) {
       point = { name: pointName, hooks: [], handler: defaultHandler };
       this.lifecycle.points.push(point);
     }
-
-    point.hooks = point.hooks || [];
-    // todo: return new hooks reference instead of mutating point.hooks
-    // then replace point.hooks with the returned hooks
-    return this.replace<Hook>(point.hooks, newHooks);
+    point.hooks = this.replace<Hook>(point.hooks || [], newHooks);
+    return this;
   }
 
   /**
@@ -374,20 +367,27 @@ export default class Hookable {
    * @param hookName
    * @param hook
    */
-  replaceHook(pointName: string, hookName: string, hook: Hook): Hook[] {
+  replaceHook(pointName: string, hookName: string, hook: Hook): this {
     let point = this.getPoint(pointName);
     if (!point) {
       throw new Error(`point ${pointName} doesn't exist`);
     }
 
-    return this.replaceOne(point.hooks, hookName, hook);
+    point.hooks = this.replaceOne(point.hooks, hookName, hook);
+    return this;
   }
 
   /**
    * runs the project using the runner (the main handler)
+   * @param runner the main handler, handles the whole process and decides what to do in each step
+   *   the runner manages lifecycle points and triggers each point.handler function
+   *   it may run points in parallel or in sequent or change their running order,
+   *   and may pass data between points
+   *   it also may decide to re-run any point with new arguments, if one failed for example
+   *   or re-run the whole lifecycle
    */
-  run(): Promise<any> {
-    return this.lifecycle.runner(this.lifecycle);
+  run(runner?: Handler): Promise<Lifecycle> {
+    return (runner || defaultRunner)(this.getLifecycle());
   }
 }
 
@@ -426,38 +426,43 @@ function checkDuplication<T extends Element>(
  * @param lifecycle
  * @returns store
  */
-export function defaultRunner(lifecycle: Lifecycle): Promise<Obj> {
+export function defaultRunner(lifecycle: Lifecycle): Promise<Lifecycle> {
   return new Promise(async (resolve) => {
-    // each runner defines it's own store to save arbitrary data between all lifecycle points
-
     // todo: use point.handler() to run all point hooks and point.before*(), point.after*() functions
     if (lifecycle.beforeAll && typeof lifecycle.beforeAll === 'function') {
       // todo: add options to before*()/after*()
       await lifecycle.beforeAll(lifecycle.store);
     }
-
     lifecycle.points.forEach(async (point) => {
       if (!point.handler || !point.hooks || point.hooks.length === 0) {
         return;
       }
 
-      await point.handler(point.name, lifecycle.store);
+      lifecycle.store[point.name] = await point.handler(point, lifecycle.store);
     });
 
     if (lifecycle.afterAll && typeof lifecycle.afterAll === 'function') {
       await lifecycle.afterAll(lifecycle.store);
     }
-
-    resolve(lifecycle.store);
+    resolve(lifecycle);
   });
 }
 
-// todo: add this handler to any point that doesn't has one
-export async function defaultHandler(point: LifecyclePoint, store: Obj = {}) {
+// todo: issue: lifecycle.store object doesn't change by reference
+// workaround: this function returns store and the runner set lifecycle.store[point.name]=defaultHandler()
+export async function defaultHandler(
+  point: LifecyclePoint,
+  store: Obj
+): Promise<Obj> {
+  if (!point.hooks || !(point.hooks instanceof Array)) {
+    return {};
+  }
+
+  store[point.name] = store[point.name] || {};
+
   if (point.beforeAll && typeof point.beforeAll === 'function') {
     store[point.name]['beforeAll'] = await point.beforeAll(point, store);
   }
-
   for (let hook of point.hooks) {
     if (point.beforeEach && typeof point.beforeEach === 'function') {
       await point.beforeEach(point, hook, store);
@@ -477,4 +482,6 @@ export async function defaultHandler(point: LifecyclePoint, store: Obj = {}) {
   if (point.afterAll && typeof point.beforeAll === 'function') {
     store[point.name]['afterAll'] = await point.afterAll(point, store);
   }
+
+  return store[point.name];
 }
