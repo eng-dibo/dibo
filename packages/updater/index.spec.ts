@@ -97,7 +97,7 @@ test('downloadHook: from code base', () => {
     downloadHook(
       {
         remote: { ...remote, release: false },
-        destination: resolve(testDir, '.remote-codebase'),
+        remotePath: resolve(testDir, '.remote-codebase'),
       },
       'pointName',
       store
@@ -124,7 +124,7 @@ test('downloadHook: from a release', () => {
     downloadHook(
       {
         remote: { ...remote, release: 'latest' },
-        destination: resolve(testDir, '/.remote-release'),
+        remotePath: resolve(testDir, '/.remote-release'),
       },
       'pointName',
       store
@@ -144,7 +144,7 @@ test('backupLocalPackageHook', (done) => {
   backupLocalPackageHook(
     {
       localPath: resolve(__dirname),
-      destination: resolve(testDir, '.backup'),
+      backupPath: resolve(testDir, '.backup'),
     },
     'pointName',
     store
@@ -189,8 +189,31 @@ test('updateHook', (done) => {
 });
 test.skip('beforeUpdateHook', (done) => {});
 test.skip('afterUpdateHook', (done) => {});
-test.skip('full process', (done) => {
-  //updater.run().then(console.log);
+test('full process', (done) => {
+  let localPath = `${testDir}/full-process`,
+    remotePath = `${localPath}/.remote`;
+
+  Promise.all([
+    write(`${localPath}/package.json`, { version: '0.0.0' }),
+    write(`${localPath}/config/index.js`, ''),
+  ])
+    .then(() =>
+      updaterHookable({
+        remote: { ...remote, release: false },
+        cleanFilter: (path) => path !== `${localPath}/config`,
+        copyFilter: (path) => path !== `${remotePath}/projects`,
+        localPath,
+        remotePath,
+      })
+    )
+    .then((hookable) => hookable.run())
+    .then((lifecycle) => {
+      console.info('done', { lifecycle });
+      done();
+    })
+    .catch((err) => {
+      done(err);
+    });
 });
 test.skip('custom hooks: getLocalVersion', () => {});
 test.skip('custom lifecycle point: checkUpdates', () => {});
