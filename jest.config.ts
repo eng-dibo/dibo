@@ -72,7 +72,7 @@ let config: Config.InitialOptions = {
    It cannot be resolved, because there exists several different files, or packages`
    this error occurs when ./dist/package.json has the same name as ./package.json
   */
-  modulePathIgnorePatterns: ['dist'],
+  modulePathIgnorePatterns: ['dist', 'test!!'],
   // todo: exclude /dist
 };
 export default config;
