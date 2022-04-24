@@ -1,5 +1,5 @@
 import Hookable from '@engineers/hookable';
-import { read, copy, remove } from '@engineers/nodejs/fs';
+import { read, copy, remove, Filter } from '@engineers/nodejs/fs';
 
 import { dirname, resolve } from 'node:path';
 import { existsSync, lstatSync } from 'node:fs';
@@ -13,7 +13,11 @@ import git from 'simple-git';
 export type UpdateType = 'patch' | 'minor' | 'major' | undefined;
 export interface Options {
   remote: Remote;
-  [key: string]: any;
+  // filter files and dirs to be removed when cleaning the localPath before the update
+  cleanFilter?: Filter;
+  // files and dirs to be copied from the downloaded update
+  copyFilter?: Filter;
+  localPath?: string;
 }
 export interface Remote {
   // example: $username/$repo
@@ -80,7 +84,7 @@ export default (options: Options): Hookable => {
         // todo: add beforeAll() to check if the update should be installed, remove beforeUpdate
         { name: 'backup', exec: backupLocalPackageHook },
         { name: 'beforeUpdate', exec: beforeUpdateHook },
-        { name: 'update', exec: updateHook },
+        { name: 'update', exec: updateHook, options },
         { name: 'finish', exec: afterUpdateHook },
       ],
     },
@@ -315,7 +319,8 @@ export function beforeUpdateHook(
 export interface UpdateHookOptions {
   remotePath: string;
   localPath?: string;
-  filter?: (file: string) => boolean;
+  cleanFilter?: Filter;
+  copyFilter?: Filter;
 }
 /**
  * the actual update process, copies files from remotePath to localPath
@@ -327,7 +332,8 @@ export function updateHook(
   pointName: string,
   store: Obj
 ): Promise<void> {
-  let { localPath, remotePath, filter } = options;
+  let opts = Object.assign({ cleanFilter: () => true }, options);
+  let { localPath, remotePath } = opts;
 
   localPath = localPath || store['localPath'] || root.toString();
   let backupPath = store['update']['backup'];
@@ -335,8 +341,9 @@ export function updateHook(
   // clean the localPath except remotePath and backupPath
   return remove(
     localPath!,
-    (path) => ![remotePath, backupPath].includes(path)
-  ).then(() => copy(remotePath, localPath!, filter));
+    (path, type) =>
+      opts.cleanFilter(path, type) && ![remotePath, backupPath].includes(path)
+  ).then(() => copy(remotePath, localPath!, opts.copyFilter));
 }
 /**
  * install dependencies, adjust configs, finish the update process and restart the app
