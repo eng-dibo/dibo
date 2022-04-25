@@ -159,8 +159,8 @@ export function compareVersionsHook(
 ): UpdateType {
   let opts: CompareVersionsOptions = Object.assign(
     {
-      localVersion: store['checkUpdates']['getLocalVersion'],
-      remoteVersion: store['checkUpdates']['getRemoteVersion'],
+      localVersion: store['checkUpdates']?.['getLocalVersion'],
+      remoteVersion: store['checkUpdates']?.['getRemoteVersion'],
     },
     options || {}
   );
@@ -202,7 +202,7 @@ export function downloadHook(
   pointName: string,
   store: Obj
 ): Promise<string> {
-  let remoteVersion = store['checkUpdates']['getRemoteVersion'] || '0.0.0';
+  let remoteVersion = store['checkUpdates']?.['getRemoteVersion'] || '0.0.0';
   let opts: DownloadOptions = Object.assign(
     {
       filter: () => true,
@@ -296,7 +296,8 @@ export function backupLocalPackageHook(
   pointName: string,
   store: Obj
 ): Promise<string> {
-  let localVersion = store['checkUpdates']['getLocalVersionVersion'] || '0.0.0';
+  let localVersion =
+    store['checkUpdates']?.['getLocalVersionVersion'] || '0.0.0';
   if (!options.localPath) {
     options.localPath = store.localPatch || root.toString();
   }
@@ -349,8 +350,8 @@ export function updateHook(
 ): Promise<void> {
   let opts = Object.assign({ cleanFilter: () => true }, options);
   opts.localPath = opts.localPath || store['localPath'] || root.toString();
-  opts.remotePath = opts.remotePath || store['download']['download'];
-  let backupPath = store['update']['backup'];
+  opts.remotePath = opts.remotePath || store['download']?.['download'];
+  let backupPath = store['update']?.['backup'];
 
   opts.remotePath = opts.localPath + '/.remote';
   if (!opts.remotePath) {
