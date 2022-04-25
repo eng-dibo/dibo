@@ -140,11 +140,15 @@ test('remove a non-exists path', () => {
   return remove(file2).then(() => expect(existsSync(file2)).toBeFalsy());
 });
 
-test('copy a dir', () => {
-  return write(`${dir}/copy-dir/file.txt`, '')
+test.only('copy a directory and its sub-directories', () => {
+  return Promise.all([
+    write(`${dir}/copy-dir/file.txt`, ''),
+    write(`${dir}/copy-dir/sub-dir/file2.txt`, ''),
+  ])
     .then(() => copy(`${dir}/copy-dir`, `${dir}/copy-dir2`))
     .then(() => {
       expect(existsSync(`${dir}/copy-dir2/file.txt`)).toBeTruthy();
+      expect(existsSync(`${dir}/copy-dir2/sub-dir/file2.txt`)).toBeTruthy();
     });
 });
 

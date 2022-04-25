@@ -33,7 +33,7 @@ import {
   stripComments,
   Filter as _Filter,
 } from './fs-sync';
-import { dirname, join } from 'node:path';
+import { basename, dirname, join } from 'node:path';
 import { objectType, Obj } from '@engineers/javascript/objects';
 import stripJsonComments from 'strip-json-comments';
 import { copyFile } from 'fs/promises';
@@ -125,16 +125,22 @@ export function remove(
  * @destination destination of the root dir
  */
 export function copy(
-  path: PathLike,
+  source: PathLike,
   destination: string,
   filter: Filter = () => true
 ) {
-  return recursive(path, (file, type) =>
-    type === 'file' && filter(file)
-      ? mkdir(destination).then(() =>
-          copyFile(file, file.replace(path.toString(), destination))
-        )
-      : undefined
+  return recursive(
+    source,
+    (path, type) => {
+      path = path.toString();
+      if (type === 'file' && filter(path)) {
+        let dest = path.replace(source.toString(), destination);
+        return mkdir(dirname(dest)).then(() => copyFile(path, dest));
+      }
+      return;
+    },
+
+    filter
   );
 }
 

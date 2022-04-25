@@ -185,14 +185,15 @@ export function remove(
 }
 
 export function copy(
-  path: PathLike,
+  source: PathLike,
   destination: string,
   filter: Filter = () => true
 ) {
-  return recursive(path, (file, type) => {
-    if (type === 'file' && filter(file)) {
-      mkdir(destination);
-      copyFileSync(file, file.replace(path.toString(), destination));
+  return recursive(source, (path, type) => {
+    if (type === 'file' && filter(path)) {
+      let dest = path.replace(source.toString(), destination);
+      mkdir(dirname(dest));
+      copyFileSync(path, dest);
     }
   });
 }

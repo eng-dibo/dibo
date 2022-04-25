@@ -172,10 +172,12 @@ test('remove non-exists path', () => {
   expect(existsSync(file2)).toBeFalsy();
 });
 
-test('copy a dir', () => {
+test('copy a directory and its sub-directories', () => {
   write(`${dir}/copy-dir/file.txt`, '');
+  write(`${dir}/copy-dir/sub-dir/file2.txt`, '');
   copy(`${dir}/copy-dir`, `${dir}/copy-dir2`);
   expect(existsSync(`${dir}/copy-dir2/file.txt`)).toBeTruthy();
+  expect(existsSync(`${dir}/copy-dir2/sub-dir/file2.txt`)).toBeTruthy();
 });
 
 describe('getEntries', () => {
