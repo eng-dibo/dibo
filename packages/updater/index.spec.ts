@@ -187,8 +187,7 @@ test('updateHook', (done) => {
     })
     .catch((error) => done(error));
 });
-test.skip('beforeUpdateHook', (done) => {});
-test.skip('afterUpdateHook', (done) => {});
+
 test('full process', (done) => {
   let localPath = `${testDir}/full-process`,
     remotePath = `${localPath}/.remote`;
@@ -208,12 +207,24 @@ test('full process', (done) => {
     )
     .then((hookable) => hookable.run())
     .then((lifecycle) => {
-      console.info('done', { lifecycle });
+      // check that each hook's output is saved in `store` object
+      expect(lifecycle.store.checkUpdates?.getLocalVersion).toEqual('0.0.0');
+      // check that the version is updated
+      expect((read(`${localPath}/package.json`) as any).version).not.toEqual(
+        '0.0.0'
+      );
+      expect(existsSync(`${localPath}/README.md`)).toBeTruthy();
+      // test cleanFilter
+      expect(existsSync(`${localPath}/config/index.js`)).toBeTruthy();
+      // test copyFilter
+      expect(existsSync(`${localPath}/projects`)).toBeFalsy();
+      // check that also subdirectories are copied
+      expect(existsSync(`${localPath}/packages`)).toBeTruthy();
+      // node_modules are excluded by default
+      expect(existsSync(`${localPath}/node_modules`)).toBeFalsy();
       done();
     })
     .catch((err) => {
       done(err);
     });
 });
-test.skip('custom hooks: getLocalVersion', () => {});
-test.skip('custom lifecycle point: checkUpdates', () => {});
