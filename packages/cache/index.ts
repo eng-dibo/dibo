@@ -46,42 +46,33 @@ export default function (
   // control.get() may be not promise and throw an error
   // we need to handle the thrown error inside try & catch block
   // otherwise make sure control.get() returns a promise
-  try {
-    cacheData =
-      !opts.age || opts.age > 0
-        ? toPromise(control.get(cacheEntries, opts))
-        : Promise.reject();
-  } catch (err) {
-    cacheData = Promise.reject(err);
-  }
 
-  return (
-    cacheData
-      // if there is no valid file, run dataSource()
-      .catch(() =>
-        toPromise(dataSource()).then((_data: any) => {
-          if (opts.refreshCache !== false) {
-            control.set(cacheEntries[0], _data, opts);
-          }
-          return _data;
-        })
-      )
-      .catch((error: any) => {
-        // if dataSource() failed, search for an existing cache that doesn't exceed maxAge
-        if (!opts.maxAge || opts.maxAge > (opts.age || -1)) {
-          try {
-            return toPromise(
-              control.get(cacheEntries, { ...opts, age: opts.maxAge })
-            );
-          } catch (err) {
-            // if no valid cache, don't throw an error
-            // the outer function will throw an error for dataSource failing
-          }
+  return toPromise(
+    !opts.age || opts.age > 0 ? control.get(cacheEntries, opts) : undefined
+  ) // if there is no valid file, run dataSource()
+    .catch((err) =>
+      toPromise(dataSource()).then((_data: any) => {
+        if (opts.refreshCache !== false) {
+          control.set(cacheEntries[0], _data, opts);
         }
-
-        throw error;
+        return _data;
       })
-  );
+    )
+    .catch((error: any) => {
+      // if dataSource() failed, search for an existing cache that doesn't exceed maxAge
+      if (!opts.maxAge || opts.maxAge > (opts.age || -1)) {
+        try {
+          return toPromise(
+            control.get(cacheEntries, { ...opts, age: opts.maxAge })
+          );
+        } catch (err) {
+          // if no valid cache, don't throw an error
+          // the outer function will throw an error for dataSource failing
+        }
+      }
+
+      throw error;
+    });
 }
 
 function toPromise<T>(value: T | Promise<T>): Promise<T> {

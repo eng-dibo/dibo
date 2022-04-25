@@ -18,11 +18,29 @@ test('read from an existing cached file', () =>
     .then(() => cache(`${dir}/file.txt`, () => 'content#2'))
     .then((value) => expect(value).toEqual('content#1')));
 
-test('read from multiple cache paths, one of them exists', () =>
-  write(`${dir}/file.txt`, 'content#1')
+test('read from multiple cache paths, one of them exists - case1', () =>
+  write(`${dir}/multiple-case1/file.txt`, 'content#1')
     .then(() =>
       cache(
-        [`${dir}/none1.txt`, `${dir}/file.txt`, `${dir}/none2.txt`],
+        [
+          `${dir}/multiple-case1/file.txt`,
+          `${dir}/none1.txt`,
+          `${dir}/none2.txt`,
+        ],
+        () => 'content#3'
+      )
+    )
+    .then((value) => expect(value).toEqual('content#1')));
+
+test('read from multiple cache paths, one of them exists - case2', () =>
+  write(`${dir}/multiple-case2/file.txt`, 'content#1')
+    .then(() =>
+      cache(
+        [
+          `${dir}/none1.txt`,
+          `${dir}/multiple-case2/file.txt`,
+          `${dir}/none2.txt`,
+        ],
         () => 'content#3'
       )
     )
@@ -42,3 +60,5 @@ test('read from a Promise dataSource', () =>
   cache(`${dir}/promise.txt`, () => {
     return new Promise((r) => r('content'));
   }).then((value) => expect(value).toEqual('content')));
+
+// lajaghj

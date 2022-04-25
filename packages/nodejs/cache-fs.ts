@@ -6,15 +6,17 @@ import { write } from './fs';
 export interface CacheFSOptions extends CacheOptions, ReadOptions {}
 function getCache(entries: PathLike[], options: CacheOptions = {}): any {
   for (let filePath of entries) {
-    // note: without {encoding: undefined} option, read() will return a string instead of Buffer
-    let data = readSync(filePath, {
-      ...options,
-      age: (options.age || 0) * 60 * 60 * 1000,
-    });
+    try {
+      // note: without {encoding: undefined} option, read() will return a string instead of Buffer
+      let data = readSync(filePath, {
+        ...options,
+        age: (options.age || 0) * 60 * 60 * 1000,
+      });
 
-    if (data !== undefined) {
-      return data;
-    }
+      if (data !== undefined) {
+        return data;
+      }
+    } catch (err) {}
   }
 
   throw 'no valid cache found';

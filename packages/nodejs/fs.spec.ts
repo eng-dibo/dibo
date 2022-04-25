@@ -19,6 +19,7 @@ import {
 } from './fs';
 import { existsSync } from 'node:fs';
 import { objectType } from '@engineers/javascript/objects';
+import { utimes } from 'node:fs/promises';
 
 let dir = resolve(__dirname, './test!!/fs'),
   file = dir + '/file.txt';
@@ -52,9 +53,9 @@ test('write in non-existing dir', () => {
 });
 
 test('getSize', () =>
-  Promise.all([getSize(file), getSize(dir)]).then((value) =>
-    expect(value).toEqual([2, 4096])
-  ));
+  write(`${dir}/get-size/file.txt`, 'ok')
+    .then(() => Promise.all([getSize(file), getSize(dir)]))
+    .then((value) => expect(value).toEqual([2, 22])));
 
 test('isDir', () =>
   Promise.all([isDir(file), isDir(dir)]).then((value) =>
@@ -119,11 +120,36 @@ test('read', () => {
   });
 });
 
+test('read from a non-existing file', () => {
+  expect(
+    read(`${dir}/non-existing.txt`, { age: 24 * 60 * 60 })
+  ).rejects.toEqual('no such file or directory');
+});
+
+test('read: age', (done) => {
+  let file = dir + '/file.txt';
+  write(file, 'ok')
+    .then(() => read(file, { age: 24 * 60 * 60 }))
+    .then((content) => {
+      expect(content).toEqual('ok');
+      done();
+    })
+    .catch((error) => done(error));
+});
+
 test('read from an expired cache', () => {
   let file = dir + '/file.txt';
+
+  let date = new Date(),
+    today = date.getDate();
+  date.setDate(today - 1);
+  // in seconds
+  let yesterday = date.getTime() / 1000;
   return expect(
-    write(file, 'ok').then(() => read(file, { age: 60 * 60 }))
-  ).rejects.toThrow('expired file');
+    write(file, 'ok')
+      .then(() => utimes(file, yesterday, yesterday))
+      .then(() => read(file, { age: 1 }))
+  ).rejects.toEqual('expired file');
 });
 
 test('remove a dir', () => {

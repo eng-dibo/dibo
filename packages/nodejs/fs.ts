@@ -185,7 +185,7 @@ export function read(
   );
 
   return getModifiedTime(path).then((modified) => {
-    if (opts.age && opts.age > 0 && modified + opts.age > Date.now()) {
+    if (opts.age && opts.age > 0 && modified + opts.age < Date.now()) {
       throw new Error(`[fs-sync] expired file ${path}`);
     }
 

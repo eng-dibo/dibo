@@ -256,7 +256,7 @@ export function read(
   if (
     opts.age &&
     opts.age > 0 &&
-    getModifiedTime(path) + opts.age > Date.now()
+    getModifiedTime(path) + opts.age < Date.now()
   ) {
     throw new Error(`[fs-sync] expired file ${path}`);
   }

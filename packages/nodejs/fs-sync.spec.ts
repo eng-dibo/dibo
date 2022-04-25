@@ -1,11 +1,4 @@
-import {
-  test,
-  expect,
-  beforeEach,
-  beforeAll,
-  afterEach,
-  describe,
-} from '@jest/globals';
+import { test, expect, beforeEach, afterEach, describe } from '@jest/globals';
 import {
   resolve,
   parsePath,
@@ -84,8 +77,9 @@ test('size units', () => {
 });
 
 test('getSize', () => {
-  expect(getSize(file)).toEqual(2);
-  expect(getSize(dir)).toBeGreaterThan(4000);
+  write(`${dir}/get-size/file.txt`, 'ok');
+  expect(getSize(`${dir}/get-size/file.txt`)).toEqual(2);
+  expect(getSize(`${dir}/get-size`)).toEqual(22);
 });
 
 test('isDir', () => {
@@ -152,10 +146,30 @@ test('read', () => {
   expect(arr).toEqual([1, 2, 3]);
 });
 
+test('read from a non-existing file', () => {
+  expect(() => read(`${dir}/non-existing.txt`, { age: 24 * 60 * 60 })).toThrow(
+    'no such file or directory'
+  );
+});
+
+test('read: age', () => {
+  let file = dir + '/file.txt';
+  write(file, 'ok');
+  expect(read(file, { age: 24 * 60 * 60 })).toEqual('ok');
+});
+
 test('read from an expired cache', () => {
   let file = dir + '/file.txt';
   write(file, 'ok');
-  expect(() => read(file, { age: 60 * 60 })).toThrow('expired file');
+  let date = new Date(),
+    today = date.getDate();
+  date.setDate(today - 1);
+  // in seconds
+  let yesterday = date.getTime() / 1000;
+
+  // set creation and modified time to yesterday
+  utimesSync(file, yesterday, yesterday);
+  expect(() => read(file, { age: 1 })).toThrow('expired file');
 });
 
 test('remove dir', () => {
