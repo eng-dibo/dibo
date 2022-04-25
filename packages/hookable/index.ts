@@ -433,12 +433,16 @@ export function defaultRunner(lifecycle: Lifecycle): Promise<Lifecycle> {
       // todo: add options to before*()/after*()
       await lifecycle.beforeAll(lifecycle.store);
     }
-    lifecycle.points.forEach(async (point) => {
+
+    // don't use `lifecycle.points.forEach(async (point) => {});`
+    for (let i = 0; i < lifecycle.points.length; i++) {
+      let point = lifecycle.points[i];
+
       lifecycle.store[point.name] =
         point.handler && point.hooks
           ? await point.handler(point, lifecycle.store)
           : undefined;
-    });
+    }
 
     if (lifecycle.afterAll && typeof lifecycle.afterAll === 'function') {
       await lifecycle.afterAll(lifecycle.store);

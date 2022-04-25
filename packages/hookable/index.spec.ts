@@ -1,4 +1,6 @@
-import { test, expect, jest, beforeAll, beforeEach } from '@jest/globals';
+import { test, expect, jest, beforeEach } from '@jest/globals';
+import { readFile } from 'fs/promises';
+import { resolve } from 'path';
 import Hookable, { LifecyclePoint } from '.';
 
 let hookable: Hookable;
@@ -61,14 +63,28 @@ test('change hooks', (done) => {
 test('promise hooks', (done) => {
   hookable.replaceHook('first step', 'hook1', {
     name: 'hook4',
-    exec: (point) =>
-      new Promise((resolve) => {
-        resolve('hook4 resolved');
-      }),
+    exec: () => Promise.resolve('hook4 resolved'),
   });
 
   hookable.run().then((lifecycle) => {
     expect(lifecycle.store['first step']['hook4']).toEqual('hook4 resolved');
+    done();
+  });
+});
+
+// test long-time process i.e read from a file
+test('promise hooks: long-time process', (done) => {
+  hookable.replaceHook('first step', 'hook1', {
+    name: 'hook5',
+    exec: (options, pointName, store) =>
+      readFile(resolve(__dirname, './package.json'), 'utf8').then(
+        () => 'hook5 resolved'
+      ),
+  });
+
+  hookable.run().then((lifecycle) => {
+    console.info('promise hooks2', { lifecycle });
+    expect(lifecycle.store['first step']['hook5']).toEqual('hook5 resolved');
     done();
   });
 });
