@@ -11,7 +11,7 @@ import request from '@engineers/nodejs/https';
 import git from 'simple-git';
 
 export type UpdateType = 'patch' | 'minor' | 'major' | undefined;
-export interface Options {
+export interface UpdaterOptions {
   remote: Remote;
   // filter files and dirs to be removed when cleaning the localPath before the update
   cleanFilter?: Filter;
@@ -39,8 +39,8 @@ export interface Remote {
 // each hook has its own options
 // hook= (options)=>function
 // run: updater(options).run()
-export default (options: Options): Hookable => {
-  let opts: Options = Object.assign({}, options || {});
+export default (options: UpdaterOptions): Hookable => {
+  let opts: UpdaterOptions = Object.assign({}, options || {});
   opts.remote = Object.assign(
     {
       release: 'latest',
