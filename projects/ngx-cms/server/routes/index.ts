@@ -11,6 +11,7 @@ import postCollectionRoute from './post-collection';
 import dataRoute from './data';
 import rssRoute from './rss';
 import sequenceRoute, { register as sequenceRegisterRoute } from './sequence';
+import updateRoute from './update';
 
 // api version, increased every time there is a breaking change
 // todo: add auth token & validate the requests
@@ -32,6 +33,7 @@ app.post('/push_notifications/:action', pushNotificationsRoute);
 app.get(/^\/rss(\/.+)?/, rssRoute);
 app.get(/^\/sequence\/([^\/]+)\/(.+)/, sequenceRegisterRoute);
 app.get(/^\/sequence\/([^\/]+)/, sequenceRoute);
+app.get(/update/, updateRoute);
 
 // keep this after all routes
 app.get('*', dataRoute);
