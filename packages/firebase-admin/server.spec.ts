@@ -20,4 +20,5 @@ test('server', () => {
 
   // test that httpServer is converted to cloudFunctions
   expect(server(httpServer).name).toEqual('cloudFunction');
+  httpServer.close();
 });
