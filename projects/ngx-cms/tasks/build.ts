@@ -145,7 +145,7 @@ export function buildPackage(): void {
       // https://chaseadams.io/posts/replace-multiple-instances-of-pattern-in-javascript/
       start: rootPkg.scripts.serve.replace(/.\/dist\//g, './'),
       deploy:
-        'node -r dotenv/config deploy dotenv_config_path=./config/server/.env',
+        'node -r dotenv/config tasks/deploy dotenv_config_path=./config/server/.env',
       postinstall: 'ngcc',
     },
     private: true,
@@ -180,7 +180,7 @@ export function buildPackage(): void {
         deploy: resolve(__dirname, './deploy.ts'),
       },
       output: {
-        path: dist,
+        path: `${dist}/tasks`,
         libraryTarget: 'commonjs',
         clean: false,
       },
@@ -203,7 +203,10 @@ export function buildPackage(): void {
     if (!err) {
       // call the default function, i.e deploy()
       // todo: pass options from cli (see ./index.ts -> runTask())
-      appendFileSync(`${dist}/deploy.js`, '\n\nmodule.exports.default();');
+      appendFileSync(
+        `${dist}/tasks/deploy.js`,
+        '\n\nmodule.exports.default();'
+      );
     }
   });
 }
