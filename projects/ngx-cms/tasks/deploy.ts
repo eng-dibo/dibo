@@ -1,4 +1,4 @@
-import gcloudConfig, { GCloudConfig } from '~config/server/gcloud';
+import { cloudRun as _cloudRun, projectId } from '~config/server/gcloud';
 import cloudFlareConfig from '~config/server/cloudflare';
 import { execSync } from '@engineers/nodejs/process';
 import { execSync as _execSync } from 'child_process';
@@ -12,10 +12,8 @@ import https from 'node:https';
  * @param options overrides gcloudConfig
  */
 // todo: detect if gcloud not installed, run task: setup
-export default function (options: GCloudConfig = {}): void {
-  let opts: GCloudConfig = Object.assign({}, gcloudConfig || {}, options);
-
-  opts.cloudRun = Object.assign(
+export default function (cloudRunOptions: any /* todo: CloudRun */ = {}): void {
+  let cloudRun = Object.assign(
     {},
     {
       name: 'cms-run',
@@ -23,12 +21,12 @@ export default function (options: GCloudConfig = {}): void {
       region: 'europe-west1',
       allowUnauthenticated: true,
     },
-    gcloudConfig.cloudRun || {},
-    options.cloudRun || {}
+    _cloudRun,
+    cloudRunOptions
   );
 
-  let image = `gcr.io/${opts.projectId}/${
-    opts.cloudRun.image || opts.cloudRun.name
+  let image = `gcr.io/${projectId}/${
+    cloudRun.image || cloudRun.name || 'ngx-cms'
   }`;
 
   console.log(`> building the image ${image} ...`);
@@ -64,11 +62,11 @@ export default function (options: GCloudConfig = {}): void {
   console.log('> deploying ...');
   execSync(
     `gcloud run deploy ${
-      opts.cloudRun.name
-    } --image=${image} --port=4200 --project=${opts.projectId} --platform=${
-      opts.cloudRun.platform
-    } --region=${opts.cloudRun.region} ${
-      opts.cloudRun.allowUnauthenticated ? '--allow-unauthenticated' : ''
+      cloudRun.name
+    } --image=${image} --port=4200 --project=${projectId} --platform=${
+      cloudRun.platform
+    } --region=${cloudRun.region} ${
+      cloudRun.allowUnauthenticated ? '--allow-unauthenticated' : ''
     }`
   );
 

@@ -1,5 +1,8 @@
-export interface purge {
-  [key: string]: any;
+interface CloudFlareConfig {
+  purge: { [key: string]: any };
+  token: string | undefined;
+  zone: string | undefined;
 }
-export const token: string | undefined;
-export const zone: string | undefined;
+
+declare let cloudFlareConfig: CloudFlareConfig;
+export default cloudFlareConfig;

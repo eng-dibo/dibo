@@ -14,6 +14,7 @@ import { basename, resolve } from 'node:path';
 import { rootPath, projectPath, dist } from './index';
 import webpack from 'webpack';
 import webpackMerge from 'webpack-merge';
+// todo: use ~server/webpack.config
 import baseConfig from '~~webpack.config';
 import externals from '@engineers/webpack/externals';
 import { JSDOM } from 'jsdom';
@@ -194,7 +195,8 @@ export function buildPackage(): void {
           externals(
             arguments,
             [/^~{1,2}config\/(.*)/],
-            'commonjs2 ./config/{{$1}}'
+            // related to tasks/deploy.ts
+            'commonjs2 ../config/{{$1}}'
           );
         },
       ],
