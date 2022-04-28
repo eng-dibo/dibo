@@ -58,7 +58,7 @@
     "npm-check-updates": "12.5.9",
     "prettier": "2.6.2",
     "semantic-release": "19.0.2",
-    "ts-loader": "9.2.8",
+    "ts-loader": "9.2.9",
     "ts-node": "10.7.0",
     "tsconfig-paths": "3.14.1",
     "tsconfig-paths-webpack-plugin": "3.5.2",
