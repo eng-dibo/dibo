@@ -34,8 +34,8 @@
     "resize images"
   ],
   "dependencies": {
-    "@types/sharp": "0.29.5",
-    "sharp": "0.29.3",
+    "@types/sharp": "0.30.2",
+    "sharp": "0.30.4",
     "@engineers/nodejs": "0.0.1"
   },
   "scripts": {
