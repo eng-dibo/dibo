@@ -39,11 +39,11 @@
     "@fortawesome/fontawesome-svg-core": "^6.1.1",
     "@fortawesome/free-brands-svg-icons": "^6.1.1",
     "@fortawesome/free-solid-svg-icons": "^6.1.1",
-    "ngx-highlightjs": "^6.1.1",
-    "ngx-infinite-scroll": "^10.0.1",
-    "ngx-quill": "^16.1.1",
-    "ngx-sharebuttons": "^9.0.0",
-    "rxjs": "^7.4.0",
+    "ngx-highlightjs": "6.1.2",
+    "ngx-infinite-scroll": "10.0.1",
+    "ngx-quill": "16.2.0",
+    "ngx-sharebuttons": "9.0.0",
+    "rxjs": "7.5.5",
     "@engineers/javascript": "0.0.1",
     "@engineers/ngx-content-core": "0.0.1",
     "@engineers/ngx-utils": "0.0.1",
@@ -67,7 +67,7 @@
     "release:local": "semantic-release --no-ci"
   },
   "devDependencies": {
-    "semantic-release": "^19.0.2",
-    "semantic-release-monorepo": "^7.0.5"
+    "semantic-release": "19.0.2",
+    "semantic-release-monorepo": "7.0.5"
   }
 }

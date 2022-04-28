@@ -28,7 +28,7 @@
   ],
   "description": "rxjs utils",
   "dependencies": {
-    "rxjs": "^7.4.0",
+    "rxjs": "7.5.5",
     "@engineers/nodejs": "0.0.1"
   },
   "keywords": [
@@ -43,7 +43,7 @@
     "release:local": "semantic-release --no-ci"
   },
   "devDependencies": {
-    "semantic-release": "^19.0.2",
-    "semantic-release-monorepo": "^7.0.5"
+    "semantic-release": "19.0.2",
+    "semantic-release-monorepo": "7.0.5"
   }
 }

@@ -48,7 +48,7 @@
     "gcloud:run": "PORT=8080 && docker run -p 9090:${PORT} -e PORT=${PORT} --rm gcr.io/dibo-cloud/vscode"
   },
   "devDependencies": {
-    "semantic-release": "^19.0.2",
-    "semantic-release-monorepo": "^7.0.5"
+    "semantic-release": "19.0.2",
+    "semantic-release-monorepo": "7.0.5"
   }
 }

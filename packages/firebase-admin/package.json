@@ -37,11 +37,11 @@
     "firebase-admin SDK"
   ],
   "dependencies": {
-    "@google-cloud/storage": "^5.17.0",
-    "firebase-admin": "^10.0.1",
-    "firebase-functions": "^3.16.0",
-    "firebase-functions-test": "^0.3.3",
-    "strip-json-comments": "^3.1.1",
+    "@google-cloud/storage": "5.19.2",
+    "firebase-admin": "10.0.2",
+    "firebase-functions": "3.20.1",
+    "firebase-functions-test": "0.3.3",
+    "strip-json-comments": "3.1.1",
     "@engineers/nodejs": "0.0.1"
   },
   "scripts": {
@@ -53,7 +53,7 @@
     "release:local": "semantic-release --no-ci"
   },
   "devDependencies": {
-    "semantic-release": "^19.0.2",
-    "semantic-release-monorepo": "^7.0.5"
+    "semantic-release": "19.0.2",
+    "semantic-release-monorepo": "7.0.5"
   }
 }
