@@ -106,7 +106,7 @@
     "cross-env": "7.0.3",
     "dotenv": "11.0.0",
     "ejs": "3.1.7",
-    "jasmine-core": "4.0.1",
+    "jasmine-core": "4.1.0",
     "jasmine-spec-reporter": "7.0.0",
     "jest-preset-angular": "11.1.2",
     "nodemon": "2.0.15",
