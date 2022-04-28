@@ -28,7 +28,7 @@
   ],
   "description": "google cloud storage",
   "dependencies": {
-    "@google-cloud/storage": "^5.19.0",
+    "@google-cloud/storage": "5.19.2",
     "@engineers/nodejs": "0.0.1"
   },
   "scripts": {
@@ -40,7 +40,7 @@
     "release:local": "semantic-release --no-ci"
   },
   "devDependencies": {
-    "semantic-release": "^19.0.2",
-    "semantic-release-monorepo": "^7.0.5"
+    "semantic-release": "19.0.2",
+    "semantic-release-monorepo": "7.0.5"
   }
 }

@@ -32,7 +32,7 @@
     "SEO"
   ],
   "dependencies": {
-    "parse-domain": "^4.1.0",
+    "parse-domain": "4.1.0",
     "@engineers/nodejs": "0.0.1"
   },
   "scripts": {
@@ -44,7 +44,7 @@
     "release:local": "semantic-release --no-ci"
   },
   "devDependencies": {
-    "semantic-release": "^19.0.2",
-    "semantic-release-monorepo": "^7.0.5"
+    "semantic-release": "19.0.2",
+    "semantic-release-monorepo": "7.0.5"
   }
 }

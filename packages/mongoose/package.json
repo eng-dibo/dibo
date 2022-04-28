@@ -33,10 +33,10 @@
     "database"
   ],
   "dependencies": {
-    "@types/shortid": "^0.0.29",
-    "mongodb": "^4.4.0",
-    "mongoose": "^6.1.6",
-    "shortid": "^2.2.8",
+    "@types/shortid": "0.0.29",
+    "mongodb": "4.5.0",
+    "mongoose": "6.3.0",
+    "shortid": "2.2.16",
     "@engineers/javascript": "0.0.1",
     "@engineers/databases": "0.0.1",
     "@engineers/nodejs": "0.0.1"
@@ -50,7 +50,7 @@
     "release:local": "semantic-release --no-ci"
   },
   "devDependencies": {
-    "semantic-release": "^19.0.2",
-    "semantic-release-monorepo": "^7.0.5"
+    "semantic-release": "19.0.2",
+    "semantic-release-monorepo": "7.0.5"
   }
 }

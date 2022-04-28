@@ -28,10 +28,10 @@
   ],
   "description": "convert Angular projects into universal apps using `expressjs`",
   "dependencies": {
-    "@nguniversal/express-engine": "^13.0.1",
-    "express": "^4.17.2",
-    "rxjs": "^7.4.0",
-    "zone.js": "~0.11.4",
+    "@nguniversal/express-engine": "13.1.0",
+    "express": "4.17.3",
+    "rxjs": "7.5.5",
+    "zone.js": "0.11.5",
     "@engineers/ngx-utils": "0.0.1",
     "@engineers/nodejs": "0.0.1"
   },
@@ -47,7 +47,7 @@
     "release:local": "semantic-release --no-ci"
   },
   "devDependencies": {
-    "semantic-release": "^19.0.2",
-    "semantic-release-monorepo": "^7.0.5"
+    "semantic-release": "19.0.2",
+    "semantic-release-monorepo": "7.0.5"
   }
 }
