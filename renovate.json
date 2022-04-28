@@ -1,5 +1,16 @@
 {
-  "extends": [
-    "config:base"
-  ]
+  "extends": ["config:base"],
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "automerge": true
+    }
+  ],
+  "automergeType": "branch",
+  "commitBody": "by https://www.whitesourcesoftware.com/free-developer-tools",
+  "commitBodyTable": true,
+  "commitMessageSuffix": "[whitesourcesoftware.com]",
+  "semanticCommits": true,
+  "dependencyDashboardAutoclose": true,
+  "dependencyDashboardTitle": "Dependency Dashboard (by whitesourcesoftware.com)"
 }
