@@ -15,6 +15,8 @@
     "aljazsim.tsce",
     "cybai.yaml-key-viewer",
     "ms-azuretools.vscode-docker",
-    "dskwrk.vscode-generate-getter-setter"
+    "dskwrk.vscode-generate-getter-setter",
+    "eamodio.gitlens",
+    "GitHub.vscode-pull-request-github"
   ]
 }
