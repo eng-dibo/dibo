@@ -35,7 +35,7 @@
   "dependencies": {
     "@types/shortid": "0.0.29",
     "mongodb": "4.5.0",
-    "mongoose": "6.3.0",
+    "mongoose": "6.3.1",
     "shortid": "2.2.16",
     "@engineers/javascript": "0.0.1",
     "@engineers/databases": "0.0.1",
