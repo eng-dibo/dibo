@@ -28,7 +28,7 @@
   ],
   "description": "tools for Angular",
   "dependencies": {
-    "jest-preset-angular": "11.1.1",
+    "jest-preset-angular": "11.1.2",
     "rxjs": "7.5.5",
     "@engineers/nodejs": "0.0.1"
   },

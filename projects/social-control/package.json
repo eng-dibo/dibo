@@ -108,7 +108,7 @@
     "ejs": "3.1.7",
     "jasmine-core": "4.0.1",
     "jasmine-spec-reporter": "7.0.0",
-    "jest-preset-angular": "11.1.1",
+    "jest-preset-angular": "11.1.2",
     "nodemon": "2.0.15",
     "protractor": "7.0.0",
     "semantic-release": "19.0.2",
