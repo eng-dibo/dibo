@@ -40,6 +40,6 @@
   },
   "dependencies": {
     "app-root-path": "3.0.0",
-    "simple-git": "3.7.0"
+    "simple-git": "3.7.1"
   }
 }
