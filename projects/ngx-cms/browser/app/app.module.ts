@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { ContentModule } from './content/content.module';
 import { ErrorComponent } from './error/error.component';
 import { Routes, RouterModule, InitialNavigation } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -12,7 +11,6 @@ import { ApiInterceptor } from './http.interceptor';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { TransferHttpCacheModule } from '@nguniversal/common';
-import env from '../env';
 import { ContentViewModule } from './content/view/view.module';
 import { ContentViewComponent } from './content/view/view.component';
 
@@ -61,6 +59,14 @@ const routes: Routes = [
     loadChildren: () =>
       import('./content/content.module').then(
         (modules) => modules.ContentModule
+      ),
+  },
+  {
+    matcher: (segments: any, group: any, route: any) =>
+      segments[0].path === 'members' ? { consumed: [segments[0]] } : null,
+    loadChildren: () =>
+      import('./members.module/members.module').then(
+        (modules) => modules.MembersModule
       ),
   },
   // default routes, if no other route matched

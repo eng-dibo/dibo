@@ -13,7 +13,9 @@ import { UniversalInterceptor } from '@engineers/ngx-universal-express/universal
 const routes: Routes = [
   {
     matcher: (segments: any, group: any, route: any) =>
-      segments.length > 1 && segments[1].path === 'editor'
+      segments.length > 1 &&
+      ['articles', 'jobs'].includes(segments[0].path) &&
+      segments[1].path === 'editor'
         ? // consume the first 2 segments only (i.e articles/editor), and keep the third segment (i.e /item)
           { consumed: segments.slice(0, 2) }
         : null,
@@ -24,7 +26,9 @@ const routes: Routes = [
   },
   {
     matcher: (segments: any, group: any, route: any) =>
-      segments.length > 1 && segments[1].path === 'manage'
+      segments.length > 1 &&
+      ['articles', 'jobs'].includes(segments[0].path) &&
+      segments[1].path === 'manage'
         ? { consumed: segments.slice(0, 2) }
         : null,
     loadChildren: () =>
