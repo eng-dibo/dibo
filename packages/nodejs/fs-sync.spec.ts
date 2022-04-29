@@ -77,9 +77,13 @@ test('size units', () => {
 });
 
 test('getSize', () => {
-  write(`${dir}/get-size/file.txt`, 'ok');
-  expect(getSize(`${dir}/get-size/file.txt`)).toEqual(2);
-  expect(getSize(`${dir}/get-size`)).toEqual(22);
+  write(`${dir}/get-size/file1.txt`, 'ok');
+  write(`${dir}/get-size/file2.txt`, 'ok');
+  expect(getSize(`${dir}/get-size/file1.txt`)).toEqual(2);
+  expect(getSize(`${dir}/get-size`)).toEqual(4);
+  expect(
+    getSize([`${dir}/get-size/file1.txt`, `${dir}/get-size/file2.txt`])
+  ).toEqual(4);
 });
 
 test('isDir', () => {
@@ -293,3 +297,5 @@ describe('getEntries', () => {
     );
   });
 });
+
+// kfnjngfjlngl
