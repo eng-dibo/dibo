@@ -1,4 +1,4 @@
-import { test, expect, afterAll } from '@jest/globals';
+import { test, expect, afterAll, jest } from '@jest/globals';
 import { resolve } from 'node:path';
 import updaterHookable, {
   getLocalVersionHook,
@@ -13,6 +13,8 @@ import updaterHookable, {
 import { remove, read } from '@engineers/nodejs/fs-sync';
 import { write } from '@engineers/nodejs/fs';
 import { existsSync } from 'node:fs';
+
+jest.setTimeout(10000);
 
 let testDir = resolve(__dirname, 'test!!'),
   remote = {
@@ -187,6 +189,8 @@ test('updateHook', (done) => {
     })
     .catch((error) => done(error));
 });
+
+// lkfnlgnljnl
 
 test('full process', (done) => {
   let localPath = `${testDir}/full-process`,
