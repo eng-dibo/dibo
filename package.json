@@ -24,7 +24,9 @@
     "link": "npm run task -- link",
     "delete-tags": "git fetch && npm run delete-tags:remote && npm run delete-tags:local",
     "delete-tags:local": "git tag | xargs git tag -d",
-    "delete-tags:remote": "git tag |  xargs git push --delete origin"
+    "delete-tags:remote": "git tag |  xargs git push --delete origin",
+    "update:all": "npm-check-updates -u --deep --enginesNode --peer  --target=minor && npm i && npm run test:all",
+    "update:all:major": "npm-check-updates -u --deep --enginesNode --peer  --target=major && npm i && npm run test:all"
   },
   "lint-staged": {
     "*": "npm run lint"
