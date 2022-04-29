@@ -5,7 +5,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: info
-      - run: echo "💡 start ${{ github.event_name }}, running on ${{ runner.os }}, repo:${{ github.repository }}, branch:${{ github.ref }}."
+        run: echo "💡 start ${{ github.event_name }}, running on ${{ runner.os }}, repo:${{ github.repository }}, branch:${{ github.ref }}."
       - name: Check out repository code
         uses: actions/checkout@v3
       - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
