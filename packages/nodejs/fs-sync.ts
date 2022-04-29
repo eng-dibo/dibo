@@ -77,14 +77,29 @@ export function getExtension(file: PathLike): string {
 }
 
 /**
- * get file size
+ * get file(s) or directories total size
  */
 export function getSize(
-  path: PathLike,
-  unit: 'b' | 'kb' | 'mb' | 'gb' = 'b'
+  path: PathLike | PathLike[],
+  unit: 'b' | 'kb' | 'mb' | 'gb' = 'b',
+  filter?: Filter
 ): number {
   let units = { b: 0, kb: 1, mb: 2, gb: 3 };
-  return lstatSync(path).size / 1024 ** units[unit];
+  let sizes = recursive(
+    path,
+    (_path, type) =>
+      type === 'file' ? lstatSync(_path).size / 1024 ** units[unit] : undefined,
+    filter
+  );
+
+  let sum = (sizes: any) => {
+    let total: number = 0;
+    for (let i = 0; i < sizes.length; i++) {
+      total += sizes[i] instanceof Array ? sum(sizes[i]) : sizes[i];
+    }
+    return total;
+  };
+  return sizes instanceof Array ? sum(sizes) : sizes;
 }
 
 export function isDir(path: PathLike): boolean {
@@ -362,17 +377,22 @@ export function getEntries(
 export type Filter = (path: string, type?: 'dir' | 'file') => boolean;
 /**
  * recursively apply a function to a directory and all subdirectories
+ * @param path path to a file or directory
+ * @param apply the function to be applied to each directory or file
+ * @param filter
+ * @returns if path is a dir: an array of apply() outputs, if path is file: output of apply()
  */
 export function recursive(
   path: PathLike | PathLike[],
   apply: (path: string, type: 'dir' | 'file') => void,
   filter: Filter = () => true
-): void {
+): any | any[] {
   if (!path) {
     throw new Error('path not provided');
   }
+
   if (path instanceof Array) {
-    return path.forEach((p: PathLike) => recursive(p, apply, filter));
+    return path.map((p: PathLike) => recursive(p, apply, filter));
   }
 
   path = resolve(path.toString());
@@ -381,14 +401,17 @@ export function recursive(
     return;
   }
 
+  let result: any[] = [];
   if (isDir(path)) {
     if (filter(path, 'dir')) {
       readdirSync(path).forEach((file: string) => {
-        recursive(`${path}/${file}`, apply, filter);
+        result.push(recursive(`${path}/${file}`, apply, filter));
       });
       apply(path, 'dir');
     }
   } else if (filter(path, 'file')) {
-    apply(path, 'file');
+    return apply(path, 'file');
   }
+
+  return result;
 }

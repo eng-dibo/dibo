@@ -53,9 +53,25 @@ test('write in non-existing dir', () => {
 });
 
 test('getSize', () =>
-  write(`${dir}/get-size/file.txt`, 'ok')
-    .then(() => Promise.all([getSize(file), getSize(dir)]))
-    .then((value) => expect(value).toEqual([2, 22])));
+  write(`${dir}/get-size/file1.txt`, 'ok')
+    .then(() =>
+      Promise.all([
+        getSize(`${dir}/get-size/file1.txt`),
+        getSize(`${dir}/get-size`),
+        getSize([`${dir}/get-size/file1.txt`, `${dir}/get-size/file2.txt`]),
+      ])
+    )
+    .then((value) => expect(value).toEqual([2, 4, 4])));
+
+test('getSize', () => {
+  write(`${dir}/get-size/file1.txt`, 'ok');
+  write(`${dir}/get-size/file2.txt`, 'ok');
+  expect(getSize(`${dir}/get-size/file1.txt`)).toEqual(2);
+  expect(getSize(`${dir}/get-size`)).toEqual(4);
+  expect(
+    getSize([`${dir}/get-size/file1.txt`, `${dir}/get-size/file2.txt`])
+  ).toEqual(4);
+});
 
 test('isDir', () =>
   Promise.all([isDir(file), isDir(dir)]).then((value) =>

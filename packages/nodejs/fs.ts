@@ -45,21 +45,29 @@ export type Filter = _Filter;
  * get file size asynchronously
  */
 export function getSize(
-  path: PathLike,
-  unit: 'b' | 'kb' | 'mb' | 'gb' = 'b'
+  path: PathLike | PathLike[],
+  unit: 'b' | 'kb' | 'mb' | 'gb' = 'b',
+  filter?: Filter
 ): Promise<number> {
-  return lstat(path)
-    .then((stats: any) => stats.size)
-    .then((size: any) => {
-      let units = {
-        b: 0,
-        kb: 1,
-        mb: 2,
-        gb: 3,
-      };
+  let units = { b: 0, kb: 1, mb: 2, gb: 3 };
 
-      return size / 1024 ** units[unit];
-    });
+  return recursive(
+    path,
+    (_path, type) =>
+      type === 'file'
+        ? lstat(_path).then((stats: any) => stats.size / 1024 ** units[unit])
+        : undefined,
+    filter
+  ).then((sizes) => {
+    let sum = (sizes: any) => {
+      let total: number = 0;
+      for (let i = 0; i < sizes.length; i++) {
+        total += sizes[i] instanceof Array ? sum(sizes[i]) : sizes[i];
+      }
+      return total;
+    };
+    return sizes instanceof Array ? sum(sizes) : sizes;
+  });
 }
 
 export function isDir(path: PathLike): Promise<boolean> {
@@ -258,14 +266,11 @@ export async function getEntries(
   return result;
 }
 
-/**
- * recursively apply a function to a directory and all subdirectories
- */
 export function recursive(
   path: PathLike | PathLike[],
   apply: (path: string, type: 'dir' | 'file') => void,
   filter: Filter = () => true
-): Promise<void> {
+): Promise<any | any[]> {
   if (!path) {
     return Promise.reject('path not provided');
   }
@@ -274,9 +279,7 @@ export function recursive(
     return Promise.all(
       // todo: path.map((p) => ({ [p]: recursive(p as string, apply) }))
       path.map((p) => recursive(p, apply, filter))
-    ).then((value) => {
-      /* a void return, to make it compatible with the return type */
-    });
+    );
   }
 
   // todo: using `path` causes an issue
@@ -309,9 +312,6 @@ export function recursive(
       )
       // if the file doesn't exist, skip
       .catch((err) => {})
-      .finally(() => {
-        /* void */
-      })
   );
 
   // todo: or {file: boolean}
