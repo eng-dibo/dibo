@@ -49,7 +49,7 @@
     "serve:ng": "ng serve",
     "prerender": "ng run ngx-cms:prerender",
     "setup": "npm run task -- setup",
-    "postinstall": "",
+    "postinstall": "ngcc",
     "kill-port:linux": "fuser -k 4200/tcp",
     "declarations": "npx -p typescript tsc config/**/*.js --declaration --allowJs --emitDeclarationOnly --esModuleInterop"
   },
