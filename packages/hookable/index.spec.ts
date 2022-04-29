@@ -83,7 +83,6 @@ test('promise hooks: long-time process', (done) => {
   });
 
   hookable.run().then((lifecycle) => {
-    console.info('promise hooks2', { lifecycle });
     expect(lifecycle.store['first step']['hook5']).toEqual('hook5 resolved');
     done();
   });
