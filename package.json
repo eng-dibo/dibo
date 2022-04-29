@@ -9,9 +9,9 @@
   "scripts": {
     "prepare": "husky install",
     "lint": "prettier --write . --ignore-path=.gitignore && eslint --fix --config .eslintrc.js --ext .js,.ts --ignore-path=.gitignore",
-    "test": "jest",
-    "test:all": "npm t -- --coverage --only-changed=false",
-    "test:all:fails": "npm t -- --coverage --only-changed=false --only-failures",
+    "test": "jest --coverage --only-changed=false",
+    "test:fails": "jest --coverage --only-changed=false --only-failures",
+    "test:changed": "jest",
     "release": "semantic-release",
     "release:local": "semantic-release --no-ci",
     "vscode": "export project=$PWD && npm run docker:stop --prefix=projects/vscode && npm run docker:run --prefix=projects/vscode",
@@ -25,8 +25,8 @@
     "delete-tags": "git fetch && npm run delete-tags:remote && npm run delete-tags:local",
     "delete-tags:local": "git tag | xargs git tag -d",
     "delete-tags:remote": "git tag |  xargs git push --delete origin",
-    "update:all": "npm-check-updates -u --deep --enginesNode --peer  --target=minor && npm i && npm run test:all",
-    "update:all:major": "npm-check-updates -u --deep --enginesNode --peer  --target=major && npm i && npm run test:all"
+    "update:all": "npm-check-updates -u --deep --enginesNode --peer  --target=minor && npm i && npm run test",
+    "update:all:major": "npm-check-updates -u --deep --enginesNode --peer  --target=major && npm i && npm run test"
   },
   "lint-staged": {
     "*": "npm run lint"
