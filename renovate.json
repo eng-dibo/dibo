@@ -1,0 +1,39 @@
+{
+  "extends": ["config:base"],
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "automerge": true,
+      "automergeStrategy": "rebase"
+    },
+    {
+      "matchPackagePatterns": [".+"],
+      "groupName": "dependencies"
+    },
+    {
+      "matchPackagePatterns": ["@angular/.+"],
+      "dependencyDashboardApproval": true
+    }
+  ],
+  "automergeType": "branch",
+  "commitBody": "by https://www.whitesourcesoftware.com/free-developer-tools",
+  "commitBodyTable": true,
+  "commitMessageSuffix": "[whitesourcesoftware.com]",
+  "semanticCommits": true,
+  "dependencyDashboardAutoclose": true,
+  "dependencyDashboardTitle": "Dependency Dashboard (by whitesourcesoftware.com)",
+  "labels": ["dependencies"],
+  "prBodyColumns": [
+    "Package",
+    "Update",
+    "Type",
+    "New value",
+    "Package file",
+    "References"
+  ],
+  "prCreation": "not-pending",
+  "semanticCommitType": "build",
+  "semanticCommitScope": "{{baseDir}}",
+  "separateMultipleMajor": true,
+  "updateInternalDeps": true
+}
