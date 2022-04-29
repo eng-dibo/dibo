@@ -12,5 +12,5 @@ jobs:
       - name: install dependencies
         run: npm ci
       - name: run the test
-        run: npm t
+        run: export NODE_OPTIONS="--max-old-space-size=8192" npm t
       - run: echo "💡 job status:${{ job.status }}."
