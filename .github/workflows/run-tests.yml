@@ -1,0 +1,15 @@
+name: Run tests
+on: [push]
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "💡 start ${{ github.event_name }}, running on ${{ runner.os }}, repo:${{ github.repository }}, branch:${{ github.ref }}."
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
+      - name: install dependencies
+        run: npm ci
+      - name: run the test
+        run: npm t
+      - run: echo "💡 job status:${{ job.status }}."
