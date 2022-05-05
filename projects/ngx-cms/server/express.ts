@@ -12,6 +12,7 @@ import { apiVersion } from './routes';
 import { APP_BASE_HREF } from '@angular/common';
 import { Request, Response, NextFunction, RequestHandler } from 'express';
 import cache from '@engineers/nodejs/cache-fs';
+import sitemapRoute from './routes/sitemap';
 
 let mode = process.env.NODE_ENV || 'production';
 export const TEMP = resolve(__dirname, '../temp');
@@ -95,6 +96,7 @@ export function server(): ReturnType<typeof expressServer> {
     }
   );
   app.use(`/api/v${apiVersion}`, routes);
+  app.get('/sitemap.xml', sitemapRoute);
 
   // prevent non-existing static files from reaching the regular route, i.e app.get('*')
   app.use('*.*', (req: Request, res: Response) => {

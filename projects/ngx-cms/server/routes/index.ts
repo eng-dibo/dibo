@@ -10,6 +10,7 @@ import pushNotificationsRoute from './push-notifications';
 import postCollectionRoute from './post-collection';
 import dataRoute from './data';
 import rssRoute from './rss';
+import sitemapRoute from './sitemap';
 import sequenceRoute, { register as sequenceRegisterRoute } from './sequence';
 import updateRoute from './update';
 
@@ -31,6 +32,7 @@ app.get('/restore/:hosts?', restoreRoute);
 app.get('/restore/:hosts?', restoreRoute);
 app.post('/push_notifications/:action', pushNotificationsRoute);
 app.get(/^\/rss(\/.+)?/, rssRoute);
+app.get(/^\/sitemap(\/.+)?/, sitemapRoute);
 app.get(/^\/sequence\/([^\/]+)\/(.+)/, sequenceRegisterRoute);
 app.get(/^\/sequence\/([^\/]+)/, sequenceRoute);
 app.get(/update/, updateRoute);
