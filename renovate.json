@@ -7,8 +7,9 @@
       "automergeStrategy": "rebase"
     },
     {
-      "matchPackagePatterns": [".+"],
-      "groupName": "dependencies"
+      "matchPackagePatterns": ["*"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "all non-major dependencies"
     },
     {
       "matchPackagePatterns": ["@angular/.+"],
