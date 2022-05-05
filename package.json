@@ -17,7 +17,7 @@
     "vscode": "export project=$PWD && npm run docker:stop --prefix=projects/vscode && npm run docker:run --prefix=projects/vscode",
     "task": "ts-node  -r tsconfig-paths/register ./tasks/index.ts",
     "tasks:build": "webpack --entry=./tasks/index.ts  --output-path=./tasks/tasks~~.js",
-    "postinstall": "ngcc",
+    "postinstall": "ngcc && npm run postinstall -ws --if-present",
     "build:packages": "npm run build -w packages",
     "publish:packages": "npm run _publish -w packages",
     "generate": "npm run task -- generate",

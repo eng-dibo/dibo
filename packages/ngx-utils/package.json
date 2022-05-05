@@ -53,6 +53,7 @@
     "_publish": "npm run build && npm publish --access=public",
     "prepublishOnly": "npm run build",
     "release": "semantic-release",
-    "release:local": "semantic-release --no-ci"
+    "release:local": "semantic-release --no-ci",
+    "postinstall": "ngcc"
   }
 }
