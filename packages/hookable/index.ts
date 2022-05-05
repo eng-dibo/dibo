@@ -59,10 +59,28 @@ export default class Hookable {
     store: {},
   };
 
-  constructor(points: LifecyclePoint[] = []) {
-    if (points) {
-      this.replacePoints(points);
+  constructor(lifecycle?: Lifecycle | LifecyclePoint[]) {
+    if (lifecycle) {
+      if (lifecycle instanceof Array) {
+        this.replacePoints(lifecycle);
+      } else {
+        this.setLifeCycle(lifecycle as Lifecycle);
+      }
     }
+  }
+
+  /**
+   * entirely change the lifecycle
+   * confirm all points and every point.hooks are unique, i.e no name duplications
+   */
+  setLifeCycle(lifecycle: Lifecycle): this {
+    // replaces lifecycle.points with validation, i.e check for duplications
+    this.replacePoints(lifecycle.points || []);
+    this.lifecycle.beforeAll = lifecycle.beforeAll;
+    this.lifecycle.afterAll = lifecycle.afterAll;
+    this.lifecycle.beforeEach = lifecycle.beforeEach;
+    this.lifecycle.afterEach = lifecycle.afterEach;
+    return this;
   }
 
   /**
@@ -83,6 +101,7 @@ export default class Hookable {
    * @param newElements the new element or elements to be added into the elements array
    * @param replace if the new elements exist replace them, otherwise throw an error
    */
+  // todo: if !replaceAll: replace duplicates and add other elements
   add<T extends Element>(
     elements: T[],
     newElements: T | T[] = [],
@@ -210,9 +229,18 @@ export default class Hookable {
    * if any point doesn't hs a handler, the defaultHandler will be attached to it
    * unless it explicity set to false
    * @param points
-   * @param force
+   * @param afterPoint string: add the new points after an existing point
+   *                   undefined: add to end of points list
+   *                   0: add to top of points list
+   * @param replace
    */
-  addPoints(points: LifecyclePoint | LifecyclePoint[], replace = false): this {
+  // todo: checkDuplicate(points) && checkDuplicate(point.hooks)
+  // todo: param afterPoint
+  addPoints(
+    points: LifecyclePoint | LifecyclePoint[],
+    afterPoint?: string | 0,
+    replace = false
+  ): this {
     this.lifecycle.points = this.add<LifecyclePoint>(
       this.lifecycle.points,
       toArray(points),
@@ -313,6 +341,7 @@ export default class Hookable {
    * unless it explicity set to false
    * @param points
    */
+  // todo: check duplication for points and every point.hooks
   replacePoints(points: LifecyclePoint | LifecyclePoint[] = []): this {
     this.lifecycle.points = this.replace<LifecyclePoint>(
       this.lifecycle.points,
