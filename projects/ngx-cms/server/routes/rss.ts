@@ -18,8 +18,9 @@ export default (req: Request, res: Response): void => {
   // todo: cache req.path.xml
   timer(`get ${req.url}`);
   let queryUrl =
-    req.params[0] || `/articles/:${prod ? 100 : 10}@status=approved`;
-  let tmp = `${TEMP}/${queryUrl}.xml`;
+    req.params[0] ||
+    `/articles/:${prod ? 100 : 10}@status=approved%3Fsort=createdAt:-1`;
+  let tmp = `${TEMP}/rss/${queryUrl}.xml`;
   cache(
     tmp,
     () =>
@@ -54,10 +55,12 @@ export default (req: Request, res: Response): void => {
           categories: [],
         });
 
+        // get main category to create item slug i.e: collection/category.title/item.id~item.slug
+        // todo: save item slug in db when creating or when modifying categories
         return query(`${collection}_categories`).then((categories: any) => {
           // todo: transform(data)
           // - add item.link=categories[0]/slug/..
-          data.forEach((item: any) => {
+          data.map((item: any) => {
             let category;
             if (item.categories && item.categories.length > 0 && categories) {
               category = categories.find(
