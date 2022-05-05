@@ -12,7 +12,6 @@ import Quill from 'quill';
 // @ts-ignore: Could not find a declaration file
 import QuillMarkdown from 'quilljs-markdown';
 import dompurify from 'dompurify';
-import { JSDOM } from 'jsdom';
 
 export interface Params {
   type: string;
@@ -285,7 +284,7 @@ export class ContentEditorComponent implements OnInit {
     // example: <div class="unwanted" unwanted="">
     // https://github.com/cure53/DOMPurify#can-i-configure-dompurify
     // todo: validate html code
-    data.content = dompurify(new JSDOM('').window).sanitize(data.content, {
+    data.content = dompurify().sanitize(data.content, {
       KEEP_CONTENT: false,
       FORBID_TAGS: ['script', 'style', 'html', 'head', 'body', 'meta'],
       FORBID_ATTR: ['class', 'id'],
