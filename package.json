@@ -33,7 +33,7 @@
   },
   "private": false,
   "dependencies": {
-    "jest": "^27.5.1",
+    "jest": "28.0.3",
     "jest-preset-angular": "^11.1.2",
     "rxjs": "^7.5.5",
     "strip-json-comments": "^3.1.1",
@@ -61,7 +61,7 @@
     "npm-check-updates": "^12.5.10",
     "prettier": "^2.6.2",
     "semantic-release": "^19.0.2",
-    "ts-jest": "^27.1.4",
+    "ts-jest": "28.0.1",
     "ts-loader": "^9.2.9",
     "ts-node": "^10.7.0",
     "tsconfig-paths": "^3.14.1",
