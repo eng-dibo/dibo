@@ -11,6 +11,8 @@ import { map } from 'rxjs/operators';
 import Quill from 'quill';
 // @ts-ignore: Could not find a declaration file
 import QuillMarkdown from 'quilljs-markdown';
+import dompurify from 'dompurify';
+import { JSDOM } from 'jsdom';
 
 export interface Params {
   type: string;
@@ -278,6 +280,17 @@ export class ContentEditorComponent implements OnInit {
 
     let data = this.formGroup.value;
     data._id = this.params.id;
+    // DOMPurify sanitizes HTML and prevents XSS attacks
+    // also remove unwanted attributes and values
+    // example: <div class="unwanted" unwanted="">
+    // https://github.com/cure53/DOMPurify#can-i-configure-dompurify
+    // todo: validate html code
+    data.content = dompurify(new JSDOM('').window).sanitize(data.content, {
+      KEEP_CONTENT: false,
+      FORBID_TAGS: ['script', 'style', 'html', 'head', 'body', 'meta'],
+      FORBID_ATTR: ['class', 'id'],
+      IN_PLACE: true,
+    });
     // todo: subscribe to progress events
     let url = `/${this.params.type}`;
     this.httpService
