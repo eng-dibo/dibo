@@ -32,7 +32,7 @@
     "SEO"
   ],
   "dependencies": {
-    "parse-domain": "^4.1.0",
+    "parse-domain": "5.0.0",
     "@engineers/nodejs": "0.0.1"
   },
   "scripts": {
