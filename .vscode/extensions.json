@@ -17,6 +17,7 @@
     "ms-azuretools.vscode-docker",
     "dskwrk.vscode-generate-getter-setter",
     "eamodio.gitlens",
-    "GitHub.vscode-pull-request-github"
+    "github.vscode-pull-request-github",
+    "markwylde.vscode-filesize"
   ]
 }
