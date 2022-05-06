@@ -71,7 +71,12 @@ export default function (options?: BuildOptions): void {
 }
 
 export function buildBrowser(mode: Mode = 'production'): void {
-  let cmd = `ng build --aot ${
+  // use --stats-json to create dist/browser/stats.json
+  // use webpack-bundle-analyzer (npm run analyze) to create a visual version of this stats
+  // to know which modules increase your bundle size
+  // open localhost::8888
+  // https://www.digitalocean.com/community/tutorials/angular-angular-webpack-bundle-analyzer
+  let cmd = `ng build --aot --stats-json ${
     mode === 'production' ? '--configuration=production' : ''
   }`;
 

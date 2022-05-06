@@ -47,6 +47,7 @@
     "serve:ts": "ts-node -r dotenv/config  ./dist/server/main.js --start dotenv_config_path=./dist/config/server/.env -- --inspect",
     "serve:dev": "cross-env NODE_ENV=development npm run serve",
     "serve:ng": "ng serve",
+    "analyze": "webpack-bundle-analyzer dist/browser/stats.json",
     "prerender": "ng run ngx-cms:prerender",
     "setup": "npm run task -- setup",
     "postinstall": "ngcc",
@@ -119,6 +120,7 @@
     "terser": "5.13.1",
     "ts-node": "^10.4.0",
     "typescript": "~4.5.4",
-    "web-push": "^3.4.5"
+    "web-push": "^3.4.5",
+    "webpack-bundle-analyzer": "^4.5.0"
   }
 }
