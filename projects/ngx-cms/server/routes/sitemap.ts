@@ -54,12 +54,21 @@ export default (req: Request, res: Response): void => {
               { allowedChars: ':ar' }
             )}`;
 
+            // lastmod format: yyy-mm-dd
+            // https://www.sitemaps.org/protocol.html
+            let date = new Date(item.updatedAt || item.createdAt || '');
+
             content += `
               <url>
                 <loc>${baseUrl}/${collection}/${itemSlug}~${item._id}</loc>
-                <lastmod>${new Date(
-                  item.updatedAt || item.createdAt || ''
-                ).toUTCString()}</lastmod>
+                <lastmod>${
+                  date.getFullYear() +
+                  '-' +
+                  (date.getMonth() + 1) +
+                  '-' +
+                  date.getDate()
+                }</lastmod>
+                <changefreq>monthly</changefreq>
               </url>            
             `;
           });
