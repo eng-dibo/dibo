@@ -48,9 +48,10 @@ export default function (
   // otherwise make sure control.get() returns a promise
 
   try {
-    cacheData = toPromise(
-      !opts.age || opts.age > 0 ? control.get(cacheEntries, opts) : undefined
-    );
+    cacheData =
+      opts.age && opts.age < 0
+        ? Promise.reject()
+        : toPromise(control.get(cacheEntries, opts));
   } catch (error) {
     cacheData = Promise.reject(error);
   }

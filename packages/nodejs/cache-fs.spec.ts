@@ -14,8 +14,8 @@ test('create a new cache', () =>
   ));
 
 test('read from an existing cached file', () =>
-  write(`${dir}/file.txt`, 'content#1')
-    .then(() => cache(`${dir}/file.txt`, () => 'content#2'))
+  write(`${dir}/file-uguihgkuhkgj.txt`, 'content#1')
+    .then(() => cache(`${dir}/file-uguihgkuhkgj.txt`, () => 'content#2'))
     .then((value) => expect(value).toEqual('content#1')));
 
 test('read from multiple cache paths, one of them exists - case1', () =>
