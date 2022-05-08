@@ -132,6 +132,7 @@ export default (req: Request, res: Response): any => {
       ).then((categories) => {
         if (!data.categories || data.categories.length === 0) {
           // default category: general topics
+          // todo: get default category from config or leave it blank
           data.categories = ['dPdoPD6UEp'];
         } else {
           // add parents recursively
