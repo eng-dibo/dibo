@@ -29,6 +29,7 @@ export let articles = {
   contacts: String, // for jobs
   categories: [String],
   sources: String,
+  cover: Boolean,
 };
 
 export let jobs = Object.assign(articles, {
