@@ -230,9 +230,8 @@ export function optimize() {
 
   // todo: minify js files using terser
 
-  /*['browser', 'server'].forEach((dir) =>
+  ['browser', 'server'].forEach((dir) =>
     readdirSync(`${dist}/${dir}`)
-      // todo:
       .filter((el) => el.endsWith('.js'))
       .forEach((el) => {
         let path = `${dist}/${dir}/${el}`;
@@ -241,7 +240,7 @@ export function optimize() {
           `terser ${path} --output ${path} --compress --mangle --keep-fnames`
         );
       })
-  );*/
+  );
 
   // transform index.html (lazy-load resources, and move them after 'load' event)
   // DOMParser() is not available in nodejs, so we use `jsdom`
@@ -303,14 +302,13 @@ export function optimize() {
     }
   });
 
-  txt += `load("styles.css"); load("scripts.js")`;
-
   dom.querySelectorAll('style').forEach((el: any) => {
     // combine all styles into a single file, and load it via load()
     appendFileSync(`${browserPath}/styles.css`, el.innerHTML);
     el.remove();
   });
 
+  txt += `load("styles.css"); load("scripts.js")`;
   txt = `import load from "./load.mjs";\nwindow.addEventListener("load", () => {\n${txt}\n});`;
   let script = dom.createElement('script');
   script.setAttribute('type', 'module');
