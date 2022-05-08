@@ -1,5 +1,6 @@
-// loads a script and returns  promise
+// loads a script and returns a promise
 // copied from @engineers/dom/load
+
 export default function load(
   src,
   attributes = {},

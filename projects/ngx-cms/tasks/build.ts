@@ -228,20 +228,6 @@ export function buildPackage(): void {
 export function optimize() {
   console.log(`> build: optimizing`);
 
-  // todo: minify js files using terser
-
-  ['browser', 'server'].forEach((dir) =>
-    readdirSync(`${dist}/${dir}`)
-      .filter((el) => el.endsWith('.js'))
-      .forEach((el) => {
-        let path = `${dist}/${dir}/${el}`;
-        console.log(`> minifying: ${dir}/${el}`);
-        execSync(
-          `terser ${path} --output ${path} --compress --mangle --keep-fnames`
-        );
-      })
-  );
-
   // transform index.html (lazy-load resources, and move them after 'load' event)
   // DOMParser() is not available in nodejs, so we use `jsdom`
   let browserPath = `${dist}/browser`,
@@ -308,8 +294,11 @@ export function optimize() {
     el.remove();
   });
 
-  txt += `load("styles.css"); load("scripts.js")`;
-  txt = `import load from "./load.mjs";\nwindow.addEventListener("load", () => {\n${txt}\n});`;
+  txt += `load("styles.css");\n load("scripts.js")`;
+  txt = `window.addEventListener("load", () => {
+    import("./load.mjs")
+    .then((module) => module.default)
+    .then((load)=>{${txt}})});`;
   let script = dom.createElement('script');
   script.setAttribute('type', 'module');
   script.append(txt);
@@ -319,6 +308,19 @@ export function optimize() {
 
   // todo: minify index.html
   write(indexPath, '<!DOCTYPE html>\n' + dom.documentElement.outerHTML);
+
+  //  minify js files using terser
+  ['browser', 'server'].forEach((dir) =>
+    readdirSync(`${dist}/${dir}`)
+      .filter((el) => el.endsWith('.js'))
+      .forEach((el) => {
+        let path = `${dist}/${dir}/${el}`;
+        console.log(`> minifying: ${dir}/${el}`);
+        execSync(
+          `terser ${path} --output ${path} --compress --mangle --keep-fnames`
+        );
+      })
+  );
 
   // the hashes for modified files is changed, so we need to rebuild ngsw-config with the new hashes
   // install @angular/service-worker to use ngsw-config (or use npx ngsw-config)
