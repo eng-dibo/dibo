@@ -18,6 +18,7 @@ export let articles = {
   _id: { type: String, default: shortId.generate },
   title: String,
   subtitle: String,
+  slug: String,
   content: String,
   summary: String,
   keywords: [{ type: String, ref: 'keywords' }],
@@ -29,6 +30,7 @@ export let articles = {
   contacts: String, // for jobs
   categories: [String],
   sources: String,
+  cover: Boolean,
 };
 
 export let jobs = Object.assign(articles, {
