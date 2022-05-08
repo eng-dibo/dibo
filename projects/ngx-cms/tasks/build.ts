@@ -277,6 +277,7 @@ export function optimize() {
       // todo: converting <script type="module"> to load() causes a blank page displayed.
       // even if they loaded.
       let type = script.getAttribute('type');
+      /*
       if (type === 'module') {
         if (!['scripts.mjs', 'modules.mjs'].includes(script.src)) {
           // todo: load modules after dom.loaded event
@@ -288,15 +289,13 @@ export function optimize() {
         }
 
         return;
-      }
+      }*/
 
       // nomodule prevents the modern browsers to load the script,
       // it instead, will load the "module" version
       // https://stackoverflow.com/a/45947601/12577650
 
-      txt += `load("${script.src}",{${
-        type === 'module' ? '' : 'nomodule:true,defer:true'
-      }},"${type || 'script'}");\n`;
+      txt += `load("${script.src}",{},"${type || 'script'}");\n`;
 
       script.remove();
     }
