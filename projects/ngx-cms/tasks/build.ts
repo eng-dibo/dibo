@@ -256,6 +256,7 @@ export function optimize() {
 
   write(`${browserPath}/styles.css`, '');
   write(`${browserPath}/scripts.js`, '');
+  write(`${browserPath}/modules.mjs`, '');
 
   function getAttributes(el: any): { [key: string]: string } {
     let result: { [key: string]: string } = {};
@@ -270,13 +271,22 @@ export function optimize() {
   dom.querySelectorAll('script').forEach((script: any) => {
     // todo: ||data-keep
     if (!script.src) {
-      appendFileSync(`${browserPath}/styles.css`, script.innerHTML);
+      appendFileSync(`${browserPath}/scripts.js`, script.innerHTML);
       script.remove();
     } else {
       // todo: converting <script type="module"> to load() causes a blank page displayed.
       // even if they loaded.
       let type = script.getAttribute('type');
       if (type === 'module') {
+        if (!['scripts.mjs', 'modules.mjs'].includes(script.src)) {
+          // todo: load modules after dom.loaded event
+          appendFileSync(
+            `${browserPath}/modules.mjs`,
+            `await import("./${script.src}").then(module=>console.log(module));\n`
+          );
+          script.remove();
+        }
+
         return;
       }
 
