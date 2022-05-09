@@ -36,5 +36,6 @@
   "semanticCommitType": "build",
   "semanticCommitScope": "{{baseDir}}",
   "separateMultipleMajor": true,
-  "updateInternalDeps": true
+  "updateInternalDeps": true,
+  "ignoreDeps": ["@semantic-release/npm", "strip-json-comments"]
 }
