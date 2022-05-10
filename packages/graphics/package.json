@@ -34,9 +34,8 @@
     "resize images"
   ],
   "dependencies": {
-    "@types/sharp": "^0.30.2",
-    "sharp": "^0.30.4",
-    "@engineers/nodejs": "0.0.1"
+    "@engineers/nodejs": "0.0.1",
+    "sharp": "^0.30.4"
   },
   "scripts": {
     "build": "webpack",
@@ -47,6 +46,7 @@
     "release:local": "semantic-release --no-ci"
   },
   "devDependencies": {
+    "@types/sharp": "^0.30.2",
     "semantic-release": "^19.0.2",
     "semantic-release-monorepo": "^7.0.5"
   }
