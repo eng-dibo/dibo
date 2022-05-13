@@ -1,34 +1,21 @@
-import { resolve } from 'path';
-import baseConfig from '~~webpack.config';
-import webpackMerge from 'webpack-merge';
-import { Configuration } from 'webpack';
 
-let config: Configuration = webpackMerge(baseConfig, {
-  resolve: {
-    alias: {
-      '~': resolve(__dirname, '.'),
+  import webpackMerge from 'webpack-merge';
+  import { Configuration } from 'webpack';
+  import baseConfig from '~~webpack.config';
+  import { resolve } from 'node:path';
+  import { getEntries, read } from '@engineers/nodejs/fs-sync';
+  
+  let tsConfig = read(resolve(__dirname, 'tsconfig.json')) as {[key:string]: any};
+  let entry:{[key:string]:string} = {};
+  // convert path to posix, i.e using "/" in all platforms
+  let pattern = new RegExp(`${__dirname.replace(/\\/g, '/')}/(.+).ts$`);
+  getEntries(__dirname, /(?<!.config|.spec).ts$/).forEach((file) => {
+    entry[file.replace(/\\/g, '/').match(pattern)![1]] = file;
+  });
+  
+  export default webpackMerge(baseConfig, {
+    entry,
+    output: {
+      path: resolve(__dirname, tsConfig.compilerOptions.outDir),
     },
-  },
-  externals: [],
-});
-
-// remove ts-loader as .ts files already loaded by Angular linker
-config.module!.rules = config.module!.rules!.filter(
-  // todo: (el: RuleSetRule)
-  (el: any) => el.loader !== 'ts-loader'
-);
-
-// if ts-loader used, change tsconfig.json for this project to use the project's paths
-let tsLoader = config.module!.rules!.find(
-  // todo: (el: RuleSetRule)
-  (el: any) => el.loader === 'ts-loader'
-) as { [key: string]: any };
-
-if (tsLoader) {
-  tsLoader.options!.configFile = resolve(__dirname, './tsconfig.json');
-}
-
-delete config.target;
-delete config.output!.library;
-delete config.output!.libraryTarget;
-export default config;
+  });
