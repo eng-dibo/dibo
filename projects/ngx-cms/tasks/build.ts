@@ -152,7 +152,7 @@ export function buildPackage(): void {
       start: rootPkg.scripts.serve.replace(/.\/dist\//g, './'),
       deploy:
         'node -r dotenv/config tasks/deploy dotenv_config_path=./config/server/.env',
-      postinstall: 'ngcc',
+    
     },
     private: true,
     // todo: add @engineers/* packages (or remove them from webpack.externals)

@@ -50,7 +50,6 @@
     "analyze": "webpack-bundle-analyzer dist/browser/stats.json",
     "prerender": "ng run ngx-cms:prerender",
     "setup": "npm run task -- setup",
-    "postinstall": "ngcc",
     "kill-port:linux": "fuser -k 4200/tcp",
     "declarations": "npx -p typescript tsc config/**/*.js --declaration --allowJs --emitDeclarationOnly --esModuleInterop"
   },
