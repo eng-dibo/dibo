@@ -36,6 +36,8 @@
     "release": "semantic-release",
     "release:local": "semantic-release --no-ci",
     "postversion": "shx cp package.json ..",
+    "postrelease": "shx rm -r dist",
+    "postrelease:local": "npm run postrelease",
     "start": "npm run build && npm run serve",
     "start:dev": "npm run build:dev && npm run serve:dev",
     "deploy": "npm run deploy --prefix=./dist",

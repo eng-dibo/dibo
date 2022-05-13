@@ -36,7 +36,9 @@
     "prerelease:local": "npm run prerelease",
     "release": "semantic-release",
     "release:local": "semantic-release --no-ci",
-    "postversion": "shx cp package.json .."
+    "postversion": "shx cp package.json ..",
+    "postrelease": "shx rm -r dist",
+    "postrelease:local": "npm run postrelease"
   },
   "keywords": [
     "ejs",

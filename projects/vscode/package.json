@@ -37,6 +37,8 @@
     "release": "semantic-release",
     "release:local": "semantic-release --no-ci",
     "postversion": "shx cp package.json ..",
+    "postrelease": "shx rm -r dist",
+    "postrelease:local": "npm run postrelease",
     "start": "npm run gcloud:project && npm run gcloud:login && npm run docker:build && npm run docker:push && npm run gcloud:deploy",
     "docker:build": "docker build . --tag=gcr.io/dibo-cloud/vscode",
     "docker:push": "docker push gcr.io/dibo-cloud/vscode",
