@@ -152,7 +152,6 @@ export function buildPackage(): void {
       ),
       deploy:
         'node -r dotenv/config deploy dotenv_config_path=./config/server/.env',
-
     },
     private: true,
     // todo: add @engineers/* packages (or remove them from webpack.externals)

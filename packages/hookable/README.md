@@ -1,4 +1,4 @@
-# @engineers/dibo-system
+# @engineers/hookable
 
 adds lifecycle to any project and manages projects lifecycle, allows using hooks and third party plugins
 
@@ -7,7 +7,7 @@ adds lifecycle to any project and manages projects lifecycle, allows using hooks
 install the package and it's peer dependencies:
 
 ```
-npm i @engineers/dibo-system
+npm i @engineers/hookable
 ```
 
 you can build this package and any of our packages yourself from [source](https://github.com/eng-dibo/dibo/tree/main/packages)
@@ -19,7 +19,7 @@ it will run, but to fine tune any functionality of this project, you need to mod
 
 this not only difficult, but also causes many bugs in your code, specially if your project doesn't have well-written unit tests.
 
-`DIBO SYSTEM` adds a lifecycle to your project, so you can control any lifecycle point.
+`hookable` adds a lifecycle to your project, so you can control any lifecycle point.
 you can attach a hook to any point, and override or modify any hook at any lifecycle point.
 
 you even can control how hooks of every point could be handled and what to de before and after every hook run. also, you can control what to do before and after every lifecycle pont finishes its job.
@@ -52,8 +52,6 @@ read our [contributing guide](https://github.com/eng-dibo/dibo/blob/main/CONTRIB
 
 - [databases](https://www.npmjs.com/package/@engineers/databases)
 
-- [dibo-system](https://www.npmjs.com/package/@engineers/dibo-system)
-
 - [dom](https://www.npmjs.com/package/@engineers/dom)
 
 - [express-redirect-middleware](https://www.npmjs.com/package/@engineers/express-redirect-middleware)
@@ -63,6 +61,8 @@ read our [contributing guide](https://github.com/eng-dibo/dibo/blob/main/CONTRIB
 - [gcloud-storage](https://www.npmjs.com/package/@engineers/gcloud-storage)
 
 - [graphics](https://www.npmjs.com/package/@engineers/graphics)
+
+- [hookable](https://www.npmjs.com/package/@engineers/hookable)
 
 - [javascript](https://www.npmjs.com/package/@engineers/javascript)
 

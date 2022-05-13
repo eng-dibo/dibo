@@ -107,7 +107,8 @@ export function updatePackages(
                 pkg.scripts = Object.assign(
                   {},
                   defaultScripts,
-                  pkg.scripts || {}
+                  pkg.scripts || {},
+                  { postbuild: 'shx cp package.json dist' }
                 );
 
                 return pkg;

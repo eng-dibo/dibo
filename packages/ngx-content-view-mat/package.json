@@ -60,10 +60,13 @@
   },
   "scripts": {
     "build": "webpack",
-    "postbuild": "cp package.json dist",
+    "postbuild": "shx cp package.json dist",
     "_publish": "npm run build && npm publish --access=public",
     "prepublishOnly": "npm run build",
+    "prerelease": "shx mkdir -p dist && shx cp package.json dist",
+    "prerelease:local": "npm run prerelease",
     "release": "semantic-release",
-    "release:local": "semantic-release --no-ci"
+    "release:local": "semantic-release --no-ci",
+    "postversion": "shx cp package.json .."
   }
 }

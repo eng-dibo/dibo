@@ -47,8 +47,6 @@ read our [contributing guide](https://github.com/eng-dibo/dibo/blob/main/CONTRIB
 
 - [databases](https://www.npmjs.com/package/@engineers/databases)
 
-- [dibo-system](https://www.npmjs.com/package/@engineers/dibo-system)
-
 - [dom](https://www.npmjs.com/package/@engineers/dom)
 
 - [express-redirect-middleware](https://www.npmjs.com/package/@engineers/express-redirect-middleware)
@@ -58,6 +56,8 @@ read our [contributing guide](https://github.com/eng-dibo/dibo/blob/main/CONTRIB
 - [gcloud-storage](https://www.npmjs.com/package/@engineers/gcloud-storage)
 
 - [graphics](https://www.npmjs.com/package/@engineers/graphics)
+
+- [hookable](https://www.npmjs.com/package/@engineers/hookable)
 
 - [javascript](https://www.npmjs.com/package/@engineers/javascript)
 
