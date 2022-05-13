@@ -5,6 +5,8 @@ config.plugins = config.plugins.filter(
 );
 
 config.plugins.push([
+  // todo: replace this plugin with script: `postversion`
+  // to update package.json after @semantic-release/npm setting dist/packages.json's version
   "@semantic-release/exec",
   {
     // use 'replace-json-property' to update the package's version
