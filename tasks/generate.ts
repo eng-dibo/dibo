@@ -200,7 +200,7 @@ export function addWebpackConfig(
   let tsConfig = read(resolve(__dirname, 'tsconfig.json')) as {[key:string]: any};
   let entry:{[key:string]:string} = {};
   // convert path to posix, i.e using "/" in all platforms
-  let pattern = new RegExp(\`${__dirname.replace(/\\\\/g, '/')}/(.+).ts$\`);
+  let pattern = new RegExp(\`\${__dirname.replace(/\\\\/g, '/')}/(.+).ts$\`);
   getEntries(__dirname, /(?<!\.config|\.spec)\.ts$/).forEach((file) => {
     entry[file.replace(/\\\\/g, '/').match(pattern)![1]] = file;
   });
