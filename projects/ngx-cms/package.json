@@ -114,8 +114,6 @@
     "jest-preset-angular": "^11.0.1",
     "nodemon": "^2.0.15",
     "protractor": "~7.0.0",
-    "semantic-release": "^19.0.2",
-    "semantic-release-monorepo": "^7.0.5",
     "supertest": "^6.2.1",
     "terser": "5.13.1",
     "ts-node": "^10.4.0",

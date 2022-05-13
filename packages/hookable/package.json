@@ -35,10 +35,6 @@
     "release": "semantic-release",
     "release:local": "semantic-release --no-ci"
   },
-  "devDependencies": {
-    "semantic-release": "^19.0.2",
-    "semantic-release-monorepo": "^7.0.5"
-  },
   "dependencies": {
     "@engineers/nodejs": "0.0.1"
   }

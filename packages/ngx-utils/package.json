@@ -32,8 +32,6 @@
     "@engineers/nodejs": "0.0.1"
   },
   "devDependencies": {
-    "semantic-release": "^19.0.2",
-    "semantic-release-monorepo": "^7.0.5",
     "jest-preset-angular": "11.1.2"
   },
   "peerDependencies": {
