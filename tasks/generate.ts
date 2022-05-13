@@ -32,7 +32,12 @@ let rootPath = resolve(__dirname, '..'),
     'prerelease:local': 'npm run prerelease',
     release: 'semantic-release',
     'release:local': 'semantic-release --no-ci',
+    // after semantic-release change the version in dist/package.json
+    // copy dist/package.json to the package's root
     postversion: 'shx cp package.json ..',
+    // clean the build folder after the releasing finished
+    postrelease: 'shx rm -r dist',
+    'postrelease:local': 'npm run postrelease',
   };
 
 export interface GenerateOptions {
