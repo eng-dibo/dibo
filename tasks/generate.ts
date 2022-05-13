@@ -21,13 +21,18 @@ let rootPath = resolve(__dirname, '..'),
   }),
   defaultScripts = {
     build: 'webpack',
-    postbuild: 'cp package.json dist',
+    postbuild: 'shx cp package.json dist',
     _publish: 'npm run build && npm publish --access=public',
     // build the package just before it is about to be published and released
     // no need to build all packages before running `npm run release`
     prepublishOnly: 'npm run build',
+    // a temporary workaround to avoid the error $pkgDir/package.json is missing
+    // by @semantic-release/npm
+    prerelease: 'shx mkdir -p dist && shx cp package.json dist',
+    'prerelease:local': 'npm run prerelease',
     release: 'semantic-release',
     'release:local': 'semantic-release --no-ci',
+    postversion: 'shx cp package.json ..',
   };
 
 export interface GenerateOptions {

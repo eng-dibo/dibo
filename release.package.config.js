@@ -4,9 +4,10 @@ config.plugins = config.plugins.filter(
   (el) => !["@semantic-release/github"].includes(el)
 );
 
+/*
 config.plugins.push([
-  // todo: replace this plugin with script: `postversion`
-  // to update package.json after @semantic-release/npm setting dist/packages.json's version
+   // to update package.json after @semantic-release/npm setting dist/packages.json's version
+  // replaced with script `postversion` 
   "@semantic-release/exec",
   {
     // use 'replace-json-property' to update the package's version
@@ -14,6 +15,6 @@ config.plugins.push([
     prepareCmd:
       "npx replace-json-property package.json version ${nextRelease.version}",
   },
-]);
+]);*/
 
 module.exports = config;
