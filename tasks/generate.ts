@@ -195,11 +195,12 @@ export function addWebpackConfig(
   import { resolve } from 'node:path';
   import { getEntries, read } from '@engineers/nodejs/fs-sync';
   
-  let tsConfig = read(resolve(__dirname, 'tsconfig.json'));
+  let tsConfig = read(resolve(__dirname, 'tsconfig.json')) as {[key:string]: any};
   let entry:{[key:string]:string} = {};
-  let pattern = new RegExp(\`\${__dirname}\/(.+)\.ts$\`);
+  // convert path to posix, i.e using "/" in all platforms
+  let pattern = new RegExp(\`${__dirname.replace(/\\\\/g, '/')}/(.+).ts$\`);
   getEntries(__dirname, /(?<!\.config|\.spec)\.ts$/).forEach((file) => {
-    entry[file.match(pattern)[1]] = file;
+    entry[file.replace(/\\\\/g, '/').match(pattern)![1]] = file;
   });
   
   export default webpackMerge(baseConfig, {
