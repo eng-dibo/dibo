@@ -59,6 +59,7 @@ export default function generate(
         updateReadMe([path]),
         addTsconfig([path]),
         addWebpackConfig([path]),
+        // addJestConfig([path]),
         addSemanticReleaseConfig([path]),
         write(`${path}/index.ts`, ''),
       ])
@@ -69,6 +70,7 @@ export default function generate(
         updateReadMe(),
         addTsconfig(),
         addWebpackConfig(),
+        // addJestConfig(),
         addSemanticReleaseConfig(),
       ])
     );
@@ -224,7 +226,7 @@ export function addJestConfig(
   let content = `
    import jestConfig from '../../jest.config';
    export default Object.assign({}, jestConfig, {
-    testMatch: [\`${__dirname}/**/*.spec.ts\`],
+    testMatch: [\`\${__dirname}/**/*.spec.ts\`],
    });
 `;
 
