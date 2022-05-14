@@ -8,7 +8,7 @@
   ],
   "scripts": {
     "prepare": "husky install",
-    "lint": "prettier --write . --ignore-path=.gitignore && eslint --fix --config .eslintrc.js --ext .js,.ts --ignore-path=.gitignore",
+    "lint": "prettier . --write --ignore-path=.gitignore && eslint . --fix --config=.eslintrc.js --ext=.js,.ts --ignore-path=.gitignore",
     "test": "jest --coverage --only-changed=false",
     "test:fails": "jest --coverage --only-changed=false --only-failures",
     "test:changed": "jest",
@@ -28,7 +28,10 @@
     "update:all:major": "npm-check-updates -u --deep --enginesNode --peer  --target=major && npm i && npm run test"
   },
   "lint-staged": {
-    "*": "npm run lint"
+    "*": [
+      "prettier --write --ignore-path=.gitignore",
+      "eslint --fix --config=.eslintrc.js --ext=.js,.ts --ignore-path=.gitignore"
+    ]
   },
   "private": false,
   "dependencies": {
@@ -51,11 +54,11 @@
     "@typescript-eslint/parser": "^5.21.0",
     "codelyzer": "^6.0.2",
     "ejs": "^3.1.7",
-    "eslint": "^8.14.0",
+    "eslint": "^8.15.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-jsdoc": "^37.9.7",
     "eslint-plugin-prefer-arrow": "^1.2.3",
-    "husky": "^7.0.4",
+    "husky": "^8.0.1",
     "lint-staged": "^12.4.1",
     "npm-check-updates": "^12.5.10",
     "prettier": "^2.6.2",
