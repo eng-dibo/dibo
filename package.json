@@ -8,7 +8,7 @@
   ],
   "scripts": {
     "prepare": "husky install",
-    "lint": "prettier . --write --ignore-path=.gitignore && eslint . --fix --config=.eslintrc.js --ext=.js,.ts --ignore-path=.gitignore",
+    "lint": "prettier . --write --ignore-path=.gitignore --ignore-unknown && eslint . --fix --config=.eslintrc.js --ext=.js,.ts --ignore-path=.gitignore",
     "test": "jest --coverage --only-changed=false",
     "test:fails": "jest --coverage --only-changed=false --only-failures",
     "test:changed": "jest",
@@ -29,7 +29,7 @@
   },
   "lint-staged": {
     "*": [
-      "prettier --write --ignore-path=.gitignore",
+      "prettier --write --ignore-path=.gitignore --ignore-unknown",
       "eslint --fix --config=.eslintrc.js --ext=.js,.ts --ignore-path=.gitignore"
     ]
   },
