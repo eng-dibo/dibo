@@ -28,5 +28,20 @@
     "hookable",
     "postback",
     "prerender"
-  ]
+  ],
+  "eslint.alwaysShowStatus": true,
+  "eslint.format.enable": true,
+  "eslint.lintTask.enable": true,
+  "eslint.lintTask.options": ". --config=.eslintrc.js  --ignore-path=.gitignore",
+  "eslint.probe": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact",
+    "html",
+    "vue",
+    "markdown",
+    "json"
+  ],
+  "eslint.useESLintClass": true
 }
