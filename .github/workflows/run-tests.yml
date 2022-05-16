@@ -15,6 +15,13 @@ jobs:
         run: export NODE_OPTIONS="--max-old-space-size=8192" npm t
       - name: delete draft releases from github
         uses: hugo19941994/delete-draft-releases@v1.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: semantic release
         run: npm run release -ws --if-preset
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: link local dependencies
+        run: npm run task link
       - run: echo "💡 job status:${{ job.status }}."
