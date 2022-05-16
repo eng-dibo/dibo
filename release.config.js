@@ -31,7 +31,7 @@ let config = {
       {
         assets: [
           {
-            path: "dist",
+            path: "dist/**",
           },
         ],
       },
