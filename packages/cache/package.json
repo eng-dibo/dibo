@@ -39,7 +39,7 @@
     "postversion": "shx cp package.json ..",
     "postrelease": "shx rm -r dist",
     "postrelease:local": "",
-    "x": "kjjhjhkj"
+    "x": "kghgh"
   },
   "dependencies": {
     "@engineers/javascript": "1.0.0",
