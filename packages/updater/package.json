@@ -45,6 +45,8 @@
   },
   "dependencies": {
     "app-root-path": "^3.0.0",
-    "simple-git": "^3.7.1"
+    "simple-git": "^3.7.1",
+    "@engineers/nodejs": "0.0.1",
+    "@engineers/hookable": "1.0.0"
   }
 }

@@ -45,6 +45,6 @@
   },
   "dependencies": {
     "@engineers/nodejs": "0.0.1",
-    "@engineers/javascript": "0.0.1"
+    "@engineers/javascript": "1.0.0"
   }
 }

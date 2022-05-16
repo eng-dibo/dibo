@@ -44,10 +44,10 @@
     "ngx-quill": "^16.2.0",
     "ngx-sharebuttons": "^9.0.0",
     "rxjs": "^7.5.5",
-    "@engineers/javascript": "0.0.1",
-    "@engineers/ngx-content-core": "0.0.1",
+    "@engineers/javascript": "1.0.0",
+    "@engineers/ngx-content-core": "1.0.0",
     "@engineers/ngx-utils": "0.0.1",
-    "@engineers/lazy-load": "0.0.1",
+    "@engineers/lazy-load": "1.0.0",
     "@engineers/rxjs": "0.0.1",
     "@engineers/nodejs": "0.0.1"
   },
