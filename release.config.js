@@ -26,7 +26,16 @@ let config = {
     "@semantic-release/commit-analyzer",
     "@semantic-release/release-notes-generator",
     "@semantic-release/changelog",
-    "@semantic-release/github",
+    [
+      "@semantic-release/github",
+      {
+        assets: [
+          {
+            path: "dist",
+          },
+        ],
+      },
+    ],
     // use pkgRoot to flatten the package (i.e put dist contents in the package's root)
     // when using the option { pkgRoot: 'dist' }, use `@semantic-release/git` to update the source package.json
     // or use @semantic-release/exec:prepareCmd after it to sync package.json to the root
@@ -37,7 +46,15 @@ let config = {
     // keep it after all other plugins to commit all changes made by other plugins
     // todo: set assets to commit all changed files `{ assets: ["**/*.*"] }`
     // todo: exclude .gitignore contents https://github.com/semantic-release/git/issues/347
-    "@semantic-release/git",
+    [
+      "@semantic-release/git",
+      {
+        // todo: add workspace to commit.scope
+        // build(pkgName.replace(/(packages|projects)\//,'')):
+        message:
+          "build: release ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}",
+      },
+    ],
   ],
 
   extends: ["semantic-release-monorepo"],
