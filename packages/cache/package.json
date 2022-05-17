@@ -38,7 +38,8 @@
     "release:local": "semantic-release --no-ci",
     "postversion": "shx cp package.json ..",
     "postrelease": "shx rm -r dist",
-    "postrelease:local": "npm run postrelease"
+    "postrelease:local": "npm run postrelease",
+    "x": 1
   },
   "dependencies": {
     "@engineers/javascript": "1.0.0",
