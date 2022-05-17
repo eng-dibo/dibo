@@ -35,7 +35,7 @@
   },
   "private": false,
   "dependencies": {
-    "jest": "^27.5.1",
+    "jest": "28.1.0",
     "jest-preset-angular": "^11.1.2",
     "rxjs": "^7.5.5",
     "strip-json-comments": "^3.1.1",
@@ -67,7 +67,7 @@
     "semantic-release": "^19.0.2",
     "semantic-release-monorepo": "^7.0.5",
     "shx": "^0.3.4",
-    "ts-jest": "^27.1.4",
+    "ts-jest": "28.0.2",
     "ts-loader": "^9.2.9",
     "ts-node": "^10.7.0",
     "tsconfig-paths": "^3.14.1",
