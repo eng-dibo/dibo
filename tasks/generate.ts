@@ -36,7 +36,7 @@ let rootPath = resolve(__dirname, '..'),
     // copy dist/package.json to the package's root
     postversion: 'shx cp package.json ..',
     // clean the build folder after the releasing finished
-    postrelease: 'shx rm -r dist',
+    postrelease: 'shx rm -r dist && shx rm -r tarball!!',
     'postrelease:local': 'npm run postrelease',
   };
 
