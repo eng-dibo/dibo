@@ -32,7 +32,7 @@
     "@engineers/nodejs": "1.0.0"
   },
   "devDependencies": {
-    "jest-preset-angular": "11.1.2"
+    "jest-preset-angular": "12.0.1"
   },
   "peerDependencies": {
     "@angular/common": "^13.1.2",
