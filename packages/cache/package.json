@@ -1,6 +1,6 @@
 {
   "name": "@engineers/cache",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "private": false,
   "files": [
     "dist"
@@ -39,7 +39,7 @@
     "postversion": "shx cp package.json ..",
     "postrelease": "shx rm -r dist",
     "postrelease:local": "npm run postrelease",
-    "x": 1
+    "x": "1"
   },
   "dependencies": {
     "@engineers/javascript": "1.0.0",
