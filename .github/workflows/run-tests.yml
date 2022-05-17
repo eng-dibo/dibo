@@ -24,4 +24,6 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: link local dependencies
         run: npm run task link
+      - name: push changes after running the task link
+        run: "git add . && git commit -m 'build: run task link' && git push"
       - run: echo "💡 job status:${{ job.status }}."
