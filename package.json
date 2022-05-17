@@ -42,6 +42,8 @@
     "tslib": "^2.4.0"
   },
   "devDependencies": {
+    "@angular-eslint/eslint-plugin": "^13.2.1",
+    "@angular-eslint/eslint-plugin-template": "^13.2.1",
     "@semantic-release/changelog": "^6.0.1",
     "@semantic-release/exec": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
