@@ -27,6 +27,7 @@
     "gcloud",
     "hookable",
     "postback",
-    "prerender"
+    "prerender",
+    "reovate"
   ]
 }
