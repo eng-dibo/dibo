@@ -45,7 +45,7 @@
     "ngx-sharebuttons": "^9.0.0",
     "rxjs": "^7.5.5",
     "@engineers/javascript": "1.0.0",
-    "@engineers/ngx-content-core": "1.0.0",
+    "@engineers/ngx-content-core": "0.0.1",
     "@engineers/ngx-utils": "1.0.0",
     "@engineers/lazy-load": "1.0.0",
     "@engineers/rxjs": "1.0.0",
