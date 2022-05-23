@@ -1,0 +1,20 @@
+<form
+  #formElement
+  [formGroup]="formGroup"
+  method="post"
+  enctype="multipart/form-data"
+>
+  <formly-form [form]="formGroup" [fields]="fields" [model]="model">
+  </formly-form>
+
+  <button
+    mat-raised-button
+    color="primary"
+    [disabled]="
+      !formGroup?.valid || formGroup?.pristine || response?.status === 'loading'
+    "
+    (click)="onSubmit()"
+  >
+    <mat-icon>done</mat-icon> Submit
+  </button>
+</form>
