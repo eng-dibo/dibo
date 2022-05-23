@@ -28,7 +28,7 @@
   ],
   "description": "google cloud storage",
   "dependencies": {
-    "@google-cloud/storage": "^5.19.4",
+    "@google-cloud/storage": "^5.20.5",
     "@engineers/nodejs": "1.0.0"
   },
   "scripts": {

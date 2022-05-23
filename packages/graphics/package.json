@@ -35,7 +35,7 @@
   ],
   "dependencies": {
     "@engineers/nodejs": "1.0.0",
-    "sharp": "^0.30.4"
+    "sharp": "^0.30.5"
   },
   "scripts": {
     "build": "webpack",
