@@ -1,14 +1,21 @@
 # This file is used by the build system to adjust CSS and JS output to support the specified browsers below.
+
 # https://github.com/browserslist/browserslist#queries
+
 # https://angular.io/guide/browser-support
 
 # You can see what browsers were selected by your queries by running:
-#   npx browserslist
+
+# npx browserslist
 
 last 1 Chrome version
 last 1 Firefox version
 last 2 Edge major versions
 last 2 Safari major versions
 last 2 iOS major versions
+last 2 Android major versions
 Firefox ESR
-IE 11
+
+# Internet Explorer is no longer officially supported.
+
+# IE 11
