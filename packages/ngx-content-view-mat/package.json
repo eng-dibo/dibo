@@ -40,7 +40,7 @@
     "@fortawesome/free-brands-svg-icons": "^6.1.1",
     "@fortawesome/free-solid-svg-icons": "^6.1.1",
     "ngx-highlightjs": "^6.1.2",
-    "ngx-infinite-scroll": "^10.0.1",
+    "ngx-infinite-scroll": "13.0.2",
     "ngx-quill": "^16.2.0",
     "ngx-sharebuttons": "^9.0.0",
     "rxjs": "^7.5.5",
