@@ -62,7 +62,7 @@
     "jest-preset-angular": "^11.1.2",
     "jest": "^27.5.1",
     "lint-staged": "^12.4.1",
-    "npm-check-updates": "^12.5.10",
+    "npm-check-updates": "13.0.3",
     "prettier": "^2.6.2",
     "semantic-release-monorepo": "^7.0.5",
     "semantic-release": "^19.0.2",
