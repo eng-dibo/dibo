@@ -1,6 +1,6 @@
 {
   "name": "@engineers/lazy-load",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "private": false,
   "files": [
     "dist"
@@ -45,6 +45,6 @@
     "postrelease:local": "npm run postrelease"
   },
   "dependencies": {
-    "@engineers/nodejs": "0.0.1"
+    "@engineers/nodejs": "1.0.0"
   }
 }

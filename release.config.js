@@ -26,18 +26,37 @@ let config = {
     "@semantic-release/commit-analyzer",
     "@semantic-release/release-notes-generator",
     "@semantic-release/changelog",
-    "@semantic-release/github",
+
     // use pkgRoot to flatten the package (i.e put dist contents in the package's root)
-    // when using the option { pkgRoot: 'dist' }, use `@semantic-release/git` to update the source package.json
-    // or use @semantic-release/exec:prepareCmd after it to sync package.json to the root
-    // example: https://github.com/semantic-release/npm#examples
-    // keep it after all other plugins but before `@semantic-release/git` to publish the final changes to npm
-    ["@semantic-release/npm", { pkgRoot: "dist" }],
+    // this will update dist/package.json, you need to manually update package.json in the root
+    // and use `@semantic-release/git` to commit it
+    ["@semantic-release/npm", { pkgRoot: "dist", tarballDir: "tarball!!" }],
+    // keep it after `@semantic-release/npm` to add the created tarball to assets
+    [
+      "@semantic-release/github",
+      {
+        assets: [
+          {
+            //  to add all files in dist: "dist/**/*.*",
+            path: "tarball!!/**/*.*",
+          },
+        ],
+      },
+    ],
 
     // keep it after all other plugins to commit all changes made by other plugins
     // todo: set assets to commit all changed files `{ assets: ["**/*.*"] }`
+    // this will add all files, not only modified ones
     // todo: exclude .gitignore contents https://github.com/semantic-release/git/issues/347
-    "@semantic-release/git",
+    [
+      "@semantic-release/git",
+      {
+        // todo: add workspace to commit.scope
+        // build(pkgName.replace(/(packages|projects)\//,'')):
+        message:
+          "build: release ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}",
+      },
+    ],
   ],
 
   extends: ["semantic-release-monorepo"],

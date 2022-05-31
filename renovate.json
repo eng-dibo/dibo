@@ -1,14 +1,11 @@
 {
+  "enabled": false,
   "extends": ["config:base"],
   "packageRules": [
     {
       "matchUpdateTypes": ["minor", "patch"],
       "automerge": true,
-      "automergeStrategy": "rebase"
-    },
-    {
-      "matchPackagePatterns": ["*"],
-      "matchUpdateTypes": ["minor", "patch"],
+      "automergeStrategy": "rebase",
       "groupName": "all non-major dependencies"
     },
     {
@@ -17,12 +14,8 @@
     }
   ],
   "automergeType": "branch",
-  "commitBody": "by https://www.whitesourcesoftware.com/free-developer-tools",
-  "commitBodyTable": true,
-  "commitMessageSuffix": "[whitesourcesoftware.com]",
-  "semanticCommits": true,
   "dependencyDashboardAutoclose": true,
-  "dependencyDashboardTitle": "Dependency Dashboard (by whitesourcesoftware.com)",
+  "dependencyDashboardTitle": "Dependency Dashboard by reovate",
   "labels": ["dependencies"],
   "prBodyColumns": [
     "Package",
@@ -33,8 +26,12 @@
     "References"
   ],
   "prCreation": "not-pending",
+  "semanticCommits": true,
   "semanticCommitType": "build",
-  "semanticCommitScope": "{{baseDir}}",
+  "semanticCommitScope": "{{ baseDir }}",
+  "commitBody": "by https://www.whitesourcesoftware.com/free-developer-tools",
+  "commitBodyTable": true,
+  "commitMessageSuffix": "[renovate]",
   "separateMultipleMajor": true,
   "updateInternalDeps": true,
   "ignoreDeps": ["@semantic-release/npm", "strip-json-comments"]

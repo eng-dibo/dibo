@@ -27,7 +27,8 @@
     "gcloud",
     "hookable",
     "postback",
-    "prerender"
+    "prerender",
+    "renovate"
   ],
   "eslint.alwaysShowStatus": true,
   "eslint.format.enable": true,

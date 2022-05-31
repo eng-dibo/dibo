@@ -5,7 +5,9 @@
 module.exports = {
   // lint all file types, add plugins or parsers for unsupported types
   // todo: is this replaces the cli option `--ext` that is set to '.js' only by default?
-  files: ["**/*.*"],
+  // todo: fix "Unexpected top-level property files"
+  // files: ["**/*.*"],
+  // ext: ".*",
   env: {
     browser: true,
     es6: true,
@@ -65,7 +67,6 @@ module.exports = {
   extends: [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
-    "plugin:@typescript-eslint/recommended-requiring-type-checking",
     "plugin:import/recommended",
     "plugin:import/typescript",
     "plugin:jsdoc/recommended",
@@ -74,7 +75,9 @@ module.exports = {
     "plugin:require-path-exists/recommended",
     "plugin:json/recommended",
     "plugin:n/recommended",
-    "plugin:@microsoft/sdl/recommended",
+    "plugin:@microsoft/sdl/common",
+    "plugin:@microsoft/sdl/node",
+
     // disallows angular-bypass-sanitizer
     // "plugin:@microsoft/sdl/angular",
     "plugin:security-node/recommended",
@@ -84,32 +87,41 @@ module.exports = {
     // Google JavaScript style guide
     // https://google.github.io/styleguide/jsguide.html
     // plugin: https://npmjs.com/package/eslint-config-google
-    "google",
+    // "google",
   ],
   parser: "@typescript-eslint/parser",
-  parserOptions: {
-    project: "tsconfig.json",
-    sourceType: "module",
-  },
-  /* to solve the error: The file does not match your project config:
-     this issue occurs when formatting a file not included in parserOptions.project (i.e: tsconfig.json)
-     
-     solutions:
-       - ignore this file by .eslintignore or ignorePatterns[]
-       - add it to tsconfig.json
-       https://stackoverflow.com/a/61959593/12577650
-   */
 
   // ignoring any non-standard file extensions to solve `the extension for the file () is non-standard`
-  // including files without extensions such as `Dockerfile` "**/*",
-  ignorePatterns: ["**/*", "package-lock.json"],
-  ignorePath: ".gitignore",
+  // todo: including files without extensions such as `Dockerfile` "**/*",
+  ignorePatterns: ["package-lock.json", "**/*.d.ts"],
+  // todo: fix: "Unexpected top-level property ignorePath"
+  // ignorePath: ".gitignore",
   // override configs for some files
+  // the last override block has the highest precedence
   overrides: [
     {
-      // linting angular test files to follow best practices for testing
+      files: ["**/*.[jt]sx?"],
+      parser: "@typescript-eslint/parser",
+      parserOptions: {
+        /* to solve the error: The file does not match your project config:
+         this issue occurs when formatting a file not included in parserOptions.project (i.e: tsconfig.json)
 
-      files: ["**/__tests__/**/*.[jt]s?(x)", "**/?(*.)+(spec|test).[jt]s?(x)"],
+         solutions:
+           - ignore this file by .eslintignore or ignorePatterns[]
+           - add it to tsconfig.json
+           https://stackoverflow.com/a/61959593/12577650
+       */
+        project: ["tsconfig.json"],
+        sourceType: "module",
+        extends: [
+          "plugin:@typescript-eslint/recommended-requiring-type-checking",
+          "plugin:@microsoft/sdl/typescript",
+        ],
+      },
+    },
+    {
+      // linting angular test files to follow best practices for testing
+      files: ["**/__tests__/**/*.[jt]sx?", "**/?(*.)+(spec|test).[jt]sx?"],
       extends: [
         "plugin:jest/recommended",
         // todo: enable only for angular projects and packages (starts with ngx-*)
@@ -161,10 +173,12 @@ module.exports = {
     "json-files/require-unique-dependency-names": "error",
     // handle promises correctly with `await` or `.then()` and `.catch()`
     "@typescript-eslint/no-floating-promise": "error",
-    "tree-shaking/no-side-effects-in-initialization": "error",
+    // "tree-shaking/no-side-effects-in-initialization": "error",
     "implicit-dependencies/no-implicit": [
       "error",
       { dev: true, peer: true, optional: true },
     ],
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": "off",
   },
 };

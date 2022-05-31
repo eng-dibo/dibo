@@ -1,0 +1,30 @@
+name: main-workflow
+on:
+  push:
+    branches:
+      - main
+      - "renovate/**"
+jobs:
+  platform-ubuntu:
+    runs-on: ubuntu-latest
+    steps:
+      - name: info
+        run: echo "💡 start ${{ github.workflow }}, event:${{ github.event_name }}, os:${{ runner.os }}, repo:${{ github.repository }}, branch:${{ github.ref }}."
+      - name: Check out the repository code (clone ${{ github.repository }} to the runner)
+        uses: actions/checkout@v3
+      - name: install dependencies
+        run: npm ci
+      - name: run the tests
+        run: export NODE_OPTIONS="--max-old-space-size=8192" npm t
+      - name: delete draft releases from github
+        uses: hugo19941994/delete-draft-releases@v1.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: semantic release
+        run: npm run release -ws --if-preset
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: maintenance-tasks
+        run: npm run task maintenance
+      - run: echo "💡 job status:${{ job.status }}."

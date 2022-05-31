@@ -41,7 +41,7 @@
     "postrelease:local": "npm run postrelease"
   },
   "dependencies": {
-    "@engineers/javascript": "0.0.1",
-    "@engineers/nodejs": "0.0.1"
+    "@engineers/javascript": "1.0.0",
+    "@engineers/nodejs": "1.0.0"
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@engineers/tmpl",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "private": false,
   "files": [
     "dist"
@@ -50,6 +50,6 @@
     "semantic-release-monorepo": "^7.0.5"
   },
   "dependencies": {
-    "@engineers/nodejs": "0.0.1"
+    "@engineers/nodejs": "1.0.0"
   }
 }

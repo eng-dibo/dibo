@@ -2,7 +2,7 @@
 let config = require("./release.config");
 
 config.replace("@semantic-release/npm", [
-  "semantic-release/npm",
+  "@semantic-release/npm",
   {
     npmPublish: false,
   },
