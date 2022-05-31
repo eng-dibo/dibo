@@ -26,20 +26,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: maintenance-tasks
-        run: |
-          npm run task link && npm i --package-lock-only
-          npm run generate
-          npm run lint
-      - name: push changes after running the task link
-        # set husky to be executable
-        # https://stackoverflow.com/questions/8598639/why-is-my-git-pre-commit-hook-not-executable-by-default#comment88478230_47166916
-        # todo: ignore if package-lock.json is the only changed file
-        # use `git diff --name-only` to list changed files
-        run: |
-          chmod +x .husky/pre-commit
-          git config user.name ${{ github.actor }}
-          git config user.email "${{ github.actor }}@github.com"
-          git add . 
-          git commit -m 'build: maintenance' 
-          git push
+        run: npm run task maintenance
       - run: echo "💡 job status:${{ job.status }}."
