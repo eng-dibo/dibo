@@ -34,11 +34,7 @@
     ]
   },
   "private": false,
-  "dependencies": {
-    "rxjs": "^7.5.5",
-    "strip-json-comments": "^3.1.1",
-    "tslib": "^2.4.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@angular-eslint/eslint-plugin-template": "^13.2.1",
     "@angular-eslint/eslint-plugin": "^13.2.1",
@@ -75,7 +71,10 @@
     "typescript": "^4.6",
     "webpack-cli": "^4.9.2",
     "webpack-merge": "^5.8.0",
-    "webpack": "^5.72.0"
+    "webpack": "^5.72.0",
+    "rxjs": "^7.5.5",
+    "strip-json-comments": "^3.1.1",
+    "tslib": "^2.4.0"
   },
   "keywords": [
     "nodejs",
