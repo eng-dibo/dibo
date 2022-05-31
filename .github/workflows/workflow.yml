@@ -1,17 +1,20 @@
-name: Run tests
-on: [push]
+name: main-workflow
+on:
+  push:
+    branches:
+      - main
+      - "renovate/**"
 jobs:
-  run-tests:
+  platform-ubuntu:
     runs-on: ubuntu-latest
     steps:
       - name: info
         run: echo "💡 start ${{ github.workflow }}, event:${{ github.event_name }}, os:${{ runner.os }}, repo:${{ github.repository }}, branch:${{ github.ref }}."
-      - name: Check out repository code
+      - name: Check out the repository code (clone ${{ github.repository }} to the runner)
         uses: actions/checkout@v3
-      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
       - name: install dependencies
         run: npm ci
-      - name: run the test
+      - name: run the tests
         run: export NODE_OPTIONS="--max-old-space-size=8192" npm t
       - name: delete draft releases from github
         uses: hugo19941994/delete-draft-releases@v1.0.0
@@ -22,16 +25,21 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - name: link local dependencies
-        run: npm run task link && npm i --package-lock-only
+      - name: maintenance-tasks
+        run: |
+          npm run task link && npm i --package-lock-only
+          npm run generate
+          npm run lint
       - name: push changes after running the task link
         # set husky to be executable
         # https://stackoverflow.com/questions/8598639/why-is-my-git-pre-commit-hook-not-executable-by-default#comment88478230_47166916
+        # todo: ignore if package-lock.json is the only changed file
+        # use `git diff --name-only` to list changed files
         run: |
           chmod +x .husky/pre-commit
           git config user.name ${{ github.actor }}
           git config user.email "${{ github.actor }}@github.com"
           git add . 
-          git commit -m 'build: run task link' 
+          git commit -m 'build: maintenance' 
           git push
       - run: echo "💡 job status:${{ job.status }}."
