@@ -1,4 +1,5 @@
 /* eslint-disable sort-keys */
+// todo: enable all disabled rules
 // todo: create a task to install missing eslint plugins and parsers (from top scope and overrides), run as postinstall
 // `npm i -D eslint-plugin-$plugin-name
 // plugins.map(el=>!el.startsWith('@')?el.startsWith('eslint-plugin')?el:'eslint-plugin-'+el: ..)
@@ -65,6 +66,7 @@ module.exports = {
     "implicit-dependencies",
     "@html-eslint",
     "prettier",
+    "css",
   ],
   extends: [
     "eslint:recommended",
@@ -90,12 +92,14 @@ module.exports = {
     // plugin: https://npmjs.com/package/eslint-config-google
     // "google",
     "plugin:prettier/recommended",
+    "plugin:markdown/recommended",
+    "plugin:css/recommended",
   ],
   parser: "@typescript-eslint/parser",
 
   // ignoring any non-standard file extensions to solve `the extension for the file () is non-standard`
   // todo: including files without extensions such as `Dockerfile` "**/*",
-  ignorePatterns: ["package-lock.json", "**/*.d.ts"],
+  ignorePatterns: ["package-lock.json", "**/*.d.ts", "**/*.txt", "**/LICENSE"],
   // todo: fix: "Unexpected top-level property ignorePath"
   // ignorePath: ".gitignore",
   // override configs for some files
@@ -185,8 +189,18 @@ module.exports = {
     "json-files/require-unique-dependency-names": "error",
     // "tree-shaking/no-side-effects-in-initialization": "error",
     "implicit-dependencies/no-implicit": [
-      "error",
+      "warn",
       { dev: true, peer: true, optional: true },
+    ],
+    "n/no-unpublished-import": "warn",
+    // the rules 'n/no-missing-import' and 'require-path-exists/exists' cannot find tsconfig.paths
+    "n/no-missing-import": "off",
+    "require-path-exists/exists": [
+      "off",
+      {
+        webpackConfigPath: "webpack.config.ts",
+        extensions: ["", ".js", ".ts", ".json", ".node"],
+      },
     ],
     "no-unused-vars": "off",
     "@typescript-eslint/no-unused-vars": "off",
