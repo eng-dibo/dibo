@@ -1,4 +1,5 @@
 // https://jestjs.io/docs/cli
+// eslint-disable-next-line n/no-extraneous-import
 import type { Config } from '@jest/types';
 import { pathsToModuleNameMapper } from 'ts-jest';
 import stripJsonComments from 'strip-json-comments';
