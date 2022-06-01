@@ -1,6 +1,6 @@
-import { test, expect, beforeEach, afterAll } from '@jest/globals';
+import { afterAll, beforeEach, expect, test } from '@jest/globals';
 import cache from './cache-fs';
-import { write, remove } from './fs';
+import { remove, write } from './fs';
 import { resolve } from './fs-sync';
 
 let dir = resolve(__dirname, './test!!/cache');

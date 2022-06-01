@@ -1,8 +1,8 @@
 // https://blog.iansinnott.com/testing-webpack-plugins
 
-import { test, expect, beforeAll, afterAll } from '@jest/globals';
+import { afterAll, beforeAll, expect, test } from '@jest/globals';
 import webpack, { Configuration } from 'webpack';
-import { write, read, remove } from '@engineers/nodejs/fs-sync';
+import { read, remove, write } from '@engineers/nodejs/fs-sync';
 import { resolve } from 'node:path';
 import externals, { node } from './externals';
 
@@ -51,9 +51,9 @@ afterAll(() => {
 });
 
 test('no externals', (done) => {
-  webpack(config).run((err: any, stats: any) => {
-    if (err) {
-      done(err);
+  webpack(config).run((error: any, stats: any) => {
+    if (error) {
+      done(error);
     } else if (stats.hasErrors()) {
       done(stats.toString());
     } else {
@@ -76,9 +76,9 @@ test('exclude example2 from bundling ', (done) => {
     ],
   });
 
-  webpack(config2).run((err: any, stats: any) => {
-    if (err) {
-      done(err);
+  webpack(config2).run((error: any, stats: any) => {
+    if (error) {
+      done(error);
     } else if (stats.hasErrors()) {
       done(stats.toString());
     } else {
@@ -100,9 +100,9 @@ test('transform ', (done) => {
     ],
   });
 
-  webpack(config2).run((err: any, stats: any) => {
-    if (err) {
-      done(err);
+  webpack(config2).run((error: any, stats: any) => {
+    if (error) {
+      done(error);
     } else if (stats.hasErrors()) {
       done(stats.toString());
     } else {
@@ -121,9 +121,9 @@ test('transform function', (done) => {
     ],
   });
 
-  webpack(config2).run((err: any, stats: any) => {
-    if (err) {
-      done(err);
+  webpack(config2).run((error: any, stats: any) => {
+    if (error) {
+      done(error);
     } else if (stats.hasErrors()) {
       done(stats.toString());
     } else {
@@ -142,9 +142,9 @@ test('whiteList ', (done) => {
     ],
   });
 
-  webpack(config2).run((err: any, stats: any) => {
-    if (err) {
-      done(err);
+  webpack(config2).run((error: any, stats: any) => {
+    if (error) {
+      done(error);
     } else if (stats.hasErrors()) {
       done(stats.toString());
     } else {
@@ -166,9 +166,9 @@ test('whiteList function returns false ', (done) => {
     ],
   });
 
-  webpack(config2).run((err: any, stats: any) => {
-    if (err) {
-      done(err);
+  webpack(config2).run((error: any, stats: any) => {
+    if (error) {
+      done(error);
     } else if (stats.hasErrors()) {
       done(stats.toString());
     } else {
@@ -190,9 +190,9 @@ test('template variables', (done) => {
     ],
   });
 
-  webpack(config2).run((err: any, stats: any) => {
-    if (err) {
-      done(err);
+  webpack(config2).run((error: any, stats: any) => {
+    if (error) {
+      done(error);
     } else if (stats.hasErrors()) {
       done(stats.toString());
     } else {
@@ -214,9 +214,9 @@ test('template variables with function', (done) => {
     ],
   });
 
-  webpack(config2).run((err: any, stats: any) => {
-    if (err) {
-      done(err);
+  webpack(config2).run((error: any, stats: any) => {
+    if (error) {
+      done(error);
     } else if (stats.hasErrors()) {
       done(stats.toString());
     } else {
@@ -240,9 +240,9 @@ test('transform type', (done) => {
     ],
   });
 
-  webpack(config2).run((err: any, stats: any) => {
-    if (err) {
-      done(err);
+  webpack(config2).run((error: any, stats: any) => {
+    if (error) {
+      done(error);
     } else if (stats.hasErrors()) {
       done(stats.toString());
     } else {
@@ -265,9 +265,9 @@ test.skip('bundle node_modules', (done) => {
     },
   });
 
-  webpack(config2).run((err: any, stats: any) => {
-    if (err) {
-      done(err);
+  webpack(config2).run((error: any, stats: any) => {
+    if (error) {
+      done(error);
     } else if (stats.hasErrors()) {
       done(stats.toString());
     } else {
@@ -286,9 +286,9 @@ test('node()', (done) => {
     },
   });
 
-  webpack(config2).run((err: any, stats: any) => {
-    if (err) {
-      done(err);
+  webpack(config2).run((error: any, stats: any) => {
+    if (error) {
+      done(error);
     } else if (stats.hasErrors()) {
       done(stats.toString());
     } else {

@@ -2,15 +2,15 @@
  * @jest-environment jsdom
  */
 
-import { test, expect, beforeAll, beforeEach } from '@jest/globals';
+import { beforeAll, beforeEach, expect, test } from '@jest/globals';
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import {
-  ViewChild,
   Component,
-  NgModule,
-  ViewContainerRef,
   ComponentRef,
+  NgModule,
+  ViewChild,
+  ViewContainerRef,
 } from '@angular/core';
 import { LoadComponentsService } from './load-components.service';
 
@@ -35,7 +35,7 @@ class DynamicComponent {
 })
 class HostComponent {
   @ViewChild('placeholder', { static: true }) placeholder!: ViewContainerRef;
-  constructor(private ref: ViewContainerRef) {}
+  constructor(private reference: ViewContainerRef) {}
   ngOnInit(): void {
     // this.placeholder gives error in ./load-components.service.ts: placeholder.clear
     dynamicComponent = service.load(

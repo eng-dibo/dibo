@@ -3,19 +3,19 @@
  * and includes exactly the same test cases.
  */
 
-import { test, expect, beforeEach, afterEach, describe } from '@jest/globals';
+import { afterEach, beforeEach, describe, expect, test } from '@jest/globals';
 import { resolve } from './fs-sync';
 import {
-  mkdir,
-  write,
+  copy,
+  getEntries,
+  getModifiedTime,
   getSize,
   isDir,
-  getModifiedTime,
+  mkdir,
   move,
   read,
   remove,
-  getEntries,
-  copy,
+  write,
 } from './fs';
 import { existsSync } from 'node:fs';
 import { objectType } from '@engineers/javascript/objects';
@@ -80,8 +80,8 @@ test('isDir', () =>
 
 test('getModifiedTime -> file', () =>
   Promise.all([getModifiedTime(file), getModifiedTime(dir)]).then((value) => {
-    expect(Math.floor(value[0])).toBeGreaterThanOrEqual(1624906832178);
-    expect(Math.floor(value[1])).toBeGreaterThanOrEqual(1624906832178);
+    expect(Math.floor(value[0])).toBeGreaterThanOrEqual(1_624_906_832_178);
+    expect(Math.floor(value[1])).toBeGreaterThanOrEqual(1_624_906_832_178);
   }));
 
 test('move', () => {
@@ -123,16 +123,16 @@ test('read', () => {
       read(fileJsonComments)
     ),
   ]).then((value) => {
-    let [txt, json, arr, jsonWithComments] = value;
+    let [txt, json, array, jsonWithComments] = value;
     expect(txt.length).toEqual(2);
     expect(txt).toContain('ok');
     expect(objectType(txt)).toEqual('string');
     expect(objectType(json)).toEqual('object');
     expect(objectType(jsonWithComments)).toEqual('object');
-    expect(objectType(arr)).toEqual('array');
+    expect(objectType(array)).toEqual('array');
     expect(json).toEqual({ x: 1, y: 2 });
     expect(jsonWithComments).toEqual({ x: 1, hello: 'ok' });
-    expect(arr).toEqual([1, 2, 3]);
+    expect(array).toEqual([1, 2, 3]);
   });
 });
 
@@ -199,9 +199,9 @@ describe('getEntries', () => {
   beforeEach(() => {
     return remove(dir).then(() =>
       Promise.all(
-        entries.map((el) => {
-          return write(`${dir}/${el}`, '').then(() =>
-            write(`${dir}/subdir/${el}`, '')
+        entries.map((element) => {
+          return write(`${dir}/${element}`, '').then(() =>
+            write(`${dir}/subdir/${element}`, '')
           );
         })
       )
@@ -212,30 +212,32 @@ describe('getEntries', () => {
     return getEntries(dir).then((result) => {
       expect(result.sort()).toEqual(
         // all files in dir with full path
-        entries
-          .map((el) => `${dir}/${el}`)
-          // all files in subdir
-          .concat(entries.map((el) => `${dir}/subdir/${el}`))
-          // also include subdir itself
-          .concat([dir + '/subdir'])
-          .sort()
+        [
+          ...entries
+            .map((element) => `${dir}/${element}`)
+            // all files in subdir
+            .concat(entries.map((element) => `${dir}/subdir/${element}`)),
+          dir + '/subdir',
+        ].sort()
       );
     });
   });
 
   test('filter by function', () => {
-    return getEntries(dir, (el) => el.indexOf('.js') > -1).then((result) => {
-      expect(result).toEqual([dir + '/file.js', dir + '/subdir/file.js']);
-    });
+    return getEntries(dir, (element) => element.includes('.js')).then(
+      (result) => {
+        expect(result).toEqual([dir + '/file.js', dir + '/subdir/file.js']);
+      }
+    );
   });
 
   test('filter by regex', () => {
     return getEntries(dir, /subdir/).then((result) => {
       expect(result.sort()).toEqual(
-        entries
-          .map((el) => `${dir}/subdir/${el}`)
-          .concat([`${dir}/subdir`])
-          .sort()
+        [
+          ...entries.map((element) => `${dir}/subdir/${element}`),
+          `${dir}/subdir`,
+        ].sort()
       );
     });
   });
@@ -244,8 +246,8 @@ describe('getEntries', () => {
     return getEntries(dir, 'files').then((result) => {
       expect(result.sort()).toEqual(
         entries
-          .map((el) => `${dir}/${el}`)
-          .concat(entries.map((el) => `${dir}/subdir/${el}`))
+          .map((element) => `${dir}/${element}`)
+          .concat(entries.map((element) => `${dir}/subdir/${element}`))
           .sort()
       );
     });
@@ -258,48 +260,52 @@ describe('getEntries', () => {
   });
 
   test('depth=0', async () => {
-    for (let el of entries) {
-      await write(`${dir}/subdir/extra/${el}`, '');
+    for (let element of entries) {
+      await write(`${dir}/subdir/extra/${element}`, '');
     }
 
     return getEntries(dir, undefined, 0).then((result) => {
       expect(result.sort()).toEqual(
-        entries
-          .map((el) => `${dir}/${el}`)
-          .concat([dir + '/subdir'])
-          .sort()
+        [
+          ...entries.map((element) => `${dir}/${element}`),
+          dir + '/subdir',
+        ].sort()
       );
     });
   });
 
   test('depth=1', async () => {
-    for (let el of entries) {
-      await write(`${dir}/subdir/extra/${el}`, '');
+    for (let element of entries) {
+      await write(`${dir}/subdir/extra/${element}`, '');
     }
 
     return getEntries(dir, undefined, 1).then((result) => {
       expect(result.sort()).toEqual(
-        entries
-          .map((el) => `${dir}/${el}`)
-          .concat([dir + '/subdir', dir + '/subdir/extra'])
-          .concat(entries.map((el) => `${dir}/subdir/${el}`))
+        [
+          ...entries.map((element) => `${dir}/${element}`),
+          dir + '/subdir',
+          dir + '/subdir/extra',
+        ]
+          .concat(entries.map((element) => `${dir}/subdir/${element}`))
           .sort()
       );
     });
   });
 
   test('depth=2', async () => {
-    for (let el of entries) {
-      await write(`${dir}/subdir/extra/${el}`, '');
+    for (let element of entries) {
+      await write(`${dir}/subdir/extra/${element}`, '');
     }
 
     getEntries(dir, undefined, 2).then((result) => {
       expect(result.sort()).toEqual(
-        entries
-          .map((el) => `${dir}/${el}`)
-          .concat([dir + '/subdir', dir + '/subdir/extra'])
-          .concat(entries.map((el) => `${dir}/subdir/${el}`))
-          .concat(entries.map((el) => `${dir}/subdir/extra/${el}`))
+        [
+          ...entries.map((element) => `${dir}/${element}`),
+          dir + '/subdir',
+          dir + '/subdir/extra',
+        ]
+          .concat(entries.map((element) => `${dir}/subdir/${element}`))
+          .concat(entries.map((element) => `${dir}/subdir/extra/${element}`))
           .sort()
       );
     });
@@ -308,7 +314,9 @@ describe('getEntries', () => {
   test('non existing dir', () => {
     expect.hasAssertions();
     return expect(getEntries(dir + '/non-existing')).rejects.toThrow(
-      Error(`ENOENT: no such file or directory, scandir '${dir}/non-existing'`)
+      new Error(
+        `ENOENT: no such file or directory, scandir '${dir}/non-existing'`
+      )
     );
   });
 });

@@ -1,15 +1,15 @@
-import { test, expect, describe, jest } from '@jest/globals';
+import { describe, expect, jest, test } from '@jest/globals';
 import {
-  objectType,
-  includes,
-  isIterable,
-  isPromise,
-  isEmpty,
   chunk,
   cleanObject,
   filterObjectByKeys,
-  stringToObject,
   flatten,
+  includes,
+  isEmpty,
+  isIterable,
+  isPromise,
+  objectType,
+  stringToObject,
 } from './objects';
 
 let types = [
@@ -35,17 +35,17 @@ let empty = [
 ];
 
 describe('objectType', () => {
-  types.forEach((el) => {
-    test(el.type, () => {
-      expect(objectType(el.value)).toEqual(el.type);
+  for (let element of types) {
+    test(element.type, () => {
+      expect(objectType(element.value)).toEqual(element.type);
     });
-  });
+  }
 });
 
 describe('includes', () => {
-  let arr = ['x', 'y', 'z'],
-    str = 'xyz',
-    obj = { x: 1, y: 2, z: 3 };
+  let array = ['x', 'y', 'z'],
+    string_ = 'xyz',
+    object = { x: 1, y: 2, z: 3 };
 
   let tests = [
     ['x', true],
@@ -56,56 +56,64 @@ describe('includes', () => {
     [/a/, false],
   ];
 
-  tests.forEach((el) => {
-    test(el[0].toString(), () => {
-      expect(includes(el[0], arr)).toEqual(el[1]);
-      expect(includes(el[0], str)).toEqual(el[1]);
-      expect(includes(el[0], obj)).toEqual(el[1]);
+  for (let element of tests) {
+    test(element[0].toString(), () => {
+      expect(includes(element[0], array)).toEqual(element[1]);
+      expect(includes(element[0], string_)).toEqual(element[1]);
+      expect(includes(element[0], object)).toEqual(element[1]);
 
-      if (el[0] instanceof Array) {
-        expect(includes(el[0], arr, { elementAsItem: false })).toEqual(true);
-        expect(includes(el[0], str, { elementAsItem: false })).toEqual(true);
-        expect(includes(el[0], obj, { elementAsItem: false })).toEqual(true);
+      if (Array.isArray(element[0])) {
+        expect(includes(element[0], array, { elementAsItem: false })).toEqual(
+          true
+        );
+        expect(includes(element[0], string_, { elementAsItem: false })).toEqual(
+          true
+        );
+        expect(includes(element[0], object, { elementAsItem: false })).toEqual(
+          true
+        );
       }
     });
-  });
+  }
 
   test('case sensitive', () => {
-    expect(includes('X', arr, { caseSensitive: true })).toEqual(false);
+    expect(includes('X', array, { caseSensitive: true })).toEqual(false);
   });
 });
 
 describe('isIterable', () => {
-  types.forEach((el) => {
-    test(el.type, () => {
-      let result = ['array', 'object'].includes(el.type) ? true : false;
-      expect(isIterable(el.value)).toEqual(result);
+  for (let element of types) {
+    test(element.type, () => {
+      let result = ['array', 'object'].includes(element.type) ? true : false;
+      expect(isIterable(element.value)).toEqual(result);
     });
-  });
+  }
 });
 
 describe('isPromise', () => {
-  types.forEach((el) => {
-    test(el.type, () => {
-      expect(isPromise(el.value)).toEqual(el.type === 'promise' ? true : false);
+  for (let element of types) {
+    test(element.type, () => {
+      expect(isPromise(element.value)).toEqual(
+        element.type === 'promise' ? true : false
+      );
     });
-  });
+  }
 });
 
 describe('isEmpty', () => {
-  types
-    .filter((el) => !['undefined', 'null'].includes(el.type))
-    .forEach((el) => {
-      test(`not empty: ${el.type}`, () => {
-        expect(isEmpty(el.value)).toEqual(false);
-      });
+  for (let element of types.filter(
+    (element_) => !['undefined', 'null'].includes(element_.type)
+  )) {
+    test(`not empty: ${element.type}`, () => {
+      expect(isEmpty(element.value)).toEqual(false);
     });
+  }
 
-  empty.forEach((el) => {
-    test(`empty: ${el.type}`, () => {
-      expect(isEmpty(el.value)).toEqual(true);
+  for (let element of empty) {
+    test(`empty: ${element.type}`, () => {
+      expect(isEmpty(element.value)).toEqual(true);
     });
-  });
+  }
 });
 
 describe('chunk', () => {
@@ -151,12 +159,12 @@ test('filterObjectByKeys', () => {
 });
 
 test('stringToObject', () => {
-  let obj = stringToObject('a.b.c', 'value');
-  expect(obj).toEqual({ a: { b: { c: 'value' } } });
-  expect(obj.a.b.c).toEqual('value');
+  let object = stringToObject('a.b.c', 'value');
+  expect(object).toEqual({ a: { b: { c: 'value' } } });
+  expect(object.a.b.c).toEqual('value');
 });
 test('flatten', () => {
-  let obj = { a: 1, b: { x: 2, y: { m1: 1, m2: 2 } } };
+  let object = { a: 1, b: { x: 2, y: { m1: 1, m2: 2 } } };
   let flattened = { a: 1, 'b.x': 2, 'b.y.m1': 1, 'b.y.m2': 2 };
-  expect(flatten(obj)).toEqual(flattened);
+  expect(flatten(object)).toEqual(flattened);
 });

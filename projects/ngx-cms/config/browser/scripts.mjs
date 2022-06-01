@@ -17,6 +17,9 @@ window.addEventListener("load", () => {
         `https://www.googletagmanager.com/gtag/js?id=${values.googleAnalytics}`
       ).then(() => {
         window.dataLayer = window.dataLayer || [];
+        /**
+         *
+         */
         function gtag() {
           dataLayer.push(arguments);
         }
@@ -33,8 +36,8 @@ window.addEventListener("load", () => {
       load("//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js", {
         "data-ad-client": values.adsense,
       })
-        .then((el) => console.log(`adsense loaded ${values.adsense}`))
-        .catch((err) => console.error("adsense failed to load", err));
+        .then((element) => console.log(`adsense loaded ${values.adsense}`))
+        .catch((error) => console.error("adsense failed to load", error));
     }
   });
 });

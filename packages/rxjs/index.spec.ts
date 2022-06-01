@@ -1,4 +1,4 @@
-import { test, expect, beforeAll, beforeEach } from '@jest/globals';
+import { beforeAll, beforeEach, expect, test } from '@jest/globals';
 import { toObservable } from './index';
 import { Observable, of } from 'rxjs';
 

@@ -1,4 +1,4 @@
-import admin, { ServiceAccount, AppOptions, app } from 'firebase-admin';
+import admin, { AppOptions, ServiceAccount, app } from 'firebase-admin';
 const nativeRequire = require('@engineers/webpack/native-require');
 
 // todo: InitOptions properties
@@ -11,7 +11,9 @@ export interface InitOptions extends AppOptions {
 
 /**
  * initializes firebase app
- * @param options
+ *
+ * @param options { InitOptions | string}
+ * @returns {App} a firebase app
  */
 export default function (options: InitOptions | string): app.App {
   let opts: InitOptions = Object.assign(
@@ -32,19 +34,17 @@ export default function (options: InitOptions | string): app.App {
   }
 
   // get projectId from credentials or serviceAccount
-  if (!opts.projectId) {
-    if (opts.serviceAccount) {
-      if (typeof opts.serviceAccount === 'string') {
-        // todo: dynamic require()
-        // https://stackoverflow.com/a/54559637/12577650
-        // https://webpack.js.org/guides/dependency-management/#require-with-expression
-        opts.serviceAccount = nativeRequire(opts.serviceAccount);
-      }
-      opts.serviceAccount = opts.serviceAccount as ServiceAccount;
-      opts.projectId =
-        // @ts-ignore: 'project_id' does not exist on type 'ServiceAccount'
-        opts.serviceAccount.projectId || opts.serviceAccount.project_id;
+  if (!opts.projectId && opts.serviceAccount) {
+    if (typeof opts.serviceAccount === 'string') {
+      // todo: dynamic require()
+      // https://stackoverflow.com/a/54559637/12577650
+      // https://webpack.js.org/guides/dependency-management/#require-with-expression
+      opts.serviceAccount = nativeRequire(opts.serviceAccount);
     }
+    opts.serviceAccount = opts.serviceAccount as ServiceAccount;
+    opts.projectId =
+      // @ts-ignore: 'project_id' does not exist on type 'ServiceAccount'
+      opts.serviceAccount.projectId || opts.serviceAccount.project_id;
   }
 
   delete opts.serviceAccount;

@@ -12,12 +12,16 @@ export interface CacheOptions {
 
 /**
  * cache data into a file, or read the cache file if the data is fresh
- * @method cache
+ *
+ * @function cache
  * @param  files to be read from
+ * @param entries
  * @param  dataSource a function to fetch the data if no cached file is found
  * @param  control get & set the cache
+ * @param control.get
+ * @param control.set
  * @param options  for read() except that age here in hr, in addition to maxAge
- * @return Promise<any>;
+ * @returns Promise<any>;
  *  todo:
  *  - strategy -> in case of no valid cache & failed to get data, return:
  *               - the most recent cache file
@@ -27,7 +31,6 @@ export interface CacheOptions {
  *  - search for a valid cache from the givin files (skipped if options.age<=0)
  *  - if no valid cache found, run dataSource() to fetch the new data
  *  - if dataSource() failed, search for a valid cache that doesn't exceed maxAge
- *
  */
 export default function (
   entries: any,
@@ -39,7 +42,7 @@ export default function (
   options?: CacheOptions
 ): Promise<any> {
   let opts: CacheOptions = Object.assign({}, options || {});
-  let cacheEntries: any[] = entries instanceof Array ? entries : [entries];
+  let cacheEntries: any[] = Array.isArray(entries) ? entries : [entries];
   let cacheData: Promise<any>;
 
   // search for a valid cache (only if opts.age>0)
@@ -59,7 +62,7 @@ export default function (
   return (
     cacheData
       // if there is no valid file, run dataSource()
-      .catch((err) =>
+      .catch((error) =>
         toPromise(dataSource()).then((_data: any) => {
           if (opts.refreshCache !== false) {
             control.set(cacheEntries[0], _data, opts);
@@ -74,7 +77,7 @@ export default function (
             return toPromise(
               control.get(cacheEntries, { ...opts, age: opts.maxAge })
             );
-          } catch (err) {
+          } catch {
             // if no valid cache, don't throw an error
             // the outer function will throw an error for dataSource failing
           }
@@ -85,6 +88,11 @@ export default function (
   );
 }
 
+/**
+ *
+ * @param value
+ * @returns
+ */
 function toPromise<T>(value: T | Promise<T>): Promise<T> {
   return isPromise(value) ? (value as Promise<T>) : Promise.resolve(value);
 }

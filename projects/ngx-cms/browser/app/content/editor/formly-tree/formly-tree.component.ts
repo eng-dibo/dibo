@@ -27,24 +27,28 @@ interface FoodNode {
 })
 export class FormlyTreeComponent extends FieldType implements OnInit {
   treeControl = new NestedTreeControl<any>((node) =>
-    this.to.data.filter((el: any) => el.parent === node._id)
+    this.to.data.filter((element: any) => element.parent === node._id)
   );
   dataSource = new MatTreeNestedDataSource<any>();
   formControl: FormControl;
 
   ngOnInit() {
-    this.dataSource.data = this.to.data.filter((el: any) => !el.parent);
+    this.dataSource.data = this.to.data.filter(
+      (element: any) => !element.parent
+    );
   }
 
   hasChildren = (index: number, node: any) => {
     // keep this function as arrow function, so `this` refers to the instance instead of the template
-    return this.to.data.some((el: any) => el.parent === node._id);
+    return this.to.data.some((element: any) => element.parent === node._id);
   };
 
   /**
    * set the formControl value manually
    * https://github.com/ngx-formly/ngx-formly/issues/3107#issuecomment-997437812
+   *
    * @param value
+   * @param node
    * @param checked
    */
   onChange(node: any, checked: boolean) {

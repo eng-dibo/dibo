@@ -13,8 +13,8 @@ if(data.createdAt && ){...}
 import { Injectable } from '@angular/core';
 // for SSR: https://github.com/angular/angular/issues/15742#issuecomment-292892856
 import {
-  Meta as MetaTagsService,
   MetaDefinition,
+  Meta as MetaTagsService,
   Title as TitleService,
 } from '@angular/platform-browser';
 import { NgxLoadService } from './load-scripts.service';
@@ -94,12 +94,14 @@ export class MetaService {
    * prepares meta tags
    * - adds default tags for setTags (not updateTags)
    * - converts tags to the correct form like {key: value} -> {name: key, content: value}
+   *
    * @param tags
+   * @param _tags
    * @returns the final tags
    */
   prepare(_tags: Meta = {}): MetaDefinition[] {
     let tags = Object.assign({}, _tags);
-    if (tags.baseUrl && tags.baseUrl.substr(-1) !== '/') {
+    if (tags.baseUrl && tags.baseUrl.slice(-1) !== '/') {
       tags.baseUrl += '/';
     }
 
@@ -237,6 +239,7 @@ export class MetaService {
 
   /**
    * sets meta tags of the page
+   *
    * @param tags
    * @returns an array of the final meta tags
    */
@@ -262,6 +265,7 @@ export class MetaService {
 
   /**
    * updates the existing tags and returns the final transformed meta tags
+   *
    * @param tags
    * @returns
    */
@@ -277,9 +281,9 @@ export class MetaService {
         return;
       }
 
-      let el = this.metaService.updateTag(tag);
-      if (el) {
-        result.push(el);
+      let element = this.metaService.updateTag(tag);
+      if (element) {
+        result.push(element);
       }
     });
 
@@ -288,6 +292,7 @@ export class MetaService {
 
   /**
    * get the first instance of the matching meta tag.
+   *
    * @param selector
    * @returns
    */
@@ -298,6 +303,7 @@ export class MetaService {
   /**
    * returns all tags that matches the given selector as an array of HTMLElements
    * i.e `<meta ... />` not `{key: value}`
+   *
    * @param selector
    * @returns
    */
@@ -307,23 +313,24 @@ export class MetaService {
 
   /**
    * converts {key: value} to {name: key, content: value}
-   * @method convert
+   *
+   * @function convert
    * @param  key
    * @param  value
-   * @return
+   * @returns
    */
   convert(key: string, value: any): { [key: string]: any; content?: any } {
-    let prop: string;
+    let property: string;
 
     if (['charset'].includes(key)) {
       // <meta charset="UTF-8"> not <meta name="charset" content="UTF-8">
       return { [key]: value };
     }
 
-    if (key.substr(0, 3) === 'og:') {
-      prop = 'property';
+    if (key.slice(0, 3) === 'og:') {
+      property = 'property';
     } else if (key === 'http-equiv' || key === 'httpEquiv') {
-      prop = 'httpEquiv';
+      property = 'httpEquiv';
       [key, value] = value; // ex: {httpEquiv:['content','text/html']}
     } else if (
       [
@@ -339,19 +346,18 @@ export class MetaService {
     ) {
       // http://help.dottoro.com/lhquobhe.php
       // ex: <meta http-equiv=”last-modified” content=”YYYY-MM-DD”>
-      prop = 'httpEquiv';
+      property = 'httpEquiv';
 
       if (key === 'location') {
         value = value.slice(0, 4) !== 'URL=' ? 'URL=' + value : value;
       } else if (key === 'refresh') {
-        value =
-          value instanceof Array ? `${value[0]}; URL='${value[1]}'` : value;
+        value = Array.isArray(value) ? `${value[0]}; URL='${value[1]}'` : value;
       }
     } else {
-      prop = 'name';
+      property = 'name';
     }
 
     // todo: itemprop i.e: <meta name> VS <meta itemprop>
-    return { [prop]: key, content: value };
+    return { [property]: key, content: value };
   }
 }

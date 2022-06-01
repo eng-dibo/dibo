@@ -1,40 +1,46 @@
 import { timer } from './time';
 
-const dev = process.env.NODE_ENV === 'development',
+const development = process.env.NODE_ENV === 'development',
   logger = console;
 // todo: allow the consumer to change `logger`, ex: logger= Winston
 
 /**
  * replaces all `replace` parts in a string.
  * String.replace() only replaces the first occurrence
- * @method replaceAll
+ *
+ * @function replaceAll
  * @param  element
  * @param  replace
  * @param  replaceWith will be casted to string
- * @return the new string, or an array contains the new strings
+ * @returns the new string, or an array contains the new strings
  * @example replaceAll("abxcdx",'x','y') => "abycdy"
  *
  * todo: replaceAll("abcd",["a","c"],"x") => "xbxd"
  */
 export function replaceAll(
   element: string | Array<string>,
-  replace: string | RegExp | Array<string | RegExp>,
-  replaceWith: any
+  replace: string | RegExp | Array<RegExp>,
+  replaceWith: string
 ): string | Array<any> {
-  if (element instanceof Array) {
+  if (Array.isArray(element)) {
     // el may be a nested array, in this case replaceAll() will return Array<>
     // so element.map() here may return Array<Array> instead of Array<string>
     // so replaceAll() returns Array<any> instead of Array<string>
-    return element.map((el: any) => replaceAll(el, replace, replaceWith));
+    return element.map((element_: any) =>
+      replaceAll(element_, replace, replaceWith)
+    );
   }
 
-  if (replace instanceof Array) {
-    replace.forEach((el) => {
-      element = replaceAll(element, el, replaceWith);
-    });
+  if (Array.isArray(replace)) {
+    for (let item of replace) {
+      element = replaceAll(element, item, replaceWith);
+    }
     return element;
   }
-  replace = new RegExp(replace, 'g');
+
+  if (typeof replace === 'string') {
+    replace = new RegExp(replace, 'g');
+  }
   return element.replace(replace as RegExp, replaceWith.toString());
   // faster than element.split(replace).join(replaceWith)
   // https://jsperf.com/replace-all-vs-split-join
@@ -42,11 +48,12 @@ export function replaceAll(
 
 /**
  * asynchronously replace a part of a string
- * @method replaceAsync
+ *
+ * @function replaceAsync
  * @param str
  * @param regex
  * @param replacer a function that returns a promise that resoles to `replaceWith`
- * @return
+ * @returns
  *
  * todo: merge replaceAsync() with replaceAll(), where replaceWith: (()=>Promise<string>)
  */
@@ -56,6 +63,13 @@ todo:
  - regex = Regex | string
  - replacer: any (string | fn:()=>any | async fn | promise | any other type (cast to string))
    ex: replacer may be a promise or a function that returns a promise
+ */
+/**
+ *
+ * @param element
+ * @param regex
+ * @param replacer
+ * @returns
  */
 export function replaceAsync(
   element: string,
@@ -69,13 +83,14 @@ export function replaceAsync(
   }
   // if regex is global (i.e: /regex/g) we need to recursively apply the replacement
   if (!regex.global) {
-    return replacer(...matched).then((newStr: any) =>
-      element.replace(regex, newStr)
+    return replacer(...matched).then((newString: any) =>
+      element.replace(regex, newString)
     );
   } else {
-    let i = 0,
+    let index_ = 0,
       index = 0,
       result: string[] = [],
+      // eslint-disable-next-line security-node/non-literal-reg-expr
       copy = new RegExp(regex.source, regex.flags.replace('g', '')),
       callbacks: any = [];
 
@@ -84,22 +99,22 @@ export function replaceAsync(
       let substr: string = matched.shift() || '';
       // position of substr after the current index
       let nextIndex = element.indexOf(substr, index);
-      result[i] = element.slice(index, nextIndex);
-      i++;
-      let j = i;
+      result[index_] = element.slice(index, nextIndex);
+      index_++;
+      let index__ = index_;
       callbacks.push(
         replacer(...(substr.match(copy) || []), nextIndex, element).then(
-          (newStr: any) => {
-            result[j] = newStr;
+          (newString: any) => {
+            result[index__] = newString;
           }
         )
       );
       index = nextIndex + substr.length;
-      i++;
+      index_++;
     }
-    result[i] = element.slice(index);
+    result[index_] = element.slice(index);
     return Promise.all(callbacks).then(() => {
-      if (dev) {
+      if (development) {
         logger.debug(`[replaceAsync()] +${timer('replaceAsync')}s`, {
           element,
           regex,
@@ -114,9 +129,13 @@ export function replaceAsync(
  * perform replace() recursively
  * https://stackoverflow.com/a/14806999/12577650
  *
+ * @param value
+ * @param pattern
+ * @param newValue
  * @example
  * replaceRec('xxx',/x/,'x') -> result: `x`
  * 'xxx'.replace(/x/,'x') -> result: `xx`
+ * @returns
  */
 export function replaceRec(
   value: string,
@@ -129,11 +148,13 @@ export function replaceRec(
     : replaceRec(newString, pattern, newValue);
 }
 
+// eslint-disable-next-line no-secrets/no-secrets
 /**
  * converts a string to a number if possible
  * useful if the value always been passed as a string,
  * for example when it received from `cli` or asa url parameter
  * https://github.com/substack/minimist/blob/aeb3e27dae0412de5c0494e9563a5f10c82cc7a9/index.js#L240
+ *
  * @param value
  * @returns a number if it could e converted, or the original value
  */
@@ -143,9 +164,9 @@ export function toNumber(value: string | number): number | string {
   }
   if (
     // hexadecimal numbers, example: 0xFF
-    /^0x[0-9a-f]+$/i.test(value) ||
+    /^0x[\da-f]+$/i.test(value) ||
     // example: +1.2e-5
-    /^[-+]?(?:\d+(?:\.\d*)??)(?:e[-+]?\d+)??$/.test(value)
+    /^[+-]?\d+(?:\.\d*)?(?:e[+-]?\d+)?$/.test(value)
   ) {
     return Number(value);
   }
@@ -155,7 +176,10 @@ export function toNumber(value: string | number): number | string {
 
 /**
  * converts an object-like string into a plain object
+ *
  * @param value accepts two formats: `key=value` or `JSON.stringify({...}}`
+ * @param pairsDelimiter
+ * @param keyValueDelimiter
  * @returns
  */
 export function stringToObject(
@@ -165,22 +189,22 @@ export function stringToObject(
 ): { [key: string]: any } {
   if (!value) return {};
   value = decodeURIComponent(value);
-  let obj: { [key: string]: string } = {};
+  let object: { [key: string]: string } = {};
 
   if (value.startsWith('{') || value.startsWith('[')) {
     // example: '{k1:"v1", k2:"v2"}' or '["value"]'
-    obj = JSON.parse(value);
+    object = JSON.parse(value);
   } else if (value.includes(keyValueDelimiter)) {
     // example: 'k1=v1,k2=v2'
-    value.split(pairsDelimiter).forEach((el: string) => {
-      let [key, value] = el.split(keyValueDelimiter);
-      obj[key] = value;
+    value.split(pairsDelimiter).forEach((element: string) => {
+      let [key, value] = element.split(keyValueDelimiter);
+      object[key] = value;
     });
   } else {
     throw new Error(`[javascript] stringToObject: invalid value: ${value}`);
   }
 
-  return obj;
+  return object;
 }
 
 /* todo:

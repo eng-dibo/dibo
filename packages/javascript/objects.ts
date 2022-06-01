@@ -2,24 +2,30 @@
  * javascript objects
  */
 
-export interface Obj {
+export interface Object_ {
   [key: string]: any;
 }
 
 /**
  * returns the object type. i.e: string, array, number, ...
- * @examples
+ *
+ * @example
  *  {} => object
  *  [] => array
  *  null => null
  *  function(){} => function
  *  1 => number
  *  "x", 'x', `x` => string
- * @method objectType
+ * @function objectType
  * @param  obj        [description]
- * @return [description]
+ * @returns [description]
  */
 
+/**
+ *
+ * @param object
+ * @returns
+ */
 export function objectType(object: any): string {
   return Object.prototype.toString
     .call(object)
@@ -38,17 +44,18 @@ export interface IncludesOptions {
 
 /**
  * check if the container includes the element
- * @method includes
+ *
+ * @function includes
  * @param  element the element that you want to search for
  * @param  container
  * @param  options
- * @return boolean
+ * @returns boolean
  *
  * todo: add more container types (class,. ...)
  * todo: support RegExp in array containers, ex: includes('x', [/x/])
  * todo: return {matched:true, value: matchedValue};
  *       this helps inspecting the matched regexp;
- *       don't return the value, because it may be === fale
+ *       don't return the value, because it may be === false
  * todo: for object containers: options.find='key' | 'value'
  */
 export function includes(
@@ -58,14 +65,14 @@ export function includes(
 ): boolean {
   let defaultOptions = {
     caseSensitive: false,
-    find: 'key',
     elementAsItem: true,
+    find: 'key',
   };
   options = Object.assign(defaultOptions, options || {});
 
   // if element is Array, check if the container includes any of element[] items
   // todo: options.all=true, to check if the container includes *all* of them
-  if (element instanceof Array && options?.elementAsItem === false) {
+  if (Array.isArray(element) && options?.elementAsItem === false) {
     for (let item of element) {
       if (includes(item, container, options)) {
         return true;
@@ -78,7 +85,7 @@ export function includes(
     if (typeof container === 'string') {
       // ex: includes(/x/, 'xyz')
       return element.test(container);
-    } else if (container instanceof Array) {
+    } else if (Array.isArray(container)) {
       // ex: includes(/x/, ['x','y','z'])
       for (let item of container) {
         if (includes(element, item)) {
@@ -100,8 +107,8 @@ export function includes(
   }
   if (typeof container === 'string') {
     // ex: includes('x', 'xyz')
-    return container.indexOf(element) > -1;
-  } else if (container instanceof Array) {
+    return container.includes(element);
+  } else if (Array.isArray(container)) {
     // ex: includes('x', ['x','y','z'])
     return container.includes(element);
   } else if (objectType(container) === 'object') {
@@ -117,6 +124,7 @@ export function includes(
 
 /**
  * check if the element is iterable, but not a string.
+ *
  * @param object
  * @returns boolean
  */
@@ -134,6 +142,7 @@ export function isIterable(object: any): boolean {
 
 /**
  * check if the object a promise or a promise-like, i.e has `.then()`
+ *
  * @param object
  * @returns
  */
@@ -144,22 +153,28 @@ export function isPromise(object: any): boolean {
   );
 }
 
+/**
+ *
+ * @param object
+ * @returns
+ */
 export function isEmpty(object: any): boolean {
   // note that in js: `[]!=[]` and `{}!={}` because every one is a new instance.
   // so, ['', 0, null, [], {}].includes([]) returns false
   return (
     ['', 0, false, null, undefined, [], {}].includes(object) ||
-    (object instanceof Array && object.length === 0) ||
+    (Array.isArray(object) && object.length === 0) ||
     (objectType(object) === 'object' && Object.keys(object).length === 0)
   );
 }
 
 /**
  * divide Array into chunks
- * @method chunk
+ *
+ * @function chunk
  * @param  array
  * @param  chunkSize number of elements of each chunk
- * @return an array of chunks
+ * @returns an array of chunks
  * @example chunk([1,2,3,4], 2) => [ [1,2], [3,4]]
  */
 export function chunk(
@@ -175,18 +190,19 @@ export function chunk(
   }
 
   let result = [];
-  for (let i = 0; i < array.length; i += chunkSize) {
-    result.push(array.slice(i, i + chunkSize));
+  for (let index = 0; index < array.length; index += chunkSize) {
+    result.push(array.slice(index, index + chunkSize));
   }
   return result;
 }
 
 /**
  * remove circular references from the object
+ *
  * @param object
- * @return the clean object after removing the circular references
+ * @returns the clean object after removing the circular references
  */
-export function cleanObject(object: Obj): Obj {
+export function cleanObject(object: Object_): Object_ {
   if (objectType(object) !== 'object') {
     throw new Error('the element is not an object');
   }
@@ -197,6 +213,7 @@ export function cleanObject(object: Obj): Obj {
 
 /**
  * filter objects by keys
+ *
  * @example
  *   object = {a:1, b:2, c:3, d: 4}
  *   keys = ['a', 'b']
@@ -205,9 +222,12 @@ export function cleanObject(object: Obj): Obj {
  * @param keys
  * @returns
  */
-export function filterObjectByKeys(object: Obj, keys: Array<string>): Obj {
+export function filterObjectByKeys(
+  object: Object_,
+  keys: Array<string>
+): Object_ {
   // https://stackoverflow.com/a/47443227/12577650
-  return keys.reduce((obj, key) => ({ ...obj, [key]: object[key] }), {});
+  return Object.fromEntries(keys.map((key) => [key, object[key]]));
 
   // or: https://stackoverflow.com/a/54976713/12577650
   // return Object.assign({}, ...keys.map((key) => ({ [key]: keys[key] })));
@@ -215,54 +235,70 @@ export function filterObjectByKeys(object: Obj, keys: Array<string>): Obj {
 
 /**
  * converts string with dot notation into an object key
+ *
+ * @param keys
+ * @param value
  * @example 'a.b.c' -> {a: {b:{ c: value}}}
  */
-export function stringToObject(keys: string | Array<string>, value?: any): Obj {
-  let obj: Obj = {};
+export function stringToObject(
+  keys: string | Array<string>,
+  value?: any
+): Object_ {
+  let object: Object_ = {};
   if (typeof keys === 'string') {
     keys = keys.split('.');
   }
 
-  let tmp = obj;
+  let temporary = object;
 
-  for (let i = 0; i < keys.length - 1; i++) {
-    let key: string = keys[i];
+  for (let index = 0; index < keys.length - 1; index++) {
+    let key: string = keys[index];
 
-    if (!(key in tmp)) {
-      tmp[key] = {};
+    if (!(key in temporary)) {
+      temporary[key] = {};
     }
 
-    tmp = tmp[key];
+    temporary = temporary[key];
   }
 
   // last element
   let _key = keys[keys.length - 1];
-  tmp[_key] = value;
+  temporary[_key] = value;
 
-  return obj;
+  return object;
 }
 
 /**
  * flatten the nested objects into the top-level as a dot-notation string
  * use case: sending the object to a plain-text environment such as cli or as a url parameter.
  * https://stackoverflow.com/a/69246829/12577650
+ *
+ * @param value
+ * @param delimiter
  * @example {a:{b:1, {x:{y:2}}}} -> {a.b:1, a.x.y:2 }
+ * @returns
  */
-export function flatten(value: Obj, delimiter = '.'): Obj {
-  function walk(obj: Obj, parent = ''): Obj {
+export function flatten(value: Object_, delimiter = '.'): Object_ {
+  /**
+   *
+   * @param object
+   * @param parent
+   * @returns
+   */
+  function walk(object: Object_, parent = ''): Object_ {
     parent = parent.trim();
-    let result: Obj = {};
-    Object.entries(obj).forEach(([key, val]) => {
+    let result: Object_ = {};
+    for (let [key, value_] of Object.entries(object)) {
       let prefix = parent !== '' ? `${parent}${delimiter}${key}` : key;
 
-      if (objectType(val) === 'object') {
-        let flattened = walk(val, prefix);
+      if (objectType(value_) === 'object') {
+        let flattened = walk(value_, prefix);
         // todo: remove keys from flattened
         Object.assign(result, flattened);
       } else {
-        result[prefix] = val;
+        result[prefix] = value_;
       }
-    });
+    }
     return result;
   }
 

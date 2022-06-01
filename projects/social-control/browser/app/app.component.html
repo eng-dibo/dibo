@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <mat-toolbar color="primary">
   <a href="/" class="logo">
     <img
@@ -5,7 +6,7 @@
       height="50"
       alt="{{ meta?.name }} Logo"
       src="/assets/icons/icon-72x72.png"
-    />
+    >
     <span *ngIf="meta" [matTooltip]="meta.description || ''">{{
       meta.name
     }}</span>
@@ -16,8 +17,8 @@
     <!-- todo: <{{item.tag}}> </{{item.tag}}> -->
     <!-- todo: [ngClass]="... || null" -->
     <!-- todo: fix routerLink (instead of href) doesn't work 
-         https://stackoverflow.com/a/61588147/12577650    
-    -->
+            https://stackoverflow.com/a/61588147/12577650    
+        -->
 
     <a
       *ngIf="item.tag === 'a'"

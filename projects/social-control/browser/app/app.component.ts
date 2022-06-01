@@ -30,16 +30,17 @@ export class AppComponent {
   */
 
   constructor(private http: HttpClient, private platform: PlatformService) {
-    if (platform.isBrowser() && localStorage) {
-      // set the device id, use it:
+    if (
+      platform.isBrowser() &&
+      localStorage && // set the device id, use it:
       // - as a security check, if a logingin trial from a strange device add an additional step
       // - instead of userid if no loggedin user
       // - to set preferences per device
 
-      if (!localStorage.getItem('device')) {
-        // todo: try to get 'device' from cookies or subScription.object.publicKey
-        localStorage.setItem('device', new Date().getTime().toString());
-      }
+      !localStorage.getItem('device')
+    ) {
+      // todo: try to get 'device' from cookies or subScription.object.publicKey
+      localStorage.setItem('device', Date.now().toString());
     }
   }
 
@@ -53,7 +54,7 @@ export class AppComponent {
       (result: any) => {
         this.meta = result[0];
         let toolbar = result[1];
-        if (toolbar && toolbar instanceof Array) {
+        if (toolbar && Array.isArray(toolbar)) {
           this.toolbar = toolbar.map((item: any) => {
             if (!item.tag) {
               if (item.link) {
@@ -68,7 +69,7 @@ export class AppComponent {
           });
         }
       },
-      (err) => console.log({ err })
+      (error) => console.log({ err: error })
     );
   }
 }

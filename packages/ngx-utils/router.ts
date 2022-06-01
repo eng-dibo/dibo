@@ -4,14 +4,19 @@ import { ActivatedRoute, ParamMap } from '@angular/router';
 // export type Param = Observable<ParamMap>;
 /**
  * Observe changes of the activated route for both params and query strings.
- * @method urlParams
+ *
+ * @function urlParams
  * @param  route the current activated route
- * @return Observable<[Param, Param]>
+ * @returns Observable<[Param, Param]>
  */
 
 // issue with combineLatest: https://stackoverflow.com/a/63097193/12577650
 // other techniques: https://stackoverflow.com/questions/40699229/subscribe-to-both-route-params-and-queryparams-in-angular-2
 
+/**
+ *
+ * @param route
+ */
 export function urlParams(
   route: ActivatedRoute
 ): Observable<[ParamMap, ParamMap]> {

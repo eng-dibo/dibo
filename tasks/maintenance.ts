@@ -24,7 +24,10 @@ export function push() {
   )
     .toString()
     .split('\n')
-    .filter((el) => el.trim() !== '' && el.trim() !== 'package-lock.json');
+    .filter(
+      (element) =>
+        element.trim() !== '' && element.trim() !== 'package-lock.json'
+    );
 
   if (changed.length > 0) {
     // give husky executing permission

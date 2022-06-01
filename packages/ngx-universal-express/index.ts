@@ -11,7 +11,7 @@ import 'zone.js/dist/zone-node';
 // ex: for @angular/common@11.x.x -> install @nguniversal/express-engine@^11
 import { ngExpressEngine } from '@nguniversal/express-engine';
 import express, { Express, Request, Response } from 'express';
-import { Server } from 'http';
+import { Server } from 'node:http';
 
 export interface AppOptions {
   browserDir: string;
@@ -27,10 +27,10 @@ export interface AppOptions {
 
 /**
  * function server() creates the Express server
+ *
  * @param options
  * @param cb a callback to modify the app, ex: add express routes (i.e app.get(..))
  * @returns the created Express server.
- *
  * @example
  * import { server ,run } from "@engineers/ngx-universal-express/express";
  * let app = server({ dist: join(__dirname, "../browser", serverModule:AppServerModule ) });
@@ -70,11 +70,11 @@ export function server(options: AppOptions): Express {
 
   // Serve static files from /browser
   if (appOptions.staticDirs && appOptions.staticDirs.length > 0) {
-    appOptions.staticDirs.forEach((dir) => {
+    for (let dir of appOptions.staticDirs) {
       (appOptions.staticFiles as Array<string>).forEach((file: string) =>
         app.get(file, express.static(dir, { maxAge: appOptions.staticMaxAge }))
       );
-    });
+    }
   }
 
   return app;
@@ -92,6 +92,11 @@ export interface RunOptions {
   onListen?: RunOnListen;
   onError?: RunOnError;
 }
+/**
+ *
+ * @param expressServer
+ * @param options
+ */
 export function run(expressServer: Express, options: RunOptions = {}): Server {
   let defaultOptions = {
     port: process.env.PORT || 4200,

@@ -1,10 +1,10 @@
 // todo: move to externalsPlugin, to avoid wrapping it inside a function and passing 'arguments' param
 
 import { toRegExp } from '@engineers/javascript/regex';
-import { includes, Obj } from '@engineers/javascript/objects';
+import { Obj, includes } from '@engineers/javascript/objects';
 import { resolve } from 'node:path';
 
-export interface ExternalsParams {
+export interface ExternalsParameters {
   // the absolute 'request' path
   path: string;
   // the requested path
@@ -19,16 +19,19 @@ export interface ExternalsParams {
 
 /**
  * function arguments of config.externals[function(...args){}]
- * @method params
+ *
+ * @function params
+ * @param arguments_
+ * @param options
  * @param  args   [description]
- * @return [description]
+ * @returns [description]
  */
 // todo: function params(args: IArguments):ExternalsParams{}
 export function params(
-  args: any[], // IArguments |
+  arguments_: any[], // IArguments |
   options: Obj = {}
-): ExternalsParams {
-  let externalsParams: ExternalsParams = {
+): ExternalsParameters {
+  let externalsParameters: ExternalsParameters = {
     path: '',
     request: '',
     context: '',
@@ -37,30 +40,25 @@ export function params(
     getResolve: undefined,
   };
 
-  if (args[0].context) {
+  if (arguments_[0].context) {
     // webpack 5
-    externalsParams.context = args[0].context;
-    externalsParams.request = args[0].request;
-    externalsParams.contextInfo = args[0].contextInfo;
-    externalsParams.getResolve = args[0].getResolve;
-    externalsParams.callback = args[1];
+    externalsParameters.context = arguments_[0].context;
+    externalsParameters.request = arguments_[0].request;
+    externalsParameters.contextInfo = arguments_[0].contextInfo;
+    externalsParameters.getResolve = arguments_[0].getResolve;
+    externalsParameters.callback = arguments_[1];
   } else {
     // webpack 4
-    externalsParams.context = args[0];
-    externalsParams.request = args[1];
-    externalsParams.callback = args[2];
+    externalsParameters.context = arguments_[0];
+    externalsParameters.request = arguments_[1];
+    externalsParameters.callback = arguments_[2];
   }
 
-  if (externalsParams.request.startsWith('.')) {
-    externalsParams.path = resolve(
-      externalsParams.context,
-      externalsParams.request
-    );
-  } else {
-    externalsParams.path = externalsParams.request;
-  }
+  externalsParameters.path = externalsParameters.request.startsWith('.')
+    ? resolve(externalsParameters.context, externalsParameters.request)
+    : externalsParameters.request;
 
-  return externalsParams;
+  return externalsParameters;
 }
 
 // if an ExternalsList[] item is a function and it's value is true,
@@ -75,13 +73,13 @@ export function params(
  *  - function: return true to include the requested item
  */
 export type ExternalsList = Array<
-  RegExp | string | ((externalsParams: ExternalsParams) => boolean)
+  RegExp | string | ((externalsParameters: ExternalsParameters) => boolean)
 >;
 
 export type ExternalsTransform =
   | string
   // todo: (externalsParams,match)
-  | ((externalsParams: ExternalsParams) => string);
+  | ((externalsParameters: ExternalsParameters) => string);
 
 export type Report =
   | {
@@ -97,18 +95,19 @@ export type Report =
  * if any item of this list matched the request and didn't match the whitelist transform it
  * you need to wrap externals() inside a function and pass it's arguments to it as the first param
  * so it executed every time with new arguments, i.e: evaluate a new transform value
- * @method externals
+ *
+ * @function externals
+ * @param args
+ * @param arguments_
  * @param list
  * @param transform  a function or string to transform the request; default is `commonjs {{request}}`
  * @param whitelist an array of paths (strings or regex) to be excluded from adding to externals even if matched
- * @return
- *
+ * @returns
  * @example
  * config.externals[ function(){externals(arguments,["path",/pathRegex/])} ]
- *
  */
 export default function externals(
-  args: any,
+  arguments_: any,
   list: ExternalsList,
   transform?: ExternalsTransform,
   whitelist?: ExternalsList
@@ -125,8 +124,8 @@ export default function externals(
   // string | [string] | object -> callback(null,transform)
   let action: string | undefined;
 
-  let externalsParams = params(args);
-  let { path, request, callback } = externalsParams;
+  let externalsParameters = params(arguments_);
+  let { path, request, callback } = externalsParameters;
 
   for (let item of list) {
     // todo: item = 'pattern' | {pattern, ...options}
@@ -136,7 +135,7 @@ export default function externals(
       whitelisted = false;
 
     if (typeof item === 'function') {
-      itemMatched = item(externalsParams);
+      itemMatched = item(externalsParameters);
     } else {
       let pattern = toRegExp(item);
       // itemMatched = pattern.test(pattern.global ? path : request);
@@ -149,12 +148,12 @@ export default function externals(
       if (whitelist) {
         for (let whitelistItem of whitelist) {
           if (typeof whitelistItem === 'function') {
-            if (whitelistItem(externalsParams)) {
+            if (whitelistItem(externalsParameters)) {
               whitelisted = true;
               report = {
                 status: 'whitelisted',
                 matched: whitelistItem,
-                arguments: externalsParams,
+                arguments: externalsParameters,
               };
               break;
             }
@@ -165,7 +164,7 @@ export default function externals(
               report = {
                 status: 'whitelisted',
                 matched: whitelistItem,
-                arguments: externalsParams,
+                arguments: externalsParameters,
               };
               break;
             }
@@ -174,11 +173,11 @@ export default function externals(
       }
       if (!whitelisted) {
         if (transform && typeof transform === 'function') {
-          transform = transform(externalsParams);
+          transform = transform(externalsParameters);
         }
 
         transform = ((transform as string) || `commonjs2 ${path}`).trim();
-        if (transform.length > 0 && transform.indexOf(' ') === -1) {
+        if (transform.length > 0 && !transform.includes(' ')) {
           //  transform is module type, example: `commonjs2`
           transform = `${transform} ${path}`;
         }
@@ -187,9 +186,9 @@ export default function externals(
         // only works if item is RegExp or string or a function that returns a Regexp or String
         // i.e doesn't work if item is a function that returns boolean
         // todo: support multiple groups: ex: "commonjs {{var1}} - {{var2}}"
-        if (itemMatched instanceof Array) {
+        if (Array.isArray(itemMatched)) {
           transform = transform.replace(
-            /\{{(.*?)}}/g,
+            /{{(.*?)}}/g,
             (...matched: any[]): string => {
               // todo: expose more variables (ex: matches[])
               // todo: support obj.* syntax ex: "commonjs ${var.property}"
@@ -197,11 +196,11 @@ export default function externals(
               let matchedValue = matched[1];
               if (matchedValue.startsWith('$')) {
                 return itemMatched![
-                  matchedValue.substring(1) as keyof typeof itemMatched
+                  matchedValue.slice(1) as keyof typeof itemMatched
                 ];
               }
               // @ts-ignore
-              return externalsParams[matchedValue];
+              return externalsParameters[matchedValue];
             }
           );
         }
@@ -210,7 +209,7 @@ export default function externals(
           status: 'transformed',
           matched: item,
           transform,
-          arguments: externalsParams,
+          arguments: externalsParameters,
         };
 
         action = transform;
@@ -229,12 +228,15 @@ export default function externals(
  * exclude node_modules from bundling, use require(package) instead.
  * this function must be added to the *end* of externals[] list,
  * to avoid overriding any user-defined externals() function.
- * @method node
+ *
+ * @param transform
+ * @param whitelist
+ * @function node
  */
 export function node(
   transform?: ExternalsTransform,
   whitelist?: ExternalsList
-): (...args: any[]) => Report {
+): (...arguments_: any[]) => Report {
   let list = [
     /*
     match request that doesn't start with ".", ex: ".." and "./"
@@ -248,7 +250,7 @@ export function node(
 
     // non-global pattern to apply the check on 'request' only instead of 'path',
     // as 'path' is an absolute path, and never starts with '.'
-    /^(?!\.|\/|\\|.+?:).*/,
+    /^(?![./\\]|.+?:).*/,
 
     // a path to a `node_modules` dir
     /^.*?\/node_modules\//g,

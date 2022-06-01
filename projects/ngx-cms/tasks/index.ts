@@ -2,7 +2,7 @@
  see <root>/tasks
 */
 import { runTask } from '@engineers/nodejs/process';
-import { resolve } from 'path';
+import { resolve } from 'node:path';
 import setup from './setup';
 import deploy from './deploy';
 import build from './build';

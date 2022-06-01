@@ -6,12 +6,12 @@
 // todo: emit events: progress, response, change (fileAdded)
 // todo: move custom types (such as quill) out of formly
 
-import { Component, Directive, ViewChild, Input, OnInit } from '@angular/core';
+import { Component, Directive, Input, OnInit, ViewChild } from '@angular/core';
 import { FieldType } from '@ngx-formly/material';
 import {
-  NG_VALUE_ACCESSOR,
   ControlValueAccessor,
   FormControl,
+  NG_VALUE_ACCESSOR,
 } from '@angular/forms';
 
 @Component({
@@ -43,7 +43,7 @@ export class FormlyFileComponent extends FieldType {
   onFilesAdded(): void {
     let files: File[] = this.fileInput.nativeElement.files;
     if (this.to.multiple) {
-      files.forEach((file) => this.files.add(file));
+      for (let file of files) this.files.add(file);
     } else {
       this.files = new Set([files[0]]);
     }
@@ -77,10 +77,10 @@ export class FileValueAccessor implements ControlValueAccessor {
   onTouched = () => {};
 
   writeValue(value: any): any {}
-  registerOnChange(fn: any): void {
-    this.onChange = fn;
+  registerOnChange(function_: any): void {
+    this.onChange = function_;
   }
-  registerOnTouched(fn: any): void {
-    this.onTouched = fn;
+  registerOnTouched(function_: any): void {
+    this.onTouched = function_;
   }
 }

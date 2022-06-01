@@ -1,5 +1,5 @@
-import { test, expect, describe, jest } from '@jest/globals';
-import { merge, deepMerge } from './merge';
+import { describe, expect, jest, test } from '@jest/globals';
+import { deepMerge, merge } from './merge';
 
 describe('merge', () => {
   test('merge array with other types', () => {
@@ -50,13 +50,13 @@ describe('merge', () => {
 
 describe('deepMerge', () => {
   test('merge objects', () => {
-    let obj1 = {
+    let object1 = {
         a: 1,
         b: 2,
         c: { x: 10, y: { m: 11 } },
         d: { x: 10, y: { m: 11 } },
       },
-      obj2 = {
+      object2 = {
         b: 3,
         c: 4,
         d: { x: 9, y: { n: 12 } },
@@ -67,6 +67,6 @@ describe('deepMerge', () => {
         c: 4,
         d: { x: 9, y: { n: 12, m: 11 } },
       };
-    expect(deepMerge([obj1, obj2])).toEqual(result);
+    expect(deepMerge([object1, object2])).toEqual(result);
   });
 });

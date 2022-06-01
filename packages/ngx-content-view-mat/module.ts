@@ -28,8 +28,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { HighlightModule } from 'ngx-highlightjs';
 import { QuillModule } from 'ngx-quill';
 import {
-  FontAwesomeModule,
   FaIconLibrary,
+  FontAwesomeModule,
 } from '@fortawesome/angular-fontawesome';
 import { fab } from '@fortawesome/free-brands-svg-icons';
 import { fas } from '@fortawesome/free-solid-svg-icons';

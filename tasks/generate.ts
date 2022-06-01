@@ -1,6 +1,7 @@
+/* eslint-disable sort-keys */
 import { getEntries, read, write } from '@engineers/nodejs/fs';
 import { read as readSync } from '@engineers/nodejs/fs-sync';
-import { filterObjectByKeys, Obj } from '@engineers/javascript/objects';
+import { Obj, filterObjectByKeys } from '@engineers/javascript/objects';
 import { basename, dirname, resolve } from 'node:path';
 import { existsSync, writeFileSync } from 'node:fs';
 import ejs from 'ejs';
@@ -10,11 +11,11 @@ let rootPath = resolve(__dirname, '..'),
   // todo: copy `author` to other package.json files only if not existing.
   keys = ['repository', 'homepage', 'bugs', 'license', 'author', 'funding'],
   rootData = filterObjectByKeys(rootPackage as Obj, keys),
-  defaultPackage = (dir: string) => ({
-    name: `@engineers/${basename(dir)}`,
+  defaultPackage = (directory: string) => ({
+    name: `@engineers/${basename(directory)}`,
     version: '0.0.1',
     // projects shouldn't be published to npm
-    private: dir.startsWith('projects/'),
+    private: directory.startsWith('projects/'),
     // include only `tsconfig.compilerOptions.outDir` folder when publishing to npm
     // in addition to package.json and README.md
     files: ['dist'],
@@ -51,6 +52,9 @@ export interface GenerateOptions {
 
 /**
  * generates build files such as package.json, README.md, etc.
+ *
+ * @param name
+ * @param options
  */
 export default function generate(
   name: string,
@@ -88,14 +92,16 @@ export default function generate(
  * to other package.json files in all subdirectories.
  *
  * paths are relative to cwd()
+ *
  * @param dirs packages where to update it's readme.md file
  * @param pkgObj additional package properties provided by cli, takes precedence over the existing properties
+ * @param directories
  */
 export function updatePackages(
-  dirs?: string[] | Promise<string[]>,
-  pkgObj: { [key: string]: any } = {}
+  directories?: string[] | Promise<string[]>,
+  packageObject: { [key: string]: any } = {}
 ): Promise<void> {
-  return Promise.resolve(dirs || getDirs())
+  return Promise.resolve(directories || getDirs())
     .then((entries: Array<string>) =>
       Promise.all(
         entries.map((entry: string) => {
@@ -108,7 +114,7 @@ export function updatePackages(
                   defaultPackage(entry),
                   rootData,
                   content,
-                  pkgObj
+                  packageObject
                 );
 
                 pkg.scripts = Object.assign(
@@ -132,16 +138,18 @@ export function updatePackages(
 
 /**
  * update readMe.md file in each package
+ *
  * @param dirs see updatePackages()
+ * @param directories
  */
-export function updateReadMe(dirs?: string[]): Promise<void> {
+export function updateReadMe(directories?: string[]): Promise<void> {
   return getDirs()
     .then((entries: Array<string>) =>
       Promise.all(
-        (dirs || entries).map((entry: string) => {
+        (directories || entries).map((entry: string) => {
           read(`${entry}/package.json`)
             // if ${entry}/package.json not exists, use rootData
-            .catch((err) => {
+            .catch((error) => {
               let pkg = Object.assign(rootData, defaultPackage(entry));
               pkg.scripts = Object.assign(defaultScripts, pkg.scripts || {});
               return pkg;
@@ -172,8 +180,12 @@ export function updateReadMe(dirs?: string[]): Promise<void> {
     .then();
 }
 
+/**
+ *
+ * @param directories
+ */
 export function addTsconfig(
-  dirs?: string[] | Promise<string[]>
+  directories?: string[] | Promise<string[]>
 ): Promise<void[]> {
   let content = JSON.stringify({
     extends: '../../tsconfig.json',
@@ -185,15 +197,19 @@ export function addTsconfig(
     },
   });
 
-  return Promise.resolve(dirs || getDirs()).then((dirs) =>
-    dirs
-      .filter((dir) => !existsSync(`${dir}/tsconfig.json`))
-      .map((dir) => writeFileSync(`${dir}/tsconfig.json`, content))
+  return Promise.resolve(directories || getDirs()).then((directories) =>
+    directories
+      .filter((directory) => !existsSync(`${directory}/tsconfig.json`))
+      .map((directory) => writeFileSync(`${directory}/tsconfig.json`, content))
   );
 }
 
+/**
+ *
+ * @param directories
+ */
 export function addWebpackConfig(
-  dirs?: string[] | Promise<string[]>
+  directories?: string[] | Promise<string[]>
 ): Promise<void[]> {
   let content = `
   import webpackMerge from 'webpack-merge';
@@ -218,15 +234,21 @@ export function addWebpackConfig(
   });
 `;
 
-  return Promise.resolve(dirs || getDirs()).then((dirs) =>
-    dirs
-      .filter((dir) => !existsSync(`${dir}/webpack.config.ts`))
-      .map((dir) => writeFileSync(`${dir}/webpack.config.ts`, content))
+  return Promise.resolve(directories || getDirs()).then((directories) =>
+    directories
+      .filter((directory) => !existsSync(`${directory}/webpack.config.ts`))
+      .map((directory) =>
+        writeFileSync(`${directory}/webpack.config.ts`, content)
+      )
   );
 }
 
+/**
+ *
+ * @param directories
+ */
 export function addJestConfig(
-  dirs?: string[] | Promise<string[]>
+  directories?: string[] | Promise<string[]>
 ): Promise<void[]> {
   let content = `
    import jestConfig from '../../jest.config';
@@ -235,41 +257,50 @@ export function addJestConfig(
    });
 `;
 
-  return Promise.resolve(dirs || getDirs()).then((dirs) =>
-    dirs
-      .filter((dir) => !existsSync(`${dir}/jest.config.ts`))
-      .map((dir) => writeFileSync(`${dir}/jest.config.ts`, content))
+  return Promise.resolve(directories || getDirs()).then((directories) =>
+    directories
+      .filter((directory) => !existsSync(`${directory}/jest.config.ts`))
+      .map((directory) => writeFileSync(`${directory}/jest.config.ts`, content))
   );
 }
 
+/**
+ *
+ * @param directories
+ */
 export function addSemanticReleaseConfig(
-  dirs?: string[] | Promise<string[]>
+  directories?: string[] | Promise<string[]>
 ): Promise<void[]> {
-  return Promise.resolve(dirs || getDirs()).then((dirs) =>
-    dirs
-      .filter((dir) => !existsSync(`${dir}/release.config.js`))
-      .map((dir) => {
+  return Promise.resolve(directories || getDirs()).then((directories) =>
+    directories
+      .filter((directory) => !existsSync(`${directory}/release.config.js`))
+      .map((directory) => {
         let file = `release.${
-          dir.startsWith('projects/') ? 'app' : 'package'
+          directory.startsWith('projects/') ? 'app' : 'package'
         }.config.js`;
 
         let content = `
           let baseConfig= require("../../${file}");
           module.exports = baseConfig;
         `;
-        writeFileSync(`${dir}/release.config.js`, content);
+        writeFileSync(`${directory}/release.config.js`, content);
       })
   );
 }
 
 /**
  * get a list of packages and/or projects
+ *
+ * @param targets
  */
+// eslint-disable-next-line unicorn/prevent-abbreviations
 export function getDirs(
   targets: string[] = ['./packages', './projects']
 ): Promise<Array<string>> {
-  return Promise.all(targets.map((dir) => getEntries(dir, 'dirs', 0))).then(
+  return Promise.all(
+    targets.map((directory) => getEntries(directory, 'dirs', 0))
+  ).then(
     // combine an array of arrays into a single array
-    (results) => results.reduce((acc, current) => acc.concat(current), [])
+    (results) => results.flat()
   );
 }

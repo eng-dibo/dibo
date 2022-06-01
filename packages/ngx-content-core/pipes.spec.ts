@@ -1,8 +1,8 @@
 /**
  * @jest-environment jsdom
  */
-import { test, expect, beforeAll, beforeEach, describe } from '@jest/globals';
-import { TestBed, ComponentFixture } from '@angular/core/testing';
+import { beforeAll, beforeEach, describe, expect, test } from '@jest/globals';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgxContentCoreModule } from './module';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Component } from '@angular/core';

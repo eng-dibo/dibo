@@ -1,6 +1,6 @@
-import { test, expect, describe, jest } from '@jest/globals';
-import { existsSync, unlinkSync } from 'fs';
-import { resize, OutputInfo, convert, edit } from './index';
+import { describe, expect, jest, test } from '@jest/globals';
+import { existsSync, unlinkSync } from 'node:fs';
+import { OutputInfo, convert, edit, resize } from './index';
 
 const img = __dirname + '/test/flower.jpg';
 

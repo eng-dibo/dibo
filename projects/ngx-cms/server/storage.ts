@@ -17,6 +17,11 @@ export let storage = new Storage({
   ),
 });
 
+/**
+ *
+ * @param path
+ * @param options
+ */
 export function read(
   path: PathLike,
   options?: ReadOptions | BufferEncoding
@@ -25,6 +30,12 @@ export function read(
 }
 
 // export function writeFileSync(path: PathLike | number, data: string | NodeJS.ArrayBufferView, options?: WriteFileOptions): void;
+/**
+ *
+ * @param path
+ * @param data
+ * @param options
+ */
 export function write(
   path: PathLike,
   data: any,
@@ -36,6 +47,10 @@ export function write(
   );
 }
 
+/**
+ *
+ * @param path
+ */
 export function remove(path: PathLike): Promise<any> {
   return storage.delete(`${path.toString()}`);
 }

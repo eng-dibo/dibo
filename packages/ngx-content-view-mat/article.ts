@@ -1,11 +1,11 @@
-import { Component, Input, ElementRef } from '@angular/core';
+import { Component, ElementRef, Input } from '@angular/core';
 import { replaceAll } from '@engineers/javascript/string';
 
-interface Obj {
+interface Object_ {
   [key: string]: any;
 }
 
-export interface Article extends Obj {
+export interface Article extends Object_ {
   id?: string;
   title?: string;
   subtitle?: string;
@@ -22,7 +22,7 @@ export interface Article extends Obj {
   copyButton?: boolean;
 }
 
-export interface Keywords extends Obj {
+export interface Keywords extends Object_ {
   text: string;
   count?: number | string;
   link?: string;
@@ -39,7 +39,7 @@ export interface Image {
   height?: number;
 }
 
-export interface ArticleOptions extends Obj {
+export interface ArticleOptions extends Object_ {
   // tag used for title, default: <h1>
   titleTag?: string;
   // todo: move to options.quickActions[icon:content_copy, options:{getData()}]
@@ -67,7 +67,7 @@ export class NgxContentArticleComponent {
   @Input() options: ArticleOptions = {};
   opts!: ArticleOptions;
 
-  constructor(private el: ElementRef) {
+  constructor(private element: ElementRef) {
     let quickActions: Array<QuickActionsElement> = [
       // todo: issue,  `action: this.copy` makes `this` inside copy() refers to this array element
       // i.e {icon, action} instead of the component
@@ -77,7 +77,7 @@ export class NgxContentArticleComponent {
 
     // remove duplicates (action elements from parent component overrides default action elements)
     // todo: if(options && !action) add options to quickActions element
-    if (this.options.quickActions instanceof Array) {
+    if (Array.isArray(this.options.quickActions)) {
       quickActions = quickActions.filter((defaultAction) => {
         !this.options.quickActions!.some(
           (action) => action.icon === defaultAction.icon
@@ -115,7 +115,7 @@ export class NgxContentArticleComponent {
       if (link) {
         let url = new URL(link);
         url.pathname = url.pathname.replace(
-          /([^\/]+)\/(?:[^\/]+)\/.+~([^\/?]+)/,
+          /([^/]+)\/[^/]+\/.+~([^/?]+)/,
           '$1/~$2'
         );
         link = url.href;
@@ -125,19 +125,21 @@ export class NgxContentArticleComponent {
       if (content) {
         let headers = [...(content?.querySelectorAll('h2') || [])],
           headersText = headers
-            ? headers.map((el: HTMLElement) => `- ${el.textContent}`).join('\n')
+            ? headers
+                .map((element: HTMLElement) => `- ${element.textContent}`)
+                .join('\n')
             : '',
           intro;
 
         if (headers.length > 0) {
           // intro is all elements before the first header
           let els = [];
-          let el = headers[0].previousElementSibling;
-          while (el) {
-            els.unshift(el as HTMLElement);
-            el = el.previousElementSibling;
+          let element = headers[0].previousElementSibling;
+          while (element) {
+            els.unshift(element as HTMLElement);
+            element = element.previousElementSibling;
           }
-          intro = els.map((el) => el.innerText.trim()).join('\n');
+          intro = els.map((element) => element.innerText.trim()).join('\n');
         } else {
           intro = content?.innerText?.trim();
         }
@@ -157,7 +159,7 @@ export class NgxContentArticleComponent {
 
         intro = (
           replaceAll(intro.replace(linkPattern, ''), '\n\n', '\n') as string
-        ).substr(0, 500);
+        ).slice(0, 500);
 
         // todo: use template, example: options.template='{{titleText}}\n{{link}}'
         data = `${titleText}\n\n${intro}\n\n${headersText}\n\n👇👇\n${link}`;
@@ -172,20 +174,20 @@ export class NgxContentArticleComponent {
           // todo: add a tooltip to the copy button
           console.log(`copied!!`);
         },
-        function (err) {
-          console.error('Async: Could not copy text: ', err);
+        function (error) {
+          console.error('Async: Could not copy text:', error);
         }
       );
     } else {
       // https://dev.to/tqbit/how-to-use-javascript-to-copy-text-to-the-clipboard-2hi2
       let area = document.createElement('textarea');
       area.value = data;
-      document.body.appendChild(area);
+      document.body.append(area);
       area.select();
       if (document.execCommand('copy')) {
         console.log(`copied!!`);
       }
-      document.body.removeChild(area);
+      area.remove();
     }
   }
 
@@ -197,8 +199,8 @@ export class NgxContentArticleComponent {
       let shareAction = this.options!.shareAction(card);
     }
 
-    let title = card.getElementsByTagName('mat-card-title')[0],
+    let title = card.querySelectorAll('mat-card-title')[0],
       titleText = title.textContent,
-      link = title.getElementsByTagName('a')[0].href;
+      link = title.querySelectorAll('a')[0].href;
   }
 }

@@ -1,19 +1,22 @@
 import { Request, Response } from 'express';
 import { stringToObject } from '@engineers/javascript/string';
 import { TEMP } from '.';
-import { unlinkSync, existsSync } from 'node:fs';
-import { query as dbQuery } from '~server/database';
-import { request, getConfig, handleMessage } from '~server/functions';
+import { existsSync, unlinkSync } from 'node:fs';
+import { query as databaseQuery } from '~server/database';
+import { getConfig, handleMessage, request } from '~server/functions';
 /**
  * adds the app to a new page
  * see ~server/models.pages for more
  *
+ * @param req
+ * @param request_
+ * @param res
  * @example:  setup/page=$pageId,access_token=$token,greeting=welcome%20{{user_first_name}},welcome=conversation%20started
  * access_token is required for the first time only, other properties except pageId are optional
  */
-export default (req: Request, res: Response): void => {
+export default (request_: Request, res: Response): void => {
   try {
-    let config = stringToObject(req.params.config);
+    let config = stringToObject(request_.params.config);
     if (!config.page) {
       throw new Error(`parameter page (page id) is required`);
     }
@@ -43,7 +46,7 @@ export default (req: Request, res: Response): void => {
     )
       .then(() =>
         // todo: add user
-        dbQuery(
+        databaseQuery(
           `updateOne:pages/_id=${config._id}/${JSON.stringify(
             config
           )}/upsert=true`
@@ -51,8 +54,8 @@ export default (req: Request, res: Response): void => {
       )
       // purge the cache
       .then(() => {
-        let tmp = `${TEMP}/pages/${config._id}.json`;
-        existsSync(tmp) && unlinkSync(tmp);
+        let temporary = `${TEMP}/pages/${config._id}.json`;
+        existsSync(temporary) && unlinkSync(temporary);
       })
       .then(() =>
         // persistent menu requires adding a 'get started' button
@@ -66,13 +69,17 @@ export default (req: Request, res: Response): void => {
       .then(() =>
         Promise.all(
           ['greeting', 'menu']
-            .filter((el) => config[el])
-            .map((el) => {
-              if (el === 'menu') return { persistent_menu: config[el] };
-              else if (el === 'greeting') return { greeting: config[el] };
-              return config[el];
+            .filter((element) => config[element])
+            .map((element) => {
+              if (element === 'menu')
+                return { persistent_menu: config[element] };
+              else if (element === 'greeting')
+                return { greeting: config[element] };
+              return config[element];
             })
-            .map((el) => request(config._id, 'me/messenger_profile', el))
+            .map((element) =>
+              request(config._id, 'me/messenger_profile', element)
+            )
         )
       )
       .then((result) => res.json(config))

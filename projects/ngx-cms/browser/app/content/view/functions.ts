@@ -1,17 +1,22 @@
-import { Params, Category } from './view.component';
+import { Category, Params as Parameters_ } from './view.component';
 import {
   Article,
-  Payload,
   Keywords,
   Meta,
+  Payload,
 } from '@engineers/ngx-content-view-mat';
 import {
+  slug as _slug,
   html2text,
   length,
-  slug as _slug,
 } from '@engineers/ngx-content-core/pipes-functions';
 import { replaceAll } from '@engineers/javascript/string';
 
+/**
+ *
+ * @param value
+ * @param options
+ */
 export function slug(value: string, options: any = {}) {
   return _slug(
     value,
@@ -26,7 +31,11 @@ export function slug(value: string, options: any = {}) {
   );
 }
 
-export function getParams(url: string): Params {
+/**
+ *
+ * @param url
+ */
+export function getParams(url: string): Parameters_ {
   let [link, query] = url.split('?');
   let type, item, category;
   if (link === '/') {
@@ -68,33 +77,44 @@ export interface GetUrlOptions {
   limit?: number;
   offset?: number;
 }
-export function getUrl(params: any, options: GetUrlOptions = {}): string {
-  let url = `${params.type}/`;
-  if (params.item) {
+/**
+ *
+ * @param parameters
+ * @param options
+ */
+export function getUrl(parameters: any, options: GetUrlOptions = {}): string {
+  let url = `${parameters.type}/`;
+  if (parameters.item) {
     // todo: ~_id,title,subtitle,summary,author,cover,categories,updatedAt
-    url += params.item;
+    url += parameters.item;
   } else {
     url += `${options.offset || 0}:${options.limit || 10}@status=approved`;
-    if (params.category._id) {
+    if (parameters.category._id) {
       // get articles where category in article.categories[]
-      url += `,categories=${params.category._id}`;
-    } else if (params.category.slug) {
+      url += `,categories=${parameters.category._id}`;
+    } else if (parameters.category.slug) {
       // get articles in a category by its slug name
-      url += `,category=${encodeURIComponent('^' + params.category.slug)}`;
+      url += `,category=${encodeURIComponent('^' + parameters.category.slug)}`;
     }
     // sort by createdAt or updatedAt (descending)
     url += `%3Fsort=createdAt:-1`;
   }
 
-  if (params.refresh) {
-    url += `?refresh=${params.refresh}`;
+  if (parameters.refresh) {
+    url += `?refresh=${parameters.refresh}`;
   }
   return url;
 }
 
+/**
+ *
+ * @param data
+ * @param parameters
+ * @param categories
+ */
 export function transformData(
   data: Payload,
-  params: Params,
+  parameters: Parameters_,
   categories?: Category[]
 ): Payload {
   if (!data) {
@@ -103,7 +123,7 @@ export function transformData(
   if (typeof data === 'string') {
     // ex: the url fetched via a ServiceWorker
     data = JSON.parse(data);
-  } else if (!(data instanceof Array) && data.error) {
+  } else if (!Array.isArray(data) && data.error) {
     // todo: cause
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error/Error#rethrowing_an_error_with_a_cause
     throw new Error(
@@ -111,23 +131,31 @@ export function transformData(
     );
   }
 
-  if (data instanceof Array) {
+  if (Array.isArray(data)) {
     data = data
-      .map((item: Article) => adjustArticle(item, params, categories, 'list'))
+      .map((item: Article) =>
+        adjustArticle(item, parameters, categories, 'list')
+      )
       // randomize (shuffle) data[]
       .sort(() => 0.5 - Math.random()) as Article[];
   } else if (!data.error && data.content) {
     // data may be doesn't 'content' property
     // for example article_categories
-    data = adjustArticle(data as Article, params, categories, 'item');
+    data = adjustArticle(data as Article, parameters, categories, 'item');
   }
 
   return data;
 }
 
+/**
+ *
+ * @param data
+ * @param parameters
+ * @param defaultMetaTags
+ */
 export function getMetaTags(
   data: Payload,
-  params: Params,
+  parameters: Parameters_,
   // override tags from `data`
   defaultMetaTags: Meta = {}
 ): Meta {
@@ -135,7 +163,7 @@ export function getMetaTags(
     return defaultMetaTags;
   }
   let metaTags: Meta;
-  if (!(data instanceof Array)) {
+  if (!Array.isArray(data)) {
     if (data.keywords && defaultMetaTags.baseUrl) {
       data.keywords = adjustKeywords(data.keywords, defaultMetaTags);
     }
@@ -158,13 +186,13 @@ export function getMetaTags(
   else {
     metaTags = {
       ...defaultMetaTags,
-      url: defaultMetaTags.url + params.type,
+      url: defaultMetaTags.url + parameters.type,
       title: defaultMetaTags.name,
     };
   }
 
   // todo: if(jobs)description=..
-  if (!('cover' in metaTags) && params.type === 'jobs') {
+  if (!('cover' in metaTags) && parameters.type === 'jobs') {
     metaTags.image = {
       src: '/assets/site-image/jobs.webp',
       // todo: width, height
@@ -174,9 +202,16 @@ export function getMetaTags(
   return metaTags;
 }
 
+/**
+ *
+ * @param item
+ * @param parameters
+ * @param categories
+ * @param type
+ */
 export function adjustArticle(
   item: Article,
-  params: Params,
+  parameters: Parameters_,
   categories?: Array<Category>,
   type: 'item' | 'list' = 'item'
 ): Article {
@@ -188,36 +223,36 @@ export function adjustArticle(
   if (
     item.categories &&
     item.categories.length > 0 &&
-    categories instanceof Array
+    Array.isArray(categories)
   ) {
-    category = categories.find((el) => el._id === item.categories[0]);
+    category = categories.find((element) => element._id === item.categories[0]);
   }
   item.slug = category ? category.slug || slug(category.title!) : 'general';
   item.slug += '/' + slug(item.title || '');
-  item.link = `/${params.type}/${item.slug}~${item.id}`;
+  item.link = `/${parameters.type}/${item.slug}~${item.id}`;
 
   if (item.cover) {
     // if the layout changed, change the attribute sizes, for example if a side menu added.
     // todo: i<originalSize/250
-    let src = `/api/v1/image/${params.type}-cover-${item._id}/${item.slug}.webp`,
+    let source = `/api/v1/image/${parameters.type}-cover-${item._id}/${item.slug}.webp`,
       srcset = '',
       // for type=item: image width = 100% of the viewport width
       // for type=list: each column is adjusted to be ~250px (by css media queries)
       // or: 1000->25vw (4 cols), 750->33vw (3cols), 500->50vw (2cols), default=100vw
       sizes = type === 'item' ? '100vw' : '250px';
-    for (let i = 1; i < 10; i++) {
-      let n = i * 250;
-      srcset += `${src}?size=${n} ${n}w, `;
+    for (let index = 1; index < 10; index++) {
+      let n = index * 250;
+      srcset += `${source}?size=${n} ${n}w, `;
     }
 
     item.cover = {
-      src,
+      src: source,
       srcset,
       sizes,
     };
   }
 
-  if (type === 'item' && params.type === 'jobs') {
+  if (type === 'item' && parameters.type === 'jobs') {
     item.content += `<div id='contacts'>${item.contacts}</div>`;
   }
 
@@ -228,6 +263,11 @@ export function adjustArticle(
   return item;
 }
 
+/**
+ *
+ * @param keywords
+ * @param defaultTags
+ */
 export function adjustKeywords(
   keywords: string | Keywords[],
   defaultTags: Meta
@@ -243,19 +283,24 @@ export function adjustKeywords(
   }
 
   return (keywords as Keywords[])
-    .filter((el: any) => el.text)
-    .map((el: any) => {
-      if (!el.link) {
-        el.link = `https://www.google.com/search?q=site%3A${
+    .filter((element: any) => element.text)
+    .map((element: any) => {
+      if (!element.link) {
+        element.link = `https://www.google.com/search?q=site%3A${
           defaultTags.baseUrl
-        }+${replaceAll(el.text, '', '+')}`;
+        }+${replaceAll(element.text, '', '+')}`;
       }
 
-      el.target = '_blank';
-      return el;
+      element.target = '_blank';
+      return element;
     });
 }
 
+/**
+ *
+ * @param value
+ * @param options
+ */
 export function summary(value: string, options: any = {}): string {
   let text = html2text(value, { lineBreak: options.lineBreak || 'br' });
   return length(text, options.length || 500);

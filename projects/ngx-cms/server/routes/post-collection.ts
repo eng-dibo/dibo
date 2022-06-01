@@ -7,7 +7,7 @@ import { slug } from '@engineers/ngx-content-core/pipes-functions';
 import { prod } from '~config/server';
 import { supportedCollections } from './supported-collections';
 import { write } from '~server/storage';
-import { write as writeFs, remove } from '@engineers/nodejs/fs';
+import { remove, write as writeFs } from '@engineers/nodejs/fs';
 import { connect, getModel, query } from '~server/database';
 import cache from '@engineers/nodejs/cache-fs';
 import { existsSync, unlink } from 'node:fs';
@@ -16,27 +16,27 @@ import { TEMP } from '.';
 import { Request, Response } from 'express';
 
 // todo: change to /api/v1/collection/itemType[/id]
-export default (req: Request, res: Response): any => {
-  let collection = req.params.collection;
+export default (request: Request, res: Response): any => {
+  let collection = request.params.collection;
   if (!supportedCollections.includes(collection)) {
     return res.json({
       error: `posting to the collection "${collection}" in not allowed`,
     });
   }
-  timer(`post ${req.url}`);
+  timer(`post ${request.url}`);
   if (!prod) {
     console.log('[server/api] post', {
-      body: req.body,
-      files: req.files,
-      file: req.file,
+      body: request.body,
+      files: request.files,
+      file: request.file,
     });
   }
 
-  if (!req.body || !req.body.content) {
+  if (!request.body || !request.body.content) {
     return res.json({ error: { message: 'no data posted' } });
   }
 
-  let data = req.body,
+  let data = request.body,
     date = new Date(),
     update: boolean;
 
@@ -77,15 +77,15 @@ export default (req: Request, res: Response): any => {
     ) => {
       let fileName = date.getTime(),
         fileStoragePath = `${collection}/${data._id}/${fileName}.webp`,
-        src = `/api/v1/image/${collection}-${fileName}-${data._id}/${titleSlug}.webp`,
+        source = `/api/v1/image/${collection}-${fileName}-${data._id}/${titleSlug}.webp`,
         srcset = '',
         // in list layout (i.e the index page) only cover image is displayed
         // content images are displayed only on item layout
         sizes = '100vw';
 
-      for (let i = 1; i < 10; i++) {
-        let n = i * 250;
-        srcset += `${src}?size=${n} ${n}w, `;
+      for (let index = 1; index < 10; index++) {
+        let n = index * 250;
+        srcset += `${source}?size=${n} ${n}w, `;
       }
 
       // todo: catch(err=>writeFile('queue/*',{imgData,err})) to retry uploading again
@@ -103,12 +103,12 @@ export default (req: Request, res: Response): any => {
           throw new Error(`error in handling the encoded images ${error}`);
         });
       // todo: get image dimensions from dataImg
-      return `<img width="" height="" data-src="${src}" data-srcset="${srcset}" sizes="${sizes}" alt="${data.title}" />`;
+      return `<img width="" height="" data-src="${source}" data-srcset="${srcset}" sizes="${sizes}" alt="${data.title}" />`;
     }
   );
 
   // upload cover
-  if (req.file && req.file.buffer) {
+  if (request.file && request.file.buffer) {
     if (!prod) {
       console.log('[server/api] uploading cover ...');
     }
@@ -117,11 +117,11 @@ export default (req: Request, res: Response): any => {
     // to get original name: cover.originalname
     let fileStoragePath = `${collection}/${data._id}/cover.webp`;
 
-    resize(req.file.buffer, '', { format: 'webp' })
+    resize(request.file.buffer, '', { format: 'webp' })
       .then((_data: any) => write(fileStoragePath, _data))
       .then((file: any) => {
         console.log(`[server/api] cover uploaded`);
-        writeFs(`${TEMP}/media/${data._id}/cover.webp`, req.file!.buffer);
+        writeFs(`${TEMP}/media/${data._id}/cover.webp`, request.file!.buffer);
       });
   }
 
@@ -142,24 +142,26 @@ export default (req: Request, res: Response): any => {
             data.categories = [data.categories];
           }
           // convert to {_id:parent}
-          let tmp: any = {},
+          let temporary: any = {},
             getParentRecursive = (entry: string) => {
-              if (tmp[entry]) {
-                data.categories.push(tmp[entry]);
-                getParentRecursive(tmp[entry]);
+              if (temporary[entry]) {
+                data.categories.push(temporary[entry]);
+                getParentRecursive(temporary[entry]);
               }
             };
-          categories.forEach((el: any) => {
-            tmp[el._id] = el.parent;
+          categories.forEach((element: any) => {
+            temporary[element._id] = element.parent;
           });
 
-          data.categories.forEach((el: string) => getParentRecursive(el));
+          data.categories.forEach((element: string) =>
+            getParentRecursive(element)
+          );
         }
 
         // filter the first category in data.categories[] that has no parent
-        let mainCategory = categories.filter((el: any) => {
-          return !el.parent && data.categories.includes(el._id);
-        })[0];
+        let mainCategory = categories.find((element: any) => {
+          return !element.parent && data.categories.includes(element._id);
+        });
 
         data.slug = `${slug(mainCategory.title, {
           length: 200,
@@ -180,7 +182,7 @@ export default (req: Request, res: Response): any => {
               timestamps: true,
             })
             // return data to the front-End
-            .then((doc: any) => {
+            .then((document_: any) => {
               return data;
             })
         );
@@ -191,6 +193,10 @@ export default (req: Request, res: Response): any => {
     .then((_data: any) => {
       res.json(_data);
       // purge the cache
+      /**
+       *
+       * @param path
+       */
       function purge(path: string): void {
         if (existsSync(`${TEMP}/${path}`)) {
           unlink(`${TEMP}/${path}`, () => {});
@@ -207,7 +213,7 @@ export default (req: Request, res: Response): any => {
       if (!prod) {
         console.log(
           `[server/api] post: ${collection}`,
-          timer(`post ${req.url}`, true)
+          timer(`post ${request.url}`, true)
         );
       }
     })
@@ -215,7 +221,7 @@ export default (req: Request, res: Response): any => {
       res.json({ error });
       console.error(
         `[server/api] post: ${collection}`,
-        timer(`post ${req.url}`, true),
+        timer(`post ${request.url}`, true),
         error
       );
     });

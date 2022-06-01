@@ -1,7 +1,7 @@
 let config = require("./release.config");
 
 config.plugins = config.plugins.filter(
-  (el) => !["@semantic-release/github"].includes(el)
+  (element) => !["@semantic-release/github"].includes(element)
 );
 
 /*

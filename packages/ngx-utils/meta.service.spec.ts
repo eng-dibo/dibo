@@ -3,12 +3,12 @@
  */
 
 import {
-  test,
-  expect,
-  beforeAll,
   afterAll,
+  beforeAll,
   beforeEach,
+  expect,
   jest,
+  test,
 } from '@jest/globals';
 import { MetaService } from './meta.service';
 import { ComponentFixture, TestBed } from '@angular/core/testing';

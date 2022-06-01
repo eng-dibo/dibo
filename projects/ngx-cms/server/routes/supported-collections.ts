@@ -15,4 +15,5 @@ export let supportedCollections = [
   'messenger_blocks',
 ];
 
-export default (req: Request, res: Response) => res.json(supportedCollections);
+export default (request: Request, res: Response) =>
+  res.json(supportedCollections);

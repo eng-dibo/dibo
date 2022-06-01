@@ -1,7 +1,7 @@
-import { test, expect, beforeAll, describe } from '@jest/globals';
+import { beforeAll, describe, expect, test } from '@jest/globals';
 import { server } from './express';
 import { Express } from 'express';
-import EventEmitter from 'events';
+import EventEmitter from 'node:events';
 import supertest from 'supertest';
 
 let app: Express;

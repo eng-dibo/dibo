@@ -4,7 +4,7 @@
 /**
  * @param {string} tmplPath the path of the template being parsed
  * @param {*} config tmpl.config
- * @returns {Object} a new config object
+ * @returns {object} a new config object
  */
 export default function (tmplPath, config) {
   // todo: for packages, packageName = dirname(tmplPath)
@@ -20,6 +20,7 @@ export default function (tmplPath, config) {
       packageName,
       repo: "https://github.com/eng-dibo/dibo",
       npm: "https://www.npmjs.com/org/engineers",
+      // eslint-disable-next-line no-secrets/no-secrets
       email: "sh.eldeeb.2010+dev.github@gmail.com",
       author: "Sherif Eldeeb",
       license: "MIT",

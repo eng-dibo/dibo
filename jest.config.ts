@@ -2,13 +2,24 @@
 import type { Config } from '@jest/types';
 import { pathsToModuleNameMapper } from 'ts-jest';
 import stripJsonComments from 'strip-json-comments';
-import fs from 'fs';
+import fs from 'node:fs';
 
+/**
+ *
+ * @param tsConfigPath
+ * @param prefix
+ * @returns
+ */
 export function getPaths(
   tsConfigPath = './tsconfig.json',
   prefix = '<rootDir>'
 ) {
   // todo: use `import { read } from "@engineers/nodejs/fs-sync.read()"`
+  /**
+   *
+   * @param path
+   * @returns
+   */
   function readJson(path: string): any {
     let content = fs.readFileSync(path).toString();
     // strip comments from json file

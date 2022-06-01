@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import * as fn from './pipes-functions';
+import * as function_ from './pipes-functions';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Pipe({
@@ -7,8 +7,8 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 })
 export class SlugPipe implements PipeTransform {
   // todo: transform(...args) causes an error, but transform(value,...args) not!
-  transform(value: string, ...args: any[]): string {
-    return fn.slug(value, ...args);
+  transform(value: string, ...arguments_: any[]): string {
+    return function_.slug(value, ...arguments_);
   }
 }
 
@@ -16,8 +16,8 @@ export class SlugPipe implements PipeTransform {
   name: 'html2text',
 })
 export class Html2textPipe implements PipeTransform {
-  transform(value: string, ...args: any[]): string {
-    return fn.html2text(value, ...args);
+  transform(value: string, ...arguments_: any[]): string {
+    return function_.html2text(value, ...arguments_);
   }
 }
 
@@ -25,8 +25,8 @@ export class Html2textPipe implements PipeTransform {
   name: 'length',
 })
 export class LengthPipe implements PipeTransform {
-  transform(value: string, ...args: any[]): string {
-    return fn.length(value, ...args);
+  transform(value: string, ...arguments_: any[]): string {
+    return function_.length(value, ...arguments_);
   }
 }
 
@@ -35,7 +35,7 @@ export class LengthPipe implements PipeTransform {
 })
 export class Nl2brPipe implements PipeTransform {
   transform(value: string): string {
-    return fn.nl2br(value);
+    return function_.nl2br(value);
   }
 }
 
@@ -43,13 +43,13 @@ export class Nl2brPipe implements PipeTransform {
 export class KeepHtmlPipe implements PipeTransform {
   constructor(private sanitizer: DomSanitizer) {}
   transform(value: string): SafeHtml {
-    return fn.keepHtml(value, this.sanitizer);
+    return function_.keepHtml(value, this.sanitizer);
   }
 }
 
 @Pipe({ name: 'hypernate' })
 export class HypernatePipe implements PipeTransform {
   transform(value: string): string {
-    return fn.hypernate(value);
+    return function_.hypernate(value);
   }
 }

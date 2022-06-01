@@ -6,26 +6,26 @@ import Rss from 'rss';
 import { query } from '~server/database';
 import { parse } from '@engineers/databases/operations';
 import {
-  slug,
   html2text,
   length,
+  slug,
 } from '@engineers/ngx-content-core/pipes-functions';
 import cache from '@engineers/nodejs/cache-fs';
 import { TEMP } from '.';
 import { Request, Response } from 'express';
 
-export default (req: Request, res: Response): void => {
+export default (request: Request, res: Response): void => {
   // todo: cache req.path.xml
-  timer(`get ${req.url}`);
+  timer(`get ${request.url}`);
   let queryUrl =
-    req.params[0] ||
+    request.params[0] ||
     `/articles/:${prod ? 100 : 10}@status=approved%3Fsort=createdAt:-1`;
-  let tmp = `${TEMP}/rss/${queryUrl}.xml`;
+  let temporary = `${TEMP}/rss/${queryUrl}.xml`;
   cache(
-    tmp,
+    temporary,
     () =>
-      getData(queryUrl, req.query.refresh ? -1 : 3).then((data) => {
-        if (!(data instanceof Array)) {
+      getData(queryUrl, request.query.refresh ? -1 : 3).then((data) => {
+        if (!Array.isArray(data)) {
           Promise.reject({ error: { message: 'data error' } });
         }
 
@@ -36,7 +36,7 @@ export default (req: Request, res: Response): void => {
         let queryObject = parse(queryUrl);
         let { collection } = queryObject;
         let baseUrl =
-          defaultTags.baseUrl || `${req.protocol}://${req.hostname}`;
+          defaultTags.baseUrl || `${request.protocol}://${request.hostname}`;
 
         let rss = new Rss({
           // todo: if(@category=*) use category.title
@@ -44,7 +44,7 @@ export default (req: Request, res: Response): void => {
           description: defaultTags.description,
           site_url: baseUrl,
           // or this.route.snapshot.url (toString)
-          feed_url: req.path,
+          feed_url: request.path,
           generator: 'ngx-cms platform',
           image_url: `${baseUrl}/assets/site-image/${collection}.webp`,
           language: 'ar,en',
@@ -64,7 +64,7 @@ export default (req: Request, res: Response): void => {
             let category;
             if (item.categories && item.categories.length > 0 && categories) {
               category = categories.find(
-                (el: any) => el._id === item.categories[0]
+                (element: any) => element._id === item.categories[0]
               );
             }
             let itemSlug = `${category ? category.slug : '' || ''}/${slug(
@@ -105,21 +105,21 @@ export default (req: Request, res: Response): void => {
           return rss.xml({ indent: false });
         });
       }),
-    { age: req.query.refresh ? -1 : 24 * 30 }
+    { age: request.query.refresh ? -1 : 24 * 30 }
   )
     .then((feed) => {
       res.set('Content-Type', 'text/xml');
       res.send(feed);
       if (!prod) {
         console.log(
-          `[server/api] getData: +${timer(`get ${req.url}`, true)}sec`
+          `[server/api] getData: +${timer(`get ${request.url}`, true)}sec`
         );
       }
     })
     .catch((error: any) => {
       if (!prod) {
         console.error(
-          `[server/api] getData: ${timer('get ' + req.url, true)}`,
+          `[server/api] getData: ${timer('get ' + request.url, true)}`,
           { error }
         );
       } else {

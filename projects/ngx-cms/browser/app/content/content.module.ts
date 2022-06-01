@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Routes, RouterModule } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 import { NgxLoadService } from '@engineers/ngx-utils/load-scripts.service';
 import { QuillModule } from 'ngx-quill';
 import { MatIconModule } from '@angular/material/icon';

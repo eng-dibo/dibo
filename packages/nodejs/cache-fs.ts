@@ -1,9 +1,14 @@
 import cache, { CacheOptions } from '@engineers/cache';
 import { PathLike } from 'node:fs';
-import { resolve, ReadOptions, read as readSync } from './fs-sync';
+import { ReadOptions, read as readSync, resolve } from './fs-sync';
 import { write } from './fs';
 
 export interface CacheFSOptions extends CacheOptions, ReadOptions {}
+/**
+ *
+ * @param entries
+ * @param options
+ */
 function getCache(entries: PathLike[], options: CacheOptions = {}): any {
   for (let filePath of entries) {
     try {
@@ -16,30 +21,40 @@ function getCache(entries: PathLike[], options: CacheOptions = {}): any {
       if (data !== undefined) {
         return data;
       }
-    } catch (err) {}
+    } catch {}
   }
 
   throw 'no valid cache found';
 }
 
+/**
+ *
+ * @param entry
+ * @param data
+ * @param options
+ */
 function setCache(entry: any, data: any, options: CacheOptions = {}) {
   write(entry, data);
 }
 
 /**
  * use fileSystem as cache location for @engineers/cache
+ *
+ * @param files
+ * @param dataSource
+ * @param options
  */
 export default (
   files: PathLike | PathLike[],
   dataSource: () => any,
   options?: CacheFSOptions | BufferEncoding
 ) => {
-  let opts: CacheFSOptions = Object.assign(
+  let options_: CacheFSOptions = Object.assign(
     {},
     typeof options === 'string' ? { encoding: options } : options || {}
   );
 
-  let cacheEntries: PathLike[] = (files instanceof Array ? files : [files]).map(
+  let cacheEntries: PathLike[] = (Array.isArray(files) ? files : [files]).map(
     (filePath) => resolve(filePath)
   );
 
@@ -51,6 +66,6 @@ export default (
         getCache(entries, options),
       set: (data: any, options: CacheOptions = {}) => setCache(data, options),
     },
-    opts
+    options_
   );
 };

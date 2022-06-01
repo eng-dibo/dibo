@@ -1,16 +1,16 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ContentEditorComponent } from './editor.component';
-import { Routes, RouterModule } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 import { MetaService } from '@engineers/ngx-utils/meta.service';
 import { NgxLoadService } from '@engineers/ngx-utils/load-scripts.service';
-import { FormlyModule, FormlyFieldConfig } from '@ngx-formly/core';
+import { FormlyFieldConfig, FormlyModule } from '@ngx-formly/core';
 import { FormlyMaterialModule } from '@ngx-formly/material';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FormlyTreeComponent } from './formly-tree/formly-tree.component';
 import {
-  FormlyFileComponent,
   FileValueAccessor,
+  FormlyFileComponent,
 } from './formly-file/formly-file.component';
 import { QuillModule } from 'ngx-quill';
 import { FormlyQuillComponent } from './formly-quill/formly-quill.component';

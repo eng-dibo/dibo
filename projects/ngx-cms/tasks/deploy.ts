@@ -1,7 +1,7 @@
 import { cloudRun as _cloudRun, projectId } from '~config/server/gcloud';
 import cloudFlareConfig from '~config/server/cloudflare';
 import { execSync } from '@engineers/nodejs/process';
-import { execSync as _execSync } from 'child_process';
+import { execSync as _execSync } from 'node:child_process';
 import setup from './setup';
 import https from 'node:https';
 
@@ -10,6 +10,7 @@ import https from 'node:https';
  * gcloud must be installed, run task: setup
  *
  * @param options overrides gcloudConfig
+ * @param cloudRunOptions
  */
 // todo: detect if gcloud not installed, run task: setup
 export default function (cloudRunOptions: any /* todo: CloudRun */ = {}): void {
@@ -34,7 +35,7 @@ export default function (cloudRunOptions: any /* todo: CloudRun */ = {}): void {
 
   try {
     _execSync('gcloud version');
-  } catch (err) {
+  } catch {
     console.log('installing gcloud tools...');
     setup({ init: false });
   }
@@ -48,7 +49,7 @@ export default function (cloudRunOptions: any /* todo: CloudRun */ = {}): void {
       // todo: if !permissions throw error
       // check permissions for container registry
       // https://cloud.google.com/container-registry/docs/access-control#grant
-    } catch (err) {
+    } catch {
       console.log('login to gcloud');
       execSync('gcloud auth login --no-launch-browser');
     }
@@ -90,19 +91,19 @@ export default function (cloudRunOptions: any /* todo: CloudRun */ = {}): void {
       },
     };
 
-    var req = https.request(options, function (res) {
+    let request = https.request(options, function (res) {
       res.setEncoding('utf8');
       res.on('data', function (chunk) {
         console.log(chunk);
       });
     });
 
-    req.on('error', function (error) {
+    request.on('error', function (error) {
       console.error(`> [cloudflare] error:`, error);
     });
 
-    req.write(JSON.stringify(cloudFlareConfig.purge));
-    req.end();
+    request.write(JSON.stringify(cloudFlareConfig.purge));
+    request.end();
   }
 
   console.log('Done');

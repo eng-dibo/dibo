@@ -2,13 +2,14 @@
  * @jest-environment jsdom
  */
 
-import { test, expect, afterAll, beforeAll, jest } from '@jest/globals';
+import { afterAll, beforeAll, expect, jest, test } from '@jest/globals';
 import { TestBed } from '@angular/core/testing';
 import { NgxLoadService } from './load-scripts.service';
 import { Renderer2 } from '@angular/core';
 
 let service: NgxLoadService;
-let src = 'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js';
+let source =
+  'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js';
 
 beforeAll(() => {
   TestBed.configureTestingModule({
@@ -23,7 +24,7 @@ test('service should be created', () => {
 
 // todo: run this test
 test.skip('load() should return a fulfilled promise', () => {
-  return expect(service.load(src)).resolves.not.toThrow();
+  return expect(service.load(source)).resolves.not.toThrow();
 });
 
 // the previous test only checks that load() fulfilled,
@@ -33,8 +34,8 @@ test.skip('load() should return a fulfilled promise', () => {
 test('head should contains the loaded script', () => {
   // run load() here again, because if the previous test skipped the script will not be loaded
   // and this test will fail
-  service.load(src);
+  service.load(source);
   expect(
-    document.getElementsByTagName('head')[0].innerHTML.indexOf('jquery.min.js')
+    document.querySelectorAll('head')[0].innerHTML.indexOf('jquery.min.js')
   ).toBeGreaterThan(-1);
 });

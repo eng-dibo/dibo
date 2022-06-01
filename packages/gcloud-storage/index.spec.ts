@@ -1,4 +1,4 @@
-import { test, expect, afterAll } from '@jest/globals';
+import { afterAll, expect, test } from '@jest/globals';
 import Storage from './index';
 import { remove } from '@engineers/nodejs/fs';
 import { resolve, write } from '@engineers/nodejs/fs-sync';
@@ -13,7 +13,7 @@ if (!existsSync(serviceAccount)) {
   );
 } else {
   let bucket = 'testing.appspot.com';
-  let storage = new Storage({ keyFilename: serviceAccount, bucket });
+  let storage = new Storage({ bucket, keyFilename: serviceAccount });
   write(__dirname + '/test~~/file.json', { ok: 1 });
 
   afterAll(() => {

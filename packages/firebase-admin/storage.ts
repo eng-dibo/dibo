@@ -1,17 +1,17 @@
 // todo: change to '@google-cloud/storage'
 // https://cloud.google.com/storage/docs/samples/storage-list-buckets#storage_list_buckets-nodejs
-import { storage, app as _app } from 'firebase-admin';
+import { app as _app, storage } from 'firebase-admin';
 
 // todo: use 'firebase/storage'
 import {
-  File,
   Bucket,
-  UploadResponse,
   DownloadResponse,
+  File,
   SaveOptions,
+  UploadResponse,
 } from '@google-cloud/storage';
-import { mkdirSync } from 'fs';
-import { dirname } from 'path';
+import { mkdirSync } from 'node:fs';
+import { dirname } from 'node:path';
 import stripJsonComments from 'strip-json-comments';
 
 export interface StorageOptions {
@@ -34,6 +34,7 @@ export interface DeleteOptions {
 
 /**
  * firebase storage functions, such as upload() and download()
+ *
  * @deprecated use @engineers/gcloud-storage
  */
 // todo: extends Bucket
@@ -44,8 +45,9 @@ export default class Storage {
 
   /**
    * creates a new bucket
-   * @method constructor
-   * @param  bucket
+   *
+   * @function constructor
+   * @param options
    */
   // todo: if(bucket instanceof admin.Bucket)this.bucket=bucket
   // constructor();
@@ -58,10 +60,11 @@ export default class Storage {
 
   /**
    * uploads a file to the current bucket
-   * @method upload
+   *
+   * @function upload
    * @param  file file path
    * @param  options UploadOptions object or destination path as string
-   * @return Promise<UploadResponse>;  //UploadResponse=[File, API request]
+   * @returns {Promise<UploadResponse | void>}
    */
   // todo: upload / download a folder
   upload(
@@ -76,15 +79,15 @@ export default class Storage {
 
   /**
    * downloads a file
-   * @method download
+   *
+   * @function download
    * @param  file        file path
    * @param  options DownloadOptions object or destination as string
-   * @return Promise that resolves to:
+   * @returns Promise that resolves to:
    *           - boolean: if options.destination used
    *           - Buffer: if options.encoding is undefined
    *           - Array or plain object: if the file is json
    *           - string: otherwise
-   *
    */
 
   // todo: if(!options.destination)return th content as Promise<Buffer | ...>
@@ -100,25 +103,25 @@ export default class Storage {
     let defaultOptions = {
       encoding: null,
     };
-    let opts: DownloadOptions = Object.assign(
+    let options_: DownloadOptions = Object.assign(
       defaultOptions,
       typeof options === 'string' ? { destination: options } : options || {}
     );
 
     // create the destination if it doesn't exist'
-    if (opts.destination) {
-      mkdirSync(dirname(opts.destination), { recursive: true });
+    if (options_.destination) {
+      mkdirSync(dirname(options_.destination), { recursive: true });
     }
 
     // file.download(opts) mutates opts
-    return file.download({ ...opts }).then((result: [Buffer]) => {
-      if (opts.destination) {
+    return file.download({ ...options_ }).then((result: [Buffer]) => {
+      if (options_.destination) {
         return true;
       }
       let data: Buffer = result[0];
 
       // from @engineers/nodejs/fs.ts
-      if (opts.encoding === undefined) {
+      if (options_.encoding === undefined) {
         return data;
       }
       let dataString: string = data.toString();
@@ -131,6 +134,11 @@ export default class Storage {
 
   /**
    * writes a content to a file in the bucket
+   *
+   * @param path file path
+   * @param content content to be written into the file
+   * @param options
+   * @returns {Bucket}
    */
   write(
     path: string,
@@ -141,6 +149,7 @@ export default class Storage {
   }
 
   delete(path: string, options?: DeleteOptions): Promise<any> {
+    // eslint-disable-next-line no-secrets/no-secrets
     // https://stackoverflow.com/a/64539948/12577650
     return this.bucket.file(path).delete(options);
     // or: return this.bucket.deleteFiles(query?: DeleteFilesOptions);

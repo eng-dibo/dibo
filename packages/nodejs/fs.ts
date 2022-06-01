@@ -4,45 +4,50 @@
  */
 
 import {
-  PathLike,
-  constants,
   MakeDirectoryOptions,
+  PathLike,
   WriteFileOptions,
+  constants,
   lstatSync,
   readdirSync,
 } from 'node:fs';
 
 import {
-  unlink,
-  rmdir,
-  lstat,
-  rename,
-  writeFile,
-  access,
   mkdir as _mkdir,
+  access,
+  copyFile,
+  lstat,
   readFile,
   readdir,
+  rename,
+  rmdir,
+  unlink,
+  writeFile,
 } from 'node:fs/promises';
 
 import { Abortable } from 'node:events';
 
 import {
   MoveOptions,
-  resolve,
   ReadOptions,
-  stripComments,
   Filter as _Filter,
+  resolve,
+  stripComments,
 } from './fs-sync';
 import { basename, dirname, join } from 'node:path';
-import { objectType, Obj } from '@engineers/javascript/objects';
+import { Obj, objectType } from '@engineers/javascript/objects';
 import stripJsonComments from 'strip-json-comments';
-import { copyFile } from 'fs/promises';
+
 // todo: import { lstat } from 'fs/promises';
 
 export type Filter = _Filter;
 
 /**
  * get file size asynchronously
+ *
+ * @param path
+ * @param unit
+ * @param filter
  */
 export function getSize(
   path: PathLike | PathLike[],
@@ -60,29 +65,42 @@ export function getSize(
     filter
   ).then((sizes) => {
     let sum = (sizes: any) => {
-      let total: number = 0;
-      for (let i = 0; i < sizes.length; i++) {
-        total += sizes[i] instanceof Array ? sum(sizes[i]) : sizes[i];
+      let total = 0;
+      for (let size of sizes) {
+        total += Array.isArray(size) ? sum(size) : size;
       }
       return total;
     };
-    return sizes instanceof Array ? sum(sizes) : sizes;
+    return Array.isArray(sizes) ? sum(sizes) : sizes;
   });
 }
 
+/**
+ *
+ * @param path
+ */
 export function isDir(path: PathLike): Promise<boolean> {
   return lstat(path).then((stats: any) => stats.isDirectory());
 }
 
+/**
+ *
+ * @param file
+ */
 export function getModifiedTime(file: PathLike): Promise<number> {
   return lstat(file).then((stats: any) => stats.mtimeMs);
 }
 
+/**
+ *
+ * @param path
+ * @param mode
+ */
 export function mkdir(
   path: string | string[],
   mode: number | string = 0o777
 ): Promise<void> {
-  if (path instanceof Array) {
+  if (Array.isArray(path)) {
     return Promise.all(path.map((p) => ({ [p]: mkdir(p, mode) }))).then(
       () => {}
     );
@@ -95,6 +113,12 @@ export function mkdir(
     .then(() => {});
 }
 
+/**
+ *
+ * @param path
+ * @param newPath
+ * @param options
+ */
 export function move(
   path: PathLike,
   newPath: PathLike,
@@ -110,8 +134,11 @@ export function move(
 */
 /**
  * remove a file or an array of files or recursively remove a directory and its subdirectories
+ *
  * @param path
  * @param options
+ * @param filter
+ * @param keepDir
  * @returns
  */
 export function remove(
@@ -129,7 +156,11 @@ export function remove(
 
 /**
  * copy  a file or recursively remove a directory and its subdirectories to another location
+ *
  * @param path path of the source directory
+ * @param source
+ * @param destination
+ * @param filter
  * @destination destination of the root dir
  */
 export function copy(
@@ -142,8 +173,10 @@ export function copy(
     (path, type) => {
       path = path.toString();
       if (type === 'file' && filter(path)) {
-        let dest = path.replace(source.toString(), destination);
-        return mkdir(dirname(dest)).then(() => copyFile(path, dest));
+        let destination_ = path.replace(source.toString(), destination);
+        return mkdir(dirname(destination_)).then(() =>
+          copyFile(path, destination_)
+        );
       }
       return;
     },
@@ -152,6 +185,12 @@ export function copy(
   );
 }
 
+/**
+ *
+ * @param path
+ * @param data
+ * @param options
+ */
 export function write(
   path: PathLike,
   data: any,
@@ -171,6 +210,7 @@ export function write(
 
 /**
  * read a file content
+ *
  * @param path
  * @param options
  * @returns a promise that resolves to:
@@ -187,26 +227,30 @@ export function read(
     flag: 'r',
     age: 0,
   };
-  let opts: ReadOptions = Object.assign(
+  let options_: ReadOptions = Object.assign(
     defaultOptions,
     typeof options === 'string' ? { encoding: options } : options || {}
   );
 
   return getModifiedTime(path).then((modified) => {
-    if (opts.age && opts.age > 0 && modified + opts.age < Date.now()) {
+    if (
+      options_.age &&
+      options_.age > 0 &&
+      modified + options_.age < Date.now()
+    ) {
       throw new Error(`[fs-sync] expired file ${path}`);
     }
 
     return readFile(path, {
-      encoding: opts.encoding,
-      flag: opts.flag,
+      encoding: options_.encoding,
+      flag: options_.flag,
     }).then((data) => {
       // if(opts.encoding) readFile() will return string, otherwise it returns Buffer
       // if the consumer wants the data as Buffer, provide options.encoding=undefined explicitly
       // to use the default encoding provide options.encoding=null (the default behavior is)
       // https://stackoverflow.com/a/48818444/12577650
       // https://nodejs.org/api/fs.html#fs_fs_readfilesync_path_options
-      if (opts.encoding === undefined) {
+      if (options_.encoding === undefined) {
         return data;
       }
 
@@ -223,6 +267,12 @@ export function read(
 // todo: don't use `await` to prevent blocking the execution,
 // i.e: execute operations in parallel
 // todo: use concurrency(operation,pool=10,...args)
+/**
+ *
+ * @param dir
+ * @param filter
+ * @param depth
+ */
 export async function getEntries(
   dir = '.',
   filter?: ((entry: string) => boolean) | RegExp | 'files' | 'dirs' | '*',
@@ -230,16 +280,28 @@ export async function getEntries(
 ): Promise<Array<string>> {
   let _filter: ((entry: string) => boolean) | undefined;
 
-  if (filter === 'files') {
-    _filter = (entry: string) => lstatSync(entry).isFile();
-  } else if (filter === 'dirs') {
-    _filter = (entry: string) => lstatSync(entry).isDirectory();
-  } else if (filter === '*') {
-    _filter = undefined;
-  } else if (filter instanceof RegExp) {
-    _filter = (entry: string) => (filter as RegExp).test(entry);
-  } else if (typeof filter === 'function') {
-    _filter = filter;
+  switch (filter) {
+    case 'files': {
+      _filter = (entry: string) => lstatSync(entry).isFile();
+
+      break;
+    }
+    case 'dirs': {
+      _filter = (entry: string) => lstatSync(entry).isDirectory();
+
+      break;
+    }
+    case '*': {
+      _filter = undefined;
+
+      break;
+    }
+    default:
+      if (filter instanceof RegExp) {
+        _filter = (entry: string) => (filter as RegExp).test(entry);
+      } else if (typeof filter === 'function') {
+        _filter = filter;
+      }
   }
   let entries = readdirSync(dir);
   let result: Array<string> = [];
@@ -266,6 +328,12 @@ export async function getEntries(
   return result;
 }
 
+/**
+ *
+ * @param path
+ * @param apply
+ * @param filter
+ */
 export function recursive(
   path: PathLike | PathLike[],
   apply: (path: string, type: 'dir' | 'file') => void,
@@ -275,7 +343,7 @@ export function recursive(
     return Promise.reject('path not provided');
   }
 
-  if (path instanceof Array) {
+  if (Array.isArray(path)) {
     return Promise.all(
       // todo: path.map((p) => ({ [p]: recursive(p as string, apply) }))
       path.map((p) => recursive(p, apply, filter))
@@ -307,11 +375,11 @@ export function recursive(
                 )
               )
               // execute apply on the root dir
-              .then(() => Promise.resolve(apply(_path, 'dir')))
+              .then(() => apply(_path, 'dir'))
           : undefined
       )
       // if the file doesn't exist, skip
-      .catch((err) => {})
+      .catch((error) => {})
   );
 
   // todo: or {file: boolean}

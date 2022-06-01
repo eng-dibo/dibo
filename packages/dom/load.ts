@@ -1,21 +1,22 @@
 /**
  * dynamically load and inject scripts
  * returns a promise, so dependencies can be loaded in order
- * @param src
- * @param attributes
- * @param type
- * @param parent
- * @returns
+ *
+ * @param source the path or link to the file
+ * @param attributes key-value attributes to be added to the html element
+ * @param type one of 'script' | 'css' | 'link' | 'module'
+ * @param parent the html element to inject the created element into
+ * @returns {Promise<HTMLElement>} a promise that resolves to the created element
  */
 export default function load(
-  src: string,
+  source: string,
   attributes: { [key: string]: any } = {},
   type?: 'script' | 'css' | 'link' | 'module',
   parent?: HTMLElement
 ): Promise<HTMLElement> {
   return new Promise((resolve, reject) => {
     if (!type) {
-      let fileExtension = (src.split('.').pop() || '').toLowerCase();
+      let fileExtension = (source.split('.').pop() || '').toLowerCase();
       if (fileExtension === 'js') {
         type = 'script';
       }
@@ -38,59 +39,55 @@ export default function load(
     }
 
     if (type === 'link') {
-      attributes.href = src;
+      attributes.href = source;
       // https://developer.mozilla.org/en-US/docs/Web/HTML/Preloading_content#Cross-origin_fetches
       attributes.crossorigin = true;
     } else if (type === 'script' || type === 'module') {
-      attributes.src = src;
-      if (type === 'module') {
-        attributes.type = type;
-      }
+      attributes.src = source;
+
       // `type = 'text/javascript'` is no more required
-      else {
-        attributes.type = 'text/javascript';
-      }
+      attributes.type = type === 'module' ? type : 'text/javascript';
     }
 
     if (!('async' in attributes)) {
       attributes.async = true;
     }
 
-    let el: HTMLElement = document.createElement(
+    let element: HTMLElement = document.createElement(
       type === 'link' ? 'link' : 'script'
     );
     for (let key in attributes) {
       if (attributes.hasOwnProperty(key)) {
-        el.setAttribute(key, attributes[key]);
+        element.setAttribute(key, attributes[key]);
       }
     }
 
     // todo: fix: non of the following events emits
-    // todo: remove listener
-    el.addEventListener('load', () => {
-      console.log('load', src);
-      resolve(el);
+    // todo: remove listener after resolving the Promise
+    element.addEventListener('load', () => {
+      console.log('load', source);
+      resolve(element);
     });
 
-    el.addEventListener('loaded', () => {
-      console.log('loaded', src);
-      resolve(el);
+    element.addEventListener('loaded', () => {
+      console.log('loaded', source);
+      resolve(element);
     });
 
-    el.addEventListener('complete', () => {
-      console.log('complete', src);
-      resolve(el);
+    element.addEventListener('complete', () => {
+      console.log('complete', source);
+      resolve(element);
     });
 
-    el.addEventListener('readystatechange', () => {
-      console.log('el:readystatechange', src);
-      resolve(el);
+    element.addEventListener('readystatechange', () => {
+      console.log('el:readystatechange', source);
+      resolve(element);
     });
-    el.addEventListener('error', (error) => {
-      console.log('el:error', { error, src });
+    element.addEventListener('error', (error) => {
+      console.log('el:error', { error, src: source });
       reject(error);
     });
 
-    (parent || document.head || document.body).appendChild(el);
+    (parent || document.head || document.body).append(element);
   });
 }

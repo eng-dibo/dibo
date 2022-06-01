@@ -1,5 +1,5 @@
 import Hookable from '@engineers/hookable';
-import { read, copy, remove, Filter } from '@engineers/nodejs/fs';
+import { Filter, copy, read, remove } from '@engineers/nodejs/fs';
 
 import { dirname, resolve } from 'node:path';
 import { existsSync, lstatSync } from 'node:fs';
@@ -40,13 +40,13 @@ export interface Remote {
 // hook= (options)=>function
 // run: updater(options).run()
 export default (options: UpdaterOptions): Hookable => {
-  let opts: UpdaterOptions = Object.assign({}, options || {});
-  opts.remote = Object.assign(
+  let options_: UpdaterOptions = Object.assign({}, options || {});
+  options_.remote = Object.assign(
     {
       release: 'latest',
       branch: 'master',
     },
-    opts.remote || {}
+    options_.remote || {}
   );
 
   return new Hookable([
@@ -99,14 +99,20 @@ export default (options: UpdaterOptions): Hookable => {
   ]);
 };
 
-export interface Obj {
+export interface Object_ {
   [key: string]: any;
 }
 
+/**
+ *
+ * @param localPath
+ * @param pointName
+ * @param store
+ */
 export function getLocalVersionHook(
   localPath: string | undefined,
   pointName: string,
-  store: Obj
+  store: Object_
 ): Promise<string> {
   // todo: locate the nearest up-level package.json
   localPath = localPath || store['localPath'] || root.toString();
@@ -126,13 +132,16 @@ export function getLocalVersionHook(
 /**
  * get the remote package version from a github repo
  * it parses package.json in the code base, but may download the remote package from a release
+ *
  * @param remote
+ * @param pointName
+ * @param store
  * @returns
  */
 export function getRemoteVersionHook(
   remote: Remote,
   pointName: string,
-  store: Obj
+  store: Object_
 ): Promise<string> {
   let url = `https://raw.githubusercontent.com/${remote.repo}/${
     remote.branch || 'master'
@@ -152,12 +161,18 @@ export interface CompareVersionsOptions {
   localVersion: string;
   remoteVersion: string;
 }
+/**
+ *
+ * @param options
+ * @param pointName
+ * @param store
+ */
 export function compareVersionsHook(
   options: CompareVersionsOptions,
   pointName: string,
-  store: Obj
+  store: Object_
 ): UpdateType {
-  let opts: CompareVersionsOptions = Object.assign(
+  let options_: CompareVersionsOptions = Object.assign(
     {
       localVersion: store['checkUpdates']?.['getLocalVersion'],
       remoteVersion: store['checkUpdates']?.['getRemoteVersion'],
@@ -165,7 +180,7 @@ export function compareVersionsHook(
     options || {}
   );
 
-  let { localVersion, remoteVersion } = opts;
+  let { localVersion, remoteVersion } = options_;
 
   if (
     !/\d+\.\d+\.\d+/.test(localVersion) ||
@@ -197,13 +212,19 @@ export interface DownloadOptions {
 // and notify the admin about the new version and whether it could be auto updated
 // or need admin attention and a migration guide
 // use pre.download to decide if the update should be downloaded based on updateType level
+/**
+ *
+ * @param options
+ * @param pointName
+ * @param store
+ */
 export function downloadHook(
   options: DownloadOptions,
   pointName: string,
-  store: Obj
+  store: Object_
 ): Promise<string> {
   let remoteVersion = store['checkUpdates']?.['getRemoteVersion'] || '0.0.0';
-  let opts: DownloadOptions = Object.assign(
+  let options_: DownloadOptions = Object.assign(
     {
       filter: () => true,
       remotePath: `${store.localPath || process.cwd()}/.remote/${
@@ -214,10 +235,10 @@ export function downloadHook(
     options || {}
   );
 
-  let { remote } = opts;
+  let { remote } = options_;
 
   // todo: convert to function
-  if (opts.filter instanceof Array) {
+  if (Array.isArray(options_.filter)) {
   }
 
   if (remote.token) {
@@ -240,8 +261,8 @@ export function downloadHook(
 
     // todo: use opts.filter to download only selected assets
     return (
-      opts.clean !== false && existsSync(opts.remotePath!)
-        ? remove(opts.remotePath!)
+      options_.clean !== false && existsSync(options_.remotePath!)
+        ? remove(options_.remotePath!)
         : Promise.resolve()
     )
       .then(() =>
@@ -252,17 +273,17 @@ export function downloadHook(
               `https://${remote.token ? remote.token + '@' : ''}github.com/${
                 remote.repo
               }`,
-              opts.remotePath!,
+              options_.remotePath!,
               [`--branch=${tag}`]
             )
           )
       )
-      .then(() => opts.remotePath!);
+      .then(() => options_.remotePath!);
   } else {
     // todo: clone the repo, then extract the project's path (if monorepo)
     return (
-      opts.clean !== false && existsSync(opts.remotePath!)
-        ? remove(opts.remotePath!)
+      options_.clean !== false && existsSync(options_.remotePath!)
+        ? remove(options_.remotePath!)
         : Promise.resolve()
     )
       .then(() =>
@@ -270,11 +291,11 @@ export function downloadHook(
           `https://${remote.token ? remote.token + '@' : ''}github.com/${
             remote.repo
           }`,
-          opts.remotePath!,
+          options_.remotePath!,
           [`--branch=${remote.branch}`]
         )
       )
-      .then(() => opts.remotePath!);
+      .then(() => options_.remotePath!);
   }
 }
 
@@ -285,6 +306,7 @@ export interface BackupLocalPackageHookOptions {
 
 /**
  * backup the local package before performing the update
+ *
  * @param options
  * @param pointName
  * @param store
@@ -294,7 +316,7 @@ export interface BackupLocalPackageHookOptions {
 export function backupLocalPackageHook(
   options: BackupLocalPackageHookOptions,
   pointName: string,
-  store: Obj
+  store: Object_
 ): Promise<string> {
   let localVersion =
     store['checkUpdates']?.['getLocalVersionVersion'] || '0.0.0';
@@ -323,11 +345,15 @@ export function backupLocalPackageHook(
 }
 /**
  * transform and filter the downloaded package and run actions like notify the admin
+ *
+ * @param options
+ * @param pointName
+ * @param store
  */
 export function beforeUpdateHook(
   options: any,
   pointName: string,
-  store: Obj
+  store: Object_
 ): Promise<void> {
   return Promise.resolve();
 }
@@ -340,30 +366,37 @@ export interface UpdateHookOptions {
 }
 /**
  * the actual update process, copies files from remotePath to localPath
+ *
  * @param localPath
  * @param remotePath
+ * @param options
+ * @param pointName
+ * @param store
  */
 export function updateHook(
   options: UpdateHookOptions,
   pointName: string,
-  store: Obj
+  store: Object_
 ): Promise<void> {
-  let opts = Object.assign({ cleanFilter: () => true }, options);
-  opts.localPath = opts.localPath || store['localPath'] || root.toString();
-  opts.remotePath = opts.remotePath || store['download']?.['download'];
+  let options_ = Object.assign({ cleanFilter: () => true }, options);
+  options_.localPath =
+    options_.localPath || store['localPath'] || root.toString();
+  options_.remotePath = options_.remotePath || store['download']?.['download'];
   let backupPath = store['update']?.['backup'];
 
-  opts.remotePath = opts.localPath + '/.remote';
-  if (!opts.remotePath) {
+  options_.remotePath = options_.localPath + '/.remote';
+  if (!options_.remotePath) {
     throw new Error(`remotePath not provided`);
   }
   // clean the localPath except remotePath and backupPath
   return remove(
-    opts.localPath!,
+    options_.localPath!,
     (path, type) =>
-      opts.cleanFilter(path, type) &&
-      ![opts.remotePath, backupPath].includes(path)
-  ).then(() => copy(opts.remotePath, opts.localPath!, opts.copyFilter));
+      options_.cleanFilter(path, type) &&
+      ![options_.remotePath, backupPath].includes(path)
+  ).then(() =>
+    copy(options_.remotePath, options_.localPath!, options_.copyFilter)
+  );
 }
 /**
  * install dependencies, adjust configs, finish the update process and restart the app
@@ -384,7 +417,7 @@ export function parseGithubUrlHook(url: string) {
     - and may be followed by a $path (for monorepos) then a filename (for file paths)
   */
   let match = url.match(
-    /(?:(?:https?:\/\/)?github.com\/)?([^\/]+)\/([^\/]+)(.+)/
+    /(?:(?:https?:\/\/)?github.com\/)?([^/]+)\/([^/]+)(.+)/
   );
   if (match) {
     return {

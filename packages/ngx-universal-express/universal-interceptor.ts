@@ -1,11 +1,11 @@
 // https://angular.io/guide/universal#using-absolute-urls-for-server-requests
-import { Injectable, Inject, Optional } from '@angular/core';
+import { Inject, Injectable, Optional } from '@angular/core';
 import {
-  HttpInterceptor,
-  HttpHandler,
-  HttpRequest,
-  HttpHeaders,
   HttpEvent,
+  HttpHandler,
+  HttpHeaders,
+  HttpInterceptor,
+  HttpRequest,
 } from '@angular/common/http';
 import { Request } from 'express';
 import { REQUEST } from '@nguniversal/express-engine/tokens';
@@ -18,22 +18,22 @@ export class UniversalInterceptor implements HttpInterceptor {
   constructor(@Optional() @Inject(REQUEST) protected request: Request) {}
 
   intercept(
-    req: HttpRequest<any>,
+    request: HttpRequest<any>,
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
-    let serverReq: HttpRequest<any> = req;
+    let serverRequest: HttpRequest<any> = request;
     if (this.request) {
-      let newUrl = /^(?:https?:)/.test(req.url)
-        ? req.url
+      let newUrl = /^https?:/.test(request.url)
+        ? request.url
         : `${this.request.protocol}://${this.request.get('host')}${
-            !req.url.startsWith('/') ? '/' : ''
-          }${req.url}`;
+            !request.url.startsWith('/') ? '/' : ''
+          }${request.url}`;
 
       // req is immutable, you have to clone it and modify the cloned object
       // use req.clone({url}) -> equivalent to `{...req, url: 'newUrl'}`
-      serverReq = req.clone({ url: newUrl });
+      serverRequest = request.clone({ url: newUrl });
     }
 
-    return next.handle(serverReq);
+    return next.handle(serverRequest);
   }
 }

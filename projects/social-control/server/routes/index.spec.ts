@@ -1,4 +1,4 @@
-import { test, expect, beforeAll, afterAll } from '@jest/globals';
+import { afterAll, beforeAll, expect, test } from '@jest/globals';
 import app, { query } from './index';
 import { connect, getModel } from '../mongoose';
 // todo: use '~'

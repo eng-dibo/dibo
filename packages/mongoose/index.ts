@@ -2,13 +2,11 @@ import mongoose from 'mongoose';
 import shortId from 'shortid';
 import { Obj, chunk } from '@engineers/javascript/objects';
 import { replaceAll, stringToObject } from '@engineers/javascript/string';
-import { parse, Operation } from '@engineers/databases/operations';
+import { Operation, parse } from '@engineers/databases/operations';
 import { Admin } from 'mongodb';
 
 // to use the native Mongo driver: connection.getClient()
 // to access admin operations: mongoose.mongo.Admin(mongoose.connection.db)
-
-export { mongoose };
 
 export type Uri =
   | string
@@ -31,6 +29,7 @@ export interface ConnectionOptions extends mongoose.ConnectOptions {
 
 /**
  * connect to the database
+ *
  * @param uri
  * @param options
  * @returns the connection object
@@ -48,20 +47,20 @@ export function connect(
   delete options.multiple;
 
   let defaultOptions: ConnectionOptions = {
+    autoIndex: false,
     // https://mongoosejs.com/docs/connections.html
     bufferCommands: false,
-    autoIndex: false,
     keepAlive: true,
     //  writeConcern: { w: 'majority' },
   };
-  let opts = Object.assign(options || {}, defaultOptions);
+  let options_ = Object.assign(options || {}, defaultOptions);
 
   let srv = false;
   if (typeof uri !== 'string') {
     srv = !!uri.srv;
     if (!uri.host) {
       uri.host = 'localhost:27017';
-    } else if (uri.host instanceof Array) {
+    } else if (Array.isArray(uri.host)) {
       uri.host = uri.host.join(',');
     }
 
@@ -70,18 +69,21 @@ export function connect(
     }?retryWrites=${uri.retryWrites !== false}`;
   }
 
-  if (uri.substr(0, 7) !== 'mongodb') {
+  if (uri.slice(0, 7) !== 'mongodb') {
     uri = 'mongodb' + (srv ? '+srv' : '') + '://' + uri;
   }
 
-  return mongoose.connect(uri, opts).catch((error: any) => {
-    error.details = { uri, options: opts };
+  return mongoose.connect(uri, options_).catch((error: any) => {
+    error.details = { options: options_, uri };
     throw error;
   });
 }
 
 /**
  * encodes the username and password for URI
+ *
+ * @param value
+ * @returns
  */
 export function encode(value: string): string {
   // example: convert '@' to '%40%
@@ -102,16 +104,17 @@ export type Connection =
  * - mongoose interface
  * - a connection object
  * to get a connection object
+ *
  * @param connection a database name, or a mongoose object, or a connection object
+ * @returns
  */
 export function getConnection(
   connection: Connection = mongoose.connection
 ): mongoose.Connection {
   if (typeof connection === 'string') {
     connection = mongoose.connection.useDb(connection);
-  } else if (connection instanceof mongoose.Connection) {
-    connection = connection;
-  } else {
+    // eslint-disable-next-line no-empty
+  } else if (!(connection instanceof mongoose.Connection)) {
     connection = mongoose.connection;
   }
   return connection;
@@ -129,6 +132,7 @@ export interface SchemaOptions extends mongoose.SchemaOptions {
  * if a model with the provided connection and collection already exists,
  * it just returns the existing model.
  * to get the schema use model().schema
+ *
  * @param collection collection name
  * @param schema a mongoose schema or the model fields as a plain object
  * @param options
@@ -160,11 +164,11 @@ export function model(
     }
   }
 
-  let opts = Object.assign(
+  let options_ = Object.assign(
     {},
     {
-      override: false,
       collection,
+      override: false,
       // add createdAt, updatedAt
       // https://mongoosejs.com/docs/guide.html#timestamps
       timestamps: true,
@@ -173,10 +177,10 @@ export function model(
   );
 
   if (!(schema instanceof mongoose.Schema)) {
-    schema = new mongoose.Schema(schema, opts);
+    schema = new mongoose.Schema(schema, options_);
   }
 
-  if (opts.shortId) {
+  if (options_.shortId) {
     schema.add({ _id: { type: String, default: shortId.generate } });
   }
 
@@ -189,11 +193,14 @@ export function model(
 /**
  * perform database operations dynamically via an API call request.
  * to use another database pass model(...,dbName) to the param `collection`
- * @method query
+ *
+ * @function query
  * @param  operation  operation name, example: find
  * @param  collection  collection name or model object (as accepted in @engineers/mongoose model())
+ * @param url
+ * @param schema
  * @param  params  every operation has it's own params, for example find(filter, docs, options)
- * @return {}
+ * @returns {}
  * @example: GET /api/v1/find/articles
  * @example: GET /api/v1/find/articles/$articleId
  * @example: GET /api/v1/find/articles/{"status":"approved"},null,{"limit":1}
@@ -245,14 +252,14 @@ export function query(
     }
   }
 
-  let args: Array<any>;
+  let arguments_: Array<any>;
   if (operation === 'find' && params) {
     // Model.find(filter, projection, options)
     params.filter = stringToObject(params.filter);
     if (params.fields) {
       try {
         params.fields = stringToObject(params.fields);
-      } catch (e) {
+      } catch {
         // example: collection/~field1,-_id (exclude _id)
         params.fields = replaceAll(params.fields, ',', ' ');
       }
@@ -262,11 +269,11 @@ export function query(
     // example: collection/?sort={field1:1, _id:-1}
     params.sort = stringToObject(params.sort, ',', ':');
 
-    args = [params.filter, params.fields, params];
+    arguments_ = [params.filter, params.fields, params];
     delete params.filter;
     delete params.fields;
   } else if (operation === 'findById' && params) {
-    args = [params._id];
+    arguments_ = [params._id];
   } else {
     // example: `update:users/_id=1,username=newUserName/upsert=true
     // UserModel.update({_id:1, username: newUserName}, {upsert: true})
@@ -275,11 +282,11 @@ export function query(
     // https://mongoosejs.com/docs/api/model.html
     // also methods other than Model methods such as mongoose.prototype.connect()
     // example: query('connect:mongodb://uri')
-    args = (portions || []).map((el) => {
+    arguments_ = (portions || []).map((element) => {
       try {
-        return stringToObject(el);
-      } catch (e) {
-        return el;
+        return stringToObject(element);
+      } catch {
+        return element;
       }
     });
   }
@@ -290,7 +297,7 @@ export function query(
     // @ts-ignore: This expression is not callable.
     // because not all keys of contentModel are methods
     // ~fix:  (contentModel[..] as contentModel.method )()
-    contentModel[operation as keyof typeof contentModel](...args);
+    contentModel[operation as keyof typeof contentModel](...arguments_);
 
   // mongooseQuery.exec() converts mongoose.Query to promise
   // but doesn't work with some operations like 'create'
@@ -304,6 +311,7 @@ export function query(
  * connect to 'admin', i.e connect('mongodb://user:pass@host/admin').then(connection=>admin(connection))
  * https://mongodb.github.io/node-mongodb-native/api-generated/admin.html
  * https://stackoverflow.com/a/61398301/12577650
+ *
  * @param connection
  * @returns
  */
@@ -314,6 +322,7 @@ export function admin(connection: Connection = mongoose.connection): Admin {
 
 /**
  * List the existing databases, needs admin access.
+ *
  * @param connection see getConnection()
  * @param systemDbs true to include system databases in the result, i.e: 'admin', 'local'
  * @returns an array of the available databases.
@@ -328,7 +337,7 @@ export function listDatabases(connection?: Connection, systemDbs = false): any {
         systemDbs
           ? _dbs.databases
           : _dbs.databases.filter(
-              (db: any) => !['admin', 'local'].includes(db.name)
+              (database: any) => !['admin', 'local'].includes(database.name)
             )
       )
   );
@@ -339,10 +348,12 @@ export function listDatabases(connection?: Connection, systemDbs = false): any {
  * to change the use database, provide it's name as a string instead of `connection`
  * https://docs.mongodb.com/manual/reference/command/listCollections/#dbcmd.listCollections
  * https://mongodb.github.io/node-mongodb-native/3.6/api/Db.html#listCollections
+ *
  * @param connection
  * @param filter Query to filter collections by,
  * example: to include the collection 'outlets' only: `{name: 'outlets'}`
  * example: to exclude the collection 'outlets': `{name: {$ne: 'outlets'}}`
+ * @param options
  * @returns array of collections
  */
 export function listCollections(
@@ -355,7 +366,7 @@ export function listCollections(
     .toArray();
 }
 
-export type BackupFilter = (db?: string, collection?: string) => boolean;
+export type BackupFilter = (database?: string, collection?: string) => boolean;
 
 export interface BackupData {
   [db: string]: {
@@ -374,10 +385,11 @@ export interface BackupData {
  * create a full backup of the databases and their contents.
  * you need to establish a connection before calling this method
  * i.e: connect().then(()=>backup(..))
- * @method backup
+ *
+ * @function backup
  * @param  connection see getConnection()
  * @param  filter  a filter strategy for databases/collections/fields to be fetched
- * @return    { dbName: { collectionName:{ data } }}
+ * @returns    { dbName: { collectionName:{ data } }}
  */
 export function backup(
   connection?: Connection,
@@ -385,34 +397,36 @@ export function backup(
 ): Promise<BackupData> {
   // convert [{ k1:v1, k2:v2 }] to { k1:v1, k2:v2 }
   // i.e: { [dbName]: value }
-  let convert: any = (arr: any) =>
-    arr.reduce(
-      (obj: any, item: any) => ({
-        ...obj,
-        [Object.keys(item)[0]]: item[Object.keys(item)[0]],
-      }),
-      {}
+  let convert: any = (array: any) =>
+    Object.fromEntries(
+      array.map((item: any) => [
+        Object.keys(item)[0],
+        item[Object.keys(item)[0]],
+      ])
     );
 
   return listDatabases(connection).then((dbs: any[]) =>
     Promise.all(
       dbs
-        .filter((db: any) => filter(db.name))
-        .map(async (db: any) => ({
-          [db.name]: await listCollections(db.name).then((collections: any) =>
-            Promise.all(
-              collections
-                .filter((collection: any) => filter(db.name, collection.name))
-                .map(async (collection: any) => ({
-                  [collection.name]: {
-                    info: collection,
-                    data: await getConnection(db.name)
-                      .collection(collection.name)
-                      .find({})
-                      .toArray(),
-                  },
-                }))
-            ).then((result: any) => convert(result))
+        .filter((database: any) => filter(database.name))
+        .map(async (database: any) => ({
+          [database.name]: await listCollections(database.name).then(
+            (collections: any) =>
+              Promise.all(
+                collections
+                  .filter((collection: any) =>
+                    filter(database.name, collection.name)
+                  )
+                  .map(async (collection: any) => ({
+                    [collection.name]: {
+                      info: collection,
+                      data: await getConnection(database.name)
+                        .collection(collection.name)
+                        .find({})
+                        .toArray(),
+                    },
+                  }))
+              ).then((result: any) => convert(result))
           ),
         }))
     ).then((result: any) => convert(result))
@@ -430,29 +444,34 @@ export function backup(
  *  - validate the data model
  * you need to establish a connection before calling this method
  * i.e: connect().then(()=>backup(..))
- * @method restore
+ *
+ * @function restore
+ * @param filter
+ * @param chunkSize
  * @param  backupData
- * @return void
+ * @returns void
  */
 export function restore(
   backupData: BackupData,
   filter: BackupFilter = () => true,
-  chunkSize: number = 50
+  chunkSize = 50
 ): Promise<void> {
   // convert backupData format to [ { dbName, collName, ...collection } ] to use Promise.all()
   //todo: return Promise.all(Object.keys(backupData).map(...))
   // todo: return promise<{dbName:report}>
   let backupDataArray: Array<Obj> = [];
   Object.keys(backupData)
-    .filter((dbName: string) => filter(dbName))
-    .forEach((dbName: string) => {
-      Object.keys(backupData[dbName])
-        .filter((collectionName: string) => filter(dbName, collectionName))
+    .filter((databaseName: string) => filter(databaseName))
+    .forEach((databaseName: string) => {
+      Object.keys(backupData[databaseName])
+        .filter((collectionName: string) =>
+          filter(databaseName, collectionName)
+        )
         .forEach((collectionName: string) => {
           backupDataArray.push({
-            dbName,
+            dbName: databaseName,
             collectionName,
-            ...backupData[dbName][collectionName],
+            ...backupData[databaseName][collectionName],
           });
         });
     });
@@ -466,14 +485,14 @@ export function restore(
         collectionName,
         data,
         info,
-        model: modelObj,
+        model: modelObject,
         modelOptions,
       }) => {
         let dataModel = model(
           collectionName,
           // todo: mongoose casts _id from string to ObjectId which may changes its value
           // https://github.com/Automattic/mongoose/issues/11136
-          modelObj || { _id: 'string' },
+          modelObject || { _id: 'string' },
           Object.assign(
             { strict: false, validateBeforeSave: false },
             modelOptions || {}
@@ -494,8 +513,10 @@ export function restore(
                   }/${dataChunk.length} `
                 )
               )
-              .catch((err: any) => {
-                throw new Error(`error in ${dbName}/${collectionName}: ${err}`);
+              .catch((error: any) => {
+                throw new Error(
+                  `error in ${dbName}/${collectionName}: ${error}`
+                );
               })
           )
         ).then(() => {
@@ -507,3 +528,5 @@ export function restore(
     /*void*/
   });
 }
+
+export { default as mongoose } from 'mongoose';

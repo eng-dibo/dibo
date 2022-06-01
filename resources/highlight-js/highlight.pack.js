@@ -19,7 +19,7 @@
     _ = !0,
     n = /^(no-?highlight|plain|text)$/i,
     E = /\blang(?:uage)?-([\w-]+)\b/i,
-    t = /((^(<[^>]+>|\t|)+|(?:\n)))/gm,
+    t = /((^(<[^>]+>|\t|)+|\n))/gm,
     r = {
       case_insensitive: "cI",
       lexemes: "l",
@@ -75,16 +75,32 @@
       languages: void 0,
     },
     c = "of and for in not or if then".split(" ");
+  /**
+   *
+   * @param e
+   */
   function B(e) {
     return e.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   }
+  /**
+   *
+   * @param e
+   */
   function d(e) {
     return e.nodeName.toLowerCase();
   }
+  /**
+   *
+   * @param e
+   */
   function R(e) {
     return n.test(e);
   }
-  function i(e) {
+  /**
+   *
+   * @param e
+   */
+  function index(e) {
     var n,
       t = {},
       r = Array.prototype.slice.call(arguments, 1);
@@ -96,6 +112,10 @@
       t
     );
   }
+  /**
+   *
+   * @param e
+   */
   function p(e) {
     var a = [];
     return (
@@ -113,12 +133,21 @@
       a
     );
   }
+  /**
+   *
+   * @param e
+   * @param n
+   * @param t
+   */
   function v(e, n, t) {
     var r = 0,
       a = "",
-      i = [];
+      index_ = [];
+    /**
+     *
+     */
     function o() {
-      return e.length && n.length
+      return e.length > 0 && n.length > 0
         ? e[0].offset !== n[0].offset
           ? e[0].offset < n[0].offset
             ? e
@@ -126,10 +155,14 @@
           : "start" === n[0].event
           ? e
           : n
-        : e.length
+        : e.length > 0
         ? e
         : n;
     }
+    /**
+     *
+     * @param e
+     */
     function c(e) {
       a +=
         "<" +
@@ -143,69 +176,95 @@
           .join("") +
         ">";
     }
+    /**
+     *
+     * @param e
+     */
     function l(e) {
       a += "</" + d(e) + ">";
     }
+    /**
+     *
+     * @param e
+     */
     function u(e) {
       ("start" === e.event ? c : l)(e.node);
     }
-    for (; e.length || n.length; ) {
+    for (; e.length > 0 || n.length > 0; ) {
       var s = o();
       if (((a += B(t.substring(r, s[0].offset))), (r = s[0].offset), s === e)) {
         for (
-          i.reverse().forEach(l);
+          index_.reverse().forEach(l);
           u(s.splice(0, 1)[0]),
             (s = o()) === e && s.length && s[0].offset === r;
 
         );
-        i.reverse().forEach(c);
+        index_.reverse().forEach(c);
       } else
-        "start" === s[0].event ? i.push(s[0].node) : i.pop(),
+        "start" === s[0].event ? index_.push(s[0].node) : index_.pop(),
           u(s.splice(0, 1)[0]);
     }
-    return a + B(t.substr(r));
+    return a + B(t.slice(r));
   }
+  /**
+   *
+   * @param n
+   */
   function l(n) {
     return (
       n.v &&
         !n.cached_variants &&
         (n.cached_variants = n.v.map(function (e) {
-          return i(n, { v: null }, e);
+          return index(n, { v: null }, e);
         })),
       n.cached_variants
         ? n.cached_variants
         : (function e(n) {
             return !!n && (n.eW || e(n.starts));
           })(n)
-        ? [i(n, { starts: n.starts ? i(n.starts) : null })]
+        ? [index(n, { starts: n.starts ? index(n.starts) : null })]
         : Object.isFrozen(n)
-        ? [i(n)]
+        ? [index(n)]
         : [n]
     );
   }
+  /**
+   *
+   * @param e
+   */
   function u(e) {
     if (r && !e.langApiRestored) {
       for (var n in ((e.langApiRestored = !0), r)) e[n] && (e[r[n]] = e[n]);
       (e.c || []).concat(e.v || []).forEach(u);
     }
   }
+  /**
+   *
+   * @param n
+   * @param t
+   */
   function M(n, t) {
-    var i = {};
+    var index_ = {};
     return (
       "string" == typeof n
         ? r("keyword", n)
         : o(n).forEach(function (e) {
             r(e, n[e]);
           }),
-      i
+      index_
     );
+    /**
+     *
+     * @param a
+     * @param e
+     */
     function r(a, e) {
       t && (e = e.toLowerCase()),
         e.split(" ").forEach(function (e) {
           var n,
             t,
             r = e.split("|");
-          i[r[0]] = [
+          index_[r[0]] = [
             a,
             ((n = r[0]),
             (t = r[1])
@@ -219,20 +278,42 @@
         });
     }
   }
+  /**
+   *
+   * @param r
+   */
   function x(r) {
+    /**
+     *
+     * @param e
+     */
     function s(e) {
       return (e && e.source) || e;
     }
+    /**
+     *
+     * @param e
+     * @param n
+     */
     function f(e, n) {
       return new RegExp(s(e), "m" + (r.cI ? "i" : "") + (n ? "g" : ""));
     }
+    /**
+     *
+     * @param a
+     */
     function a(a) {
-      var i,
+      var index_,
         e,
         o = {},
         c = [],
         l = {},
         t = 1;
+      /**
+       *
+       * @param e
+       * @param n
+       */
       function n(e, n) {
         (o[t] = e),
           c.push([e, n]),
@@ -246,26 +327,26 @@
         return e[1];
       });
       return (
-        (i = f(
+        (index_ = f(
           (function (e, n) {
             for (
-              var t = /\[(?:[^\\\]]|\\.)*\]|\(\??|\\([1-9][0-9]*)|\\./,
+              var t = /\[(?:[^\\\]]|\\.)*\]|\(\??|\\([1-9]\d*)|\\./,
                 r = 0,
                 a = "",
-                i = 0;
-              i < e.length;
-              i++
+                index__ = 0;
+              index__ < e.length;
+              index__++
             ) {
               var o = (r += 1),
-                c = s(e[i]);
-              for (0 < i && (a += n), a += "("; 0 < c.length; ) {
+                c = s(e[index__]);
+              for (0 < index__ && (a += n), a += "("; c.length > 0; ) {
                 var l = t.exec(c);
-                if (null == l) {
+                if (undefined == l) {
                   a += c;
                   break;
                 }
-                (a += c.substring(0, l.index)),
-                  (c = c.substring(l.index + l[0].length)),
+                (a += c.slice(0, Math.max(0, l.index))),
+                  (c = c.slice(Math.max(0, l.index + l[0].length))),
                   "\\" == l[0][0] && l[1]
                     ? (a += "\\" + String(Number(l[1]) + o))
                     : ((a += l[0]), "(" == l[0] && r++);
@@ -279,12 +360,12 @@
         (l.lastIndex = 0),
         (l.exec = function (e) {
           var n;
-          if (0 === c.length) return null;
-          i.lastIndex = l.lastIndex;
-          var t = i.exec(e);
+          if (c.length === 0) return null;
+          index_.lastIndex = l.lastIndex;
+          var t = index_.exec(e);
           if (!t) return null;
           for (var r = 0; r < t.length; r++)
-            if (null != t[r] && null != o["" + r]) {
+            if (undefined != t[r] && undefined != o["" + r]) {
               n = o["" + r];
               break;
             }
@@ -323,14 +404,11 @@
           (t.tE = s(t.e) || ""),
           t.eW && e.tE && (t.tE += (t.e ? "|" : "") + e.tE)),
         t.i && (t.iR = f(t.i)),
-        null == t.relevance && (t.relevance = 1),
+        undefined == t.relevance && (t.relevance = 1),
         t.c || (t.c = []),
-        (t.c = Array.prototype.concat.apply(
-          [],
-          t.c.map(function (e) {
-            return l("self" === e ? t : e);
-          })
-        )),
+        (t.c = t.c.flatMap(function (e) {
+          return l("self" === e ? t : e);
+        })),
         t.c.forEach(function (e) {
           n(e, t);
         }),
@@ -338,22 +416,39 @@
         (t.t = a(t)));
     })(r);
   }
-  function S(n, i, a, e) {
+  /**
+   *
+   * @param n
+   * @param index_
+   * @param a
+   * @param e
+   */
+  function S(n, index_, a, e) {
+    /**
+     *
+     * @param e
+     * @param n
+     * @param t
+     * @param r
+     */
     function c(e, n, t, r) {
       if (!t && "" === n) return "";
       if (!e) return n;
       var a = '<span class="' + (r ? "" : O.classPrefix);
       return (a += e + '">') + n + (t ? "" : C);
     }
+    /**
+     *
+     */
     function o() {
       (R +=
-        null != E.sL
+        undefined != E.sL
           ? (function () {
               var e = "string" == typeof E.sL;
               if (e && !N[E.sL]) return B(p);
               var n = e
                 ? S(E.sL, p, !0, d[E.sL])
-                : T(p, E.sL.length ? E.sL : void 0);
+                : T(p, E.sL.length > 0 ? E.sL : void 0);
               return (
                 0 < E.relevance && (v += n.relevance),
                 e && (d[E.sL] = n.top),
@@ -361,47 +456,63 @@
               );
             })()
           : (function () {
-              var e, n, t, r, a, i, o;
+              var e, n, t, r, a, index__, o;
               if (!E.k) return B(p);
               for (r = "", n = 0, E.lR.lastIndex = 0, t = E.lR.exec(p); t; )
                 (r += B(p.substring(n, t.index))),
                   (a = E),
-                  (i = t),
-                  (o = g.cI ? i[0].toLowerCase() : i[0]),
+                  (index__ = t),
+                  (o = g.cI ? index__[0].toLowerCase() : index__[0]),
                   (e = a.k.hasOwnProperty(o) && a.k[o])
                     ? ((v += e[1]), (r += c(e[0], B(t[0]))))
                     : (r += B(t[0])),
                   (n = E.lR.lastIndex),
                   (t = E.lR.exec(p));
-              return r + B(p.substr(n));
+              return r + B(p.slice(n));
             })()),
         (p = "");
     }
+    /**
+     *
+     * @param e
+     */
     function l(e) {
       (R += e.cN ? c(e.cN, "", !0) : ""),
         (E = Object.create(e, { parent: { value: E } }));
     }
+    /**
+     *
+     * @param e
+     */
     function u(e) {
       var n = e[0],
         t = e.rule;
       return (
         t &&
           t.endSameAsBegin &&
-          (t.eR = new RegExp(n.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&"), "m")),
+          (t.eR = new RegExp(n.replace(/[$()*+./?[\\\]^{|}-]/g, "\\$&"), "m")),
         t.skip ? (p += n) : (t.eB && (p += n), o(), t.rB || t.eB || (p = n)),
         l(t),
         t.rB ? 0 : n.length
       );
     }
+    /**
+     *
+     * @param e
+     */
     function s(e) {
       var n = e[0],
-        t = i.substr(e.index),
+        t = index_.slice(e.index),
         r = (function e(n, t) {
-          if (((r = n.eR), (a = t), (i = r && r.exec(a)) && 0 === i.index)) {
+          if (
+            ((r = n.eR),
+            (a = t),
+            (index__ = r && r.exec(a)) && 0 === index__.index)
+          ) {
             for (; n.endsParent && n.parent; ) n = n.parent;
             return n;
           }
-          var r, a, i;
+          var r, a, index__;
           if (n.eW) return e(n.parent, t);
         })(E, t);
       if (r) {
@@ -420,16 +531,21 @@
       }
     }
     var f = {};
+    /**
+     *
+     * @param e
+     * @param n
+     */
     function t(e, n) {
       var t = n && n[0];
-      if (((p += e), null == t)) return o(), 0;
+      if (((p += e), undefined == t)) return o(), 0;
       if (
         "begin" == f.type &&
         "end" == n.type &&
         f.index == n.index &&
         "" === t
       )
-        return (p += i.slice(n.index, n.index + 1)), 1;
+        return (p += index_.slice(n.index, n.index + 1)), 1;
       if ("begin" === (f = n).type) return u(n);
       if ("illegal" === n.type && !a)
         throw new Error(
@@ -437,7 +553,7 @@
         );
       if ("end" === n.type) {
         var r = s(n);
-        if (null != r) return r;
+        if (undefined != r) return r;
       }
       return (p += t), t.length;
     }
@@ -456,24 +572,29 @@
     var p = "",
       v = 0;
     try {
-      for (var M, b, h = 0; (E.t.lastIndex = h), (M = E.t.exec(i)); )
-        (b = t(i.substring(h, M.index), M)), (h = M.index + b);
-      for (t(i.substr(h)), r = E; r.parent; r = r.parent) r.cN && (R += C);
+      for (var M, b, h = 0; (E.t.lastIndex = h), (M = E.t.exec(index_)); )
+        (b = t(index_.substring(h, M.index), M)), (h = M.index + b);
+      for (t(index_.slice(h)), r = E; r.parent; r = r.parent) r.cN && (R += C);
       return { relevance: v, value: R, i: !1, language: n, top: E };
-    } catch (e) {
-      if (e.message && -1 !== e.message.indexOf("Illegal"))
-        return { i: !0, relevance: 0, value: B(i) };
+    } catch (error) {
+      if (error.message && -1 !== error.message.indexOf("Illegal"))
+        return { i: !0, relevance: 0, value: B(index_) };
       if (_)
         return {
           relevance: 0,
-          value: B(i),
+          value: B(index_),
           language: n,
           top: E,
-          errorRaised: e,
+          errorRaised: error,
         };
-      throw e;
+      throw error;
     }
   }
+  /**
+   *
+   * @param t
+   * @param e
+   */
   function T(t, e) {
     e = e || O.languages || o(N);
     var r = { relevance: 0, value: B(t) },
@@ -492,6 +613,10 @@
       r
     );
   }
+  /**
+   *
+   * @param e
+   */
   function b(e) {
     return O.tabReplace || O.useBR
       ? e.replace(t, function (e, n) {
@@ -503,12 +628,16 @@
         })
       : e;
   }
+  /**
+   *
+   * @param e
+   */
   function s(e) {
     var n,
       t,
       r,
       a,
-      i,
+      index_,
       o,
       c,
       l,
@@ -519,9 +648,10 @@
           t,
           r,
           a,
-          i = e.className + " ";
+          index__ = e.className + " ";
         if (
-          ((i += e.parentNode ? e.parentNode.className : ""), (t = E.exec(i)))
+          ((index__ += e.parentNode ? e.parentNode.className : ""),
+          (t = E.exec(index__)))
         ) {
           var o = D(t[1]);
           return (
@@ -534,20 +664,20 @@
             o ? t[1] : "no-highlight"
           );
         }
-        for (n = 0, r = (i = i.split(/\s+/)).length; n < r; n++)
-          if (R((a = i[n])) || D(a)) return a;
+        for (n = 0, r = (index__ = index__.split(/\s+/)).length; n < r; n++)
+          if (R((a = index__[n])) || D(a)) return a;
       })(e);
     R(f) ||
       (O.useBR
         ? ((n = document.createElement("div")).innerHTML = e.innerHTML
             .replace(/\n/g, "")
-            .replace(/<br[ \/]*>/g, "\n"))
+            .replace(/<br[ /]*>/g, "\n"))
         : (n = e),
-      (i = n.textContent),
-      (r = f ? S(f, i, !0) : T(i)),
+      (index_ = n.textContent),
+      (r = f ? S(f, index_, !0) : T(index_)),
       (t = p(n)).length &&
         (((a = document.createElement("div")).innerHTML = r.value),
-        (r.value = v(t, p(a), i))),
+        (r.value = v(t, p(a), index_))),
       (r.value = b(r.value)),
       (e.innerHTML = r.value),
       (e.className =
@@ -566,6 +696,9 @@
           re: r.second_best.relevance,
         }));
   }
+  /**
+   *
+   */
   function h() {
     if (!h.called) {
       h.called = !0;
@@ -574,9 +707,17 @@
     }
   }
   var w = { disableAutodetect: !0 };
+  /**
+   *
+   * @param e
+   */
   function D(e) {
     return (e = (e || "").toLowerCase()), N[e] || N[g[e]];
   }
+  /**
+   *
+   * @param e
+   */
   function L(e) {
     var n = D(e);
     return n && !n.disableAutodetect;
@@ -587,7 +728,7 @@
     (a.fixMarkup = b),
     (a.highlightBlock = s),
     (a.configure = function (e) {
-      O = i(O, e);
+      O = index(O, e);
     }),
     (a.initHighlighting = h),
     (a.initHighlightingOnLoad = function () {
@@ -598,7 +739,7 @@
       var t;
       try {
         t = e(a);
-      } catch (e) {
+      } catch (error) {
         if (
           (console.error(
             "Language definition for '{}' could not be registered.".replace(
@@ -608,8 +749,8 @@
           ),
           !_)
         )
-          throw e;
-        console.error(e), (t = w);
+          throw error;
+        console.error(error), (t = w);
       }
       u((N[n] = t)),
         (t.rawDefinition = e.bind(null, a)),
@@ -630,7 +771,7 @@
       );
     }),
     (a.autoDetection = L),
-    (a.inherit = i),
+    (a.inherit = index),
     (a.debugMode = function () {
       _ = !1;
     }),
@@ -710,14 +851,14 @@
       !(function n(t) {
         Object.freeze(t);
         var r = "function" == typeof t;
-        Object.getOwnPropertyNames(t).forEach(function (e) {
+        for (let e of Object.getOwnPropertyNames(t)) {
           !t.hasOwnProperty(e) ||
             null === t[e] ||
             ("object" != typeof t[e] && "function" != typeof t[e]) ||
             (r && ("caller" === e || "callee" === e || "arguments" === e)) ||
             Object.isFrozen(t[e]) ||
             n(t[e]);
-        });
+        }
         return t;
       })(e);
     }),
@@ -727,7 +868,7 @@
 hljs.registerLanguage("scss", function (e) {
   var t = "@[a-z-]+",
     r = { cN: "variable", b: "(\\$[a-zA-Z-][a-zA-Z0-9_-]*)\\b" },
-    i = { cN: "number", b: "#[0-9A-Fa-f]+" };
+    index = { cN: "number", b: "#[0-9A-Fa-f]+" };
   e.CSSNM, e.QSM, e.ASM, e.CBCM;
   return {
     cI: !0,
@@ -763,7 +904,7 @@ hljs.registerLanguage("scss", function (e) {
       {
         b: ":",
         e: ";",
-        c: [r, i, e.CSSNM, e.QSM, e.ASM, { cN: "meta", b: "!important" }],
+        c: [r, index, e.CSSNM, e.QSM, e.ASM, { cN: "meta", b: "!important" }],
       },
       { b: "@(page|font-face)", l: t, k: "@page @font-face" },
       {
@@ -771,7 +912,7 @@ hljs.registerLanguage("scss", function (e) {
         e: "[{;]",
         rB: !0,
         k: "and or not only",
-        c: [{ b: t, cN: "keyword" }, r, e.QSM, e.ASM, i, e.CSSNM],
+        c: [{ b: t, cN: "keyword" }, r, e.QSM, e.ASM, index, e.CSSNM],
       },
     ],
   };
@@ -787,7 +928,7 @@ hljs.registerLanguage("cpp", function (e) {
           e: "'",
           i: ".",
         },
-        { b: /(?:u8?|U|L)?R"([^()\\ ]{0,16})\((?:.|\n)*?\)\1"/ },
+        { b: /(?:u8?|U|L)?R"([^ ()\\]{0,16})\([\n.]*\)\1"/ },
       ],
     },
     a = {
@@ -803,7 +944,7 @@ hljs.registerLanguage("cpp", function (e) {
       ],
       relevance: 0,
     },
-    i = {
+    index = {
       cN: "meta",
       b: /#\s*[a-z]+\b/,
       e: /$/,
@@ -832,8 +973,9 @@ hljs.registerLanguage("cpp", function (e) {
     aliases: ["c", "cc", "h", "c++", "h++", "hpp", "hh", "hxx", "cxx"],
     k: c,
     i: "</",
-    c: n.concat([
-      i,
+    c: [
+      ...n,
+      index,
       {
         b: "\\b(deque|list|queue|stack|vector|map|set|bitset|multiset|multimap|unordered_map|unordered_set|unordered_multiset|unordered_multimap|array)\\s*<",
         e: ">",
@@ -848,19 +990,17 @@ hljs.registerLanguage("cpp", function (e) {
           { bK: "new throw return else", e: /;/ },
         ],
         k: c,
-        c: n.concat([
-          { b: /\(/, e: /\)/, k: c, c: n.concat(["self"]), relevance: 0 },
-        ]),
+        c: [...n, { b: /\(/, e: /\)/, k: c, c: [...n, "self"], relevance: 0 }],
         relevance: 0,
       },
       {
         cN: "function",
         b: "(" + e.IR + "[\\*&\\s]+)+" + s,
         rB: !0,
-        e: /[{;=]/,
+        e: /[;={]/,
         eE: !0,
         k: c,
-        i: /[^\w\s\*&]/,
+        i: /[^\s\w&*]/,
         c: [
           { b: s, rB: !0, c: [e.TM], relevance: 0 },
           {
@@ -886,24 +1026,24 @@ hljs.registerLanguage("cpp", function (e) {
           },
           e.CLCM,
           e.CBCM,
-          i,
+          index,
         ],
       },
       {
         cN: "class",
         bK: "class struct",
-        e: /[{;:]/,
+        e: /[:;{]/,
         c: [{ b: /</, e: />/, c: ["self"] }, e.TM],
       },
-    ]),
-    exports: { preprocessor: i, strings: r, k: c },
+    ],
+    exports: { preprocessor: index, strings: r, k: c },
   };
 });
 hljs.registerLanguage("json", function (e) {
-  var i = { literal: "true false null" },
+  var index = { literal: "true false null" },
     n = [e.CLCM, e.CBCM],
     c = [e.QSM, e.CNM],
-    r = { e: ",", eW: !0, eE: !0, c: c, k: i },
+    r = { e: ",", eW: !0, eE: !0, c: c, k: index },
     t = {
       b: "{",
       e: "}",
@@ -919,7 +1059,7 @@ hljs.registerLanguage("json", function (e) {
     n.forEach(function (e) {
       c.push(e);
     }),
-    { c: c, k: i, i: "\\S" }
+    { c: c, k: index, i: "\\S" }
   );
 });
 hljs.registerLanguage("nginx", function (e) {
@@ -995,8 +1135,8 @@ hljs.registerLanguage("perl", function (e) {
     n = {
       v: [
         { b: /\$\d/ },
-        { b: /[\$%@](\^\w\b|#\w+(::\w+)*|{\w+}|\w+(::\w*)*)/ },
-        { b: /[\$%@][^\s\w{]/, relevance: 0 },
+        { b: /[$%@](\^\w\b|#\w+(::\w+)*|\{\w+\}|\w+(::\w*)*)/ },
+        { b: /[$%@][^\s\w{]/, relevance: 0 },
       ],
     },
     c = [e.BE, r, n],
@@ -1063,7 +1203,7 @@ hljs.registerLanguage("perl", function (e) {
         c: [{ b: "^@@.*", e: "$", cN: "comment" }],
       },
     ];
-  return (r.c = a), { aliases: ["pl", "pm"], l: /[\w\.]+/, k: t, c: (s.c = a) };
+  return (r.c = a), { aliases: ["pl", "pm"], l: /[\w.]+/, k: t, c: (s.c = a) };
 });
 hljs.registerLanguage("coffeescript", function (e) {
   var c = {
@@ -1074,7 +1214,7 @@ hljs.registerLanguage("coffeescript", function (e) {
     },
     n = "[A-Za-z$_][0-9A-Za-z$_]*",
     r = { cN: "subst", b: /#\{/, e: /}/, k: c },
-    i = [
+    index = [
       e.BNM,
       e.inherit(e.CNM, { starts: { e: "(\\s*/)?", relevance: 0 } }),
       {
@@ -1105,20 +1245,21 @@ hljs.registerLanguage("coffeescript", function (e) {
         ],
       },
     ];
-  r.c = i;
+  r.c = index;
   var s = e.inherit(e.TM, { b: n }),
     t = "(\\(.*\\))?\\s*\\B[-=]>",
     a = {
       cN: "params",
       b: "\\([^\\(]",
       rB: !0,
-      c: [{ b: /\(/, e: /\)/, k: c, c: ["self"].concat(i) }],
+      c: [{ b: /\(/, e: /\)/, k: c, c: ["self"].concat(index) }],
     };
   return {
     aliases: ["coffee", "cson", "iced"],
     k: c,
     i: /\/\*/,
-    c: i.concat([
+    c: [
+      ...index,
       e.C("###", "###"),
       e.HCM,
       {
@@ -1129,7 +1270,7 @@ hljs.registerLanguage("coffeescript", function (e) {
         c: [s, a],
       },
       {
-        b: /[:\(,=]\s*/,
+        b: /[(,:=]\s*/,
         relevance: 0,
         c: [{ cN: "function", b: t, e: "[-=]>", rB: !0, c: [a] }],
       },
@@ -1137,11 +1278,11 @@ hljs.registerLanguage("coffeescript", function (e) {
         cN: "class",
         bK: "class",
         e: "$",
-        i: /[:="\[\]]/,
-        c: [{ bK: "extends", eW: !0, i: /[:="\[\]]/, c: [s] }, s],
+        i: /[":=[\]]/,
+        c: [{ bK: "extends", eW: !0, i: /[":=[\]]/, c: [s] }, s],
       },
       { b: n + ":", e: ":", rB: !0, rE: !0, relevance: 0 },
-    ]),
+    ],
   };
 });
 hljs.registerLanguage("typescript", function (e) {
@@ -1174,7 +1315,7 @@ hljs.registerLanguage("typescript", function (e) {
       relevance: 0,
     },
     o = { cN: "subst", b: "\\$\\{", e: "\\}", k: t, c: [] },
-    i = {
+    index = {
       b: "html`",
       e: "",
       starts: { e: "`", rE: !1, c: [e.BE, o], sL: "xml" },
@@ -1186,15 +1327,15 @@ hljs.registerLanguage("typescript", function (e) {
     },
     b = { cN: "string", b: "`", e: "`", c: [e.BE, o] };
   return (
-    (o.c = [e.ASM, e.QSM, i, l, b, s, e.RM]),
+    (o.c = [e.ASM, e.QSM, index, l, b, s, e.RM]),
     {
       aliases: ["ts"],
       k: t,
       c: [
-        { cN: "meta", b: /^\s*['"]use strict['"]/ },
+        { cN: "meta", b: /^\s*["']use strict["']/ },
         e.ASM,
         e.QSM,
-        i,
+        index,
         l,
         b,
         e.CLCM,
@@ -1236,14 +1377,14 @@ hljs.registerLanguage("typescript", function (e) {
         {
           cN: "function",
           bK: "function",
-          e: /[\{;]/,
+          e: /[;{]/,
           eE: !0,
           k: t,
           c: ["self", e.inherit(e.TM, { b: r }), c],
           i: /%/,
           relevance: 0,
         },
-        { bK: "constructor", e: /[\{;]/, eE: !0, c: ["self", c] },
+        { bK: "constructor", e: /[;{]/, eE: !0, c: ["self", c] },
         { b: /module\./, k: { built_in: "module" }, relevance: 0 },
         { bK: "module", e: /\{/, eE: !0 },
         { bK: "interface", e: /\{/, eE: !0, k: "interface extends" },
@@ -1257,10 +1398,10 @@ hljs.registerLanguage("typescript", function (e) {
 });
 hljs.registerLanguage("php", function (e) {
   var c = { b: "\\$+[a-zA-Z_-ÿ][a-zA-Z0-9_-ÿ]*" },
-    i = { cN: "meta", b: /<\?(php)?|\?>/ },
+    index = { cN: "meta", b: /<\?(php)?|\?>/ },
     t = {
       cN: "string",
-      c: [e.BE, i],
+      c: [e.BE, index],
       v: [
         { b: 'b"', e: '"' },
         { b: "b'", e: "'" },
@@ -1275,7 +1416,7 @@ hljs.registerLanguage("php", function (e) {
     k: "and include_once list abstract global private echo interface as static endswitch array null if endwhile or const for endforeach self var while isset public protected exit foreach throw elseif include __FILE__ empty require_once do xor return parent clone use __CLASS__ __LINE__ else break print eval new catch __METHOD__ case exception default die require __FUNCTION__ enddeclare final try switch continue endfor endif declare unset true false trait goto instanceof insteadof __DIR__ __NAMESPACE__ yield finally",
     c: [
       e.HCM,
-      e.C("//", "$", { c: [i] }),
+      e.C("//", "$", { c: [index] }),
       e.C("/\\*", "\\*/", { c: [{ cN: "doctag", b: "@[A-Za-z]+" }] }),
       e.C("__halt_compiler.+?;", !1, {
         eW: !0,
@@ -1284,14 +1425,14 @@ hljs.registerLanguage("php", function (e) {
       }),
       {
         cN: "string",
-        b: /<<<['"]?\w+['"]?$/,
+        b: /<<<["']?\w+["']?$/,
         e: /^\w+;?$/,
-        c: [e.BE, { cN: "subst", v: [{ b: /\$\w+/ }, { b: /\{\$/, e: /\}/ }] }],
+        c: [e.BE, { cN: "subst", v: [{ b: /\$\w+/ }, { b: /{\$/, e: /}/ }] }],
       },
-      i,
+      index,
       { cN: "keyword", b: /\$this\b/ },
       c,
-      { b: /(::|->)+[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*/ },
+      { b: /(::|->)+[A-Z_a-z\u007F-\u00FF][\w\u007F-\u00FF]*/ },
       {
         cN: "function",
         bK: "function",
@@ -1308,10 +1449,10 @@ hljs.registerLanguage("php", function (e) {
         bK: "class interface",
         e: "{",
         eE: !0,
-        i: /[:\(\$"]/,
+        i: /["$(:]/,
         c: [{ bK: "extends implements" }, e.UTM],
       },
-      { bK: "namespace", e: ";", i: /[\.']/, c: [e.UTM] },
+      { bK: "namespace", e: ";", i: /['.]/, c: [e.UTM] },
       { bK: "use", e: ";", c: [e.UTM] },
       { b: "=>" },
       t,
@@ -1322,7 +1463,7 @@ hljs.registerLanguage("php", function (e) {
 hljs.registerLanguage("bash", function (e) {
   var t = {
       cN: "variable",
-      v: [{ b: /\$[\w\d#@][\w\d_]*/ }, { b: /\$\{(.*?)}/ }],
+      v: [{ b: /\$[\w#@]\w*/ }, { b: /\$\{(.*?)\}/ }],
     },
     a = {
       cN: "string",
@@ -1332,7 +1473,7 @@ hljs.registerLanguage("bash", function (e) {
     };
   return {
     aliases: ["sh", "zsh"],
-    l: /\b-?[a-z\._]+\b/,
+    l: /\b-?[._a-z]+\b/,
     k: {
       keyword: "if then else elif fi for while in do done case esac function",
       literal: "true false",
@@ -1344,9 +1485,9 @@ hljs.registerLanguage("bash", function (e) {
       { cN: "meta", b: /^#![^\n]+sh\s*$/, relevance: 10 },
       {
         cN: "function",
-        b: /\w[\w\d_]*\s*\(\s*\)\s*\{/,
+        b: /\w+\s*\(\s*\)\s*{/,
         rB: !0,
-        c: [e.inherit(e.TM, { b: /\w[\w\d_]*/ })],
+        c: [e.inherit(e.TM, { b: /\w+/ })],
         relevance: 0,
       },
       e.HCM,
@@ -1358,9 +1499,19 @@ hljs.registerLanguage("bash", function (e) {
   };
 });
 hljs.registerLanguage("less", function (e) {
+  /**
+   *
+   * @param e
+   */
   function r(e) {
     return { cN: "string", b: "~?" + e + ".*?" + e };
   }
+  /**
+   *
+   * @param e
+   * @param r
+   * @param t
+   */
   function t(e, r, t) {
     return { cN: e, b: r, relevance: t };
   }
@@ -1384,7 +1535,7 @@ hljs.registerLanguage("less", function (e) {
     { cN: "attribute", b: a + "\\s*:", e: ":", rB: !0, eE: !0 },
     { cN: "meta", b: "!important" }
   );
-  var i = n.concat({ b: "{", e: "}", c: s }),
+  var index = n.concat({ b: "{", e: "}", c: s }),
     l = { bK: "when", eW: !0, c: [{ bK: "and not" }].concat(n) },
     o = {
       b: c + "\\s*:",
@@ -1409,7 +1560,7 @@ hljs.registerLanguage("less", function (e) {
     v = {
       cN: "variable",
       v: [{ b: "@" + a + "\\s*:", relevance: 15 }, { b: "@" + a }],
-      starts: { e: "[;}]", rE: !0, c: i },
+      starts: { e: "[;}]", rE: !0, c: index },
     },
     C = {
       v: [
@@ -1431,15 +1582,15 @@ hljs.registerLanguage("less", function (e) {
         t("selector-class", "\\." + c, 0),
         t("selector-tag", "&", 0),
         { cN: "selector-attr", b: "\\[", e: "\\]" },
-        { cN: "selector-pseudo", b: /:(:)?[a-zA-Z0-9\_\-\+\(\)"'.]+/ },
-        { b: "\\(", e: "\\)", c: i },
+        { cN: "selector-pseudo", b: /:(:)?[\w"'()+.\-]+/ },
+        { b: "\\(", e: "\\)", c: index },
         { b: "!important" },
       ],
     };
   return s.push(e.CLCM, e.CBCM, u, v, o, C), { cI: !0, i: "[=>'/<($\"]", c: s };
 });
 hljs.registerLanguage("swift", function (e) {
-  var i = {
+  var index = {
       keyword:
         "#available #colorLiteral #column #else #elseif #endif #file #fileLiteral #function #if #imageLiteral #line #selector #sourceLocation _ __COLUMN__ __FILE__ __FUNCTION__ __LINE__ Any as as! as? associatedtype associativity break case catch class continue convenience default defer deinit didSet do dynamic dynamicType else enum extension fallthrough false fileprivate final for func get guard if import in indirect infix init inout internal is lazy left let mutating nil none nonmutating open operator optional override postfix precedence prefix private protocol Protocol public repeat required rethrows return right self Self set static struct subscript super switch throw throws true try try! try? Type typealias unowned var weak where while willSet",
       literal: "true false nil",
@@ -1447,7 +1598,7 @@ hljs.registerLanguage("swift", function (e) {
         "abs advance alignof alignofValue anyGenerator assert assertionFailure bridgeFromObjectiveC bridgeFromObjectiveCUnconditional bridgeToObjectiveC bridgeToObjectiveCUnconditional c contains count countElements countLeadingZeros debugPrint debugPrintln distance dropFirst dropLast dump encodeBitsAsWords enumerate equal fatalError filter find getBridgedObjectiveCType getVaList indices insertionSort isBridgedToObjectiveC isBridgedVerbatimToObjectiveC isUniquelyReferenced isUniquelyReferencedNonObjC join lazy lexicographicalCompare map max maxElement min minElement numericCast overlaps partition posix precondition preconditionFailure print println quickSort readLine reduce reflect reinterpretCast reverse roundUpToAlignment sizeof sizeofValue sort split startsWith stride strideof strideofValue swap toString transcode underestimateCount unsafeAddressOf unsafeBitCast unsafeDowncast unsafeUnwrap unsafeReflect withExtendedLifetime withObjectAtPlusZero withUnsafePointer withUnsafePointerToObject withUnsafeMutablePointer withUnsafeMutablePointers withUnsafePointer withUnsafePointers withVaList zip",
     },
     t = e.C("/\\*", "\\*/", { c: ["self"] }),
-    n = { cN: "subst", b: /\\\(/, e: "\\)", k: i, c: [] },
+    n = { cN: "subst", b: /\\\(/, e: "\\)", k: index, c: [] },
     r = {
       cN: "string",
       c: [e.BE, n],
@@ -1464,7 +1615,7 @@ hljs.registerLanguage("swift", function (e) {
   return (
     (n.c = [a]),
     {
-      k: i,
+      k: index,
       c: [
         r,
         e.CLCM,
@@ -1478,14 +1629,14 @@ hljs.registerLanguage("swift", function (e) {
           e: "{",
           eE: !0,
           c: [
-            e.inherit(e.TM, { b: /[A-Za-z$_][0-9A-Za-z$_]*/ }),
+            e.inherit(e.TM, { b: /[$A-Z_a-z][\w$]*/ }),
             { b: /</, e: />/ },
             {
               cN: "params",
               b: /\(/,
               e: /\)/,
               endsParent: !0,
-              k: i,
+              k: index,
               c: ["self", a, r, e.CBCM, { b: ":" }],
               i: /["']/,
             },
@@ -1495,10 +1646,10 @@ hljs.registerLanguage("swift", function (e) {
         {
           cN: "class",
           bK: "struct protocol class extension enum",
-          k: i,
+          k: index,
           e: "\\{",
           eE: !0,
-          c: [e.inherit(e.TM, { b: /[A-Za-z$_][\u00C0-\u02B80-9A-Za-z$_]*/ })],
+          c: [e.inherit(e.TM, { b: /[$A-Z_a-z][\w$\u00C0-\u02B8]*/ })],
         },
         {
           cN: "meta",
@@ -1534,7 +1685,7 @@ hljs.registerLanguage("xml", function (e) {
               v: [
                 { b: /"/, e: /"/, c: [c] },
                 { b: /'/, e: /'/, c: [c] },
-                { b: /[^\s"'=<>`]+/ },
+                { b: /[^\s"'<=>`]+/ },
               ],
             },
           ],
@@ -1573,7 +1724,7 @@ hljs.registerLanguage("xml", function (e) {
           },
         ],
       },
-      e.C("\x3c!--", "--\x3e", { relevance: 10 }),
+      e.C("\u003C!--", "--\u003E", { relevance: 10 }),
       { b: "<\\!\\[CDATA\\[", e: "\\]\\]>", relevance: 10 },
       c,
       { cN: "meta", b: /<\?xml/, e: /\?>/, relevance: 10 },
@@ -1613,7 +1764,7 @@ hljs.registerLanguage("xml", function (e) {
         cN: "tag",
         b: "</?",
         e: "/?>",
-        c: [{ cN: "name", b: /[^\/><\s]+/, relevance: 0 }, r],
+        c: [{ cN: "name", b: /[^\s/<>]+/, relevance: 0 }, r],
       },
     ],
   };
@@ -1681,7 +1832,7 @@ hljs.registerLanguage("kotlin", function (e) {
       ],
     };
   n.c.push(r);
-  var i = {
+  var index = {
       cN: "meta",
       b:
         "@(?:file|property|field|get|set|receiver|param|setparam|delegate)\\s*:(?:\\s*" +
@@ -1725,7 +1876,7 @@ hljs.registerLanguage("kotlin", function (e) {
           starts: { c: [{ cN: "symbol", b: /@\w+/ }] },
         },
         a,
-        i,
+        index,
         l,
         {
           cN: "function",
@@ -1734,7 +1885,7 @@ hljs.registerLanguage("kotlin", function (e) {
           rB: !0,
           eE: !0,
           k: t,
-          i: /fun\s+(<.*>)?[^\s\(]+(\s+[^\s\(]+)\s*=/,
+          i: /fun\s+(<.*>)?[^\s(]+(\s+[^\s(]+)\s*=/,
           relevance: 5,
           c: [
             { b: e.UIR + "\\s*\\(", rB: !0, relevance: 0, c: [e.UTM] },
@@ -1749,14 +1900,14 @@ hljs.registerLanguage("kotlin", function (e) {
               c: [
                 {
                   b: /:/,
-                  e: /[=,\/]/,
+                  e: /[,/=]/,
                   eW: !0,
                   c: [o, e.CLCM, b],
                   relevance: 0,
                 },
                 e.CLCM,
                 b,
-                i,
+                index,
                 l,
                 r,
                 e.CNM,
@@ -1768,15 +1919,15 @@ hljs.registerLanguage("kotlin", function (e) {
         {
           cN: "class",
           bK: "class interface trait",
-          e: /[:\{(]|$/,
+          e: /[(:{]|$/,
           eE: !0,
           i: "extends implements",
           c: [
             { bK: "public protected internal private constructor" },
             e.UTM,
             { cN: "type", b: /</, e: />/, eB: !0, eE: !0, relevance: 0 },
-            { cN: "type", b: /[,:]\s*/, e: /[<\(,]|$/, eB: !0, rE: !0 },
-            i,
+            { cN: "type", b: /[,:]\s*/, e: /[(,<]|$/, eB: !0, rE: !0 },
+            index,
             l,
           ],
         },
@@ -1818,18 +1969,18 @@ hljs.registerLanguage("ruby", function (e) {
         { b: "%[qQwWx]?%", e: "%" },
         { b: "%[qQwWx]?-", e: "-" },
         { b: "%[qQwWx]?\\|", e: "\\|" },
-        { b: /\B\?(\\\d{1,3}|\\x[A-Fa-f0-9]{1,2}|\\u[A-Fa-f0-9]{4}|\\?\S)\b/ },
+        { b: /\B\?(\\\d{1,3}|\\x[\dA-Fa-f]{1,2}|\\u[\dA-Fa-f]{4}|\\?\S)\b/ },
         {
-          b: /<<[-~]?'?(\w+)(?:.|\n)*?\n\s*\1\b/,
+          b: /<<[~-]?'?(\w+)[\n.]*?\n\s*\1\b/,
           rB: !0,
           c: [
-            { b: /<<[-~]?'?/ },
+            { b: /<<[~-]?'?/ },
             { b: /\w+/, endSameAsBegin: !0, c: [e.BE, s] },
           ],
         },
       ],
     },
-    i = { cN: "params", b: "\\(", e: "\\)", endsParent: !0, k: b },
+    index = { cN: "params", b: "\\(", e: "\\)", endsParent: !0, k: b },
     l = [
       t,
       a,
@@ -1847,7 +1998,7 @@ hljs.registerLanguage("ruby", function (e) {
         cN: "function",
         bK: "def",
         e: "$|;",
-        c: [e.inherit(e.TM, { b: c }), i].concat(n),
+        c: [e.inherit(e.TM, { b: c }), index].concat(n),
       },
       { b: e.IR + "::" },
       { cN: "symbol", b: e.UIR + "(\\!|\\?)?:", relevance: 0 },
@@ -1882,7 +2033,7 @@ hljs.registerLanguage("ruby", function (e) {
     ].concat(n);
   s.c = l;
   var d = [
-    { b: /^\s*=>/, starts: { e: "$", c: (i.c = l) } },
+    { b: /^\s*=>/, starts: { e: "$", c: (index.c = l) } },
     {
       cN: "meta",
       b: "^([>?]>|[\\w#]+\\(\\w+\\):\\d+:\\d+>|(\\w+-)?\\d+\\.\\d+\\.\\d(p\\d+)?[^>]+>)",
@@ -1988,10 +2139,10 @@ hljs.registerLanguage("java", function (e) {
       {
         cN: "class",
         bK: "class interface",
-        e: /[{;=]/,
+        e: /[;={]/,
         eE: !0,
         k: "class interface",
-        i: /[:"\[\]]/,
+        i: /[":[\]]/,
         c: [{ bK: "extends implements" }, e.UTM],
       },
       { bK: "new throw return else", relevance: 0 },
@@ -2002,7 +2153,7 @@ hljs.registerLanguage("java", function (e) {
           e.UIR +
           "\\s*\\(",
         rB: !0,
-        e: /[{;=]/,
+        e: /[;={]/,
         eE: !0,
         k: a,
         c: [
@@ -2025,8 +2176,8 @@ hljs.registerLanguage("java", function (e) {
   };
 });
 hljs.registerLanguage("objectivec", function (e) {
-  var t = /[a-zA-Z@][a-zA-Z0-9_]*/,
-    i = "@interface @class @protocol @implementation";
+  var t = /[@A-Za-z]\w*/,
+    index = "@interface @class @protocol @implementation";
   return {
     aliases: ["mm", "objc", "obj-c"],
     k: {
@@ -2067,10 +2218,10 @@ hljs.registerLanguage("objectivec", function (e) {
       },
       {
         cN: "class",
-        b: "(" + i.split(" ").join("|") + ")\\b",
+        b: "(" + index.split(" ").join("|") + ")\\b",
         e: "({|$)",
         eE: !0,
-        k: i,
+        k: index,
         l: t,
         c: [e.UTM],
       },
@@ -2189,9 +2340,9 @@ hljs.registerLanguage("python", function (e) {
       built_in: "Ellipsis NotImplemented",
       literal: "False None True",
     },
-    b = { cN: "meta", b: /^(>>>|\.\.\.) / },
+    b = { cN: "meta", b: /^(>{3}|\.{3}) / },
     c = { cN: "subst", b: /\{/, e: /\}/, k: r, i: /#/ },
-    a = { b: /\{\{/, relevance: 0 },
+    a = { b: /\{{/, relevance: 0 },
     l = {
       cN: "string",
       c: [e.BE],
@@ -2219,7 +2370,7 @@ hljs.registerLanguage("python", function (e) {
         { b: e.CNR + "[lLjJ]?" },
       ],
     },
-    i = { cN: "params", b: /\(/, e: /\)/, c: ["self", b, n, l, e.HCM] };
+    index = { cN: "params", b: /\(/, e: /\)/, c: ["self", b, n, l, e.HCM] };
   return (
     (c.c = [l, n, b]),
     {
@@ -2238,8 +2389,8 @@ hljs.registerLanguage("python", function (e) {
             { cN: "class", bK: "class" },
           ],
           e: /:/,
-          i: /[${=;\n,]/,
-          c: [e.UTM, i, { b: /->/, eW: !0, k: "None" }],
+          i: /[\n$,;={]/,
+          c: [e.UTM, index, { b: /->/, eW: !0, k: "None" }],
         },
         { cN: "meta", b: /^[\t ]*@/, e: /$/ },
         { b: /\b(print|exec)\(/ },
@@ -2251,13 +2402,13 @@ hljs.registerLanguage("sql", function (e) {
   var t = e.C("--", "$");
   return {
     cI: !0,
-    i: /[<>{}*]/,
+    i: /[*<>{}]/,
     c: [
       {
         bK: "begin end start commit rollback savepoint lock alter create drop rename call delete do handler insert load replace select truncate update set show pragma grant merge describe use explain help declare prepare execute deallocate release unlock purge reset change stop analyze cache flush optimize repair kill install uninstall checksum restore check backup revoke comment values with",
         e: /;/,
         eW: !0,
-        l: /[\w\.]+/,
+        l: /[\w.]+/,
         k: {
           keyword:
             "as abort abs absolute acc acce accep accept access accessed accessible account acos action activate add addtime admin administer advanced advise aes_decrypt aes_encrypt after agent aggregate ali alia alias all allocate allow alter always analyze ancillary and anti any anydata anydataset anyschema anytype apply archive archived archivelog are as asc ascii asin assembly assertion associate asynchronous at atan atn2 attr attri attrib attribu attribut attribute attributes audit authenticated authentication authid authors auto autoallocate autodblink autoextend automatic availability avg backup badfile basicfile before begin beginning benchmark between bfile bfile_base big bigfile bin binary_double binary_float binlog bit_and bit_count bit_length bit_or bit_xor bitmap blob_base block blocksize body both bound bucket buffer_cache buffer_pool build bulk by byte byteordermark bytes cache caching call calling cancel capacity cascade cascaded case cast catalog category ceil ceiling chain change changed char_base char_length character_length characters characterset charindex charset charsetform charsetid check checksum checksum_agg child choose chr chunk class cleanup clear client clob clob_base clone close cluster_id cluster_probability cluster_set clustering coalesce coercibility col collate collation collect colu colum column column_value columns columns_updated comment commit compact compatibility compiled complete composite_limit compound compress compute concat concat_ws concurrent confirm conn connec connect connect_by_iscycle connect_by_isleaf connect_by_root connect_time connection consider consistent constant constraint constraints constructor container content contents context contributors controlfile conv convert convert_tz corr corr_k corr_s corresponding corruption cos cost count count_big counted covar_pop covar_samp cpu_per_call cpu_per_session crc32 create creation critical cross cube cume_dist curdate current current_date current_time current_timestamp current_user cursor curtime customdatum cycle data database databases datafile datafiles datalength date_add date_cache date_format date_sub dateadd datediff datefromparts datename datepart datetime2fromparts day day_to_second dayname dayofmonth dayofweek dayofyear days db_role_change dbtimezone ddl deallocate declare decode decompose decrement decrypt deduplicate def defa defau defaul default defaults deferred defi defin define degrees delayed delegate delete delete_all delimited demand dense_rank depth dequeue des_decrypt des_encrypt des_key_file desc descr descri describ describe descriptor deterministic diagnostics difference dimension direct_load directory disable disable_all disallow disassociate discardfile disconnect diskgroup distinct distinctrow distribute distributed div do document domain dotnet double downgrade drop dumpfile duplicate duration each edition editionable editions element ellipsis else elsif elt empty enable enable_all enclosed encode encoding encrypt end end-exec endian enforced engine engines enqueue enterprise entityescaping eomonth error errors escaped evalname evaluate event eventdata events except exception exceptions exchange exclude excluding execu execut execute exempt exists exit exp expire explain explode export export_set extended extent external external_1 external_2 externally extract failed failed_login_attempts failover failure far fast feature_set feature_value fetch field fields file file_name_convert filesystem_like_logging final finish first first_value fixed flash_cache flashback floor flush following follows for forall force foreign form forma format found found_rows freelist freelists freepools fresh from from_base64 from_days ftp full function general generated get get_format get_lock getdate getutcdate global global_name globally go goto grant grants greatest group group_concat group_id grouping grouping_id groups gtid_subtract guarantee guard handler hash hashkeys having hea head headi headin heading heap help hex hierarchy high high_priority hosts hour hours http id ident_current ident_incr ident_seed identified identity idle_time if ifnull ignore iif ilike ilm immediate import in include including increment index indexes indexing indextype indicator indices inet6_aton inet6_ntoa inet_aton inet_ntoa infile initial initialized initially initrans inmemory inner innodb input insert install instance instantiable instr interface interleaved intersect into invalidate invisible is is_free_lock is_ipv4 is_ipv4_compat is_not is_not_null is_used_lock isdate isnull isolation iterate java join json json_exists keep keep_duplicates key keys kill language large last last_day last_insert_id last_value lateral lax lcase lead leading least leaves left len lenght length less level levels library like like2 like4 likec limit lines link list listagg little ln load load_file lob lobs local localtime localtimestamp locate locator lock locked log log10 log2 logfile logfiles logging logical logical_reads_per_call logoff logon logs long loop low low_priority lower lpad lrtrim ltrim main make_set makedate maketime managed management manual map mapping mask master master_pos_wait match matched materialized max maxextents maximize maxinstances maxlen maxlogfiles maxloghistory maxlogmembers maxsize maxtrans md5 measures median medium member memcompress memory merge microsecond mid migration min minextents minimum mining minus minute minutes minvalue missing mod mode model modification modify module monitoring month months mount move movement multiset mutex name name_const names nan national native natural nav nchar nclob nested never new newline next nextval no no_write_to_binlog noarchivelog noaudit nobadfile nocheck nocompress nocopy nocycle nodelay nodiscardfile noentityescaping noguarantee nokeep nologfile nomapping nomaxvalue nominimize nominvalue nomonitoring none noneditionable nonschema noorder nopr nopro noprom nopromp noprompt norely noresetlogs noreverse normal norowdependencies noschemacheck noswitch not nothing notice notnull notrim novalidate now nowait nth_value nullif nulls num numb numbe nvarchar nvarchar2 object ocicoll ocidate ocidatetime ociduration ociinterval ociloblocator ocinumber ociref ocirefcursor ocirowid ocistring ocitype oct octet_length of off offline offset oid oidindex old on online only opaque open operations operator optimal optimize option optionally or oracle oracle_date oradata ord ordaudio orddicom orddoc order ordimage ordinality ordvideo organization orlany orlvary out outer outfile outline output over overflow overriding package pad parallel parallel_enable parameters parent parse partial partition partitions pascal passing password password_grace_time password_lock_time password_reuse_max password_reuse_time password_verify_function patch path patindex pctincrease pctthreshold pctused pctversion percent percent_rank percentile_cont percentile_disc performance period period_add period_diff permanent physical pi pipe pipelined pivot pluggable plugin policy position post_transaction pow power pragma prebuilt precedes preceding precision prediction prediction_cost prediction_details prediction_probability prediction_set prepare present preserve prior priority private private_sga privileges procedural procedure procedure_analyze processlist profiles project prompt protection public publishingservername purge quarter query quick quiesce quota quotename radians raise rand range rank raw read reads readsize rebuild record records recover recovery recursive recycle redo reduced ref reference referenced references referencing refresh regexp_like register regr_avgx regr_avgy regr_count regr_intercept regr_r2 regr_slope regr_sxx regr_sxy reject rekey relational relative relaylog release release_lock relies_on relocate rely rem remainder rename repair repeat replace replicate replication required reset resetlogs resize resource respect restore restricted result result_cache resumable resume retention return returning returns reuse reverse revoke right rlike role roles rollback rolling rollup round row row_count rowdependencies rowid rownum rows rtrim rules safe salt sample save savepoint sb1 sb2 sb4 scan schema schemacheck scn scope scroll sdo_georaster sdo_topo_geometry search sec_to_time second seconds section securefile security seed segment select self semi sequence sequential serializable server servererror session session_user sessions_per_user set sets settings sha sha1 sha2 share shared shared_pool short show shrink shutdown si_averagecolor si_colorhistogram si_featurelist si_positionalcolor si_stillimage si_texture siblings sid sign sin size size_t sizes skip slave sleep smalldatetimefromparts smallfile snapshot some soname sort soundex source space sparse spfile split sql sql_big_result sql_buffer_result sql_cache sql_calc_found_rows sql_small_result sql_variant_property sqlcode sqldata sqlerror sqlname sqlstate sqrt square standalone standby start starting startup statement static statistics stats_binomial_test stats_crosstab stats_ks_test stats_mode stats_mw_test stats_one_way_anova stats_t_test_ stats_t_test_indep stats_t_test_one stats_t_test_paired stats_wsr_test status std stddev stddev_pop stddev_samp stdev stop storage store stored str str_to_date straight_join strcmp strict string struct stuff style subdate subpartition subpartitions substitutable substr substring subtime subtring_index subtype success sum suspend switch switchoffset switchover sync synchronous synonym sys sys_xmlagg sysasm sysaux sysdate sysdatetimeoffset sysdba sysoper system system_user sysutcdatetime table tables tablespace tablesample tan tdo template temporary terminated tertiary_weights test than then thread through tier ties time time_format time_zone timediff timefromparts timeout timestamp timestampadd timestampdiff timezone_abbr timezone_minute timezone_region to to_base64 to_date to_days to_seconds todatetimeoffset trace tracking transaction transactional translate translation treat trigger trigger_nestlevel triggers trim truncate try_cast try_convert try_parse type ub1 ub2 ub4 ucase unarchived unbounded uncompress under undo unhex unicode uniform uninstall union unique unix_timestamp unknown unlimited unlock unnest unpivot unrecoverable unsafe unsigned until untrusted unusable unused update updated upgrade upped upper upsert url urowid usable usage use use_stored_outlines user user_data user_resources users using utc_date utc_timestamp uuid uuid_short validate validate_password_strength validation valist value values var var_samp varcharc vari varia variab variabl variable variables variance varp varraw varrawc varray verify version versions view virtual visible void wait wallet warning warnings week weekday weekofyear wellformed when whene whenev wheneve whenever where while whitespace window with within without work wrapped xdb xml xmlagg xmlattributes xmlcast xmlcolattval xmlelement xmlexists xmlforest xmlindex xmlnamespaces xmlpi xmlquery xmlroot xmlschema xmlserialize xmltable xmltype xor year year_to_month years yearweek",
@@ -2287,7 +2438,7 @@ hljs.registerLanguage("cs", function (e) {
         "abstract as base bool break byte case catch char checked const continue decimal default delegate do double enum event explicit extern finally fixed float for foreach goto if implicit in int interface internal is lock long object operator out override params private protected public readonly ref sbyte sealed short sizeof stackalloc static string struct switch this try typeof uint ulong unchecked unsafe ushort using virtual void volatile while add alias ascending async await by descending dynamic equals from get global group into join let nameof on orderby partial remove select set value var when where yield",
       literal: "null false true",
     },
-    i = {
+    index = {
       cN: "number",
       v: [
         { b: "\\b(0b[01']+)" },
@@ -2321,8 +2472,8 @@ hljs.registerLanguage("cs", function (e) {
       i: /\n/,
       c: [{ b: "{{" }, { b: "}}" }, { b: '""' }, t],
     });
-  (n.c = [l, s, c, e.ASM, e.QSM, i, e.CBCM]),
-    (t.c = [b, s, r, e.ASM, e.QSM, i, e.inherit(e.CBCM, { i: /\n/ })]);
+  (n.c = [l, s, c, e.ASM, e.QSM, index, e.CBCM]),
+    (t.c = [b, s, r, e.ASM, e.QSM, index, e.inherit(e.CBCM, { i: /\n/ })]);
   var o = { v: [l, s, c, e.ASM, e.QSM] },
     d = e.IR + "(<" + e.IR + "(\\s*,\\s*" + e.IR + ")*>)?(\\[\\])?";
   return {
@@ -2337,7 +2488,7 @@ hljs.registerLanguage("cs", function (e) {
             cN: "doctag",
             v: [
               { b: "///", relevance: 0 },
-              { b: "\x3c!--|--\x3e" },
+              { b: "\u003C!--|--\u003E" },
               { b: "</?", e: ">" },
             ],
           },
@@ -2355,16 +2506,16 @@ hljs.registerLanguage("cs", function (e) {
         },
       },
       o,
-      i,
+      index,
       {
         bK: "class interface",
-        e: /[{;=]/,
-        i: /[^\s:,]/,
+        e: /[;={]/,
+        i: /[^\s,:]/,
         c: [e.TM, e.CLCM, e.CBCM],
       },
       {
         bK: "namespace",
-        e: /[{;=]/,
+        e: /[;={]/,
         i: /[^\s:]/,
         c: [e.inherit(e.TM, { b: "[a-zA-Z](\\.?\\w)*" }), e.CLCM, e.CBCM],
       },
@@ -2381,7 +2532,7 @@ hljs.registerLanguage("cs", function (e) {
         cN: "function",
         b: "(" + d + "\\s+)+" + e.IR + "\\s*\\(",
         rB: !0,
-        e: /\s*[{;=]/,
+        e: /\s*[;={]/,
         eE: !0,
         k: a,
         c: [
@@ -2394,7 +2545,7 @@ hljs.registerLanguage("cs", function (e) {
             eE: !0,
             k: a,
             relevance: 0,
-            c: [o, i, e.CBCM],
+            c: [o, index, e.CBCM],
           },
           e.CLCM,
           e.CBCM,
@@ -2405,7 +2556,7 @@ hljs.registerLanguage("cs", function (e) {
 });
 hljs.registerLanguage("css", function (e) {
   var c = {
-    b: /(?:[A-Z\_\.\-]+|--[a-zA-Z0-9_-]+)\s*:/,
+    b: /(?:[.A-Z_\-]+|--[\w-]+)\s*:/,
     rB: !0,
     e: ";",
     eW: !0,
@@ -2440,13 +2591,13 @@ hljs.registerLanguage("css", function (e) {
   };
   return {
     cI: !0,
-    i: /[=\/|'\$]/,
+    i: /[$'/=|]/,
     c: [
       e.CBCM,
-      { cN: "selector-id", b: /#[A-Za-z0-9_-]+/ },
-      { cN: "selector-class", b: /\.[A-Za-z0-9_-]+/ },
+      { cN: "selector-id", b: /#[\w-]+/ },
+      { cN: "selector-class", b: /\.[\w-]+/ },
       { cN: "selector-attr", b: /\[/, e: /\]/, i: "$", c: [e.ASM, e.QSM] },
-      { cN: "selector-pseudo", b: /:(:)?[a-zA-Z0-9\_\-\+\(\)"'.]+/ },
+      { cN: "selector-pseudo", b: /:(:)?[\w"'()+.\-]+/ },
       { b: "@(page|font-face)", l: "@[a-z-]+", k: "@page @font-face" },
       {
         b: "@",
@@ -2454,7 +2605,7 @@ hljs.registerLanguage("css", function (e) {
         i: /:/,
         rB: !0,
         c: [
-          { cN: "keyword", b: /@\-?\w[\w]*(\-\w+)*/ },
+          { cN: "keyword", b: /@-?\w+(-\w+)*/ },
           {
             b: /\s/,
             eW: !0,
@@ -2501,12 +2652,12 @@ hljs.registerLanguage("javascript", function (e) {
     },
     o = { cN: "string", b: "`", e: "`", c: [e.BE, c] };
   c.c = [e.ASM, e.QSM, n, s, o, t, e.RM];
-  var i = c.c.concat([e.CBCM, e.CLCM]);
+  var index = [...c.c, e.CBCM, e.CLCM];
   return {
     aliases: ["js", "jsx", "mjs", "cjs"],
     k: a,
     c: [
-      { cN: "meta", relevance: 10, b: /^\s*['"]use (strict|asm)['"]/ },
+      { cN: "meta", relevance: 10, b: /^\s*["']use (strict|asm)["']/ },
       { cN: "meta", b: /^#!/, e: /$/ },
       e.ASM,
       e.QSM,
@@ -2536,7 +2687,7 @@ hljs.registerLanguage("javascript", function (e) {
       e.CBCM,
       t,
       {
-        b: /[{,\n]\s*/,
+        b: /[\n,{]\s*/,
         relevance: 0,
         c: [
           {
@@ -2565,7 +2716,7 @@ hljs.registerLanguage("javascript", function (e) {
                 v: [
                   { b: r },
                   { b: /\(\s*\)/ },
-                  { b: /\(/, e: /\)/, eB: !0, eE: !0, k: a, c: i },
+                  { b: /\(/, e: /\)/, eB: !0, eE: !0, k: a, c: index },
                 ],
               },
             ],
@@ -2573,15 +2724,15 @@ hljs.registerLanguage("javascript", function (e) {
           { cN: "", b: /\s/, e: /\s*/, skip: !0 },
           {
             b: /</,
-            e: /(\/[A-Za-z0-9\\._:-]+|[A-Za-z0-9\\._:-]+\/)>/,
+            e: /(\/[\w.:\\-]+|[\w.:\\-]+\/)>/,
             sL: "xml",
             c: [
-              { b: /<[A-Za-z0-9\\._:-]+\s*\/>/, skip: !0 },
+              { b: /<[\w.:\\-]+\s*\/>/, skip: !0 },
               {
-                b: /<[A-Za-z0-9\\._:-]+/,
-                e: /(\/[A-Za-z0-9\\._:-]+|[A-Za-z0-9\\._:-]+\/)>/,
+                b: /<[\w.:\\-]+/,
+                e: /(\/[\w.:\\-]+|[\w.:\\-]+\/)>/,
                 skip: !0,
-                c: [{ b: /<[A-Za-z0-9\\._:-]+\s*\/>/, skip: !0 }, "self"],
+                c: [{ b: /<[\w.:\\-]+\s*\/>/, skip: !0 }, "self"],
               },
             ],
           },
@@ -2591,11 +2742,11 @@ hljs.registerLanguage("javascript", function (e) {
       {
         cN: "function",
         bK: "function",
-        e: /\{/,
+        e: /{/,
         eE: !0,
         c: [
           e.inherit(e.TM, { b: r }),
-          { cN: "params", b: /\(/, e: /\)/, eB: !0, eE: !0, c: i },
+          { cN: "params", b: /\(/, e: /\)/, eB: !0, eE: !0, c: index },
         ],
         i: /\[|%/,
       },
@@ -2604,9 +2755,9 @@ hljs.registerLanguage("javascript", function (e) {
       {
         cN: "class",
         bK: "class",
-        e: /[{;=]/,
+        e: /[;={]/,
         eE: !0,
-        i: /[:"\[\]]/,
+        i: /[":[\]]/,
         c: [{ bK: "extends" }, e.UTM],
       },
       { bK: "constructor get set", e: /\{/, eE: !0 },

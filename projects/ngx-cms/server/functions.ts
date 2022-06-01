@@ -4,7 +4,7 @@ import {
 } from '@engineers/nodejs/fs-sync';
 
 import multer from 'multer';
-import { resolve } from 'path';
+import { resolve } from 'node:path';
 
 export let dev = process.env.NODE_ENV === 'development';
 
@@ -16,17 +16,16 @@ export let json = {
     try {
       let path = `${TEMP}/${type}/${id ? id + '/data' : 'index'}.json`;
       return readSync(path);
-    } catch (err) {
-      console.warn(`json.read (${type},${id}) failed`, err);
+    } catch (error) {
+      console.warn(`json.read (${type},${id}) failed`, error);
     }
   },
 
   write(type: string, data: any): void {
     let dir = `${TEMP}/${type}`;
-    let path =
-      data instanceof Array
-        ? `${dir}/index.json`
-        : `${dir}/${data._id}/data.json`;
+    let path = Array.isArray(data)
+      ? `${dir}/index.json`
+      : `${dir}/${data._id}/data.json`;
     writeSync(path, data);
   },
 };
@@ -42,15 +41,20 @@ export let upload = multer({
     fieldSize: 10 * 1024 * 1024,
     files: 20,
   },
-  fileFilter(req: any, file: any, cb: any): void {
+  fileFilter(request: any, file: any, callback: any): void {
     // we only upload 'cover image', so only images are available
     // other files are pasted into quill editor as base64-encoded data.
     let result = file.mimetype.startsWith('image/');
     if (dev) {
-      console.log('multer fileFilter', { result, req, file, cb });
+      console.log('multer fileFilter', {
+        result,
+        req: request,
+        file,
+        cb: callback,
+      });
     }
     // to reject this file cb(null,false) or cb(new error(..))
-    cb(null, result);
+    callback(null, result);
   },
   // multer uses memoryStorage by default
   // diskStorage saves the uploaded file to the default temp dir,

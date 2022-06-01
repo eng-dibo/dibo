@@ -2,14 +2,16 @@ import { Request, Response } from 'express';
 import updater from '@engineers/updater';
 import { resolve } from 'node:path';
 
-export default (req: Request, res: Response): any => {
+export default (request: Request, res: Response): any => {
   let root = resolve(__dirname, '..'),
     localPath = `${root}`,
     remotePath = `${root}/.remote`,
-    repo = (req.query.repo as string) || 'eng-dibo/dibo',
-    branch = (req.query.branch as string) || 'main',
+    repo = (request.query.repo as string) || 'eng-dibo/dibo',
+    branch = (request.query.branch as string) || 'main',
     release =
-      req.query.release === 'false' ? false : (req.query.release as string);
+      request.query.release === 'false'
+        ? false
+        : (request.query.release as string);
 
   updater({
     remote: {

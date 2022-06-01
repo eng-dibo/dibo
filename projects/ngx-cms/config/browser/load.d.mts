@@ -1,5 +1,5 @@
 export default function load(
-  src: any,
+  source: any,
   attributes: {} | undefined,
   type: any,
   parent: any

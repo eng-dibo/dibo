@@ -23,6 +23,8 @@ export interface Config {
 
 /**
  * generate files from templates, using ejs engine.
+ *
+ * @param config
  */
 export default function (config: string | Config = './tmpl.config.js'): void {
   if (typeof config === 'string') {

@@ -1,4 +1,4 @@
-import { test, expect, afterAll } from '@jest/globals';
+import { afterAll, expect, test } from '@jest/globals';
 import { connect, getModel, query } from './database';
 import { model, mongoose } from '../../../packages/mongoose';
 import { uri } from '../../../packages/mongoose/test/config';
