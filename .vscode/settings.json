@@ -1,6 +1,6 @@
 {
   "prettier.arrowParens": "avoid",
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.defaultFormatter": "dbaeumer.vscode-eslint",
   "editor.formatOnSave": true,
   "files.autoSave": "off",
   "editor.fastScrollSensitivity": 3,
@@ -28,12 +28,13 @@
     "hookable",
     "postback",
     "prerender",
-    "renovate"
+    "renovate",
+    "upsert"
   ],
   "eslint.alwaysShowStatus": true,
   "eslint.format.enable": true,
   "eslint.lintTask.enable": true,
-  "eslint.lintTask.options": ". --config=.eslintrc.js  --ignore-path=.gitignore",
+  "eslint.lintTask.options": "** --fix --config=.eslintrc.js --ext=.* --ignore-path=.gitignore",
   "eslint.probe": [
     "javascript",
     "javascriptreact",
