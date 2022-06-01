@@ -4,6 +4,8 @@ on:
     branches:
       - main
       - "renovate/**"
+      - "feat/**"
+      - "fix/**"
 jobs:
   platform-ubuntu:
     runs-on: ubuntu-latest
