@@ -1,3 +1,4 @@
+/* eslint-disable sort-keys */
 // todo: create a task to install missing eslint plugins and parsers (from top scope and overrides), run as postinstall
 // `npm i -D eslint-plugin-$plugin-name
 // plugins.map(el=>!el.startsWith('@')?el.startsWith('eslint-plugin')?el:'eslint-plugin-'+el: ..)
@@ -63,6 +64,7 @@ module.exports = {
     // Detects when a module has been imported and not listed as a dependency in package.json.
     "implicit-dependencies",
     "@html-eslint",
+    "prettier",
   ],
   extends: [
     "eslint:recommended",
@@ -77,17 +79,17 @@ module.exports = {
     "plugin:n/recommended",
     "plugin:@microsoft/sdl/common",
     "plugin:@microsoft/sdl/node",
-
     // disallows angular-bypass-sanitizer
     // "plugin:@microsoft/sdl/angular",
     "plugin:security-node/recommended",
     "plugin:yaml/recommended",
     "plugin:anti-trojan-source/recommended",
     "plugin:sort-export-all/recommended",
-    // Google JavaScript style guide
+    // todo: Google JavaScript style guide
     // https://google.github.io/styleguide/jsguide.html
     // plugin: https://npmjs.com/package/eslint-config-google
     // "google",
+    "plugin:prettier/recommended",
   ],
   parser: "@typescript-eslint/parser",
 
@@ -117,6 +119,10 @@ module.exports = {
           "plugin:@typescript-eslint/recommended-requiring-type-checking",
           "plugin:@microsoft/sdl/typescript",
         ],
+        rules: {
+          // handle promises correctly with `await` or `.then()` and `.catch()`
+          "@typescript-eslint/no-floating-promise": "error",
+        },
       },
     },
     {
@@ -161,18 +167,22 @@ module.exports = {
   rules: {
     // sort object keys alphabetically
     // use eslint-plugin-sort-keys-fix to enable auto fixing
-    "sort-keys": ["warn"],
+    "sort-keys": ["warn", "asc", { minKeys: 5 }],
     "prefer-let/prefer-let": 2,
     "prefer-const": "off",
-    "no-secrets/no-secrets": "error",
+    "no-secrets/no-secrets": [
+      "error",
+      {
+        // ignore links
+        ignoreContent: ["https?://"],
+      },
+    ],
     "sort-imports": "warn",
     "json-files/sort-package-json": "warn",
     "json-files/ensure-repository-directory": "warn",
     "json-files/require-engines": "warn",
     // prevent duplicate packages in dependencies and devDependencies
     "json-files/require-unique-dependency-names": "error",
-    // handle promises correctly with `await` or `.then()` and `.catch()`
-    "@typescript-eslint/no-floating-promise": "error",
     // "tree-shaking/no-side-effects-in-initialization": "error",
     "implicit-dependencies/no-implicit": [
       "error",
@@ -180,5 +190,33 @@ module.exports = {
     ],
     "no-unused-vars": "off",
     "@typescript-eslint/no-unused-vars": "off",
+    // unsupported es features are supported by typescript
+    "n/no-unsupported-features/es-syntax": "off",
+    // todo: enable this rule to search for all `any` to replace it with a more strict type
+    "@typescript-eslint/no-explicit-any": "off",
+    // todo: enable this rule after migrating into esm
+    "unicorn/prefer-module": "off",
+    "jsdoc/require-param-type": "off",
+    // allow @ts-ignore
+    "@typescript-eslint/ban-ts-comment": "off",
+    "@typescript-eslint/no-empty-function": "off",
+    "unicorn/consistent-function-scoping": "warn",
+    "unicorn/prevent-abbreviations": [
+      "warn",
+      {
+        replacements: {
+          pkg: false,
+          opts: false,
+        },
+      },
+    ],
+    "prettier/prettier": [
+      "error",
+      {
+        // todo: move to .prettierrc.js
+        endOfLine: "auto",
+      },
+      { usePrettierrc: true },
+    ],
   },
 };
