@@ -5,12 +5,14 @@ import { execSync } from 'node:child_process';
  */
 export default function maintenance() {
   // link local dependencies
-  execSync('npm run task link && npm i --package-lock-only');
+  execSync('npm run task link && npm i --package-lock-only', {
+    stdio: 'inherit',
+  });
   // generate and fix build files, such as readme.md
-  execSync('npm run generate');
+  execSync('npm run generate', { stdio: 'inherit' });
   // auto fix issues in the code base, such as code style, removing unused imports, checking package.dependencies
   // see .eslintrc.js for all linting tools
-  execSync('npm run lint');
+  execSync('npm run lint', { stdio: 'inherit' });
   // push the changed files into the main repo
   push();
 }
