@@ -8,21 +8,24 @@ import { resolve } from 'node:path';
  */
 export default function linkLocalDependencies(): void {
   let rootPath = resolve(__dirname, '..');
-  let packages = getEntries('packages', 'dirs', 0);
-  for (let packageName of packages) {
+  let directories = [
+    ...getEntries('packages', 'dirs', 0),
+    ...getEntries('projects', 'dirs', 0),
+  ];
+  for (let directory of directories) {
     let files = getEntries(
-      packageName,
+      directory,
       (file) => file.endsWith('.ts') && !file.includes('node_modules')
     );
 
     for (let file of files) {
       let content = read(resolve(rootPath, file));
-      // pattern: @engineers/ followed by anything except "/", "'" or line break
+      // pattern: '@engineers/' followed by anything except "/", "'" or line break
       let matches = (content as string).matchAll(
         / from '@engineers\/([^\n'/]+)/g
       );
 
-      let packagePath = resolve(rootPath, `${packageName}/package.json`);
+      let packagePath = resolve(rootPath, `${directory}/package.json`);
       let pkg: any = read(packagePath);
       pkg.dependencies = pkg.dependencies || {};
 
