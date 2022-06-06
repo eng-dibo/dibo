@@ -65,7 +65,7 @@ export default class Hookable {
       if (Array.isArray(lifecycle)) {
         this.replacePoints(lifecycle);
       } else {
-        this.setLifeCycle(lifecycle as Lifecycle);
+        this.setLifeCycle(lifecycle);
       }
     }
   }
@@ -519,6 +519,7 @@ function checkDuplication<T extends Element>(
  * @returns store
  */
 export function defaultRunner(lifecycle: Lifecycle): Promise<Lifecycle> {
+  // eslint-disable-next-line no-async-promise-executor, @typescript-eslint/no-misused-promises
   return new Promise(async (resolve) => {
     // todo: use point.handler() to run all point hooks and point.before*(), point.after*() functions
     if (lifecycle.beforeAll && typeof lifecycle.beforeAll === 'function') {

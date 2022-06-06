@@ -14,6 +14,7 @@ let fixture: ComponentFixture<AppComponent>,
 
 @Component({
   selector: 'app',
+  // eslint-disable-next-line no-secrets/no-secrets
   template: `
     <div id="length">{{ 'abcdefghijklmnopqrstuvwxyz' | length: 5 }}</div>
     <div id="nl2br" [innerHTML]="nl2brValue | nl2br"></div>
@@ -22,7 +23,7 @@ let fixture: ComponentFixture<AppComponent>,
     <div id="hypernate" [innerHTML]="hypernateValue | hypernate"></div>
   `,
 })
-export class AppComponent {
+class AppComponent {
   constructor() {}
   nl2brValue = 'a<br>b<br />c\nd\re\n\rf';
   html2textValue = `<h2>heading</h2><p>paragraph1</p><p>paragraph2</p><a href='https://google.com'>link text</a><br />text`;

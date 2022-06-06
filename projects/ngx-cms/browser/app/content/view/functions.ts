@@ -137,11 +137,11 @@ export function transformData(
         adjustArticle(item, parameters, categories, 'list')
       )
       // randomize (shuffle) data[]
-      .sort(() => 0.5 - Math.random()) as Article[];
+      .sort(() => 0.5 - Math.random());
   } else if (!data.error && data.content) {
     // data may be doesn't 'content' property
     // for example article_categories
-    data = adjustArticle(data as Article, parameters, categories, 'item');
+    data = adjustArticle(data, parameters, categories, 'item');
   }
 
   return data;
@@ -277,7 +277,7 @@ export function adjustKeywords(
   // If this was intentional, convert the expression to 'unknown' first.
   if (typeof keywords === 'string') {
     // @ts-ignore
-    (keywords as Keywords[]) = (keywords as string)
+    (keywords as Keywords[]) = keywords
       .split(',')
       .map((text: string) => ({ text }));
   }
@@ -303,5 +303,6 @@ export function adjustKeywords(
  */
 export function summary(value: string, options: any = {}): string {
   let text = html2text(value, { lineBreak: options.lineBreak || 'br' });
+  // eslint-disable-next-line unicorn/explicit-length-check
   return length(text, options.length || 500);
 }

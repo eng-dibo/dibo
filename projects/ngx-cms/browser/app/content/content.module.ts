@@ -1,14 +1,15 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule, Routes } from '@angular/router';
-import { NgxLoadService } from '@engineers/ngx-utils/load-scripts.service';
-import { QuillModule } from 'ngx-quill';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { PlatformService } from '@engineers/ngx-utils/platform';
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { ApiInterceptor } from '../http.interceptor';
+import { CommonModule } from '@angular/common';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { NgModule } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { NgxLoadService } from '@engineers/ngx-utils/load-scripts.service';
 import { UniversalInterceptor } from '@engineers/ngx-universal-express/universal-interceptor';
+import { PlatformService } from '@engineers/ngx-utils/platform';
+import { RouterModule, Routes } from '@angular/router';
+
+import { QuillModule } from 'ngx-quill';
 
 const routes: Routes = [
   {

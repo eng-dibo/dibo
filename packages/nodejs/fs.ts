@@ -109,7 +109,7 @@ export function mkdir(
   let options: MakeDirectoryOptions = { mode, recursive: true };
 
   return access(path, constants.R_OK)
-    .catch(() => _mkdir(path as string, options as MakeDirectoryOptions))
+    .catch(() => _mkdir(path, options))
     .then(() => {});
 }
 
@@ -298,7 +298,7 @@ export async function getEntries(
     }
     default:
       if (filter instanceof RegExp) {
-        _filter = (entry: string) => (filter as RegExp).test(entry);
+        _filter = (entry: string) => filter.test(entry);
       } else if (typeof filter === 'function') {
         _filter = filter;
       }

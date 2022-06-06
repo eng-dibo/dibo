@@ -25,14 +25,13 @@ let booksSchema = { name: 'string', serial: 'number' },
   booksModel = model('books', booksSchema, options),
   backupData: BackupData;
 
-export { booksModel };
 /**
  * drop all databases used for testing and close the connection after finishing testing
  * to avoid open handlers
  *
  * @returns
  */
-export function clean(): Promise<any> {
+function clean(): Promise<any> {
   return Promise.all(
     ['spec', 'spec2']
       .map((database) => mongoose.connection.useDb(database))

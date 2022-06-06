@@ -31,6 +31,7 @@ export interface Argv {
  * @param string
  * @param args
  * @param arguments_
+ * @returns
  */
 export function parseArgv(arguments_?: string | Array<string>): Argv {
   if (!arguments_) {
@@ -153,7 +154,7 @@ export function parseArgv(arguments_?: string | Array<string>): Argv {
         // example: 'abc123' -> {a: true, b: true, c: 123}
         else if (
           /[A-Za-z]/.test(letters[index_]) &&
-          /-?\d+(\.\d*)?(e-?\d+)?$/.test(next)
+          /-?\d+(?:\.\d*)?(?:e-?\d+)?$/.test(next)
         ) {
           setOption(letters[index_], next);
           broken = true;
@@ -177,7 +178,7 @@ export function parseArgv(arguments_?: string | Array<string>): Argv {
 
       if (!broken && key !== '-') {
         // if the next element is not an option, consider it as a value of the current key
-        if (next && !/^(-|--)[^-]/.test(next)) {
+        if (next && !/^(?:-|--)[^-]/.test(next)) {
           setOption(key, next);
           index++;
         } else {

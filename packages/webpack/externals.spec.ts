@@ -26,23 +26,23 @@ beforeAll(() => {
   write(`${root}/example-node.js`, `require('path');`);
 
   config = {
-    mode: 'none',
-    target: 'node',
     entry: {
       output: `${root}/example.js`,
       output2: `${root}/example2.js`,
       output3: `${root}/example3.js`,
       output4: [`${root}/example.js`, `${root}/example2.js`],
     },
-    resolve: {
-      extensions: ['.js'],
-    },
+    mode: 'none',
     // use output if you want to test the physical outputted assets
     // otherwise remove `output` and use `stats.compilation.assets` or `stats.toJson().assets`
     // to test the outputted assets without writing them to the fs.
     output: {
       path: root,
     },
+    resolve: {
+      extensions: ['.js'],
+    },
+    target: 'node',
   };
 });
 
@@ -66,12 +66,12 @@ test('no externals', (done) => {
   });
 });
 
-test('exclude example2 from bundling ', (done) => {
+test('exclude example2 from bundling', (done) => {
   let config2 = Object.assign({}, config, {
     externals: [
-      function () {
+      function (...args) {
         // RegExp: pattern is not global: match `request` only
-        externals(arguments, [/example2/]);
+        externals(args, [/example2/]);
       },
     ],
   });
@@ -91,11 +91,11 @@ test('exclude example2 from bundling ', (done) => {
   });
 });
 
-test('transform ', (done) => {
+test('transform', (done) => {
   let config2 = Object.assign({}, config, {
     externals: [
-      function () {
-        externals(arguments, [/example2/], 'commonjs2 ../new/path.js');
+      function (...args) {
+        externals(args, [/example2/], 'commonjs2 ../new/path.js');
       },
     ],
   });
@@ -115,8 +115,8 @@ test('transform ', (done) => {
 test('transform function', (done) => {
   let config2 = Object.assign({}, config, {
     externals: [
-      function () {
-        externals(arguments, [/example2/], () => 'commonjs2 ../new/path.js');
+      function (...args) {
+        externals(args, [/example2/], () => 'commonjs2 ../new/path.js');
       },
     ],
   });
@@ -133,11 +133,11 @@ test('transform function', (done) => {
   });
 });
 
-test('whiteList ', (done) => {
+test('whiteList', (done) => {
   let config2 = Object.assign({}, config, {
     externals: [
-      function () {
-        externals(arguments, [/example2/], undefined, [/ex/]);
+      function (...args) {
+        externals(args, [/example2/], undefined, [/ex/]);
       },
     ],
   });
@@ -157,11 +157,11 @@ test('whiteList ', (done) => {
   });
 });
 
-test('whiteList function returns false ', (done) => {
+test('whiteList function returns false', (done) => {
   let config2 = Object.assign({}, config, {
     externals: [
-      function () {
-        externals(arguments, [/example2/], undefined, [() => false]);
+      function (...args) {
+        externals(args, [/example2/], undefined, [() => false]);
       },
     ],
   });
@@ -184,8 +184,8 @@ test('whiteList function returns false ', (done) => {
 test('template variables', (done) => {
   let config2 = Object.assign({}, config, {
     externals: [
-      function () {
-        externals(arguments, [/example2/], 'commonjs2 {{request}}/file.js');
+      function (...args) {
+        externals(args, [/example2/], 'commonjs2 {{request}}/file.js');
       },
     ],
   });
@@ -208,8 +208,8 @@ test('template variables', (done) => {
 test('template variables with function', (done) => {
   let config2 = Object.assign({}, config, {
     externals: [
-      function () {
-        externals(arguments, [() => true], 'commonjs2 {{request}}/file.js');
+      function (...args) {
+        externals(args, [() => true], 'commonjs2 {{request}}/file.js');
       },
     ],
   });
@@ -232,10 +232,10 @@ test('template variables with function', (done) => {
 test('transform type', (done) => {
   let config2 = Object.assign({}, config, {
     externals: [
-      function () {
+      function (...args) {
         // module type = commonjs
         // providing type only, should transform into `${type} ${path}`
-        externals(arguments, [/example2/], 'commonjs2');
+        externals(args, [/example2/], 'commonjs2');
       },
     ],
   });

@@ -1,6 +1,6 @@
-import { beforeAll, beforeEach, expect, test } from '@jest/globals';
 import { toObservable } from './index';
 import { Observable, of } from 'rxjs';
+import { beforeAll, beforeEach, expect, test } from '@jest/globals';
 
 test('toObservable() converts non-observables to Observable', (done) => {
   expect(toObservable('ok')).toBeInstanceOf(Observable);

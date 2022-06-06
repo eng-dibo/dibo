@@ -41,7 +41,7 @@ export function replaceAll(
   if (typeof replace === 'string') {
     replace = new RegExp(replace, 'g');
   }
-  return element.replace(replace as RegExp, replaceWith.toString());
+  return element.replace(replace, replaceWith.toString());
   // faster than element.split(replace).join(replaceWith)
   // https://jsperf.com/replace-all-vs-split-join
 }

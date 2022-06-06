@@ -226,7 +226,7 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
                   link: `/${this.params.type}/${element.slug}`,
                 }));
             } else if (this.params.category?.slug) {
-              let category = categories!.find(
+              let category = categories.find(
                 (element: Category) =>
                   element.slug === this.params.category!.slug
               );

@@ -25,9 +25,9 @@ export class LazyLoadDirective {
   private element;
 
   constructor(
-    private elementReference: ElementRef,
+    private elementRef: ElementRef,
     private renderer: Renderer2,
-    @Inject(PLATFORM_ID) private platformId: Object
+    @Inject(PLATFORM_ID) private platformId: any
   ) {
     this.element = this.elementRef.nativeElement;
   }

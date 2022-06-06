@@ -20,7 +20,7 @@ let fixture: ComponentFixture<AppComponent>,
   selector: 'app',
   template: `<ngx-content-view [data]="data"></ngx-content-view>`,
 })
-export class AppComponent {
+class AppComponent {
   public data = [
     {
       author: { name: 'angular developer' },

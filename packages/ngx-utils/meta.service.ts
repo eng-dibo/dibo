@@ -117,10 +117,10 @@ export class MetaService {
 
     if (tags.image) {
       if (typeof tags.image === 'string') {
-        tags.image = { src: tags.image as string };
+        tags.image = { src: tags.image };
       }
       if (tags.image.src && tags.image.src.startsWith('/')) {
-        (tags.image as Image).src = tags.baseUrl + tags.image.src.slice(1);
+        tags.image.src = tags.baseUrl + tags.image.src.slice(1);
       }
 
       tags['og:image'] = tags.image.src;
@@ -134,7 +134,7 @@ export class MetaService {
 
       // add <link> tag
       this.loadService.load(
-        (tags.image as Image).src as string,
+        tags.image.src as string,
         {
           rel: 'image_src',
         },
@@ -207,11 +207,11 @@ export class MetaService {
             key = key.slice(8);
           }
           if (key === 'site' || key === 'site:id') {
-            if (!(value as string).startsWith('@')) {
+            if (!value.startsWith('@')) {
               value = '@' + value;
             }
           } else if (key === 'description') {
-            value = (value as string).slice(0, 200);
+            value = value.slice(0, 200);
           }
           tags[`twitter:${key}`] = value;
         }
@@ -246,14 +246,14 @@ export class MetaService {
   // todo: <meta name> VS <meta property>
   addTags(tags: Meta = {}): HTMLMetaElement[] {
     let defaultTags = {
-      viewport: 'width=device-width, initial-scale=1',
-      type: 'website',
-      charset: 'UTF-8',
-      'content-type': 'text/html',
       baseUrl: '/',
-      title: tags.name,
-      'og:type': 'website',
+      charset: 'utf8',
+      'content-type': 'text/html',
       medium: 'website',
+      'og:type': 'website',
+      title: tags.name,
+      type: 'website',
+      viewport: 'width=device-width, initial-scale=1',
     };
 
     let _tags: MetaDefinition[] = this.prepare(

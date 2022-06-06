@@ -53,7 +53,10 @@ test('write in non-existing dir', () => {
 });
 
 test('getSize', () =>
-  write(`${dir}/get-size/file1.txt`, 'ok')
+  Promise.all([
+    write(`${dir}/get-size/file1.txt`, 'ok'),
+    write(`${dir}/get-size/file2.txt`, 'ok'),
+  ])
     .then(() =>
       Promise.all([
         getSize(`${dir}/get-size/file1.txt`),
@@ -62,16 +65,6 @@ test('getSize', () =>
       ])
     )
     .then((value) => expect(value).toEqual([2, 4, 4])));
-
-test('getSize', () => {
-  write(`${dir}/get-size/file1.txt`, 'ok');
-  write(`${dir}/get-size/file2.txt`, 'ok');
-  expect(getSize(`${dir}/get-size/file1.txt`)).toEqual(2);
-  expect(getSize(`${dir}/get-size`)).toEqual(4);
-  expect(
-    getSize([`${dir}/get-size/file1.txt`, `${dir}/get-size/file2.txt`])
-  ).toEqual(4);
-});
 
 test('isDir', () =>
   Promise.all([isDir(file), isDir(dir)]).then((value) =>
@@ -182,7 +175,7 @@ test('remove a non-exists path', () => {
   return remove(file2).then(() => expect(existsSync(file2)).toBeFalsy());
 });
 
-test.only('copy a directory and its sub-directories', () => {
+test('copy a directory and its sub-directories', () => {
   return Promise.all([
     write(`${dir}/copy-dir/file.txt`, ''),
     write(`${dir}/copy-dir/sub-dir/file2.txt`, ''),
@@ -253,11 +246,10 @@ describe('getEntries', () => {
     });
   });
 
-  test('filter by type: dirs', () => {
+  test('filter by type: dirs', () =>
     getEntries(dir, 'dirs').then((result) => {
       expect(result).toEqual([dir + '/subdir']);
-    });
-  });
+    }));
 
   test('depth=0', async () => {
     for (let element of entries) {
@@ -297,7 +289,7 @@ describe('getEntries', () => {
       await write(`${dir}/subdir/extra/${element}`, '');
     }
 
-    getEntries(dir, undefined, 2).then((result) => {
+    return getEntries(dir, undefined, 2).then((result) => {
       expect(result.sort()).toEqual(
         [
           ...entries.map((element) => `${dir}/${element}`),

@@ -77,7 +77,7 @@ export class NgxContentViewComponent implements OnInit {
           }
 
           if (this.meta) {
-            this.metaService.updateTags(this.meta as Meta);
+            this.metaService.updateTags(this.meta);
           }
 
           this.content = content;

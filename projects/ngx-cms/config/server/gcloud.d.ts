@@ -4,15 +4,15 @@ export var storageBucket: string;
 export var storageRoot: string;
 export var databaseURL: string;
 export namespace cloudRun {
-  const name: string;
-  const platform: string;
-  const region: string;
-  const allowUnauthenticated: boolean;
-  const image: string;
+  let name: string;
+  let platform: string;
+  let region: string;
+  let allowUnauthenticated: boolean;
+  let image: string;
 }
 export namespace gcloudMessaging {
-  const id: string;
-  const subject: string;
+  let id: string;
+  let subject: string;
 }
 export let serviceAccount: any;
 export let projectId: string;

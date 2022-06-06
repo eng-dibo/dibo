@@ -1,7 +1,8 @@
-import webpackMerge from 'webpack-merge';
-import { Configuration } from 'webpack';
-import baseConfig from '~~webpack.config';
 import { resolve } from 'node:path';
+import baseConfig from '~~webpack.config';
+import { Configuration } from 'webpack';
+import webpackMerge from 'webpack-merge';
+
 import { getEntries, read } from '@engineers/nodejs/fs-sync';
 
 let tsConfig = read(resolve(__dirname, 'tsconfig.json')) as {

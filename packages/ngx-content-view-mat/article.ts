@@ -1,11 +1,11 @@
 import { Component, ElementRef, Input } from '@angular/core';
 import { replaceAll } from '@engineers/javascript/string';
 
-interface Object_ {
+interface Obj {
   [key: string]: any;
 }
 
-export interface Article extends Object_ {
+export interface Article extends Obj {
   id?: string;
   title?: string;
   subtitle?: string;
@@ -22,7 +22,7 @@ export interface Article extends Object_ {
   copyButton?: boolean;
 }
 
-export interface Keywords extends Object_ {
+export interface Keywords extends Obj {
   text: string;
   count?: number | string;
   link?: string;
@@ -39,7 +39,7 @@ export interface Image {
   height?: number;
 }
 
-export interface ArticleOptions extends Object_ {
+export interface ArticleOptions extends Obj {
   // tag used for title, default: <h1>
   titleTag?: string;
   // todo: move to options.quickActions[icon:content_copy, options:{getData()}]
@@ -71,8 +71,11 @@ export class NgxContentArticleComponent {
     let quickActions: Array<QuickActionsElement> = [
       // todo: issue,  `action: this.copy` makes `this` inside copy() refers to this array element
       // i.e {icon, action} instead of the component
-      { icon: 'content_copy', action: () => this.copy(this.el.nativeElement) },
-      { icon: 'share', action: () => this.share(this.el.nativeElement) },
+      {
+        icon: 'content_copy',
+        action: () => this.copy(this.element.nativeElement),
+      },
+      { icon: 'share', action: () => this.share(this.element.nativeElement) },
     ];
 
     // remove duplicates (action elements from parent component overrides default action elements)
@@ -92,12 +95,12 @@ export class NgxContentArticleComponent {
     // todo: clone the node element, so any modification (such as removing links)
     // doesn't affect the original element
     // this removes line breaks from card.innerText
-    // card = (card || this.el.nativeElement).cloneNode(true) as HTMLElement;
-    card = card || (this.el.nativeElement as HTMLElement);
+    // card = (card || this.element.nativeElement).cloneNode(true) as HTMLElement;
+    card = card || (this.element.nativeElement as HTMLElement);
     let data: string | undefined;
 
-    if (this.options && this.options!.copyAction) {
-      let copyAction = this.options!.copyAction(card);
+    if (this.options && this.options.copyAction) {
+      let copyAction = this.options.copyAction(card);
       if (typeof copyAction === 'string') {
         // todo: enable template variables (ejs)
         // ex: copyAction()=>'{{title}}\n{{link}}'
@@ -139,6 +142,7 @@ export class NgxContentArticleComponent {
             els.unshift(element as HTMLElement);
             element = element.previousElementSibling;
           }
+          // eslint-disable-next-line unicorn/prefer-dom-node-text-content
           intro = els.map((element) => element.innerText.trim()).join('\n');
         } else {
           intro = content?.innerText?.trim();
@@ -193,10 +197,10 @@ export class NgxContentArticleComponent {
 
   share(card?: any) {
     // todo: open a popup with sharebuttons
-    card = card || this.el.nativeElement;
+    card = card || this.element.nativeElement;
 
-    if (this.options && typeof this.options!.shareAction === 'function') {
-      let shareAction = this.options!.shareAction(card);
+    if (this.options && typeof this.options.shareAction === 'function') {
+      let shareAction = this.options.shareAction(card);
     }
 
     let title = card.querySelectorAll('mat-card-title')[0],

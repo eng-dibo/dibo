@@ -201,13 +201,10 @@ export class Categories {
     let output = '';
     if (Array.isArray(ctg)) {
       if (filter) {
-        if (Array.isArray(filter)) {
-          ctg = ctg.filter((element) => filter.includes(element._id));
-        }
         // todo: el.startsWith("!")? !filter.includes(): filter.includes()
-        else {
-          ctg = ctg.filter(filter);
-        }
+        ctg = Array.isArray(filter)
+          ? ctg.filter((element) => filter.includes(element._id))
+          : ctg.filter(filter);
       }
       ctg.forEach((element: any) => {
         output += this.createInputs(element, undefined, tab);

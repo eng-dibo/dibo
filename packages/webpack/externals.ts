@@ -255,7 +255,7 @@ export function node(
     // a path to a `node_modules` dir
     /^.*?\/node_modules\//g,
   ];
-  return function () {
-    return externals(arguments, list, transform, whitelist);
+  return function (...args) {
+    return externals(args, list, transform, whitelist);
   };
 }

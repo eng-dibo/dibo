@@ -66,13 +66,8 @@ export class NgxLoadService {
         attributes.crossorigin = true;
       } else if (type === 'script' || type === 'module') {
         attributes.src = source;
-        if (type === 'module') {
-          attributes.type = type;
-        }
         // `type = 'text/javascript'` is no more required
-        else {
-          attributes.type = 'text/javascript';
-        }
+        attributes.type = type === 'module' ? type : 'text/javascript';
       }
 
       if (!('async' in attributes)) {

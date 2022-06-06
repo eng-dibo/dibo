@@ -20,22 +20,22 @@ import { of } from 'rxjs';
 @Component({
   template: `<router-outlet></router-outlet>`,
 })
-export class AppComponent {}
+class AppComponent {}
 
 @Component({
   template: `Home`,
 })
-export class HomeComponent {}
+class HomeComponent {}
 
 @Component({
   template: `Search`,
 })
-export class SearchComponent {}
+class SearchComponent {}
 
 @Component({
   template: `User`,
 })
-export class UserComponent {
+class UserComponent {
   id: string | null;
   id2: string | null;
   constructor(public _activatedRoute: ActivatedRoute) {}
@@ -49,7 +49,7 @@ export class UserComponent {
   }
 }
 
-export const routes: Routes = [
+const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: 'home', component: HomeComponent },
   { path: 'search', component: SearchComponent },

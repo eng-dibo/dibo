@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved */
 // Initialize the server environment, and add DOM types to the global scope
 import '@angular/platform-server/init';
 import { NgModule, enableProdMode } from '@angular/core';

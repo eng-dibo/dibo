@@ -2,7 +2,7 @@
  * javascript objects
  */
 
-export interface Object_ {
+export interface Obj {
   [key: string]: any;
 }
 
@@ -202,7 +202,7 @@ export function chunk(
  * @param object
  * @returns the clean object after removing the circular references
  */
-export function cleanObject(object: Object_): Object_ {
+export function cleanObject(object: Obj): Obj {
   if (objectType(object) !== 'object') {
     throw new Error('the element is not an object');
   }
@@ -222,10 +222,7 @@ export function cleanObject(object: Object_): Object_ {
  * @param keys
  * @returns
  */
-export function filterObjectByKeys(
-  object: Object_,
-  keys: Array<string>
-): Object_ {
+export function filterObjectByKeys(object: Obj, keys: Array<string>): Obj {
   // https://stackoverflow.com/a/47443227/12577650
   return Object.fromEntries(keys.map((key) => [key, object[key]]));
 
@@ -239,12 +236,10 @@ export function filterObjectByKeys(
  * @param keys
  * @param value
  * @example 'a.b.c' -> {a: {b:{ c: value}}}
+ * @returns
  */
-export function stringToObject(
-  keys: string | Array<string>,
-  value?: any
-): Object_ {
-  let object: Object_ = {};
+export function stringToObject(keys: string | Array<string>, value?: any): Obj {
+  let object: Obj = {};
   if (typeof keys === 'string') {
     keys = keys.split('.');
   }
@@ -278,16 +273,16 @@ export function stringToObject(
  * @example {a:{b:1, {x:{y:2}}}} -> {a.b:1, a.x.y:2 }
  * @returns
  */
-export function flatten(value: Object_, delimiter = '.'): Object_ {
+export function flatten(value: Obj, delimiter = '.'): Obj {
   /**
    *
    * @param object
    * @param parent
    * @returns
    */
-  function walk(object: Object_, parent = ''): Object_ {
+  function walk(object: Obj, parent = ''): Obj {
     parent = parent.trim();
-    let result: Object_ = {};
+    let result: Obj = {};
     for (let [key, value_] of Object.entries(object)) {
       let prefix = parent !== '' ? `${parent}${delimiter}${key}` : key;
 

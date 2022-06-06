@@ -148,7 +148,7 @@ export function edit(img: Img, options: EditOptions = {}): Promise<ImgOutput> {
         options_.output = `${parts.dir}/${parts.file}`;
         if (options_.size[0]) {
           options_.output += `_${options_.size[0]}${
-            options_.size[1] ? 'X' + options_.size[1] : ''
+            options_.size[1] ? `X ${options_.size[1]}` : ''
           }`;
         }
         options_.output += `.${options_.format || parts.extension}`;
@@ -169,12 +169,10 @@ export function edit(img: Img, options: EditOptions = {}): Promise<ImgOutput> {
             };base64,${data.toString('base64')}`
         );
     } else {
-      imgOutput = img
-        .toFile(options_.output as string)
-        .then((info: _OutputInfo) => ({
-          output: options_.output as string,
-          ...info,
-        }));
+      imgOutput = img.toFile(options_.output).then((info: _OutputInfo) => ({
+        output: options_.output as string,
+        ...info,
+      }));
     }
 
     return imgOutput;

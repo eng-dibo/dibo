@@ -27,7 +27,7 @@ export function getPaths(
     return JSON.parse(stripJsonComments(content));
   }
 
-  let tsConfig = readJson(tsConfigPath);
+  let tsConfig = readJson(tsConfigPath) as { [key: string]: any };
   /*
    pathsToModuleNameMapper generates moduleNameMapper from tsconfig.compilerOptions.paths
    https://huafu.github.io/ts-jest/user/config/#paths-mapping

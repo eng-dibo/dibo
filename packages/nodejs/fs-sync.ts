@@ -331,7 +331,7 @@ export function read(
   }
   data = data.toString();
   return path.toString().trim().slice(-5) === '.json'
-    ? JSON.parse(stripJsonComments(data as string))
+    ? JSON.parse(stripJsonComments(data))
     : data;
 }
 
@@ -410,7 +410,7 @@ export function getEntries(
     }
     default:
       if (filter instanceof RegExp) {
-        _filter = (entry: string) => (filter as RegExp).test(entry);
+        _filter = (entry: string) => filter.test(entry);
       } else if (typeof filter === 'function') {
         _filter = filter;
       }

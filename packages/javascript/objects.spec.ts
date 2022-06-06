@@ -12,7 +12,7 @@ import {
   stringToObject,
 } from './objects';
 
-let types = [
+let types: Array<{ type: string; value: any }> = [
   { type: 'string', value: 'hello' },
   { type: 'number', value: 1 },
   { type: 'array', value: ['x', 'y'] },
@@ -36,6 +36,7 @@ let empty = [
 
 describe('objectType', () => {
   for (let element of types) {
+    // eslint-disable-next-line jest/valid-title
     test(element.type, () => {
       expect(objectType(element.value)).toEqual(element.type);
     });

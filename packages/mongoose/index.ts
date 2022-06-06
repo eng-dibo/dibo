@@ -184,10 +184,7 @@ export function model(
     schema.add({ _id: { type: String, default: shortId.generate } });
   }
 
-  return (connection as mongoose.Connection).model(
-    collection,
-    schema as mongoose.Schema
-  );
+  return connection.model(collection, schema as mongoose.Schema);
 }
 
 /**

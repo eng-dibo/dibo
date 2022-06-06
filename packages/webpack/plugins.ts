@@ -64,7 +64,7 @@ export default class BasePlugin implements BasePluginInterface {
         }
 
         hookObject.lifecycle = hookObject.lifecycle || 'afterCompile';
-        hookObject.name = hookObject.name || 'plugin-' + Date.now();
+        hookObject.name = hookObject.name || `plugin-${Date.now()}`;
 
         if (compiler.hooks) {
           let tap = hookObject.hook instanceof Promise ? 'tapPromise' : 'tap';

@@ -117,7 +117,7 @@
             "main": "browser/test.ts",
             "polyfills": "browser/polyfills.ts",
             "tsConfig": "tsconfig.spec.json",
-            "karmaConfig": "karma.conf.js",
+            "karmaConfig": "karma.config.js",
             "assets": ["browser/favicon.ico", "browser/assets"],
             "styles": [
               "../../node_modules/@angular/material/prebuilt-themes/deeppurple-amber.css",

@@ -23,7 +23,7 @@ window.addEventListener("load", () => {
            *
            */
           function gtag() {
-            dataLayer.push(arguments);
+            window.dataLayer.push(arguments);
           }
           gtag("js", new Date());
           gtag("config", values.googleAnalytics);
