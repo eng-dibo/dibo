@@ -1,7 +1,7 @@
 import gcloudConfig, { GCloudConfig } from '~config/server/gcloud';
 import cloudFlareConfig from '~config/server/cloudflare';
 import { execSync } from '@engineers/nodejs/process';
-import { execSync as _execSync } from 'child_process';
+import { execSync as _execSync } from 'node:child_process';
 import setup from './setup';
 import https from 'node:https';
 
@@ -13,9 +13,9 @@ import https from 'node:https';
  */
 // todo: detect if gcloud not installed, run task: setup
 export default function (options: GCloudConfig = {}): void {
-  let opts: GCloudConfig = Object.assign({}, gcloudConfig || {}, options);
+  let options_: GCloudConfig = Object.assign({}, gcloudConfig || {}, options);
 
-  opts.cloudRun = Object.assign(
+  options_.cloudRun = Object.assign(
     {},
     {
       name: 'social-control',
@@ -27,8 +27,8 @@ export default function (options: GCloudConfig = {}): void {
     options.cloudRun || {}
   );
 
-  let image = `gcr.io/${opts.projectId}/${
-    opts.cloudRun.image || opts.cloudRun.name
+  let image = `gcr.io/${options_.projectId}/${
+    options_.cloudRun.image || options_.cloudRun.name
   }`;
 
   console.log(`> building the image ${image} ...`);
@@ -36,7 +36,7 @@ export default function (options: GCloudConfig = {}): void {
 
   try {
     _execSync('gcloud version');
-  } catch (err) {
+  } catch {
     console.log('installing gcloud tools...');
     setup({ init: false });
   }
@@ -50,7 +50,7 @@ export default function (options: GCloudConfig = {}): void {
       // todo: if !permissions throw error
       // check permissions for container registry
       // https://cloud.google.com/container-registry/docs/access-control#grant
-    } catch (err) {
+    } catch {
       console.log('login to gcloud');
       execSync('gcloud auth login --no-launch-browser');
     }
@@ -64,11 +64,11 @@ export default function (options: GCloudConfig = {}): void {
   console.log('> deploying ...');
   execSync(
     `gcloud run deploy ${
-      opts.cloudRun.name
-    } --image=${image} --port=4200 --project=${opts.projectId} --platform=${
-      opts.cloudRun.platform
-    } --region=${opts.cloudRun.region} ${
-      opts.cloudRun.allowUnauthenticated ? '--allow-unauthenticated' : ''
+      options_.cloudRun.name
+    } --image=${image} --port=4200 --project=${options_.projectId} --platform=${
+      options_.cloudRun.platform
+    } --region=${options_.cloudRun.region} ${
+      options_.cloudRun.allowUnauthenticated ? '--allow-unauthenticated' : ''
     }`
   );
 
@@ -92,19 +92,19 @@ export default function (options: GCloudConfig = {}): void {
       },
     };
 
-    var req = https.request(options, function (res) {
+    let request = https.request(options, function (res) {
       res.setEncoding('utf8');
       res.on('data', function (chunk) {
         console.log(chunk);
       });
     });
 
-    req.on('error', function (error) {
+    request.on('error', function (error) {
       console.error(`> [cloudflare] error:`, error);
     });
 
-    req.write(JSON.stringify(cloudFlareConfig.purge));
-    req.end();
+    request.write(JSON.stringify(cloudFlareConfig.purge));
+    request.end();
   }
 
   console.log('Done');

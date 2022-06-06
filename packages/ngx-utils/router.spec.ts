@@ -2,14 +2,14 @@
  * @jest-environment jsdom
  */
 
-import { test, expect, beforeAll, beforeEach, describe } from '@jest/globals';
+import { beforeAll, beforeEach, describe, expect, test } from '@jest/globals';
 import { Component } from '@angular/core';
-import { ParamMap, Router, Routes } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router, Routes } from '@angular/router';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Location } from '@angular/common';
 import { RouterTestingModule } from '@angular/router/testing';
-import { ActivatedRoute } from '@angular/router';
-import { urlParams } from './router';
+
+import { urlParams as urlParameters } from './router';
 import { take } from 'rxjs/operators';
 import { of } from 'rxjs';
 
@@ -20,22 +20,22 @@ import { of } from 'rxjs';
 @Component({
   template: `<router-outlet></router-outlet>`,
 })
-export class AppComponent {}
+class AppComponent {}
 
 @Component({
   template: `Home`,
 })
-export class HomeComponent {}
+class HomeComponent {}
 
 @Component({
   template: `Search`,
 })
-export class SearchComponent {}
+class SearchComponent {}
 
 @Component({
   template: `User`,
 })
-export class UserComponent {
+class UserComponent {
   id: string | null;
   id2: string | null;
   constructor(public _activatedRoute: ActivatedRoute) {}
@@ -43,13 +43,13 @@ export class UserComponent {
   ngOnInit(): void {
     this.id = this._activatedRoute.snapshot.params.id;
 
-    this._activatedRoute.paramMap.subscribe((params) => {
-      this.id2 = params.get('id');
+    this._activatedRoute.paramMap.subscribe((parameters) => {
+      this.id2 = parameters.get('id');
     });
   }
 }
 
-export const routes: Routes = [
+const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: 'home', component: HomeComponent },
   { path: 'search', component: SearchComponent },
@@ -108,13 +108,13 @@ describe.skip('temporary skip all tests', () => {
       .navigate(['/user/123'], { queryParams: { username: 'test' } })
       .then((result: any) => {
         return (
-          urlParams(activatedRoute)
+          urlParameters(activatedRoute)
             // combineLatest may emit continuously and never complete,
             // we just need the fist emitted value
             // but we take(>1) to guarantee that bot paramMap and queryParamMap emitted values
             .pipe(take(1))
-            .subscribe((params: any) => {
-              expect(params).toEqual([{ id: '456' }, { username: 'test' }]);
+            .subscribe((parameters: any) => {
+              expect(parameters).toEqual([{ id: '456' }, { username: 'test' }]);
               done();
             })
         );

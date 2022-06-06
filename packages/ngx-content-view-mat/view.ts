@@ -66,9 +66,9 @@ export class NgxContentViewComponent implements OnInit {
     if (this.data) {
       toObservable(this.data).subscribe(
         (data: Payload) => {
-          this.type = data instanceof Array ? 'list' : 'item';
+          this.type = Array.isArray(data) ? 'list' : 'item';
           let content =
-            !(data instanceof Array) && data.error
+            !Array.isArray(data) && data.error
               ? this.createError(data.error)
               : data;
 
@@ -77,7 +77,7 @@ export class NgxContentViewComponent implements OnInit {
           }
 
           if (this.meta) {
-            this.metaService.updateTags(this.meta as Meta);
+            this.metaService.updateTags(this.meta);
           }
 
           this.content = content;

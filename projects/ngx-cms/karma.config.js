@@ -1,5 +1,9 @@
 // https://karma-runner.github.io/1.0/config/configuration-file.html
 
+/**
+ *
+ * @param config
+ */
 export default function (config) {
   config.set({
     basePath: "",

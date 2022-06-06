@@ -1,0 +1,6 @@
+// include all files for eslint
+{
+  "extends": "./tsconfig.json",
+  "include": ["**/*.*"],
+  "exclude": [""]
+}

@@ -1,10 +1,10 @@
 import {
   Directive,
-  Input,
   ElementRef,
-  Renderer2,
-  PLATFORM_ID,
   Inject,
+  Input,
+  PLATFORM_ID,
+  Renderer2,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 
@@ -27,7 +27,7 @@ export class LazyLoadDirective {
   constructor(
     private elementRef: ElementRef,
     private renderer: Renderer2,
-    @Inject(PLATFORM_ID) private platformId: Object
+    @Inject(PLATFORM_ID) private platformId: any
   ) {
     this.element = this.elementRef.nativeElement;
   }
@@ -35,7 +35,7 @@ export class LazyLoadDirective {
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
       if (window && 'IntersectionObserver' in window) {
-        let opts = Object.assign({}, this.options || {});
+        let options = Object.assign({}, this.options || {});
         this.observer = new IntersectionObserver(
           (entries) =>
             entries.forEach((entry) => {
@@ -60,7 +60,7 @@ export class LazyLoadDirective {
                 this.observer.unobserve(this.element);
               }
             }),
-          opts
+          options
         );
 
         this.observer.observe(this.element);

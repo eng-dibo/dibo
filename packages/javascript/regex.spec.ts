@@ -1,5 +1,5 @@
-import { test, expect, describe, jest } from '@jest/globals';
-import { escape, toRegExp, toFilter } from './regex';
+import { describe, expect, jest, test } from '@jest/globals';
+import { escape, toFilter, toRegExp } from './regex';
 
 test('escape', () => {
   expect(escape('a[bc{d}[e]f')).toEqual('a\\[bc\\{d\\}\\[e\\]f');

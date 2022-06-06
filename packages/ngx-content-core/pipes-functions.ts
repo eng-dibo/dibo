@@ -9,13 +9,14 @@
 
 import {
   DomSanitizer,
-  ɵDomSanitizerImpl,
   SafeHtml,
+  ɵDomSanitizerImpl,
 } from '@angular/platform-browser';
 import { replaceRec } from '@engineers/javascript/string';
 
 /**
  * cuts a part of a string into the specified length, starting from `start` value
+ *
  * @param value
  * @param _length
  * @param start
@@ -27,6 +28,7 @@ export function length(value: string, _length?: number, start = 0): string {
 
 /**
  * converts line breaks `\n\r` into `<br />`
+ *
  * @param value
  * @returns
  */
@@ -45,17 +47,18 @@ export interface SlugOptions {
  * creates a url-friendly slug from a text (a content title)
  * i.e: replaces the white spaces, removes the unwanted characters
  * and limits the slug to the specified length
- * @method slug
+ *
+ * @function slug
  * @param  value the text to be converted into slug.
  * @param options
- * @return
+ * @returns
  */
 export function slug(value: string, options: SlugOptions = {}): string {
   let langs = {
     ar: 'أابتثجحخدذرزسشصضطظعغفقكلمنهويىآئءلألإإآة',
   };
 
-  let opts = Object.assign(
+  let options_ = Object.assign(
     {
       length: 200,
       allowedChars: '',
@@ -64,10 +67,12 @@ export function slug(value: string, options: SlugOptions = {}): string {
     options || {}
   );
 
-  opts.allowedChars = opts.allowedChars
+  options_.allowedChars = options_.allowedChars
     .split('|')
-    .map((el) =>
-      el.startsWith(':') ? langs[el.substr(1) as keyof typeof langs] : el
+    .map((element) =>
+      element.startsWith(':')
+        ? langs[element.slice(1) as keyof typeof langs]
+        : element
     )
     .join('');
 
@@ -75,7 +80,7 @@ export function slug(value: string, options: SlugOptions = {}): string {
     // remove the trailing spaces
     .trim()
     // remove any unallowed characters
-    .replace(new RegExp(`[^a-z0-9-._~${opts.allowedChars}]`, 'gi'), '-')
+    .replace(new RegExp(`[^a-z0-9-._~${options_.allowedChars}]`, 'gi'), '-')
     // replace the inner spaces with '-'
     .replace(/\s+/g, '-')
     // remove sequential slashes
@@ -83,7 +88,10 @@ export function slug(value: string, options: SlugOptions = {}): string {
     // remove the trailing slashes at the beginning or the end.
     .replace(/^-+|-+$/g, '');
 
-  return length(opts.encode ? encodeURIComponent(_slug) : _slug, opts.length);
+  return length(
+    options_.encode ? encodeURIComponent(_slug) : _slug,
+    options_.length
+  );
 }
 
 export interface Html2textOptions {
@@ -101,6 +109,7 @@ export interface Html2textOptions {
 /**
  * converts an html code into a plain text, keeping some allowed tags, or converts it into another format
  * for example: you can keep links <a> or convert it into `md` format (i.e: [text](link))
+ *
  * @param value
  * @param options
  * @returns
@@ -113,46 +122,53 @@ export function html2text(
   value: string,
   options: Html2textOptions = {}
 ): string {
-  let opts = Object.assign({ lineBreak: 'n', links: '$2 $1' }, options || {});
+  let options_ = Object.assign(
+    { lineBreak: 'n', links: '$2 $1' },
+    options || {}
+  );
 
-  if (typeof opts.links === 'string') {
-    opts.links = opts.links.replace('[text]', '$2').replace('[href]', '$1');
+  if (typeof options_.links === 'string') {
+    options_.links = options_.links
+      .replace('[text]', '$2')
+      .replace('[href]', '$1');
   }
 
   // convert line breaks and block tags like <p> and <h1> into the specified format
   // todo: get all html block tags
   // pattern: /<p .*>(content)</.+>/
-  let blockTags = /(?:<(?:p|h[1-6])+?>(.*?)<\/.+?>)+?/gi;
+  let blockTags = /(?:<(?:p|h[1-6])+>(.*?)<\/.+?>)+?/gi;
 
   value =
-    opts.lineBreak === 'br'
+    options_.lineBreak === 'br'
       ? // we need only <p> or <p .*>, but not <pxxx>
         nl2br(value).replace(blockTags, '<br />$1<br />')
       : value.replace(/<br.*>/gi, '\n').replace(blockTags, '\n$1\n');
 
   // convert links into the specified format
   value = value.replace(
-    /<a.*? href=(?:"|')(.*?)(?:"|').*>(.*?)<\/a>/gi,
-    opts.links
+    /<a.*? href=["'](.*?)["'].*>(.*?)<\/a>/gi,
+    options_.links
   );
 
   value = value
     // remove inline <style>, <script>, <meta> blocks
-    .replace(/<(style|script|meta)[^>]*>.*<\/\1>/gm, '')
+    .replace(/<(style|script|meta)[^>]*>.*<\/\1>/g, '')
     // strip html(except <br> if lineBreak=br)
     // or: /<(?:.|\s)*?>/
-    .replace(opts.lineBreak === 'br' ? /<(?!br)[^>]+>/g : /<[^>]+>/g, '')
+    .replace(options_.lineBreak === 'br' ? /<(?!br)[^>]+>/g : /<[^>]+>/g, '')
     // remove leading spaces and repeating CR/LF
-    .replace(/([\r\n]+ +)+/gm, '');
+    .replace(/([\n\r]+ +)+/g, '');
 
   // remove repeating line breaks
   // matches `<br>  <br>` and `<br>\n</br>
-  value = replaceRec(value, /(<br[^>]*?>[ \n]?)+/gm, '<br />');
+  value = replaceRec(value, /(<br[^>]*>[\n ]?)+/g, '<br />');
   return value;
 }
 
 /**
  * hypernate links
+ *
+ * @param value
  */
 // todo: implement this function
 export function hypernate(value: string): string {
@@ -198,10 +214,10 @@ export function hypernate(value: string): string {
  * https://stackoverflow.com/a/58618481
  * https://medium.com/@AAlakkad/angular-2-display-html-without-sanitizing-filtering-17499024b079
  *
- * @method keepHtml
+ * @function keepHtml
  * @param  value  the trusted value to be bypassed
  * @param  sanitizer the injected DomSanitizer
- * @return SafeHTML, the bypassed html value.
+ * @returns SafeHTML, the bypassed html value.
  * @example <div [innerHTML]="htmlContent | keepContent"></div>
  */
 export function keepHtml(value: string, sanitizer?: any): SafeHtml {

@@ -1,8 +1,8 @@
 /**
  * @jest-environment jsdom
  */
-import { test, expect, beforeAll, beforeEach, describe } from '@jest/globals';
-import { TestBed, ComponentFixture } from '@angular/core/testing';
+import { beforeAll, beforeEach, describe, expect, test } from '@jest/globals';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgxContentCoreModule } from './module';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Component } from '@angular/core';
@@ -14,6 +14,7 @@ let fixture: ComponentFixture<AppComponent>,
 
 @Component({
   selector: 'app',
+  // eslint-disable-next-line no-secrets/no-secrets
   template: `
     <div id="length">{{ 'abcdefghijklmnopqrstuvwxyz' | length: 5 }}</div>
     <div id="nl2br" [innerHTML]="nl2brValue | nl2br"></div>
@@ -22,7 +23,7 @@ let fixture: ComponentFixture<AppComponent>,
     <div id="hypernate" [innerHTML]="hypernateValue | hypernate"></div>
   `,
 })
-export class AppComponent {
+class AppComponent {
   constructor() {}
   nl2brValue = 'a<br>b<br />c\nd\re\n\rf';
   html2textValue = `<h2>heading</h2><p>paragraph1</p><p>paragraph2</p><a href='https://google.com'>link text</a><br />text`;

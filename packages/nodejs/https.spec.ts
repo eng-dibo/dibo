@@ -1,4 +1,4 @@
-import { test, expect, beforeEach, afterAll } from '@jest/globals';
+import { afterAll, beforeEach, expect, test } from '@jest/globals';
 import request from './https';
 
 test('request', (done) => {

@@ -2,18 +2,18 @@
 
 import { Injectable } from '@angular/core';
 import {
-  HttpInterceptor,
-  HttpHandler,
-  HttpRequest,
-  HttpEvent,
   HttpErrorResponse,
+  HttpEvent,
+  HttpHandler,
+  HttpInterceptor,
   HttpParams,
+  HttpRequest,
 } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import env from '../env';
+import environment from '../env';
 
-interface Obj {
+interface Object_ {
   [key: string]: any;
 }
 
@@ -25,26 +25,26 @@ interface Obj {
  */
 export class ApiInterceptor implements HttpInterceptor {
   intercept(
-    req: HttpRequest<any>,
+    request: HttpRequest<any>,
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
     // todo: only in outgoing requests
     // todo: only API requests (not routerLink)
     let changes = {
       // if it doesn't start with /api/v1/ or https:
-      url: /^(?:https?:|\/?api\/v1\/)/.test(req.url)
-        ? req.url
-        : `/api/v1${req.url.startsWith('/') ? '' : '/'}${req.url}`,
+      url: /^(?:https?:|\/?api\/v1\/)/.test(request.url)
+        ? request.url
+        : `/api/v1${request.url.startsWith('/') ? '' : '/'}${request.url}`,
       // use toFormData in POST requests
       // todo: if(req.context.toFormData)
       // sending data as FormData instead of Object may cause that req.body=undefined
 
       body:
-        req.method.toLowerCase() === 'post' &&
-        req.headers.get('toFormData') === 'true'
-          ? toFormData(req.body)
-          : req.body,
-      params: queryParams(req.params),
+        request.method.toLowerCase() === 'post' &&
+        request.headers.get('toFormData') === 'true'
+          ? toFormData(request.body)
+          : request.body,
+      params: queryParams(request.params),
     };
 
     // todo: if(context.progress) req:{ reportProgress: true, observe: 'events' },
@@ -58,21 +58,25 @@ export class ApiInterceptor implements HttpInterceptor {
       }
         */
 
-    let newReq = req.clone(changes);
-    if (env.mode === 'development') {
+    let newRequest = request.clone(changes);
+    if (environment.mode === 'development') {
       console.log(
-        `[http interceptor] ${newReq.method} ${req.url} -> ${newReq.url}`
+        `[http interceptor] ${newRequest.method} ${request.url} -> ${newRequest.url}`
       );
     }
     return (
       next
-        .handle(newReq)
+        .handle(newRequest)
         // catch errors
         .pipe(catchError(errorHandler))
     );
   }
 }
 
+/**
+ *
+ * @param error
+ */
 export function errorHandler(error: HttpErrorResponse): Observable<never> {
   // if(error.status===0) -> client-side or network error
   // else -> server error
@@ -88,12 +92,13 @@ export function errorHandler(error: HttpErrorResponse): Observable<never> {
  * note that body-parser doesn't handle multipart data which is what FormData is submitted as.
  * instead use: busboy, formidable, multer, ..
  * https://stackoverflow.com/questions/37630419/how-to-handle-formdata-from-express-4/37631882#37631882
- * @method toFormData
+ *
+ * @function toFormData
  * @param  data
  * @param  singleElements append the element as a single entry i.e: JSON.stringify(el)
- * @return FormData
+ * @returns FormData
  */
-export function toFormData(data: Obj, singleElements?: string[]): FormData {
+export function toFormData(data: Object_, singleElements?: string[]): FormData {
   if (data instanceof FormData) {
     return data;
   }
@@ -101,30 +106,30 @@ export function toFormData(data: Obj, singleElements?: string[]): FormData {
   let formData = new FormData();
   for (let key in data) {
     if (data.hasOwnProperty(key)) {
-      let el = data[key];
+      let element = data[key];
       if (
         // causes error with `multer uploader`
         // todo: test with multiple fileList
-        (el instanceof Array || el instanceof FileList) &&
+        (Array.isArray(element) || element instanceof FileList) &&
         (!singleElements || !singleElements.includes(key))
       ) {
         // or !/\[.*\]/.test(key)
         if (!key.endsWith('[]')) key += '[]';
         // FileList.forEach() is not a function
-        for (let i = 0; i < el.length; i++) {
-          if (el.hasOwnProperty(i)) {
-            formData.append(key, el[i]);
+        for (let index = 0; index < element.length; index++) {
+          if (element.hasOwnProperty(index)) {
+            formData.append(key, element[index]);
           }
         }
       } else {
-        if (el === null) {
+        if (element === null) {
           // stringify the value to be sent via API
           // formData converts null to "null" , FormData can contain only strings or blobs
-          el = '';
-        } else if (el instanceof Array) {
-          el = JSON.stringify(el);
+          element = '';
+        } else if (Array.isArray(element)) {
+          element = JSON.stringify(element);
         }
-        formData.append(key, el);
+        formData.append(key, element);
       }
     }
   }
@@ -132,16 +137,20 @@ export function toFormData(data: Obj, singleElements?: string[]): FormData {
   return formData;
 }
 
-export function queryParams(query: Obj = {}): HttpParams {
-  let params = new HttpParams();
+/**
+ *
+ * @param query
+ */
+export function queryParams(query: Object_ = {}): HttpParams {
+  let parameters = new HttpParams();
 
   for (let key in query) {
     if (query.hasOwnProperty(key)) {
       // HTTPParams is immutable, so queryParams.set() will return a new value
       // and will not update queryParams
       // https://www.tektutorialshub.com/angular/angular-pass-url-parameters-query-strings/
-      params = params.set(key, query[key]);
+      parameters = parameters.set(key, query[key]);
     }
   }
-  return params;
+  return parameters;
 }

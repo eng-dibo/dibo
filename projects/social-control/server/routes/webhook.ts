@@ -44,8 +44,13 @@ incoming request example:
 }
 ```
  */
-export default function webhook(req: Request, res: Response): void {
-  let body = req.body;
+/**
+ *
+ * @param request
+ * @param res
+ */
+export default function webhook(request: Request, res: Response): void {
+  let body = request.body;
 
   if (body.object === 'page') {
     // body.entry is an Array
@@ -75,11 +80,15 @@ export default function webhook(req: Request, res: Response): void {
  * you need to use the route `/setup/$pageId` first to register the app page
  * https://developers.facebook.com/docs/messenger-platform/getting-started/quick-start
  * which is the page created just for the app
+ *
+ * @param req
+ * @param request
+ * @param res
  */
-export function verify(req: Request, res: Response): void {
-  let mode = req.query['hub.mode'],
-    token = req.query['hub.verify_token'],
-    challenge = req.query['hub.challenge'];
+export function verify(request: Request, res: Response): void {
+  let mode = request.query['hub.mode'],
+    token = request.query['hub.verify_token'],
+    challenge = request.query['hub.challenge'];
 
   // Checks the mode and token sent is correct
   if (mode === 'subscribe' && token === messengerConfig.verify_token) {

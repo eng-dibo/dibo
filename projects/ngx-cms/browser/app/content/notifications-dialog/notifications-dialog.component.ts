@@ -26,11 +26,11 @@ export class NotificationsDialogComponent {
               })
               .subscribe(
                 (push: any) => console.log({ push }),
-                (err: any) => console.error({ err })
+                (error: any) => console.error({ err: error })
               )
           )
-          .catch((err) =>
-            console.error('Could not subscribe to notifications', err)
+          .catch((error) =>
+            console.error('Could not subscribe to notifications', error)
           )
       );
   }

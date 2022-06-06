@@ -2,9 +2,9 @@ import { connect, getModel } from '~server/database';
 import { Request, Response } from 'express';
 
 // Google cloud messaging (push notifications)
-export default (req: Request, res: Response): any => {
-  let action = req.params.action,
-    data = req.body;
+export default (request: Request, res: Response): any => {
+  let action = request.params.action,
+    data = request.body;
 
   if (action === 'save') {
     // save the subscription object

@@ -33,8 +33,8 @@ app.get('/restore/:hosts?', restoreRoute);
 app.post('/push_notifications/:action', pushNotificationsRoute);
 app.get(/^\/rss(\/.+)?/, rssRoute);
 app.get(/^\/sitemap(\/.+)?/, sitemapRoute);
-app.get(/^\/sequence\/([^\/]+)\/(.+)/, sequenceRegisterRoute);
-app.get(/^\/sequence\/([^\/]+)/, sequenceRoute);
+app.get(/^\/sequence\/([^/]+)\/(.+)/, sequenceRegisterRoute);
+app.get(/^\/sequence\/([^/]+)/, sequenceRoute);
 app.get(/update/, updateRoute);
 
 // keep this after all routes

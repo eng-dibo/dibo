@@ -1,5 +1,5 @@
 import Hookable from '@engineers/hookable';
-import { read, copy, remove, Filter } from '@engineers/nodejs/fs';
+import { Filter, copy, read, remove } from '@engineers/nodejs/fs';
 
 import { dirname, resolve } from 'node:path';
 import { existsSync, lstatSync } from 'node:fs';
@@ -99,14 +99,20 @@ export default (options: UpdaterOptions): Hookable => {
   ]);
 };
 
-export interface Obj {
+export interface Object_ {
   [key: string]: any;
 }
 
+/**
+ *
+ * @param localPath
+ * @param pointName
+ * @param store
+ */
 export function getLocalVersionHook(
   localPath: string | undefined,
   pointName: string,
-  store: Obj
+  store: Object_
 ): Promise<string> {
   // todo: locate the nearest up-level package.json
   localPath = localPath || store['localPath'] || root.toString();
@@ -126,13 +132,16 @@ export function getLocalVersionHook(
 /**
  * get the remote package version from a github repo
  * it parses package.json in the code base, but may download the remote package from a release
+ *
  * @param remote
+ * @param pointName
+ * @param store
  * @returns
  */
 export function getRemoteVersionHook(
   remote: Remote,
   pointName: string,
-  store: Obj
+  store: Object_
 ): Promise<string> {
   let url = `https://raw.githubusercontent.com/${remote.repo}/${
     remote.branch || 'master'
@@ -152,10 +161,16 @@ export interface CompareVersionsOptions {
   localVersion: string;
   remoteVersion: string;
 }
+/**
+ *
+ * @param options
+ * @param pointName
+ * @param store
+ */
 export function compareVersionsHook(
   options: CompareVersionsOptions,
   pointName: string,
-  store: Obj
+  store: Object_
 ): UpdateType {
   let opts: CompareVersionsOptions = Object.assign(
     {
@@ -197,10 +212,16 @@ export interface DownloadOptions {
 // and notify the admin about the new version and whether it could be auto updated
 // or need admin attention and a migration guide
 // use pre.download to decide if the update should be downloaded based on updateType level
+/**
+ *
+ * @param options
+ * @param pointName
+ * @param store
+ */
 export function downloadHook(
   options: DownloadOptions,
   pointName: string,
-  store: Obj
+  store: Object_
 ): Promise<string> {
   let remoteVersion = store['checkUpdates']?.['getRemoteVersion'] || '0.0.0';
   let opts: DownloadOptions = Object.assign(
@@ -214,10 +235,10 @@ export function downloadHook(
     options || {}
   );
 
-  let { remote } = opts;
+  let { remote, filter } = opts;
 
   // todo: convert to function
-  if (opts.filter instanceof Array) {
+  if (Array.isArray(filter)) {
   }
 
   if (remote.token) {
@@ -285,6 +306,7 @@ export interface BackupLocalPackageHookOptions {
 
 /**
  * backup the local package before performing the update
+ *
  * @param options
  * @param pointName
  * @param store
@@ -294,7 +316,7 @@ export interface BackupLocalPackageHookOptions {
 export function backupLocalPackageHook(
   options: BackupLocalPackageHookOptions,
   pointName: string,
-  store: Obj
+  store: Object_
 ): Promise<string> {
   let localVersion =
     store['checkUpdates']?.['getLocalVersionVersion'] || '0.0.0';
@@ -317,17 +339,21 @@ export function backupLocalPackageHook(
 
   return remove(backupPath)
     .then(() =>
-      copy(localPath!, backupPath!, (path) => !path.includes('node_module'))
+      copy(localPath!, backupPath, (path) => !path.includes('node_module'))
     )
-    .then(() => backupPath!);
+    .then(() => backupPath);
 }
 /**
  * transform and filter the downloaded package and run actions like notify the admin
+ *
+ * @param options
+ * @param pointName
+ * @param store
  */
 export function beforeUpdateHook(
   options: any,
   pointName: string,
-  store: Obj
+  store: Object_
 ): Promise<void> {
   return Promise.resolve();
 }
@@ -340,13 +366,17 @@ export interface UpdateHookOptions {
 }
 /**
  * the actual update process, copies files from remotePath to localPath
+ *
  * @param localPath
  * @param remotePath
+ * @param options
+ * @param pointName
+ * @param store
  */
 export function updateHook(
   options: UpdateHookOptions,
   pointName: string,
-  store: Obj
+  store: Object_
 ): Promise<void> {
   let opts = Object.assign({ cleanFilter: () => true }, options);
   opts.localPath = opts.localPath || store['localPath'] || root.toString();
@@ -384,7 +414,7 @@ export function parseGithubUrlHook(url: string) {
     - and may be followed by a $path (for monorepos) then a filename (for file paths)
   */
   let match = url.match(
-    /(?:(?:https?:\/\/)?github.com\/)?([^\/]+)\/([^\/]+)(.+)/
+    /(?:(?:https?:\/\/)?github.com\/)?([^/]+)\/([^/]+)(.+)/
   );
   if (match) {
     return {

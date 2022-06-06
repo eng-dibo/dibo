@@ -5,14 +5,16 @@ export interface SetupOptions {
 }
 /**
  * install the required SDKs
+ *
+ * @param options
  */
 // this setup is for Debian and Ubuntu systems
 // todo: auto detect system
 export default function (options?: SetupOptions): void {
-  let opts = Object.assign({}, options || {});
+  let options_ = Object.assign({}, options || {});
   gcloudSetup();
   containerRegistryAuth();
-  if (opts.init !== false) {
+  if (options_.init !== false) {
     gcloudInit();
   }
 }
@@ -22,6 +24,9 @@ export default function (options?: SetupOptions): void {
  * https://cloud.google.com/sdk/docs/install
  */
 
+/**
+ *
+ */
 export function gcloudSetup(): void {
   // Add the Cloud SDK distribution URI as a package source
   execSync(
@@ -54,6 +59,9 @@ export function containerRegistryAuth(): void {
   execSync('gcloud auth configure-docker --quiet');
 }
 
+/**
+ *
+ */
 export function gcloudInit(): void {
   execSync('gcloud auth login');
   // must login first

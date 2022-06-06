@@ -5,9 +5,30 @@
   "files": [
     "dist"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eng-dibo/dibo.git"
+  },
+  "homepage": "https://github.com/eng-dibo/dibo#readme",
+  "bugs": {
+    "url": "https://github.com/eng-dibo/dibo/issues",
+    "email": "sh.eldeeb.2010+github@gmail.com"
+  },
+  "license": "MIT",
+  "author": "Sherif Eldeeb <sh.eldeeb.2010+github@gmail.com> (https://github.com/eng-dibo)",
+  "funding": [
+    {
+      "type": "paypal",
+      "url": "https://paypal.me/group99001"
+    },
+    {
+      "type": "patreon",
+      "url": "https://www.patreon.com/GoogleDev"
+    }
+  ],
   "scripts": {
     "build": "npm run task -- build",
-    "postbuild": "exit 0",
+    "postbuild": "shx cp package.json dist",
     "_publish": "exit 0",
     "prepublishOnly": "exit 0",
     "prerelease": "shx mkdir -p dist && shx cp package.json dist",
@@ -38,27 +59,6 @@
     "declarations": "npx -p typescript tsc config/**/*.js --declaration --allowJs --emitDeclarationOnly --esModuleInterop"
   },
   "main": "./dist/server/express.js",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/eng-dibo/dibo.git"
-  },
-  "homepage": "https://github.com/eng-dibo/dibo#readme",
-  "bugs": {
-    "url": "https://github.com/eng-dibo/dibo/issues",
-    "email": "sh.eldeeb.2010+github@gmail.com"
-  },
-  "license": "MIT",
-  "author": "Sherif Eldeeb <sh.eldeeb.2010+github@gmail.com> (https://github.com/eng-dibo)",
-  "funding": [
-    {
-      "type": "paypal",
-      "url": "https://paypal.me/group99001"
-    },
-    {
-      "type": "patreon",
-      "url": "https://www.patreon.com/GoogleDev"
-    }
-  ],
   "dependencies": {
     "@angular/animations": "^13.1.2",
     "@angular/cdk": "^13.1.2",
@@ -92,7 +92,20 @@
     "rxjs": "^7.4.0",
     "shortid": "^2.2.8",
     "tslib": "^2.3.1",
-    "zone.js": "^0.11.4"
+    "zone.js": "^0.11.4",
+    "@engineers/ngx-utils": "1.0.0",
+    "@engineers/ngx-universal-express": "1.0.0",
+    "@engineers/ngx-content-view-mat": "1.0.0",
+    "@engineers/ngx-content-core": "1.0.0",
+    "@engineers/javascript": "1.0.0",
+    "@engineers/nodejs": "1.0.0",
+    "@engineers/mongoose": "1.0.0",
+    "@engineers/databases": "1.0.1",
+    "@engineers/express-redirect-middleware": "1.0.0",
+    "@engineers/graphics": "1.0.0",
+    "@engineers/updater": "1.0.0",
+    "@engineers/gcloud-storage": "1.0.0",
+    "@engineers/webpack": "1.0.0"
   },
   "devDependencies": {
     "@angular-builders/custom-webpack": "^13.0.0",

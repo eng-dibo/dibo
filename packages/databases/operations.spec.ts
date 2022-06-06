@@ -1,4 +1,5 @@
-import { test, expect } from '@jest/globals';
+/* eslint-disable sort-keys */
+import { expect, test } from '@jest/globals';
 import { parse } from './operations';
 
 let operations = {

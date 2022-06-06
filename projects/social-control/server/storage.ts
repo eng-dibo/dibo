@@ -3,7 +3,7 @@ import init from '@engineers/firebase-admin/init';
 import firebaseConfig from '~config/server/firebase';
 import deasync from 'deasync';
 import { ReadOptions } from '@engineers/nodejs/fs-sync';
-import { PathLike, WriteFileOptions } from 'fs';
+import { PathLike, WriteFileOptions } from 'node:fs';
 import { objectType } from '@engineers/javascript/objects';
 
 // all functions must have the same signature as @engineers/nodejs/fs.read(), write()
@@ -18,6 +18,11 @@ let app = init({
 let bucket = firebaseConfig.storageBucket || app.options.storageBucket;
 let storage = new Storage({ app, bucket });
 
+/**
+ *
+ * @param path
+ * @param options
+ */
 export function read(
   path: PathLike,
   options?: ReadOptions | BufferEncoding
@@ -29,6 +34,12 @@ export function read(
 }
 
 // export function writeFileSync(path: PathLike | number, data: string | NodeJS.ArrayBufferView, options?: WriteFileOptions): void;
+/**
+ *
+ * @param path
+ * @param data
+ * @param options
+ */
 export function write(
   path: PathLike,
   data: any,
@@ -44,6 +55,10 @@ export function write(
   );
 }
 
+/**
+ *
+ * @param path
+ */
 export function remove(path: PathLike): Promise<any> {
   if (firebaseConfig.storageRoot) {
     path = `${firebaseConfig.storageRoot}/${path}`;

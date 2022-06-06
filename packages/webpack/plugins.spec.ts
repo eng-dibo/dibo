@@ -1,14 +1,14 @@
 import {
-  test,
-  expect,
+  afterAll,
   beforeAll,
   beforeEach,
-  afterAll,
+  expect,
   jest,
+  test,
 } from '@jest/globals';
 import BasePlugin from './plugins';
 import webpack, { Configuration } from 'webpack';
-import { write, remove } from '@engineers/nodejs/fs-sync';
+import { remove, write } from '@engineers/nodejs/fs-sync';
 import { resolve } from 'node:path';
 
 let config: any;
@@ -52,9 +52,9 @@ test('the plugin should be created and attached to webpack', (done) => {
     plugins: [new ExamplePlugin('ok')],
   });
 
-  webpack(config2).run((err: any, stats: any) => {
-    if (err) {
-      done(err);
+  webpack(config2).run((error: any, stats: any) => {
+    if (error) {
+      done(error);
     } else if (stats.hasErrors()) {
       done(stats.toString());
     } else {
@@ -80,9 +80,9 @@ test('multiple hooks', (done) => {
     plugins: [new ExamplePlugin('ok')],
   });
 
-  webpack(config2).run((err: any, stats: any) => {
-    if (err) {
-      done(err);
+  webpack(config2).run((error: any, stats: any) => {
+    if (error) {
+      done(error);
     } else if (stats.hasErrors()) {
       done(stats.toString());
     } else {
@@ -117,9 +117,9 @@ test('the plugin can access and modify stats', (done) => {
     plugins: [new ExamplePlugin()],
   });
 
-  webpack(config2).run((err: any, stats: any) => {
-    if (err) {
-      done(err);
+  webpack(config2).run((error: any, stats: any) => {
+    if (error) {
+      done(error);
     } else if (stats.hasErrors()) {
       done(stats.toString());
     } else {

@@ -2,7 +2,7 @@ import { Configuration } from 'webpack';
 // todo: use aliases (i.e: ./packages/* -> @engineers/*)
 // webpack uses `ts-node` to compile webpack.config.ts
 // add `tsconfig-paths` to `tsconfig['ts-node']` to add tsConfig's paths to webpack's aliases
-import { resolve } from 'path';
+import { resolve } from 'node:path';
 import BasePlugin from './packages/webpack/plugins';
 import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
 
@@ -15,7 +15,7 @@ class FilterErrors extends BasePlugin {
         let pattern =
           /export '.+?'( \(reexported as '.+?'\))?? was not found in/i;
         compilation.errors = compilation.errors.filter(
-          (el: any) => !pattern.test(el.message)
+          (element: any) => !pattern.test(element.message)
         );
       },
     },

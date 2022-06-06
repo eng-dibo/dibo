@@ -1,18 +1,18 @@
-import { test, expect, beforeEach, afterEach, describe } from '@jest/globals';
+import { afterEach, beforeEach, describe, expect, test } from '@jest/globals';
 import {
-  resolve,
-  parsePath,
+  copy,
+  getEntries,
   getExtension,
+  getModifiedTime,
   getSize,
   isDir,
-  getModifiedTime,
   mkdir,
   move,
-  remove,
+  parsePath,
   read,
+  remove,
+  resolve,
   write,
-  getEntries,
-  copy,
 } from './fs-sync';
 import { objectType } from '@engineers/javascript/objects';
 
@@ -71,7 +71,7 @@ test('getExtension', () => {
 });
 
 test('size units', () => {
-  let size = 1234567890,
+  let size = 1_234_567_890,
     units = { b: 0, kb: 1, mb: 2, gb: 3 };
   expect(size / 1024 ** units.mb).toBeCloseTo(1177.3, 0);
 });
@@ -93,10 +93,10 @@ test('isDir', () => {
 
 test('getModifiedTime', () => {
   expect(Math.floor(getModifiedTime(file))).toBeGreaterThanOrEqual(
-    1624906832178
+    1_624_906_832_178
   );
   expect(Math.floor(getModifiedTime(dir))).toBeGreaterThanOrEqual(
-    1624906832178
+    1_624_906_832_178
   );
 });
 
@@ -137,17 +137,17 @@ test('read', () => {
   let txt = read(file),
     json = read(fileJson),
     jsonWithComments = read(fileJsonComments),
-    arr = read(fileArray);
+    array = read(fileArray);
 
   expect(txt.length).toEqual(2);
   expect(txt).toContain('ok');
   expect(objectType(txt)).toEqual('string');
   expect(objectType(json)).toEqual('object');
   expect(objectType(jsonWithComments)).toEqual('object');
-  expect(objectType(arr)).toEqual('array');
+  expect(objectType(array)).toEqual('array');
   expect(json).toEqual({ x: 1, y: 2 });
   expect(jsonWithComments).toEqual({ x: 1, hello: 'ok' });
-  expect(arr).toEqual([1, 2, 3]);
+  expect(array).toEqual([1, 2, 3]);
 });
 
 test('read from a non-existing file', () => {
@@ -201,28 +201,28 @@ test('copy a directory and its sub-directories', () => {
 describe('getEntries', () => {
   let entries = ['file.txt', 'file.js'];
   beforeEach(() => {
-    entries.forEach((el) => {
-      write(`${dir}/${el}`, '');
-      write(`${dir}/subdir/${el}`, '');
-    });
+    for (let element of entries) {
+      write(`${dir}/${element}`, '');
+      write(`${dir}/subdir/${element}`, '');
+    }
   });
 
   test('list all entries recursively', () => {
     expect(getEntries(dir).sort()).toEqual(
       // all files in dir with full path
-      entries
-        .map((el) => `${dir}/${el}`)
-        // all files in subdir
-        .concat(entries.map((el) => `${dir}/subdir/${el}`))
-        // also include subdir itself
-        .concat([dir + '/subdir'])
-        .sort()
+      [
+        ...entries
+          .map((element) => `${dir}/${element}`)
+          // all files in subdir
+          .concat(entries.map((element) => `${dir}/subdir/${element}`)),
+        dir + '/subdir',
+      ].sort()
     );
   });
 
   test('filter by function', () => {
     // list all js files only
-    expect(getEntries(dir, (el) => el.indexOf('.js') > -1)).toEqual([
+    expect(getEntries(dir, (element) => element.includes('.js'))).toEqual([
       dir + '/file.js',
       dir + '/subdir/file.js',
     ]);
@@ -230,18 +230,18 @@ describe('getEntries', () => {
 
   test('filter by regex', () => {
     expect(getEntries(dir, /subdir/).sort()).toEqual(
-      entries
-        .map((el) => `${dir}/subdir/${el}`)
-        .concat([`${dir}/subdir`])
-        .sort()
+      [
+        ...entries.map((element) => `${dir}/subdir/${element}`),
+        `${dir}/subdir`,
+      ].sort()
     );
   });
 
   test('filter by type: files', () => {
     expect(getEntries(dir, 'files').sort()).toEqual(
       entries
-        .map((el) => `${dir}/${el}`)
-        .concat(entries.map((el) => `${dir}/subdir/${el}`))
+        .map((element) => `${dir}/${element}`)
+        .concat(entries.map((element) => `${dir}/subdir/${element}`))
         .sort()
     );
   });
@@ -250,43 +250,44 @@ describe('getEntries', () => {
   });
 
   test('depth=0', () => {
-    entries.forEach((el) => {
-      write(`${dir}/subdir/extra/${el}`, '');
-    });
+    for (let element of entries) {
+      write(`${dir}/subdir/extra/${element}`, '');
+    }
 
     expect(getEntries(dir, undefined, 0).sort()).toEqual(
-      entries
-        .map((el) => `${dir}/${el}`)
-        .concat([dir + '/subdir'])
-        .sort()
+      [...entries.map((element) => `${dir}/${element}`), dir + '/subdir'].sort()
     );
   });
 
   test('depth=1', () => {
-    entries.forEach((el) => {
-      write(`${dir}/subdir/extra/${el}`, '');
-    });
+    for (let element of entries) {
+      write(`${dir}/subdir/extra/${element}`, '');
+    }
 
     expect(getEntries(dir, undefined, 1).sort()).toEqual(
-      entries
-        .map((el) => `${dir}/${el}`)
-        .concat([dir + '/subdir', dir + '/subdir/extra'])
-        .concat(entries.map((el) => `${dir}/subdir/${el}`))
+      [
+        ...entries.map((element) => `${dir}/${element}`),
+        dir + '/subdir',
+        dir + '/subdir/extra',
+      ]
+        .concat(entries.map((element) => `${dir}/subdir/${element}`))
         .sort()
     );
   });
 
   test('depth=2', () => {
-    entries.forEach((el) => {
-      write(`${dir}/subdir/extra/${el}`, '');
-    });
+    for (let element of entries) {
+      write(`${dir}/subdir/extra/${element}`, '');
+    }
 
     expect(getEntries(dir, undefined, 2).sort()).toEqual(
-      entries
-        .map((el) => `${dir}/${el}`)
-        .concat([dir + '/subdir', dir + '/subdir/extra'])
-        .concat(entries.map((el) => `${dir}/subdir/${el}`))
-        .concat(entries.map((el) => `${dir}/subdir/extra/${el}`))
+      [
+        ...entries.map((element) => `${dir}/${element}`),
+        dir + '/subdir',
+        dir + '/subdir/extra',
+      ]
+        .concat(entries.map((element) => `${dir}/subdir/${element}`))
+        .concat(entries.map((element) => `${dir}/subdir/extra/${element}`))
         .sort()
     );
   });

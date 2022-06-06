@@ -1,7 +1,9 @@
 {
-  "prettier.arrowParens": "avoid",
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  // format the code with prettier then fix with eslint
+  // todo: get full list of available actions from all plugins and vscode
+  "editor.codeActionsOnSave": ["source.formatDocument", "source.fixAll.eslint"],
   "files.autoSave": "off",
   "editor.fastScrollSensitivity": 3,
   "editor.mouseWheelZoom": true,
@@ -14,11 +16,31 @@
   "explorer.confirmDelete": false,
   "explorer.decorations.badges": false,
   "git.allowForcePush": true,
-  "editor.codeActionsOnSave": ["source.formatDocument", "source.fixAll.eslint"],
   "angular.enable-strict-mode-prompt": false,
   "js/ts.implicitProjectConfig.experimentalDecorators": true,
   "editor.minimap.enabled": false,
   "editor.dragAndDrop": true,
+  "eslint.alwaysShowStatus": true,
+  "eslint.format.enable": true,
+  "eslint.lintTask.enable": true,
+  // cli options for eslint. see package.scripts.lint:eslint
+  "eslint.lintTask.options": "** --fix --config=.eslintrc.js --ext=.* --ignore-path=.gitignore",
+  // languages that eslint will be activated for
+  // todo: enable for all languages,
+  // ignorePatterns option ignores files that eslint shouldn't be activated for
+  "eslint.probe": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact",
+    "html",
+    "vue",
+    "markdown",
+    "json",
+    "css",
+    "scss"
+  ],
+  "eslint.useESLintClass": true,
   "cSpell.words": [
     "adsense",
     "appspot",
@@ -28,6 +50,7 @@
     "hookable",
     "postback",
     "prerender",
-    "reovate"
+    "renovate",
+    "upsert"
   ]
 }

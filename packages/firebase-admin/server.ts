@@ -1,10 +1,11 @@
-import { https, HttpsFunction } from 'firebase-functions';
+import { HttpsFunction, https } from 'firebase-functions';
 
 /**
  * convert nodejs http server (or express.js app) into firebase cloud function
- * @method
+ *
+ * @function
  * @param  app  nodejs http server or express server app
- * @return [description]
+ * @returns
  *
  * notes:
  *  - this function can be invoked by web url:

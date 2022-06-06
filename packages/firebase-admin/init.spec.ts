@@ -1,11 +1,11 @@
 // https://firebase.google.com/docs/functions/unit-testing#testing_background_non-http_functions
-import { test, expect, describe, jest } from '@jest/globals';
+import { describe, expect, jest, test } from '@jest/globals';
 import init, { InitOptions } from './init';
 import { apps } from 'firebase-admin';
 
 const config: InitOptions = {
-  serviceAccount: __dirname + '/test/firebase.json',
   name: 'testApp',
+  serviceAccount: __dirname + '/test/firebase.json',
 };
 
 test('init', () => {

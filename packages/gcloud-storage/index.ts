@@ -1,10 +1,10 @@
 import {
-  Storage,
-  File,
   Bucket,
-  UploadResponse,
   DownloadResponse,
+  File,
   SaveOptions,
+  Storage,
+  UploadResponse,
   StorageOptions as _StorageOptions,
 } from '@google-cloud/storage';
 import { mkdirSync } from 'node:fs';
@@ -43,7 +43,9 @@ export default class {
 
   /**
    * creates a new bucket
-   * @method constructor
+   *
+   * @function constructor
+   * @param options
    * @param  bucket
    */
   // todo: if(bucket instanceof admin.Bucket)this.bucket=bucket
@@ -64,10 +66,11 @@ export default class {
 
   /**
    * uploads a file to the current bucket
-   * @method upload
+   *
+   * @function upload
    * @param  file file path
    * @param  options UploadOptions object or destination path as string
-   * @return Promise<UploadResponse>;  //UploadResponse=[File, API request]
+   * @returns Promise<UploadResponse>;  //UploadResponse=[File, API request]
    */
   // todo: upload / download a folder
   upload(
@@ -90,15 +93,15 @@ export default class {
 
   /**
    * downloads a file
-   * @method download
+   *
+   * @function download
    * @param  file        file path
    * @param  options DownloadOptions object or destination as string
-   * @return Promise that resolves to:
+   * @returns Promise that resolves to:
    *           - boolean: if options.destination used
    *           - Buffer: if options.encoding is undefined
    *           - Array or plain object: if the file is json
    *           - string: otherwise
-   *
    */
 
   // todo: if(!options.destination)return th content as Promise<Buffer | ...>
@@ -147,18 +150,24 @@ export default class {
 
   /**
    * download all files from a directory that match the provided filter
+   *
    * @param destination the local path to download the files to
-   * @param dir the directory to be downloaded
-   * @param filter
+   * @param directory the directory to be downloaded
+   * @param filter a pattern or function to filter the files to be downloaded
    * @param options limit the downloaded files (paginating behavior)
-   * @returns
+   * @param options.start download all files starting from the specified one (default is the first file)
+   * @param options.end download all files until the specified file (default is the last file)
+   * @returns a map of {file: result}
    */
   downloadAll(
     destination: string,
-    dir?: string,
+    directory?: string,
     filter?: RegExp | ((file: string) => boolean),
-    options = { start: 0, end: undefined }
+    // eslint-disable-next-line sort-keys
+    options: { start?: number; end?: number } = {}
   ) {
+    // eslint-disable-next-line sort-keys
+    options = Object.assign({ start: 0, end: undefined }, options || {});
     let results: { [key: string]: boolean } = {};
     if (!filter) {
       filter = (file) => true;
@@ -166,7 +175,7 @@ export default class {
       filter = (file) => (filter as RegExp).test(file);
     }
     return this.bucket
-      .getFiles({ prefix: dir })
+      .getFiles({ prefix: directory })
       .then((files) => files[0].filter((file) => (filter as any)(file.name)))
       .then((files) =>
         Promise.all(
@@ -183,6 +192,11 @@ export default class {
 
   /**
    * writes a content to a file in the bucket
+   *
+   * @param path bucket path
+   * @param content the content to be written
+   * @param options
+   * @returns {Bucket.file}
    */
   write(
     path: string,
@@ -195,6 +209,7 @@ export default class {
     return this.bucket.file(path).save(content, options);
   }
 
+  // eslint-disable-next-line no-secrets/no-secrets
   // https://stackoverflow.com/a/64539948/12577650
   delete(path: string, options?: DeleteOptions): Promise<any> {
     if (this.rootPath) {

@@ -2,6 +2,7 @@
 // await import() expects a js module, not json
 // https://sebhastian.com/javascript-require-is-not-defined/
 // paths are relative to the site root (i.e /browser)
+// eslint-disable-next-line import/no-unresolved
 import info from "./info.json" assert { type: "json" };
 export let googleAnalytics = "";
 

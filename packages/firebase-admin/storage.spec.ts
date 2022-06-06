@@ -1,4 +1,4 @@
-import { test, expect, afterAll } from '@jest/globals';
+import { afterAll, expect, test } from '@jest/globals';
 import Storage from './storage';
 import init from './init';
 import { remove } from '@engineers/nodejs/fs';
@@ -12,8 +12,8 @@ import { write } from '@engineers/nodejs/fs-sync';
 //   init({serviceAccount, name});
 //   new Storage({ app: apps[0] })
 let app = init({
-  serviceAccount: __dirname + '/test/firebase.json',
   name: 'testApp',
+  serviceAccount: __dirname + '/test/firebase.json',
 });
 
 let bucket = 'test/package-firebase-admin';

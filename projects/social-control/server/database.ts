@@ -1,4 +1,10 @@
-import { connect as _connect, model, mongoose, Uri } from '@engineers/mongoose';
+import {
+  Uri,
+  connect as _connect,
+  query as _query,
+  model,
+  mongoose,
+} from '@engineers/mongoose';
 import { Obj } from '@engineers/javascript/objects';
 import { db } from '~config/server';
 import * as models from '~server/models';
@@ -6,16 +12,17 @@ import cache from '@engineers/nodejs/cache-fs';
 import { Categories } from '~browser/formly-categories-material/functions';
 import { timer } from '@engineers/javascript/time';
 import { TEMP } from './routes';
-import { query as _query } from '@engineers/mongoose';
+
 import { Operation } from '@engineers/databases/operations';
 
-let dev = process.env.NODE_ENV === 'development';
+let development = process.env.NODE_ENV === 'development';
 
 /**
  * connect to the database using 'config'
- * @method connect
+ *
+ * @function connect
  * @param  uri
- * @return
+ * @returns
  */
 export function connect(uri?: Uri): ReturnType<typeof _connect> {
   return _connect(uri || db.config, { multiple: false });
@@ -23,14 +30,20 @@ export function connect(uri?: Uri): ReturnType<typeof _connect> {
 
 /**
  * close all connections;
- * @method disconnect
- * @return [description]
+ *
+ * @function disconnect
+ * @returns [description]
  */
 export function disconnect(): Promise<void> {
   // or mongoose.connection.close()
   return mongoose.disconnect();
 }
 
+/**
+ *
+ * @param url
+ * @param uri
+ */
 export function query(
   url: string | Operation,
   uri?: Uri
@@ -40,37 +53,52 @@ export function query(
   );
 }
 
+/**
+ *
+ */
 export function insert() {}
+/**
+ *
+ */
 export function update() {}
+/**
+ *
+ */
 export function get() {}
+/**
+ *
+ */
 export function _delete() {}
 
 /**
  * convert a plain object to a mongoose model
- * @method getModel
+ *
+ * @function getModel
  * @param  collection
+ * @param schemaObject
  * @param  schemaObj
- * @return
+ * @returns
  */
 export function getModel(
   collection: string,
-  schemaObj?: Obj
+  schemaObject?: Obj
 ): ReturnType<typeof model> {
   // console.log("model: " +{ type, models: mongoose.models, modelNames: mongoose.modelNames() });
 
-  if (!schemaObj) {
+  if (!schemaObject) {
     // schemaName is the same as collection name (except for [collection]_categories)
     // ex: articles_categories, jobs_categories
-    let schemaName =
-      collection.indexOf('_categories') > -1 ? 'categories' : collection;
+    let schemaName = collection.includes('_categories')
+      ? 'categories'
+      : collection;
 
     if (schemaName in models) {
-      schemaObj = models[schemaName as keyof typeof models];
+      schemaObject = models[schemaName as keyof typeof models];
     }
   }
 
-  return schemaObj
-    ? model(collection, schemaObj)
+  return schemaObject
+    ? model(collection, schemaObject)
     : // disable validation for non existing schemas
       model(collection, {}, { strict: false, validateBeforeSave: false });
 }
@@ -83,8 +111,12 @@ export function getModel(
  * @method categories
  * @return {categories, main, article_categories, category_articles, inputs}
  */
+/**
+ *
+ * @param collection
+ */
 export function getCategories(
-  collection: string = 'articles'
+  collection = 'articles'
 ): ReturnType<typeof cache> {
   return cache(`${TEMP}/${collection}/categories.json`, () =>
     connect().then(() => {
@@ -95,7 +127,7 @@ export function getCategories(
         getModel(collection).find({}, 'categories').lean(),
       ])
         .then(([categories, items]) => {
-          if (dev) {
+          if (development) {
             console.log(
               `[server] getCategories: fetched from server +${timer(
                 'getCategories'
@@ -110,16 +142,16 @@ export function getCategories(
 
           let ctg = new Categories(categories);
           ctg.adjust();
-          if (dev) {
+          if (development) {
             console.log(
               `[server] getCategories: adjusted ${timer('getCategories', true)}`
             );
           }
           return ctg.itemCategories(items);
         })
-        .catch((err) => {
-          console.error('[server] getCategories', err);
-          throw new Error(`[server] getCategories, ${err.message}`);
+        .catch((error) => {
+          console.error('[server] getCategories', error);
+          throw new Error(`[server] getCategories, ${error.message}`);
         });
     })
   );

@@ -1,6 +1,6 @@
-import { test, expect } from '@jest/globals';
+import { expect, test } from '@jest/globals';
 import server from './server';
-import http from 'http';
+import http from 'node:http';
 
 test('server', () => {
   // todo: clean the used port before running this test
@@ -10,9 +10,9 @@ test('server', () => {
   // todo: remove warn: `FIREBASE_CONFIG and GCLOUD_PROJECT environment variables are missing`
   //        init({...}) didn't help
 
-  const httpServer = http.createServer((req, res) => {
-    res.writeHead(200);
-    res.end('Hello, World!');
+  let httpServer = http.createServer((request, response) => {
+    response.writeHead(200);
+    response.end('Hello, World!');
   });
   expect(httpServer.listening).toBeFalsy();
   httpServer.listen(9500);

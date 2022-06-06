@@ -9,9 +9,13 @@ import { connect, query } from '~server/database';
  * (may contain '/'), this query returns the registered data includes '_id'
  * use this _id to get items
  * to get items run `sequence/sequence._id`
+ *
+ * @param req
+ * @param request
+ * @param res
  */
-export default (req: Request, res: Response): void => {
-  let sequenceId = req.params[0];
+export default (request: Request, res: Response): void => {
+  let sequenceId = request.params[0];
 
   if (!sequenceId) {
     throw new Error(`invalid sequence ${sequenceId}`);
@@ -35,6 +39,7 @@ export interface Sequence {
 
 /**
  * get the current item in the sequence
+ *
  * @param id the sequence id
  */
 export function getPayload(id: string) {
@@ -47,12 +52,12 @@ export function getPayload(id: string) {
       let defaultValues = { skip: 0, limit: 1 };
       let skip = result.skip ? +result.skip + defaultValues.limit : 0;
 
-      let queryObj = parse(result.query);
-      queryObj.params = queryObj.params || {};
-      queryObj.params.limit = queryObj.params.limit || 1;
-      queryObj.params.skip = skip;
+      let queryObject = parse(result.query);
+      queryObject.params = queryObject.params || {};
+      queryObject.params.limit = queryObject.params.limit || 1;
+      queryObject.params.skip = skip;
 
-      return query(queryObj).then((payload) => {
+      return query(queryObject).then((payload) => {
         query(`updateOne:sequences/_id=${id}/skip=${skip}/upsert=true`);
         return payload;
       });
@@ -61,13 +66,17 @@ export function getPayload(id: string) {
 
 /**
  * register a new sequence subscription
+ *
+ * @param req
+ * @param request
+ * @param res
  * @example sequence/(psid)/(articles/@categories=1)
  */
-export function register(req: Request, res: Response) {
+export function register(request: Request, res: Response) {
   // the subscription id (i.e user id)
-  let id = req.params[0],
+  let id = request.params[0],
     // the query for the sequence
-    queryUrl = req.params[1];
+    queryUrl = request.params[1];
 
   return connect()
     .then(() =>

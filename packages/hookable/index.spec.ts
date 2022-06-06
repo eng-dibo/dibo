@@ -1,6 +1,7 @@
-import { test, expect, jest, beforeEach } from '@jest/globals';
-import { readFile } from 'fs/promises';
-import { resolve } from 'path';
+/* eslint-disable sort-keys */
+import { beforeEach, expect, jest, test } from '@jest/globals';
+import { readFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
 import Hookable, { LifecyclePoint } from '.';
 
 let hookable: Hookable;

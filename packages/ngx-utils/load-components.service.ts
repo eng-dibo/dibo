@@ -1,10 +1,10 @@
 import {
-  ComponentRef,
-  ViewContainerRef,
-  Injectable,
   ComponentFactoryResolver,
+  ComponentRef,
+  Injectable,
   Renderer2,
   RendererFactory2,
+  ViewContainerRef,
 } from '@angular/core';
 
 @Injectable({ providedIn: 'any' })
@@ -23,14 +23,13 @@ export class LoadComponentsService {
   /**
    * dynamically load Angular components  into the template
    * https://angular.io/guide/dynamic-component-loader
-   * @method load
+   *
+   * @function load
    * @param  component the component to be dynamically loaded
    * @param  placeholder reference to the container where the dynamically loaded component will be injected
    * @param  inputs  inputs to be passed to the loaded component.
-   * @return the loaded component, so you can access it in the host component
-   *
+   * @returns the loaded component, so you can access it in the host component
    * @example https://stackblitz.com/edit/angular-ivy-kformh
-   *
    */
 
   /*
@@ -55,14 +54,14 @@ export class LoadComponentsService {
     // create the component and append to the placeholder in the template
     placeholder.clear();
     // todo: .createComponent<component type>()
-    let componentRef = placeholder.createComponent<any>(factory);
+    let componentReference = placeholder.createComponent<any>(factory);
 
     // todo: componentRef.instance = inputs; not working
     if (inputs) {
       for (let k in inputs) {
         if (inputs.hasOwnProperty(k)) {
           // todo: <ComponentType>componentRef.instance
-          componentRef.instance[k] = inputs[k];
+          componentReference.instance[k] = inputs[k];
         }
       }
     }
@@ -73,6 +72,6 @@ export class LoadComponentsService {
     el.appendChild(...);
     */
 
-    return componentRef;
+    return componentReference;
   }
 }

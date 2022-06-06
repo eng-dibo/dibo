@@ -1,6 +1,6 @@
 export default function load(
-  src: any,
-  attributes: {} | undefined,
+  source: any,
+  attributes: { [key: string]: any } | undefined,
   type: any,
   parent: any
 ): Promise<any>;

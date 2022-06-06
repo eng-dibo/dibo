@@ -3,12 +3,12 @@
  */
 
 import {
-  test,
-  expect,
-  beforeAll,
   afterAll,
+  beforeAll,
   beforeEach,
+  expect,
   jest,
+  test,
 } from '@jest/globals';
 import { MetaService } from './meta.service';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -19,7 +19,7 @@ import { Component } from '@angular/core';
 let tags = { title: 'app title test', name: 'test app' };
 let adjustedTags = [
   { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-  { charset: 'UTF-8' },
+  { charset: 'utf8' },
   { httpEquiv: 'content-type', content: 'text/html' },
   { name: 'title', content: 'app title test | test app' },
   { property: 'og:site_name', content: 'test app' },

@@ -1,8 +1,8 @@
 import {
   Component,
-  ViewChild,
   Input,
   OnInit,
+  ViewChild,
   ViewContainerRef,
 } from '@angular/core';
 import { FieldType } from '@ngx-formly/material';
@@ -76,7 +76,10 @@ export class FormlyFieldCategoriesHelper implements OnInit {
 
     let ctg = new Categories(this.data);
     let inputs =
-      ctg.createInputs(null, (el) => el._id !== '5ac348980d63be4aa0e967cb') +
+      ctg.createInputs(
+        null,
+        (element) => element._id !== '5ac348980d63be4aa0e967cb'
+      ) +
       `<mat-checkbox [formControl]="formControl" [formlyAttributes]="field">test</mat-checkbox>` +
       `<input type="checkbox" name="categories" value="5ac348980d63be4aa0e96846" [formcontrol]="formControl" [formlyattributes]="field"> test2`;
     this.categories = this.sanitizer.bypassSecurityTrustHtml(inputs);
@@ -110,8 +113,8 @@ export class FormlyFieldCategoriesHelper implements OnInit {
       );
     } */
 
-  onChange(el: any): void {
+  onChange(element: any): void {
     // todo: add el to formControl
-    console.log('onChange', el);
+    console.log('onChange', element);
   }
 }

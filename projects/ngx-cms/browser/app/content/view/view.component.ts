@@ -10,23 +10,28 @@
  */
 
 import {
-  Payload,
-  Meta,
-  ViewOptions,
   Article,
+  Meta,
+  Payload,
+  ViewOptions,
 } from '@engineers/ngx-content-view-mat';
-import env from '../../../env';
+import environment from '../../../env';
 
 import {
-  Component,
-  OnInit,
   AfterViewInit,
-  ViewChild,
+  Component,
   Inject,
+  OnInit,
+  ViewChild,
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { getParams, getUrl, transformData, getMetaTags } from './functions';
+import {
+  getMetaTags,
+  getParams as getParameters,
+  getUrl,
+  transformData,
+} from './functions';
 import { PlatformService } from '@engineers/ngx-utils/platform';
 import { MatDialog } from '@angular/material/dialog';
 import { AppInstallDialogComponent } from '../app-install-dialog/app-install-dialog.component';
@@ -38,7 +43,7 @@ import { NgxLoadService } from '@engineers/ngx-utils/load-scripts.service';
 
 // todo: import module & interfaces from packages/content/ngx-content-view/index.ts
 
-export interface Params {
+export interface Parameters_ {
   type: string;
   postType?: string;
   category?: Category;
@@ -66,7 +71,7 @@ export interface Category {
 })
 export class ContentViewComponent implements OnInit, AfterViewInit {
   @ViewChild('quillView') quillView: any;
-  params!: Params;
+  params!: Parameters_;
   tags!: Meta;
   options!: ViewOptions;
   categories!: Array<Category>;
@@ -74,8 +79,8 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
   data!: Payload;
   // data that fetched by loadMore()
   moreData: Article[] = [];
-  limit: number = 10;
-  offset: number = 0;
+  limit = 10;
+  offset = 0;
   // stop infiniteScroll when no more data (it already stops when the scrollbar reached the end)
   infiniteScroll = true;
 
@@ -90,12 +95,14 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
     @Inject(DOCUMENT) private document: Document,
     private loadService: NgxLoadService
   ) {
-    let params = getParams(this.router.url.trim());
+    let parameters = getParameters(this.router.url.trim());
     this.params = {
-      ...params,
+      ...parameters,
       postType:
-        params.type.slice(-1) === 's' ? params.type.slice(0, -1) : params.type,
-      category: params.category || {},
+        parameters.type.slice(-1) === 's'
+          ? parameters.type.slice(0, -1)
+          : parameters.type,
+      category: parameters.category || {},
     };
 
     // prevent invalid routes from requesting data from the server
@@ -112,8 +119,8 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
       // listen to Notification.permission change
       // when the notification.permission is not granted, a notificationsDialog may be opened
       if (!Notification || Notification.permission === 'granted') {
-        window.addEventListener('beforeinstallprompt', (ev) => {
-          this.showInstallDialog(ev);
+        window.addEventListener('beforeinstallprompt', (event_) => {
+          this.showInstallDialog(event_);
         });
       }
 
@@ -131,14 +138,14 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
       copyAction: (card: any): string | undefined => {
         // for jobs, override the default copied data
         if (location.pathname.split(/\//)[1] === 'jobs') {
-          let title = card.getElementsByTagName('mat-card-title')[0],
+          let title = card.querySelectorAll('mat-card-title')[0],
             titleText = title.textContent,
             // todo: shorten link -> /$type/~$id
-            link = title.getElementsByTagName('a')[0].href;
+            link = title.querySelectorAll('a')[0].href;
 
           let url = new URL(link);
           url.pathname = url.pathname.replace(
-            /([^\/]+)\/(?:[^\/]+)\/.+~([^\/?]+)/,
+            /([^/]+)\/[^/]+\/.+~([^/?]+)/,
             '$1/~$2'
           );
           link = url.href;
@@ -165,7 +172,7 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
       offset: 0,
     });
 
-    if (env.mode === 'development') {
+    if (environment.mode === 'development') {
       console.info(`[content/view] fetching from ${url}`);
     }
 
@@ -207,19 +214,21 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
           // use category._id for loadMore()
           if (categories) {
             this.categories = categories;
-            if (!(data instanceof Array) && data.categories instanceof Array) {
+            if (!Array.isArray(data) && Array.isArray(data.categories)) {
               this.itemCategories = categories
                 .filter(
-                  (el: Category) =>
-                    (data as Article).categories.includes(el._id) && !el.parent
+                  (element: Category) =>
+                    (data as Article).categories.includes(element._id) &&
+                    !element.parent
                 )
-                .map((el: Category) => ({
-                  ...el,
-                  link: `/${this.params.type}/${el.slug}`,
+                .map((element: Category) => ({
+                  ...element,
+                  link: `/${this.params.type}/${element.slug}`,
                 }));
             } else if (this.params.category?.slug) {
-              let category = categories!.find(
-                (el: Category) => el.slug === this.params.category!.slug
+              let category = categories.find(
+                (element: Category) =>
+                  element.slug === this.params.category!.slug
               );
               if (category) {
                 this.itemCategories = [
@@ -240,7 +249,7 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
             Object.assign({ baseUrl }, defaultTags)
           );
 
-          if (env.mode === 'development') {
+          if (environment.mode === 'development') {
             console.info('[content/view]', {
               params: this.params,
               data,
@@ -261,12 +270,15 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
 
   /**
    * display a dialog to the user to install the PWA app
+   *
+   * @param ev
+   * @param event_
    */
-  showInstallDialog(ev: any) {
+  showInstallDialog(event_: any) {
     window.addEventListener('load', () => {
       setTimeout(
-        () => this.dialog.open(AppInstallDialogComponent, { data: ev }),
-        10000
+        () => this.dialog.open(AppInstallDialogComponent, { data: event_ }),
+        10_000
       );
     });
   }
@@ -277,7 +289,7 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
   showNotificationsDialog() {
     window.addEventListener('load', () => {
       if ('Notification' in window) {
-        if (env.mode === 'development') {
+        if (environment.mode === 'development') {
           console.info(
             `[content/view]: notification ${Notification.permission}`
           );
@@ -295,7 +307,7 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
                 .subscribe((result) => {
                   // todo: check Notification.permission
                 }),
-            10000
+            10_000
           );
         } else if (Notification.permission === 'denied') {
           // todo: instruct the user to allow notifications (footer)
@@ -308,7 +320,7 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
   }
 
   loadMore(): void {
-    if (!(this.data instanceof Array) && this.data.error) {
+    if (!Array.isArray(this.data) && this.data.error) {
       this.infiniteScroll = false;
     }
     if (!this.infiniteScroll) {
@@ -325,7 +337,7 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
         })
       )
       .subscribe((data) => {
-        if (data && data instanceof Array) {
+        if (data && Array.isArray(data)) {
           this.moreData.push(
             ...(transformData(
               data as unknown as Article[],

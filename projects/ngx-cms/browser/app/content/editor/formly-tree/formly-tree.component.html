@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <b *ngIf="to.label">{{ to.label }}</b>
 
 <mat-tree
@@ -11,7 +12,7 @@
   <!-- [formControl]="formControl" -->
   <!-- This is the tree node template for leaf nodes -->
   <!-- There is inline padding applied to this node using styles.
-      This padding value depends on the mat-icon-button width. -->
+        This padding value depends on the mat-icon-button width. -->
   <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle>
     <mat-checkbox
       [checked]="isChecked(node)"
@@ -45,7 +46,7 @@
       >
     </div>
     <!-- There is inline padding applied to this div using styles.
-         This padding value depends on the mat-icon-button width.  -->
+            This padding value depends on the mat-icon-button width.  -->
     <div [class.invisible]="!treeControl.isExpanded(node)" role="group">
       <ng-container matTreeNodeOutlet></ng-container>
     </div>

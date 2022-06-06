@@ -51,5 +51,8 @@
     "kill": "sudo fuser -k 8080/tcp",
     "gcloud:login": "gcloud auth login && gcloud config set project dibo-cloud",
     "gcloud:run": "PORT=8080 && docker run -p 9090:${PORT} -e PORT=${PORT} --rm gcr.io/dibo-cloud/vscode"
+  },
+  "dependencies": {
+    "@engineers/nodejs": "1.0.0"
   }
 }

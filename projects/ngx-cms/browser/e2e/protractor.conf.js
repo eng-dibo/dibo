@@ -8,7 +8,7 @@ const { SpecReporter, StacktraceOption } = require("jasmine-spec-reporter");
  * @type { import("protractor").Config }
  */
 exports.config = {
-  allScriptsTimeout: 11000,
+  allScriptsTimeout: 11_000,
   specs: ["./**/*.e2e-spec.ts"],
   capabilities: {
     browserName: "chrome",
@@ -19,13 +19,14 @@ exports.config = {
   framework: "jasmine",
   jasmineNodeOpts: {
     showColors: true,
-    defaultTimeoutInterval: 30000,
+    defaultTimeoutInterval: 30_000,
     print: function () {},
   },
   onPrepare() {
     require("ts-node").register({
       project: require("path").join(__dirname, "./tsconfig.json"),
     });
+    // eslint-disable-next-line no-undef
     jasmine.getEnv().addReporter(
       new SpecReporter({
         spec: {

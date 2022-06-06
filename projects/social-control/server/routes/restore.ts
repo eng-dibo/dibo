@@ -10,8 +10,8 @@ import { read as readFS } from '@engineers/nodejs/fs';
 import { Request, Response } from 'express';
 
 // add/remove data or drop a database
-export default (req: Request, res: Response): any => {
-  let hosts = req.params.hosts;
+export default (request: Request, res: Response): any => {
+  let hosts = request.params.hosts;
   let existingHosts = readdirSync(resolve(__dirname, `../temp/db-backup`));
 
   if (!hosts) {
@@ -22,8 +22,9 @@ export default (req: Request, res: Response): any => {
   
         available hosts:
         ${existingHosts.map(
-          (el) =>
-            el.replace(resolve(__dirname, '../temp/db-backup'), '') + '\r\n'
+          (element) =>
+            element.replace(resolve(__dirname, '../temp/db-backup'), '') +
+            '\r\n'
         )}
         `,
     });
@@ -52,15 +53,17 @@ export default (req: Request, res: Response): any => {
             let filter =
               // filter databases by querystring, example: ?filter=db1,db2
               // todo: filter collections ?filter=db1,db2:coll1,coll2,db3:!coll4
-              req.query.filter
-                ? (db?: string, collection?: string) =>
-                    (req.query.filter as string).split(',').includes(db!)
+              request.query.filter
+                ? (database?: string, collection?: string) =>
+                    (request.query.filter as string)
+                      .split(',')
+                      .includes(database!)
                 : // disable filtering
-                !req.query.all
+                !request.query.all
                 ? undefined
                 : // by default, only restore supportedCollections
-                  (db: any, collection: any) => {
-                    if (db === '__info') {
+                  (database: any, collection: any) => {
+                    if (database === '__info') {
                       return false;
                     }
                     if (collection) {

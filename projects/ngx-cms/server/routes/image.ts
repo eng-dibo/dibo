@@ -2,25 +2,29 @@ import { timer } from '@engineers/javascript/time';
 import { TEMP } from '.';
 import cache from '@engineers/nodejs/cache-fs';
 import { read } from '~server/storage';
-import { resize, Size } from '@engineers/graphics';
+import { Size, resize } from '@engineers/graphics';
 import { prod } from '~config/server';
 import { Request, Response } from 'express';
 
 /**
  * saves the article's cover image to filesystem
+ *
+ * @param req
+ * @param request
+ * @param res
  */
 // todo: /\/(?<type>image|cover)\/(?<id>[^\/]+)
 // https://github.com/expressjs/express/issues/4277
 // example: <img src="/images/articles-cover-$topicId/slug-text.png?size=250" />
 // todo: change to /api/v1/articles/image/$articleId-$imageName (move to the previous app.get(); execlude from ngsw cache)
 // todo:  /api/v1/$collection/image=$name-$id/slug-text?size
-export default (req: Request, res: Response): any => {
+export default (request: Request, res: Response): any => {
   timer('/image');
 
   // todo: use system.temp folder
-  let collection = req.params[0],
-    name = req.params[1],
-    id = req.params[2],
+  let collection = request.params[0],
+    name = request.params[1],
+    id = request.params[2],
     filePath = `${collection}/${id}/${name}.webp`,
     // todo: `${TEMP}/${req.url}.webp` -> error: name is too long
     localPath = `${TEMP}/${collection}/images/${id}/${name}.webp`;
@@ -38,11 +42,11 @@ export default (req: Request, res: Response): any => {
     encoding: undefined,
   })
     .then((data) => {
-      if (!req.query.size) {
+      if (request.query.size === 0) {
         return data;
       }
 
-      let size = req.query.size as Size | Size[],
+      let size = request.query.size as Size | Size[],
         resizedPath = `${localPath.replace('.webp', '')}_${size}.webp`;
 
       return cache(
@@ -50,7 +54,7 @@ export default (req: Request, res: Response): any => {
         () =>
           resize(data, size, {
             format:
-              req.headers?.accept?.indexOf('image/webp') !== -1
+              request.headers?.accept?.indexOf('image/webp') !== -1
                 ? 'webp'
                 : 'jpeg',
             // todo: add this options to resize()

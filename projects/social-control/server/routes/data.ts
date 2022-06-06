@@ -1,13 +1,18 @@
-import { parse, Operation } from '@engineers/databases/operations';
+import { Operation, parse } from '@engineers/databases/operations';
 import { timer } from '@engineers/javascript/time';
-import { query } from '~server/database';
+import { connect, query } from '~server/database';
 import cache from '@engineers/nodejs/cache-fs';
 import { prod } from '~config/server';
 import { supportedCollections } from './supported-collections';
-import { connect } from '~server/database';
+
 import { TEMP } from '.';
 import { Request, Response } from 'express';
 
+/**
+ *
+ * @param queryUrl
+ * @param age
+ */
 export function getData(
   queryUrl: string | Operation,
   age = 24 * 30
@@ -33,20 +38,20 @@ export function getData(
 
   // stringify queryUrl to use it as cache name
   if (typeof queryUrl !== 'string') {
-    let tmpQuery = '';
+    let temporaryQuery = '';
     for (let key in params) {
-      tmpQuery += `${key}=${params[key]}`;
+      temporaryQuery += `${key}=${params[key]}`;
     }
     queryObject = queryUrl;
     queryUrl = `${operation}:${database ? database + '.' : ''}${collection}/${(
       portions || []
-    ).join('/')}${params ? '?' + tmpQuery : ''}`;
+    ).join('/')}${params ? '?' + temporaryQuery : ''}`;
   }
 
-  let tmp = `${TEMP}/${queryUrl.replace(/^\/?find.*:/, '')}.json`;
+  let temporary = `${TEMP}/${queryUrl.replace(/^\/?find.*:/, '')}.json`;
 
   return cache(
-    tmp,
+    temporary,
     () =>
       // @ts-ignore: error TS2349: This expression is not callable.
       // Each member of the union type ... has signatures, but none of those signatures are compatible with each other.
@@ -104,27 +109,27 @@ export function getData(
         */
       }),
     //  cache find* operations only
-    { age, refreshCache: /^find/.test(operation) }
+    { age, refreshCache: operation.startsWith('find') }
   );
 }
 
-export default (req: Request, res: Response): void => {
-  timer(`get ${req.url}`);
+export default (request: Request, res: Response): void => {
+  timer(`get ${request.url}`);
 
   // todo: ?refresh=AUTH_TOKEN
-  getData(req.path, req.query.refresh ? -1 : 3)
+  getData(request.path, request.query.refresh ? -1 : 3)
     .then((payload: any) => {
       res.json(payload);
       if (!prod) {
         console.log(
-          `[server/api] getData: +${timer(`get ${req.url}`, true)}sec`
+          `[server/api] getData: +${timer(`get ${request.url}`, true)}sec`
         );
       }
     })
     .catch((error: any) => {
       if (!prod) {
         console.error(
-          `[server/api] getData: +${timer(`get ${req.url}`, true)}sec`,
+          `[server/api] getData: +${timer(`get ${request.url}`, true)}sec`,
           { error }
         );
       } else {

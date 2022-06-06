@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <mat-card>
   <mat-card-header>
     <img
@@ -44,20 +45,20 @@
   </mat-card-header>
 
   <!--
-      notes:
+        notes:
         - use attr.width instead of width to remove this attribute if data.cover.width
-          has no value (i.e: null)
-          https://stackoverflow.com/a/62048326/12577650
+        has no value (i.e: null)
+        https://stackoverflow.com/a/62048326/12577650
     -->
   <mat-card-content dir="auto">
     <!-- todo:
-       - <img  [debug]="opts.dev"
+            - <img  [debug]="opts.dev"
             [errorImage]="siteLogo or placeholder?text=siteName"
             [scrollTarget]="$cdk-virtual-scroll-viewport"
             (onStateChange)="onStateChange($event)" />
-       - if(!data.cover.lazy) remove attribute lazyLoad
-       - ng-lazyload-image hooks
-      -->
+            - if(!data.cover.lazy) remove attribute lazyLoad
+            - ng-lazyload-image hooks
+        -->
     <ng-content select="[before-cover]"></ng-content>
     <img
       *ngIf="data.cover"
@@ -72,12 +73,12 @@
     />
 
     <!--
-      in item mode, use <quill-view> to render the content that was generated via <quill-editor>
-        https://www.npmjs.com/package/ngx-quill#quillviewcomponent---using-quilljs-to-render-content
-       todo:
-       if(quillView)use <quill-view>
-       else use <div *ngIf="type=='list'" class="content" [innerHtml]="data.content"></div>
-      -->
+            in item mode, use <quill-view> to render the content that was generated via <quill-editor>
+            https://www.npmjs.com/package/ngx-quill#quillviewcomponent---using-quilljs-to-render-content
+            todo:
+            if(quillView)use <quill-view>
+            else use <div *ngIf="type=='list'" class="content" [innerHtml]="data.content"></div>
+        -->
     <ng-content select="[before-content]"></ng-content>
     <quill-view-html
       *ngIf="data.content"
@@ -111,9 +112,9 @@
 
 <!-- <mat-card-actions>
     <button mat-flat-button color="primary">
-      <mat-icon>like</mat-icon> Like
+    <mat-icon>like</mat-icon> Like
     </button>
     <button mat-flat-button color="accent">
-      <mat-icon>share</mat-icon> SHARE
+    <mat-icon>share</mat-icon> SHARE
     </button>
-  </mat-card-actions> -->
+    </mat-card-actions> -->

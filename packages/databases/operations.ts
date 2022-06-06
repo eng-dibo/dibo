@@ -1,3 +1,5 @@
+/* eslint-disable unicorn/better-regex */
+/* eslint-disable sort-keys */
 import { queryToObject } from '@engineers/javascript/url';
 
 export interface Operation {
@@ -14,8 +16,8 @@ export interface Operation {
  * full syntax: operation:db.collection/portion1/portion2?params&x=1
  * only collection is require, other parts are optional
  *
- * @param url
- * @examples
+ * @param url the url-like string to be parsed
+ * @example
  *   find:users/1 -> find users where id=1 (the default primary key name may be differ between databases drivers)
  *   find:users/1?params -> use params to provide extra options
  *   users/5:2  -> find 2 users after the first 5
@@ -36,6 +38,7 @@ export interface Operation {
  *   for some operations portions are parsed and added to params,
  *   for example: parse() can get skip, limit, condition for the operation 'find'
  *   if portions are not parsed, it will be included without modifications in portions[]
+ * @returns {Operation} {@link Operation}
  */
 export function parse(url: string): Operation {
   /*
@@ -51,6 +54,8 @@ export function parse(url: string): Operation {
 
     */
   let pattern =
+    // todo: fix this linting
+    // eslint-disable-next-line unicorn/better-regex, regexp/no-useless-escape, regexp/no-super-linear-backtracking, regexp/no-useless-non-capturing-group, no-useless-escape
     /^(?:\/)?(?:([^:\/]+):)?(?:([^\/.]+)\.)?([^\/]+)(?:\/([^?]+))?(?:\?(.+)?)?$/;
   let match = url.match(pattern);
   if (match) {
@@ -60,12 +65,12 @@ export function parse(url: string): Operation {
       database,
       collection,
       _portions,
-      _params,
+      _parameters,
     ] = match;
 
     let portions = _portions ? _portions.split('/') : [];
     // convert query to object
-    let params = queryToObject(_params || '');
+    let parameters = queryToObject(_parameters || '');
 
     // parse portions and add known portions syntax to params
     // find/skip:limit~fields@conditions
@@ -80,28 +85,28 @@ export function parse(url: string): Operation {
         rangeMatch = portions[0].match(/([^:~@]+)?:([^:~@]+)?/);
 
       if (rangeMatch) {
-        if (!params.skip && rangeMatch[1]) {
-          params.skip = +rangeMatch[1];
+        if (!parameters.skip && rangeMatch[1]) {
+          parameters.skip = +rangeMatch[1];
         }
-        if (!params.limit && rangeMatch[2]) {
-          params.limit = +rangeMatch[2];
+        if (!parameters.limit && rangeMatch[2]) {
+          parameters.limit = +rangeMatch[2];
         }
 
         portions[0] = portions[0].replace(rangeMatch[0], '');
       }
 
-      if (!params.fields && fieldsMatch) {
-        params.fields = fieldsMatch[1];
+      if (!parameters.fields && fieldsMatch) {
+        parameters.fields = fieldsMatch[1];
         portions[0] = portions[0].replace(fieldsMatch[0], '');
       }
 
-      if (!params.filter && filterMatch) {
-        params.filter = filterMatch[1];
+      if (!parameters.filter && filterMatch) {
+        parameters.filter = filterMatch[1];
         portions[0] = portions[0].replace(filterMatch[0], '');
       }
 
       if (!fieldsMatch && !filterMatch && !rangeMatch) {
-        params.id = portions[0];
+        parameters.id = portions[0];
         portions.shift();
       }
 
@@ -112,11 +117,11 @@ export function parse(url: string): Operation {
 
     // convert to numeric values
     // query.limit may be provided by the user as string
-    if (params.limit) {
-      params.limit = +params.limit;
+    if (parameters.limit) {
+      parameters.limit = +parameters.limit;
     }
-    if (params.skip) {
-      params.skip = +params.skip;
+    if (parameters.skip) {
+      parameters.skip = +parameters.skip;
     }
 
     return {
@@ -124,7 +129,7 @@ export function parse(url: string): Operation {
       database,
       collection,
       portions,
-      params,
+      params: parameters,
     };
   }
 

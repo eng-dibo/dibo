@@ -4,13 +4,13 @@
  */
 import {
   resolve as _resolve,
-  normalize,
-  join,
-  dirname,
   basename,
+  dirname,
   extname,
+  join,
+  normalize,
 } from 'node:path';
-import { objectType, Obj } from '@engineers/javascript/objects';
+import { Obj, objectType } from '@engineers/javascript/objects';
 
 import {
   existsSync,
@@ -38,11 +38,13 @@ import stripJsonComments from 'strip-json-comments';
 
 /**
  * resolves path segments into an absolute path
+ *
+ * @param {...any} paths
  * @returns the absolute path
  * @example resolve('/a','b/file.js') => 'a/b/file.js'
  */
 export function resolve(...paths: PathLike[]): string {
-  let stringPaths = paths.map((el) => el.toString());
+  let stringPaths = paths.map((element) => element.toString());
   // if it null it will be the current working dir (of the working script)
   return _resolve(normalize(join(...stringPaths)));
 }
@@ -55,6 +57,8 @@ export interface ParsePath {
 }
 /**
  * parses a path to get information about it
+ *
+ * @param path
  */
 export function parsePath(path: PathLike): ParsePath {
   let extension = getExtension(path);
@@ -69,6 +73,8 @@ export function parsePath(path: PathLike): ParsePath {
 /**
  * get file extension without the leading dot
  * files that starts with a dot, the first dot considered as a part of the file name, not extension
+ *
+ * @param file
  * @example getExtension('file.js') -> 'js'
  * @example getExtension('.gitignore') -> ''
  */
@@ -78,6 +84,10 @@ export function getExtension(file: PathLike): string {
 
 /**
  * get file(s) or directories total size
+ *
+ * @param path
+ * @param unit
+ * @param filter
  */
 export function getSize(
   path: PathLike | PathLike[],
@@ -93,25 +103,34 @@ export function getSize(
   );
 
   let sum = (sizes: any) => {
-    let total: number = 0;
-    for (let i = 0; i < sizes.length; i++) {
-      total += sizes[i] instanceof Array ? sum(sizes[i]) : sizes[i];
+    let total = 0;
+    for (let size of sizes) {
+      total += Array.isArray(size) ? sum(size) : size;
     }
     return total;
   };
-  return sizes instanceof Array ? sum(sizes) : sizes;
+  return Array.isArray(sizes) ? sum(sizes) : sizes;
 }
 
+/**
+ *
+ * @param path
+ */
 export function isDir(path: PathLike): boolean {
   return existsSync(path) && lstatSync(path).isDirectory();
 }
 
+/**
+ *
+ * @param file
+ */
 export function getModifiedTime(file: PathLike): number {
   return lstatSync(file).mtimeMs;
 }
 
 /**
  * creates a directory or more if it doesn't exist
+ *
  * @param path path of the directory or a paths array of directories to create
  * @param mode
  * @returns
@@ -125,7 +144,7 @@ export function mkdir(
   path: PathLike | PathLike[],
   mode: number | string = 0o777
 ): void {
-  if (path instanceof Array) {
+  if (Array.isArray(path)) {
     return path.forEach((p: PathLike) => {
       mkdir(p, mode);
     });
@@ -164,6 +183,12 @@ todo:
  - options.existing: replace|rename_pattern|skip|(name)=>newName
  */
 
+/**
+ *
+ * @param path
+ * @param newPath
+ * @param options
+ */
 export function move(
   path: PathLike,
   newPath: PathLike,
@@ -181,6 +206,12 @@ export function move(
  * - return boolean | { [path: string]: boolean }
  */
 
+/**
+ *
+ * @param path
+ * @param filter
+ * @param keepDir
+ */
 export function remove(
   path: PathLike | PathLike[],
   filter?: Filter,
@@ -199,6 +230,12 @@ export function remove(
   );
 }
 
+/**
+ *
+ * @param source
+ * @param destination
+ * @param filter
+ */
 export function copy(
   source: PathLike,
   destination: string,
@@ -206,15 +243,21 @@ export function copy(
 ) {
   return recursive(source, (path, type) => {
     if (type === 'file' && filter(path)) {
-      let dest = path.replace(source.toString(), destination);
-      mkdir(dirname(dest));
-      copyFileSync(path, dest);
+      let destination_ = path.replace(source.toString(), destination);
+      mkdir(dirname(destination_));
+      copyFileSync(path, destination_);
     }
   });
 }
 
 // todo: fix Cannot find module '@engineers/javascript/objects' from 'packages/nodejs/fs-sync.ts'
 // https://stackoverflow.com/questions/68185573/ts-jest-cannot-resolve-tsconfig-aliases
+/**
+ *
+ * @param path
+ * @param data
+ * @param options
+ */
 export function write(
   path: PathLike,
   data: any,
@@ -251,7 +294,9 @@ export interface ReadOptions {
 }
 /**
  * read a file and return its content
+ *
  * @param file
+ * @param path
  * @param options
  */
 export function read(
@@ -263,30 +308,30 @@ export function read(
     flag: 'r',
     age: 0,
   };
-  let opts: ReadOptions = Object.assign(
+  let options_: ReadOptions = Object.assign(
     defaultOptions,
     typeof options === 'string' ? { encoding: options } : options || {}
   );
 
   if (
-    opts.age &&
-    opts.age > 0 &&
-    getModifiedTime(path) + opts.age < Date.now()
+    options_.age &&
+    options_.age > 0 &&
+    getModifiedTime(path) + options_.age < Date.now()
   ) {
     throw new Error(`[fs-sync] expired file ${path}`);
   }
 
   let data = readFileSync(path, {
-    encoding: opts.encoding,
-    flag: opts.flag,
+    encoding: options_.encoding,
+    flag: options_.flag,
   });
 
-  if (opts.encoding === undefined) {
+  if (options_.encoding === undefined) {
     return data;
   }
   data = data.toString();
   return path.toString().trim().slice(-5) === '.json'
-    ? JSON.parse(stripJsonComments(data as string))
+    ? JSON.parse(stripJsonComments(data))
     : data;
 }
 
@@ -296,6 +341,7 @@ export function read(
  *   // this comment
  *   # and this one
  *   /* and multi-line comments *\/
+ *
  * @param content
  * @returns the clean content
  */
@@ -312,6 +358,10 @@ export function read(
     ```
 */
 
+/**
+ *
+ * @param content
+ */
 export function stripComments(content: string): string {
   // '(\/\/|#).*' => removes `// comment` and `# comment`
   // '\/\*(.|\n)*\*\/' => removes `/* multi-line comments */
@@ -321,6 +371,7 @@ export function stripComments(content: string): string {
 
 /**
  * get entries (files and directories) recursively.
+ *
  * @param dir the root path to start search from.
  * @param filter filters the entries by a function or regex pattern
  * or entry type (file or directory)
@@ -328,6 +379,12 @@ export function stripComments(content: string): string {
  * @returns promise that resolves to the filtered entries.
  */
 
+/**
+ *
+ * @param dir
+ * @param filter
+ * @param depth
+ */
 export function getEntries(
   dir = '.',
   filter?: ((entry: string) => boolean) | RegExp | 'files' | 'dirs' | '*',
@@ -335,23 +392,35 @@ export function getEntries(
 ): Array<string> {
   let _filter: ((entry: string) => boolean) | undefined;
 
-  if (filter === 'files') {
-    _filter = (entry: string) => lstatSync(entry).isFile();
-  } else if (filter === 'dirs') {
-    _filter = (entry: string) => lstatSync(entry).isDirectory();
-  } else if (filter === '*') {
-    _filter = undefined;
-  } else if (filter instanceof RegExp) {
-    _filter = (entry: string) => (filter as RegExp).test(entry);
-  } else if (typeof filter === 'function') {
-    _filter = filter;
+  switch (filter) {
+    case 'files': {
+      _filter = (entry: string) => lstatSync(entry).isFile();
+
+      break;
+    }
+    case 'dirs': {
+      _filter = (entry: string) => lstatSync(entry).isDirectory();
+
+      break;
+    }
+    case '*': {
+      _filter = undefined;
+
+      break;
+    }
+    default:
+      if (filter instanceof RegExp) {
+        _filter = (entry: string) => filter.test(entry);
+      } else if (typeof filter === 'function') {
+        _filter = filter;
+      }
   }
   // todo: else if(typeof entry === 'string'){/* glob pattern */}
 
   let entries = readdirSync(dir);
   let result: Array<string> = [];
 
-  entries.forEach((entry) => {
+  for (let entry of entries) {
     let fullPath = join(dir, entry);
     if (!_filter || (_filter as (entry: string) => boolean)(fullPath)) {
       result.push(fullPath);
@@ -369,7 +438,7 @@ export function getEntries(
       );
       result = result.concat(subEntries);
     }
-  });
+  }
 
   return result;
 }
@@ -377,6 +446,7 @@ export function getEntries(
 export type Filter = (path: string, type?: 'dir' | 'file') => boolean;
 /**
  * recursively apply a function to a directory and all subdirectories
+ *
  * @param path path to a file or directory
  * @param apply the function to be applied to each directory or file
  * @param filter
@@ -391,7 +461,7 @@ export function recursive(
     throw new Error('path not provided');
   }
 
-  if (path instanceof Array) {
+  if (Array.isArray(path)) {
     return path.map((p: PathLike) => recursive(p, apply, filter));
   }
 

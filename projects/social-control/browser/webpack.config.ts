@@ -1,6 +1,6 @@
 // see server/webpack.config.ts
 
-import { resolve } from 'path';
+import { resolve } from 'node:path';
 import baseConfig from '../webpack.config';
 import { Configuration } from 'webpack';
 import webpackMerge from 'webpack-merge';
@@ -19,7 +19,7 @@ let config: Configuration = webpackMerge(baseConfig, {
 
 let tsLoader = config.module!.rules!.find(
   // todo: (el: RuleSetRule)
-  (el: any) => el.loader === 'ts-loader'
+  (element: any) => element.loader === 'ts-loader'
 ) as { [key: string]: any };
 
 if (tsLoader) {

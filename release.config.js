@@ -65,10 +65,13 @@ module.exports = config;
 
 /**
  * replaces plugins options, keeping the same order, or add a new one if not existing
+ *
+ * @param key
+ * @param value
  */
 module.exports.replace = function (key, value) {
-  let index = config.plugins.findIndex((el) => {
-    return typeof el === "string" ? el === key : el[0] === key;
+  let index = config.plugins.findIndex((element) => {
+    return typeof element === "string" ? element === key : element[0] === key;
   });
 
   if (~index) {

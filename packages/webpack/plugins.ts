@@ -7,8 +7,8 @@
  https://webpack.js.org/contribute/writing-a-plugin/
 */
 
-export type Hook = ((...args: any[]) => any) | Promise<any>;
-export interface HookObj {
+export type Hook = ((...arguments_: any[]) => any) | Promise<any>;
+export interface HookObject {
   hook: Hook;
   name?: string;
   lifecycle?: string;
@@ -23,6 +23,7 @@ export interface BasePluginInterface {
 
 /**
  * creates a plugin and adds it to a hook lifecycle
+ *
  * @example
  * // filter errors, remove the error `export {module} (reexported as ..) was not found in ..`
  * // use hooks.afterCompile instead of hooks.done, to control the errors before it outputted to the console
@@ -38,7 +39,7 @@ export default class BasePlugin implements BasePluginInterface {
   /**
    * defines the plugin hooks
    */
-  protected hooks: Hook | HookObj | Array<Hook | HookObj> = [
+  protected hooks: Hook | HookObject | Array<Hook | HookObject> = [
     { hook: () => {} },
   ];
 
@@ -48,31 +49,32 @@ export default class BasePlugin implements BasePluginInterface {
 
   /**
    * the only required method by webpack
+   *
    * @param compiler
    */
   apply(compiler: any): Promise<void[]> {
     let pluginHooks = this.hooks;
-    if (!(pluginHooks instanceof Array)) {
+    if (!Array.isArray(pluginHooks)) {
       pluginHooks = [pluginHooks];
     }
     return Promise.all(
-      pluginHooks.map((hookObj) => {
-        if (typeof hookObj === 'function' || hookObj instanceof Promise) {
-          hookObj = { hook: hookObj } as HookObj;
+      pluginHooks.map((hookObject) => {
+        if (typeof hookObject === 'function' || hookObject instanceof Promise) {
+          hookObject = { hook: hookObject } as HookObject;
         }
 
-        hookObj.lifecycle = hookObj.lifecycle || 'afterCompile';
-        hookObj.name = hookObj.name || 'plugin-' + Date.now();
+        hookObject.lifecycle = hookObject.lifecycle || 'afterCompile';
+        hookObject.name = hookObject.name || `plugin-${Date.now()}`;
 
         if (compiler.hooks) {
-          let tap = hookObj.hook instanceof Promise ? 'tapPromise' : 'tap';
-          return compiler.hooks[hookObj.lifecycle][tap](
-            hookObj.name,
-            hookObj.hook
+          let tap = hookObject.hook instanceof Promise ? 'tapPromise' : 'tap';
+          return compiler.hooks[hookObject.lifecycle][tap](
+            hookObject.name,
+            hookObject.hook
           );
         } else {
           // old versions
-          return compiler.plugin(this.options.lifecycle, hookObj.hook);
+          return compiler.plugin(this.options.lifecycle, hookObject.hook);
         }
       })
     );

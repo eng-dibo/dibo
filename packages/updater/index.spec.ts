@@ -1,20 +1,20 @@
-import { test, expect, afterAll, jest } from '@jest/globals';
+import { afterAll, expect, jest, test } from '@jest/globals';
 import { resolve } from 'node:path';
 import updaterHookable, {
-  getLocalVersionHook,
-  getRemoteVersionHook,
+  afterUpdateHook,
+  backupLocalPackageHook,
+  beforeUpdateHook,
   compareVersionsHook,
   downloadHook,
-  backupLocalPackageHook,
+  getLocalVersionHook,
+  getRemoteVersionHook,
   updateHook,
-  beforeUpdateHook,
-  afterUpdateHook,
 } from '.';
-import { remove, read } from '@engineers/nodejs/fs-sync';
+import { read, remove } from '@engineers/nodejs/fs-sync';
 import { write } from '@engineers/nodejs/fs';
 import { existsSync } from 'node:fs';
 
-jest.setTimeout(10000);
+jest.setTimeout(10_000);
 
 let testDir = resolve(__dirname, 'test!!'),
   remote = {
@@ -228,7 +228,7 @@ test('full process', (done) => {
       expect(existsSync(`${localPath}/node_modules`)).toBeFalsy();
       done();
     })
-    .catch((err) => {
-      done(err);
+    .catch((error) => {
+      done(error);
     });
 });

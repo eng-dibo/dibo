@@ -1,12 +1,12 @@
-import { test, expect, describe, jest } from '@jest/globals';
+import { describe, expect, jest, test } from '@jest/globals';
 import { replaceAll, replaceAsync, toNumber } from './string';
 
 describe('replaceAll', () => {
   test('string', () => {
-    let str = 'abxycdxy';
-    expect(replaceAll(str, 'x', 'Z')).toEqual('abZycdZy');
-    expect(replaceAll(str, ['x', 'y'], 'Z')).toEqual('abZZcdZZ');
-    expect(replaceAll(str, 'x', 1)).toEqual('ab1ycd1y');
+    let string_ = 'abxycdxy';
+    expect(replaceAll(string_, 'x', 'Z')).toEqual('abZycdZy');
+    expect(replaceAll(string_, ['x', 'y'], 'Z')).toEqual('abZZcdZZ');
+    expect(replaceAll(string_, 'x', 1)).toEqual('ab1ycd1y');
   });
 
   test('array', () => {
@@ -19,6 +19,7 @@ describe('replaceAll', () => {
 
 describe('replaceAsync', () => {
   let element = 'a-b-c-d',
+    // eslint-disable-next-line unicorn/consistent-function-scoping
     replacer = (): Promise<string> => new Promise((r) => r('x'));
 
   test('non-global regex, replaces the first occurrence only', () => {

@@ -6,14 +6,14 @@ import { backup } from '@engineers/mongoose';
 import { write as writeFs } from '@engineers/nodejs/fs';
 import { Request, Response } from 'express';
 
-export default (req: Request, res: Response): any => {
+export default (request: Request, res: Response): any => {
   // see /restore route for details
-  let filter = req.query.filter
-    ? (db?: string, collection?: string) =>
-        (req.query.filter as string).split(',').includes(db!)
-    : (req.query.all as any) === false
+  let filter = request.query.filter
+    ? (database?: string, collection?: string) =>
+        (request.query.filter as string).split(',').includes(database!)
+    : (request.query.all as any) === false
     ? undefined
-    : (db: any, collection: any) => {
+    : (database: any, collection: any) => {
         if (collection) {
           return supportedCollections.includes(collection);
         }
@@ -30,13 +30,15 @@ export default (req: Request, res: Response): any => {
       return backup(con, filter).then((data: any) => {
         let path = `../temp/db-backup/${host}/${now}`,
           info = con.connection.client.s;
-        return Promise.all(
-          Object.keys(data)
-            .map((db: string) =>
-              writeFs(resolve(__dirname, `${path}/${db}.json`), data[db])
+        return Promise.all([
+          ...Object.keys(data).map((database: string) =>
+            writeFs(
+              resolve(__dirname, `${path}/${database}.json`),
+              data[database]
             )
-            .concat([writeFs(resolve(__dirname, `${path}/__info.json`), info)])
-        ).then(() => {
+          ),
+          writeFs(resolve(__dirname, `${path}/__info.json`), info),
+        ]).then(() => {
           console.log('[backup] Done');
           res.json({ info, data });
         });

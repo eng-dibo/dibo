@@ -5,12 +5,12 @@ import { server as expressServer, run } from '@engineers/ngx-universal-express';
 import { AppServerModule } from './main';
 import { json as jsonParser, urlencoded as urlParser } from 'body-parser';
 import cors from 'cors';
-import routes from './routes';
+import routes, { apiVersion } from './routes';
 import redirect from '@engineers/express-redirect-middleware';
-import { resolve } from 'path';
-import { apiVersion } from './routes';
+import { resolve } from 'node:path';
+
 import { APP_BASE_HREF } from '@angular/common';
-import { Request, Response, NextFunction, RequestHandler } from 'express';
+import { NextFunction, Request, RequestHandler, Response } from 'express';
 import cache from '@engineers/nodejs/cache-fs';
 import sitemapRoute from './routes/sitemap';
 
@@ -18,6 +18,9 @@ let mode = process.env.NODE_ENV || 'production';
 export const TEMP = resolve(__dirname, '../temp');
 
 // The Express app is exported so that it can be used by serverless Functions.
+/**
+ *
+ */
 export function server(): ReturnType<typeof expressServer> {
   // todo: move to expressServer.msg
   console.info(`the server is working in ${mode} mode`);
@@ -26,10 +29,10 @@ export function server(): ReturnType<typeof expressServer> {
   // this may be have different values for different compilation scenarios
   // for instance, with `ts-node server/express.ts`, __dirname = '/server'
   // also `jest` transpiles .ts files on the fly, but doesn't output to 'dist' folder
-  let distFolder = resolve(__dirname, '..'),
-    browserDir = distFolder + '/browser',
-    tempDir = distFolder + '/temp',
-    configDir = distFolder + '/config/browser';
+  let distributionFolder = resolve(__dirname, '..'),
+    browserDir = distributionFolder + '/browser',
+    tempDir = distributionFolder + '/temp',
+    configDir = distributionFolder + '/config/browser';
 
   let app = expressServer({
     browserDir,
@@ -47,9 +50,9 @@ export function server(): ReturnType<typeof expressServer> {
   // add trailing slash to all requests,
   // https://expressjs.com/en/guide/using-middleware.html
   // https://dev.to/splodingsocks/getting-all-404s-with-your-firebase-functions-3p1
-  app.use((req: Request, res: Response, next: NextFunction) => {
-    if (!req.path) {
-      req.url = `/{req.url}`;
+  app.use((request: Request, res: Response, next: NextFunction) => {
+    if (!request.path) {
+      request.url = `/{req.url}`;
     }
     next();
   });
@@ -70,9 +73,9 @@ export function server(): ReturnType<typeof expressServer> {
   );
 
   // log info about the request
-  app.use((req: Request, res: Response, next: NextFunction) => {
+  app.use((request: Request, res: Response, next: NextFunction) => {
     if (mode === 'development') {
-      console.info(`[server] ${req.method} ${req.originalUrl}`);
+      console.info(`[server] ${request.method} ${request.originalUrl}`);
     }
     next();
   });
@@ -85,10 +88,10 @@ export function server(): ReturnType<typeof expressServer> {
   // invalid or deprecated api version
   app.use(
     '/api/:version',
-    (req: Request, res: Response, next: NextFunction) => {
-      if (req.params.version !== `v${apiVersion.toString()}`) {
+    (request: Request, res: Response, next: NextFunction) => {
+      if (request.params.version !== `v${apiVersion.toString()}`) {
         next(
-          `${req.originalUrl} is an invalid or deprecated request, use /api/v${apiVersion}`
+          `${request.originalUrl} is an invalid or deprecated request, use /api/v${apiVersion}`
         );
       } else {
         next();
@@ -99,33 +102,35 @@ export function server(): ReturnType<typeof expressServer> {
   app.get('/sitemap.xml', sitemapRoute);
 
   // prevent non-existing static files from reaching the regular route, i.e app.get('*')
-  app.use('*.*', (req: Request, res: Response) => {
-    throw new Error(`static file ${req.originalUrl} not found`);
+  app.use('*.*', (request: Request, res: Response) => {
+    throw new Error(`static file ${request.originalUrl} not found`);
   });
 
   // All regular routes use the Universal engine, must be after all other routes
-  app.get('*', (req: Request, res: Response): void => {
+  app.get('*', (request: Request, res: Response): void => {
     // todo: remove `slug` to shorten cache file name
-    let tmp = `${TEMP}${
-      req.path === '/'
+    let temporary = `${TEMP}${
+      request.path === '/'
         ? '/index'
-        : req.path.indexOf('~')
-        ? req.path.substring(req.path.lastIndexOf('~') + 1)
-        : req.path
+        : request.path.indexOf('~')
+        ? request.path.slice(Math.max(0, request.path.lastIndexOf('~') + 1))
+        : request.path
     }.html`;
 
     cache(
-      tmp,
+      temporary,
       () =>
         new Promise((resolve, reject) => {
           res.render(
             'index.html',
             {
-              req,
-              providers: [{ provide: APP_BASE_HREF, useValue: req.baseUrl }],
+              req: request,
+              providers: [
+                { provide: APP_BASE_HREF, useValue: request.baseUrl },
+              ],
             },
-            (err: any, content: string) => {
-              err ? reject(err) : resolve(content);
+            (error: any, content: string) => {
+              error ? reject(error) : resolve(content);
             }
           );
         }),

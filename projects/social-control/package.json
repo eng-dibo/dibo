@@ -90,7 +90,16 @@
     "rxjs": "^7.5.5",
     "shortid": "^2.2.16",
     "tslib": "^2.4.0",
-    "zone.js": "^0.11.5"
+    "zone.js": "^0.11.5",
+    "@engineers/ngx-utils": "1.0.0",
+    "@engineers/ngx-universal-express": "1.0.0",
+    "@engineers/nodejs": "1.0.0",
+    "@engineers/mongoose": "1.0.0",
+    "@engineers/javascript": "1.0.0",
+    "@engineers/databases": "1.0.1",
+    "@engineers/express-redirect-middleware": "1.0.0",
+    "@engineers/firebase-admin": "1.0.0",
+    "@engineers/webpack": "1.0.0"
   },
   "devDependencies": {
     "@angular-builders/custom-webpack": "^13.1.0",

@@ -1,15 +1,15 @@
 import { argv } from 'node:process';
 import {
-  exec,
-  execSync as _execSync,
   ExecSyncOptions,
+  execSync as _execSync,
+  exec,
 } from 'node:child_process';
 import {
   Obj,
   chunk,
-  stringToObject,
-  objectType,
   flatten,
+  objectType,
+  stringToObject,
 } from '@engineers/javascript/objects';
 import { toNumber } from '@engineers/javascript/string';
 
@@ -26,17 +26,21 @@ export interface Argv {
 
 /**
  * parses cli strings into objects
+ *
  * @param argvString
  * @param string
+ * @param args
+ * @param arguments_
+ * @returns
  */
-export function parseArgv(args?: string | Array<string>): Argv {
-  if (!args) {
-    args = argv.slice(2);
-  } else if (typeof args === 'string') {
-    args = args.split(' ');
+export function parseArgv(arguments_?: string | Array<string>): Argv {
+  if (!arguments_) {
+    arguments_ = argv.slice(2);
+  } else if (typeof arguments_ === 'string') {
+    arguments_ = arguments_.split(' ');
   }
 
-  let argsObj: Argv = { cmd: [], options: {}, external: '' };
+  let argumentsObject: Argv = { cmd: [], options: {}, external: '' };
 
   let setOption = (key: string, value: any) => {
     if (typeof value === 'string') {
@@ -49,48 +53,48 @@ export function parseArgv(args?: string | Array<string>): Argv {
         value = toNumber(value);
       }
     }
-    if (argsObj.options[key]) {
-      if (!(argsObj.options[key] instanceof Array)) {
-        argsObj.options[key] = [argsObj.options[key]];
+    if (argumentsObject.options[key]) {
+      if (!Array.isArray(argumentsObject.options[key])) {
+        argumentsObject.options[key] = [argumentsObject.options[key]];
       }
 
-      value = argsObj.options[key].concat(value);
+      value = argumentsObject.options[key].concat(value);
     }
 
     // todo: if(key.indexOf('.')>-1) -> object
     // ex: 'a.b=1' -> {a: {b: 1}}
-    if (key.indexOf('.') > -1) {
+    if (key.includes('.')) {
       // object
       let keys = key.split('.');
       key = keys.shift() as string;
-      argsObj.options[key] = stringToObject(keys, value);
+      argumentsObject.options[key] = stringToObject(keys, value);
     } else {
-      argsObj.options[key] = value;
+      argumentsObject.options[key] = value;
     }
   };
 
-  if (args.indexOf('--') !== -1) {
-    let chunks = chunk(args, args.indexOf('--'));
-    argsObj.external = chunks[1].slice(1).join(' ');
-    args = chunks[0];
+  if (arguments_.includes('--')) {
+    let chunks = chunk(arguments_, arguments_.indexOf('--'));
+    argumentsObject.external = chunks[1].slice(1).join(' ');
+    arguments_ = chunks[0];
   }
 
-  for (let i = 0; i < args.length; i++) {
-    let arg = args[i].trim();
+  for (let index = 0; index < arguments_.length; index++) {
+    let argument = arguments_[index].trim();
 
     // remove extra spaces between args
-    if (arg === '') {
+    if (argument === '') {
       continue;
     }
     // `--no-key` -> {key: false}
-    if (/^--no-.+/.test(arg)) {
-      let match = arg.match(/^--no-(.+)/),
+    if (/^--no-.+/.test(argument)) {
+      let match = argument.match(/^--no-(.+)/),
         key = match![1];
       setOption(key, false);
     }
     // `--key=value`
-    else if (/^--.+=/.test(arg)) {
-      let match = arg.match(/^--([^=]+)=(.*)$/s),
+    else if (/^--.+=/.test(argument)) {
+      let match = argument.match(/^--([^=]+)=(.*)$/s),
         key = match![1],
         value = match![2];
       // todo: cast types
@@ -99,18 +103,18 @@ export function parseArgv(args?: string | Array<string>): Argv {
     }
 
     // `--key`
-    else if (/^--.+/.test(arg)) {
-      let match = arg.match(/^--(.+)/),
+    else if (/^--.+/.test(argument)) {
+      let match = argument.match(/^--(.+)/),
         key = match![1],
-        next = args[i + 1];
+        next = arguments_[index + 1];
 
       // if the next arg doesn't start with "--", treat it as the value of this key
       // else set key to true
-      if (next !== undefined && !/^-/.test(next)) {
+      if (next !== undefined && !next.startsWith('-')) {
         // todo: cast 'boolean' to boolean
         // example: `--key true` -> {key: 'true'} -> {key: true}
         setOption(key, next);
-        i++;
+        index++;
       } else {
         setOption(key, true);
       }
@@ -119,28 +123,28 @@ export function parseArgv(args?: string | Array<string>): Argv {
     // shortcuts: `-a -bc -d value -e=value -fgh ok`
     // `-bc` is equivalent to `-b -c`
     // `-fgh ok` -> {f: true, h: true, h: 'ok'}
-    else if (/^-[^-]+/.test(arg)) {
+    else if (/^-[^-]+/.test(argument)) {
       // remove "-" & last letter, because the last letter will be depend on the next value.
       // ex: '-abcd' -> [a, b, c]
-      let letters = arg.slice(1, -1).split('');
+      let letters = argument.slice(1, -1).split('');
 
       // end of letters
       // ex: '-ab=cd' should break at 'b'
       let broken = false;
-      for (let j = 0; j < letters.length; j++) {
-        let next = arg.slice(j + 2);
+      for (let index_ = 0; index_ < letters.length; index_++) {
+        let next = argument.slice(index_ + 2);
 
         // '-a-' -> {a: '-'}
         // todo: '-ab-c'
         if (next === '-') {
-          setOption(letters[j], '-');
+          setOption(letters[index_], '-');
           continue;
         }
 
         // '-a=1' -> {a: '1'}
         // '-abc=1' -> {a: true, b: true, c: '1'}
-        if (/[A-Za-z]/.test(letters[j]) && /=/.test(next)) {
-          setOption(letters[j], next.split('=')[1]);
+        if (/[A-Za-z]/.test(letters[index_]) && /=/.test(next)) {
+          setOption(letters[index_], next.split('=')[1]);
           broken = true;
           break;
         }
@@ -149,63 +153,65 @@ export function parseArgv(args?: string | Array<string>): Argv {
         // todo: !Number.isNaN(next)
         // example: 'abc123' -> {a: true, b: true, c: 123}
         else if (
-          /[A-Za-z]/.test(letters[j]) &&
-          /-?\d+(\.\d*)?(e-?\d+)?$/.test(next)
+          /[A-Za-z]/.test(letters[index_]) &&
+          /-?\d+(?:\.\d*)?(?:e-?\d+)?$/.test(next)
         ) {
-          setOption(letters[j], next);
+          setOption(letters[index_], next);
           broken = true;
           break;
         }
 
         // if the next letter is non-word (i.e /\W/) equivalent to /[^a-zA-Z0-9_]/
         // set the current letter to the remaining characters as value
-        else if (letters[j + 1] && letters[j + 1].match(/\W/)) {
-          setOption(letters[j], arg.slice(j + 2));
+        else if (letters[index_ + 1] && /\W/.test(letters[index_ + 1])) {
+          setOption(letters[index_], argument.slice(index_ + 2));
           broken = true;
           break;
         } else {
-          setOption(letters[j], true);
+          setOption(letters[index_], true);
         }
       }
 
       // handling the last letter
-      let key = arg.slice(-1)[0],
-        next = args[i + 1];
+      let key = argument.slice(-1)[0],
+        next = arguments_[index + 1];
 
       if (!broken && key !== '-') {
         // if the next element is not an option, consider it as a value of the current key
-        if (next && !/^(-|--)[^-]/.test(next)) {
+        if (next && !/^(?:-|--)[^-]/.test(next)) {
           setOption(key, next);
-          i++;
+          index++;
         } else {
           setOption(key, true);
         }
       }
     } else {
       // add to cmd[]
-      argsObj.cmd.push(arg);
+      argumentsObject.cmd.push(argument);
     }
   }
-  return argsObj;
+  return argumentsObject;
 }
 
 /**
  * converts an argvObj to a cli argv string
+ *
  * @param argsObj
+ * @param argumentsObject
  */
-export function toArgv(argsObj: Argv): string {
+export function toArgv(argumentsObject: Argv): string {
   let argv = '';
 
-  argsObj.cmd.forEach((el) => {
-    argv += el + ' ';
-  });
+  for (let element of argumentsObject.cmd) {
+    argv += element + ' ';
+  }
 
   let setOption = function (key: string, value: any): string {
     let argv = '';
-    if (value instanceof Array) {
-      value.forEach((el) => {
-        argv += `--${key}=${el} `;
-      });
+    if (Array.isArray(value)) {
+      for (let element of value) {
+        argv += `--${key}=${element} `;
+      }
     } else {
       argv += `--${key}=${value} `;
     }
@@ -213,25 +219,25 @@ export function toArgv(argsObj: Argv): string {
   };
 
   // consumer has to convert dash options, ex: convert `--a` to `-a`
-  for (let key in argsObj.options) {
-    if (argsObj.options.hasOwnProperty(key)) {
-      let value = argsObj.options[key];
+  for (let key in argumentsObject.options) {
+    if (argumentsObject.options.hasOwnProperty(key)) {
+      let value = argumentsObject.options[key];
       if (objectType(value) === 'object') {
         // convert objects to a string with dot notation
         // {a: {b: 1}} -> 'a.b=1'
-        Object.entries(flatten({ [key]: value })).forEach(([k, v]) => {
+        for (let [k, v] of Object.entries(flatten({ [key]: value }))) {
           argv += setOption(k, v);
-        });
+        }
       } else {
         argv += setOption(key, value);
       }
     }
   }
 
-  if (argsObj.external) {
-    let external = argsObj.external.trim();
+  if (argumentsObject.external) {
+    let external = argumentsObject.external.trim();
     if (external !== '') {
-      argv += `-- ${argsObj.external}`;
+      argv += `-- ${argumentsObject.external}`;
     }
   }
 
@@ -240,34 +246,37 @@ export function toArgv(argsObj: Argv): string {
 
 /**
  * displays the output of the child process in the main std
+ *
  * @param cmd
+ * @param options
  */
 export function execSync(
   cmd: string,
   options?: ExecSyncOptions
 ): Buffer | string {
-  let opts = Object.assign({ stdio: 'inherit' }, options || {});
+  let options_ = Object.assign({ stdio: 'inherit' }, options || {});
   // display the output
   // https://stackoverflow.com/a/31104898/12577650
   // todo: don't wait until std complete to display the output
   // https://stackoverflow.com/a/30168821/12577650
   // using `{ stdio: 'inherit' })` this function displays the output and returns null
-  return _execSync(cmd, opts);
+  return _execSync(cmd, options_);
 }
 
 /**
  * promisify exec()
+ *
  * @param cmd
  * @param options
  * @returns
  */
 export function execPromise(cmd: string, options?: any): Promise<string> {
-  let opts = Object.assign(
+  let options_ = Object.assign(
     { stdio: 'inherit', encoding: 'utf8' },
     options || {}
   );
   return new Promise((res, rej) => {
-    exec(cmd, opts, (error: any, strout: any, stderr: any) => {
+    exec(cmd, options_, (error: any, strout: any, stderr: any) => {
       if (error) {
         error.message = stderr;
         rej(error);
@@ -280,19 +289,25 @@ export function execPromise(cmd: string, options?: any): Promise<string> {
 
 /**
  * run a task from tasks list from a cli cmd
+ *
  * @param tasks
  * @param args
  * @example `node tasks.js mytask --option1=value`
  */
 
+/**
+ *
+ * @param tasks
+ * @param arguments_
+ */
 export async function runTask(
   tasks: Obj,
-  args?: string | Array<string>
+  arguments_?: string | Array<string>
 ): Promise<void> {
   // let task = argv.slice(2)[0], params = argv.slice(3);
 
-  let parsedArgs = parseArgv(args),
-    task = parsedArgs.cmd.shift();
+  let parsedArguments = parseArgv(arguments_),
+    task = parsedArguments.cmd.shift();
 
   if (!task) {
     throw new Error('task not provided!');
@@ -302,15 +317,15 @@ export async function runTask(
 
   try {
     let optionsString = '';
-    for (let key in parsedArgs.options) {
-      optionsString += `--${key}=${parsedArgs.options[key]} `;
+    for (let key in parsedArguments.options) {
+      optionsString += `--${key}=${parsedArguments.options[key]} `;
     }
     console.log(
-      `>> running the task: ${task} ${parsedArgs.cmd.join(
+      `>> running the task: ${task} ${parsedArguments.cmd.join(
         ' '
       )} ${optionsString}`
     );
-    await tasks[task](...parsedArgs.cmd, parsedArgs.options);
+    await tasks[task](...parsedArguments.cmd, parsedArguments.options);
     console.log('>> Done');
   } catch (error: any) {
     error.task = task;

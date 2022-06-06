@@ -1,4 +1,4 @@
-import { resolve } from 'path';
+import { resolve } from 'node:path';
 import jestConfig from '@engineers/ngx-utils/jest.config';
 import { getPaths } from '~~jest.config';
 

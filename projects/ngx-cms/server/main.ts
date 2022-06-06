@@ -1,13 +1,16 @@
+/* eslint-disable import/no-unresolved */
 // Initialize the server environment, and add DOM types to the global scope
 import '@angular/platform-server/init';
-import { enableProdMode, NgModule } from '@angular/core';
-import env from '../browser/env';
-import { ServerModule } from '@angular/platform-server';
+import { NgModule, enableProdMode } from '@angular/core';
+import environment from '../browser/env';
+import {
+  ServerModule,
+  ServerTransferStateModule,
+} from '@angular/platform-server';
 import { AppModule } from '~browser/app/app.module';
 import { AppComponent } from '~browser/app/app.component';
-import { ServerTransferStateModule } from '@angular/platform-server';
 
-if (env.mode === 'production') {
+if (environment.mode === 'production') {
   enableProdMode();
 }
 

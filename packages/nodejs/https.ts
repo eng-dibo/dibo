@@ -1,10 +1,11 @@
-import https, { RequestOptions } from 'https';
-import { URL } from 'url';
+import https, { RequestOptions } from 'node:https';
+import { URL } from 'node:url';
 import { parse } from 'content-type';
 import { objectType } from '@engineers/javascript/objects';
 
 /**
  * make https requests and returns a promise
+ *
  * @param url
  * @param options
  * @param data
@@ -30,7 +31,7 @@ export default function request(
 
     let responseChunks: any[] = [];
 
-    let req = https.request(url, requestOptions, (res) => {
+    let request_ = https.request(url, requestOptions, (res) => {
       res.setEncoding('utf8');
 
       res.on('data', function (chunk) {
@@ -61,18 +62,18 @@ export default function request(
             // todo: {...req,body:response}
             resolve(response);
           }
-        } catch (err) {
-          reject(err);
+        } catch (error) {
+          reject(error);
         }
       });
     });
 
-    req.on('error', (error) => reject(error));
+    request_.on('error', (error) => reject(error));
 
     if (requestOptions.method!.toUpperCase() === 'POST') {
       let dataString = isObject ? JSON.stringify(data) : data;
-      req.write(dataString);
+      request_.write(dataString);
     }
-    req.end();
+    request_.end();
   });
 }

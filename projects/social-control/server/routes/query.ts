@@ -1,22 +1,26 @@
 import { Request, Response } from 'express';
 import { stringToObject } from '@engineers/javascript/string';
-import { query as dbQuery } from '~server/database';
+import { query as databaseQuery } from '~server/database';
 import { request } from '~server/functions';
 /**
  * make arbitrary queries
+ *
+ * @param req
+ * @param request_
+ * @param res
  * @example post:$pageId/subscribed_apps
  *          url: without endpoint or access_token
  */
 // todo: authentication
-export default (req: Request, res: Response): void => {
+export default (request_: Request, res: Response): void => {
   // matches: method:objectId;url;data
-  let [fullMatch, method, objectId, url, data] = req.params[0].match(
+  let [fullMatch, method, objectId, url, data] = request_.params[0].match(
     /^(?:([^:]+):)?([^;]+);([^;]+)(?:;(.+))?$/
   ) as RegExpMatchArray;
 
   try {
-    let dataObj = stringToObject(data);
-    request(objectId, url, dataObj, { method })
+    let dataObject = stringToObject(data);
+    request(objectId, url, dataObject, { method })
       .then((response: any) => res.json(response))
       .catch((error: any) => {
         console.error('[server/routes/messenger] query:', { error });

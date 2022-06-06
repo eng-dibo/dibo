@@ -1,8 +1,8 @@
 // https://blog.iansinnott.com/testing-webpack-plugins
 
-import { test, expect, beforeAll, afterAll } from '@jest/globals';
+import { afterAll, beforeAll, expect, test } from '@jest/globals';
 import webpack, { Configuration } from 'webpack';
-import { write, read, remove } from '@engineers/nodejs/fs-sync';
+import { read, remove, write } from '@engineers/nodejs/fs-sync';
 import { resolve } from 'node:path';
 import externals, { node } from './externals';
 
@@ -26,23 +26,23 @@ beforeAll(() => {
   write(`${root}/example-node.js`, `require('path');`);
 
   config = {
-    mode: 'none',
-    target: 'node',
     entry: {
       output: `${root}/example.js`,
       output2: `${root}/example2.js`,
       output3: `${root}/example3.js`,
       output4: [`${root}/example.js`, `${root}/example2.js`],
     },
-    resolve: {
-      extensions: ['.js'],
-    },
+    mode: 'none',
     // use output if you want to test the physical outputted assets
     // otherwise remove `output` and use `stats.compilation.assets` or `stats.toJson().assets`
     // to test the outputted assets without writing them to the fs.
     output: {
       path: root,
     },
+    resolve: {
+      extensions: ['.js'],
+    },
+    target: 'node',
   };
 });
 
@@ -51,9 +51,9 @@ afterAll(() => {
 });
 
 test('no externals', (done) => {
-  webpack(config).run((err: any, stats: any) => {
-    if (err) {
-      done(err);
+  webpack(config).run((error: any, stats: any) => {
+    if (error) {
+      done(error);
     } else if (stats.hasErrors()) {
       done(stats.toString());
     } else {
@@ -66,19 +66,19 @@ test('no externals', (done) => {
   });
 });
 
-test('exclude example2 from bundling ', (done) => {
+test('exclude example2 from bundling', (done) => {
   let config2 = Object.assign({}, config, {
     externals: [
-      function () {
+      function (...args) {
         // RegExp: pattern is not global: match `request` only
-        externals(arguments, [/example2/]);
+        externals(args, [/example2/]);
       },
     ],
   });
 
-  webpack(config2).run((err: any, stats: any) => {
-    if (err) {
-      done(err);
+  webpack(config2).run((error: any, stats: any) => {
+    if (error) {
+      done(error);
     } else if (stats.hasErrors()) {
       done(stats.toString());
     } else {
@@ -91,18 +91,18 @@ test('exclude example2 from bundling ', (done) => {
   });
 });
 
-test('transform ', (done) => {
+test('transform', (done) => {
   let config2 = Object.assign({}, config, {
     externals: [
-      function () {
-        externals(arguments, [/example2/], 'commonjs2 ../new/path.js');
+      function (...args) {
+        externals(args, [/example2/], 'commonjs2 ../new/path.js');
       },
     ],
   });
 
-  webpack(config2).run((err: any, stats: any) => {
-    if (err) {
-      done(err);
+  webpack(config2).run((error: any, stats: any) => {
+    if (error) {
+      done(error);
     } else if (stats.hasErrors()) {
       done(stats.toString());
     } else {
@@ -115,15 +115,15 @@ test('transform ', (done) => {
 test('transform function', (done) => {
   let config2 = Object.assign({}, config, {
     externals: [
-      function () {
-        externals(arguments, [/example2/], () => 'commonjs2 ../new/path.js');
+      function (...args) {
+        externals(args, [/example2/], () => 'commonjs2 ../new/path.js');
       },
     ],
   });
 
-  webpack(config2).run((err: any, stats: any) => {
-    if (err) {
-      done(err);
+  webpack(config2).run((error: any, stats: any) => {
+    if (error) {
+      done(error);
     } else if (stats.hasErrors()) {
       done(stats.toString());
     } else {
@@ -133,18 +133,18 @@ test('transform function', (done) => {
   });
 });
 
-test('whiteList ', (done) => {
+test('whiteList', (done) => {
   let config2 = Object.assign({}, config, {
     externals: [
-      function () {
-        externals(arguments, [/example2/], undefined, [/ex/]);
+      function (...args) {
+        externals(args, [/example2/], undefined, [/ex/]);
       },
     ],
   });
 
-  webpack(config2).run((err: any, stats: any) => {
-    if (err) {
-      done(err);
+  webpack(config2).run((error: any, stats: any) => {
+    if (error) {
+      done(error);
     } else if (stats.hasErrors()) {
       done(stats.toString());
     } else {
@@ -157,18 +157,18 @@ test('whiteList ', (done) => {
   });
 });
 
-test('whiteList function returns false ', (done) => {
+test('whiteList function returns false', (done) => {
   let config2 = Object.assign({}, config, {
     externals: [
-      function () {
-        externals(arguments, [/example2/], undefined, [() => false]);
+      function (...args) {
+        externals(args, [/example2/], undefined, [() => false]);
       },
     ],
   });
 
-  webpack(config2).run((err: any, stats: any) => {
-    if (err) {
-      done(err);
+  webpack(config2).run((error: any, stats: any) => {
+    if (error) {
+      done(error);
     } else if (stats.hasErrors()) {
       done(stats.toString());
     } else {
@@ -184,15 +184,15 @@ test('whiteList function returns false ', (done) => {
 test('template variables', (done) => {
   let config2 = Object.assign({}, config, {
     externals: [
-      function () {
-        externals(arguments, [/example2/], 'commonjs2 {{request}}/file.js');
+      function (...args) {
+        externals(args, [/example2/], 'commonjs2 {{request}}/file.js');
       },
     ],
   });
 
-  webpack(config2).run((err: any, stats: any) => {
-    if (err) {
-      done(err);
+  webpack(config2).run((error: any, stats: any) => {
+    if (error) {
+      done(error);
     } else if (stats.hasErrors()) {
       done(stats.toString());
     } else {
@@ -208,15 +208,15 @@ test('template variables', (done) => {
 test('template variables with function', (done) => {
   let config2 = Object.assign({}, config, {
     externals: [
-      function () {
-        externals(arguments, [() => true], 'commonjs2 {{request}}/file.js');
+      function (...args) {
+        externals(args, [() => true], 'commonjs2 {{request}}/file.js');
       },
     ],
   });
 
-  webpack(config2).run((err: any, stats: any) => {
-    if (err) {
-      done(err);
+  webpack(config2).run((error: any, stats: any) => {
+    if (error) {
+      done(error);
     } else if (stats.hasErrors()) {
       done(stats.toString());
     } else {
@@ -232,17 +232,17 @@ test('template variables with function', (done) => {
 test('transform type', (done) => {
   let config2 = Object.assign({}, config, {
     externals: [
-      function () {
+      function (...args) {
         // module type = commonjs
         // providing type only, should transform into `${type} ${path}`
-        externals(arguments, [/example2/], 'commonjs2');
+        externals(args, [/example2/], 'commonjs2');
       },
     ],
   });
 
-  webpack(config2).run((err: any, stats: any) => {
-    if (err) {
-      done(err);
+  webpack(config2).run((error: any, stats: any) => {
+    if (error) {
+      done(error);
     } else if (stats.hasErrors()) {
       done(stats.toString());
     } else {
@@ -265,9 +265,9 @@ test.skip('bundle node_modules', (done) => {
     },
   });
 
-  webpack(config2).run((err: any, stats: any) => {
-    if (err) {
-      done(err);
+  webpack(config2).run((error: any, stats: any) => {
+    if (error) {
+      done(error);
     } else if (stats.hasErrors()) {
       done(stats.toString());
     } else {
@@ -286,9 +286,9 @@ test('node()', (done) => {
     },
   });
 
-  webpack(config2).run((err: any, stats: any) => {
-    if (err) {
-      done(err);
+  webpack(config2).run((error: any, stats: any) => {
+    if (error) {
+      done(error);
     } else if (stats.hasErrors()) {
       done(stats.toString());
     } else {

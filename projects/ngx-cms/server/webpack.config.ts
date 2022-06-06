@@ -66,7 +66,7 @@ let config: Configuration = webpackMerge(baseConfig, {
 // use tsconfig.json for server
 let tsLoader = config.module!.rules!.find(
   // todo: (el: RuleSetRule)
-  (el: any) => el.loader === 'ts-loader'
+  (element: any) => element.loader === 'ts-loader'
 ) as { [key: string]: any };
 
 if (tsLoader) {

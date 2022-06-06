@@ -1,15 +1,15 @@
-import { test, expect, afterAll, afterEach } from '@jest/globals';
+import { afterAll, afterEach, expect, test } from '@jest/globals';
 import {
+  BackupData,
+  backup,
   connect,
+  getConnection,
+  listCollections,
+  listDatabases,
   model,
   mongoose,
   query,
-  listDatabases,
-  listCollections,
-  backup,
-  BackupData,
   restore,
-  getConnection,
 } from './index';
 import { uri as _uri } from './test/config';
 import shortId from 'shortid';
@@ -18,22 +18,23 @@ import shortId from 'shortid';
 // add this ip to `network access` in atlas settings
 // the cluster may need to be resumed after long inactivity
 
-let uri = Object.assign({ host: '127.0.0.1', dbName: 'spec' }, _uri);
+let uri = Object.assign({ dbName: 'spec', host: '127.0.0.1' }, _uri);
 
 let booksSchema = { name: 'string', serial: 'number' },
   options = { shortId: true },
   booksModel = model('books', booksSchema, options),
   backupData: BackupData;
 
-export { booksModel };
 /**
  * drop all databases used for testing and close the connection after finishing testing
  * to avoid open handlers
+ *
+ * @returns
  */
-export function clean(): Promise<any> {
+function clean(): Promise<any> {
   return Promise.all(
     ['spec', 'spec2']
-      .map((db) => mongoose.connection.useDb(db))
+      .map((database) => mongoose.connection.useDb(database))
       .map((con) => {
         con.db.dropDatabase().then(() => con.close());
       })
@@ -118,15 +119,15 @@ test('query: find()', () => {
 test('listDatabases', () => {
   return listDatabases().then((dbs: any[]) => {
     // check that there is a database called 'spec'
-    let db = dbs.filter((el) => el.name === 'spec');
-    expect(db).toBeInstanceOf(Array);
-    expect(db.length).toEqual(1);
+    let database = dbs.filter((element) => element.name === 'spec');
+    expect(database).toBeInstanceOf(Array);
+    expect(database.length).toEqual(1);
   });
 });
 
 test('listCollections', () => {
   return listCollections('spec').then((collections: any[]) => {
-    let collection = collections.filter((el) => el.name === 'books');
+    let collection = collections.filter((element) => element.name === 'books');
     expect(collection).toBeInstanceOf(Array);
     expect(collection.length).toEqual(1);
   });

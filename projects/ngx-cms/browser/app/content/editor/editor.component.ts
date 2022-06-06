@@ -1,7 +1,7 @@
-import { Component, OnInit, ViewChild, TemplateRef } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of, forkJoin } from 'rxjs';
+import { Observable, forkJoin, of } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Article } from '@engineers/ngx-content-view-mat';
 import basicArticleFields from './article-fields';
@@ -13,7 +13,7 @@ import Quill from 'quill';
 import QuillMarkdown from 'quilljs-markdown';
 import dompurify from 'dompurify';
 
-export interface Params {
+export interface Parameters_ {
   type: string;
   id: string | null;
   postType?: string;
@@ -37,7 +37,7 @@ export interface Response {
   styleUrls: ['./editor.component.scss'],
 })
 export class ContentEditorComponent implements OnInit {
-  params!: Params;
+  params!: Parameters_;
   formGroup = new FormGroup({});
   fields: FormlyFieldConfig[];
   // holds arbitrary data
@@ -61,10 +61,10 @@ export class ContentEditorComponent implements OnInit {
     private snackBar: MatSnackBar
   ) {
     // todo: use snapshot
-    this.route.paramMap.subscribe((params) => {
-      let type = params.get('type') || 'articles';
+    this.route.paramMap.subscribe((parameters) => {
+      let type = parameters.get('type') || 'articles';
       this.params = {
-        id: params.get('item'),
+        id: parameters.get('item'),
         type,
         // convert articles to article, jobs to job
         postType: type.slice(-1) === 's' ? type.slice(0, -1) : type,
@@ -134,6 +134,7 @@ export class ContentEditorComponent implements OnInit {
 
   /**
    * get data from the cache if existing, or update the cache key
+   *
    * @param key
    * @param query
    * @returns
@@ -152,6 +153,7 @@ export class ContentEditorComponent implements OnInit {
   /**
    * fetches data from the server
    * it caches the result so it doesn't have to perform the operation every time
+   *
    * @returns
    */
   getData<T>(): Observable<T> {
@@ -186,7 +188,8 @@ export class ContentEditorComponent implements OnInit {
 
         // add field:contacts after content
         articleFields.splice(
-          articleFields.findIndex((el: any) => el.key === 'content') + 1,
+          articleFields.findIndex((element: any) => element.key === 'content') +
+            1,
           0,
           {
             key: 'contacts',
@@ -216,20 +219,22 @@ export class ContentEditorComponent implements OnInit {
       }
 
       this.cache.articleFields = articleFields
-        .filter((el) => !['subtitle', 'slug'].includes(el.key as string))
-        .map((el) => {
-          if (!el.templateOptions) {
-            el.templateOptions = {};
+        .filter(
+          (element) => !['subtitle', 'slug'].includes(element.key as string)
+        )
+        .map((element) => {
+          if (!element.templateOptions) {
+            element.templateOptions = {};
           }
-          if (!el.templateOptions.label) {
-            el.templateOptions.label = el.key as string;
+          if (!element.templateOptions.label) {
+            element.templateOptions.label = element.key as string;
           }
 
-          if (this.params.type === 'articles' && el.key === 'content') {
+          if (this.params.type === 'articles' && element.key === 'content') {
             Quill.register({ 'modules/QuillMarkdown': QuillMarkdown }, true);
 
-            el.type = 'quill';
-            el.templateOptions.modules = {
+            element.type = 'quill';
+            element.templateOptions.modules = {
               toolbar: [
                 ['bold', 'italic', 'underline', 'strike'],
                 ['blockquote', 'code-block'],
@@ -249,10 +254,10 @@ export class ContentEditorComponent implements OnInit {
             };
             // todo: html description
             // '<a href="https://www.markdownguide.org/">markdown</a> is supported'
-            el.templateOptions.description = 'markdown is supported';
+            element.templateOptions.description = 'markdown is supported';
           }
 
-          return el;
+          return element;
         });
     }
     return this.cache.articleFields;

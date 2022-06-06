@@ -2,17 +2,17 @@
  * @jest-environment jsdom
  */
 
-import { test, expect, beforeAll, describe } from '@jest/globals';
+import { beforeAll, describe, expect, test } from '@jest/globals';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowserTestingModule } from '@angular/platform-browser/testing';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import {
-  length,
-  nl2br,
-  slug,
   html2text,
   hypernate,
   keepHtml,
+  length,
+  nl2br,
+  slug,
 } from './pipes-functions';
 import { Component } from '@angular/core';
 

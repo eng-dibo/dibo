@@ -2,12 +2,15 @@ import querystring from 'node:querystring';
 import _request from '@engineers/nodejs/https';
 import cache from '@engineers/nodejs/cache-fs';
 import { TEMP } from './routes';
-import { query as dbQuery } from '~server/database';
+import { query as databaseQuery } from '~server/database';
 /**
  * make http request to graph.facebook
+ *
  * @param id: object id (example: page id), used to get it's access token from db
+ * @param objectId
  * @param url
  * @param data
+ * @param options
  * @returns
  */
 export function request(
@@ -30,25 +33,35 @@ export function request(
 /**
  * send messages via messenger platform
  * https://developers.facebook.com/docs/messenger-platform/reference/send-api/
+ *
  * @param id PSID (~user id)
  * @param response
+ * @param objectId
+ * @param psid
+ * @param message
  * @returns
  */
 export function send(
   objectId: string,
   psid: string,
   message: any,
-  args?: { [key: string]: any }
+  arguments_?: { [key: string]: any }
 ): Promise<any> {
   let payload = {
     recipient: { id: psid },
     message,
-    ...args,
+    ...arguments_,
   };
 
   return request(objectId, 'me/messages', payload);
 }
 
+/**
+ *
+ * @param objectId
+ * @param psid
+ * @param payload
+ */
 export function handleMessage(
   objectId: string,
   psid: string,
@@ -80,8 +93,12 @@ export function handleMessage(
   return send(objectId, psid, response);
 }
 
+/**
+ *
+ * @param pageId
+ */
 export function getConfig(pageId: string | number) {
   return cache(`${TEMP}/pages/${pageId}.json`, () =>
-    dbQuery(`pages/${pageId}`)
+    databaseQuery(`pages/${pageId}`)
   );
 }
