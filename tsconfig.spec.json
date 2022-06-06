@@ -1,10 +1,10 @@
-/* To learn more about this file see: https://angular.io/config/tsconfig. */
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "../../dist/ngx-cms/spec",
+    "outDir": "./dist",
     "types": ["jest"]
   },
-  //"files": ["browser/test.ts", "browser/polyfills.ts"],
-  "include": ["**/*.spec.ts"]
+  "include": ["**/*.spec.ts"],
+  // override exclude because .spec.ts files are listed there
+  "exclude": [""]
 }
