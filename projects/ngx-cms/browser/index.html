@@ -1,51 +1,51 @@
 <!DOCTYPE html>
 <html lang="ar,en">
-    <head>
-        <meta charset="utf-8">
-        <title>NgxCms</title>
-        <base href="/">
-        <link
-            rel="manifest"
-            href="/manifest.webmanifest"
-            crossorigin="use-credentials"
-        >
-        <!-- todo: inject rss dynamically from the component-->
-        <link
-            rel="alternate"
-            type="application/rss+xml"
-            title="RSS Feed"
-            href="/api/v1/rss"
-        >
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="theme-color" content="#1976d2">
-        <link rel="icon" type="image/x-icon" href="favicon.ico">
-        <link rel="preconnect" href="https://fonts.gstatic.com">
-        <!-- preloading angular scripts, to reduce the first-content-paint time -->
-        <!-- todo: https://developers.google.com/web/updates/2017/12/modulepreload#so_is_link_relmodulepreload_just_link_relpreload_for_modules -->
-        <!-- https://web.dev/optimize-lcp/#preload-important-resources -->
-        <link rel="modulepreload" href="runtime.js">
-        <link rel="modulepreload" href="polyfills.js">
-        <link rel="modulepreload" href="main.js">
-        <!-- todo: prevent angular building from replacing <link> in index.html with its content -->
-        <link
-            href="//fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap"
-            rel="stylesheet"
-        >
-        <link
-            href="//fonts.googleapis.com/icon?family=Material+Icons"
-            rel="stylesheet"
-        >
-    </head>
-    <body class="mat-typography">
-        <app-root></app-root>
+  <head>
+    <meta charset="utf-8" />
+    <title>NgxCms</title>
+    <base href="/" />
+    <link
+      rel="manifest"
+      href="/manifest.webmanifest"
+      crossorigin="use-credentials"
+    />
+    <!-- todo: inject rss dynamically from the component-->
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="RSS Feed"
+      href="/api/v1/rss"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#1976d2" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <!-- preloading angular scripts, to reduce the first-content-paint time -->
+    <!-- todo: https://developers.google.com/web/updates/2017/12/modulepreload#so_is_link_relmodulepreload_just_link_relpreload_for_modules -->
+    <!-- https://web.dev/optimize-lcp/#preload-important-resources -->
+    <link rel="modulepreload" href="runtime.js" />
+    <link rel="modulepreload" href="polyfills.js" />
+    <link rel="modulepreload" href="main.js" />
+    <!-- todo: prevent angular building from replacing <link> in index.html with its content -->
+    <link
+      href="//fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="//fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="mat-typography">
+    <app-root></app-root>
 
-        <!-- 
+    <!-- 
             todo: move angular scripts here ( main.js, polyfills.js, ... )
             to be loaded after DOM loaded
         -->
-        <script src="scripts.mjs" type="module"></script>
+    <script src="scripts.mjs" type="module"></script>
 
-        <!-- todo: display instructions to enable javascript -->
-        <noscript> </noscript>
-    </body>
+    <!-- todo: display instructions to enable javascript -->
+    <noscript> </noscript>
+  </body>
 </html>

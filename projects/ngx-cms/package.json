@@ -5,9 +5,30 @@
   "files": [
     "dist"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eng-dibo/dibo.git"
+  },
+  "homepage": "https://github.com/eng-dibo/dibo#readme",
+  "bugs": {
+    "url": "https://github.com/eng-dibo/dibo/issues",
+    "email": "sh.eldeeb.2010+github@gmail.com"
+  },
+  "license": "MIT",
+  "author": "Sherif Eldeeb <sh.eldeeb.2010+github@gmail.com> (https://github.com/eng-dibo)",
+  "funding": [
+    {
+      "type": "paypal",
+      "url": "https://paypal.me/group99001"
+    },
+    {
+      "type": "patreon",
+      "url": "https://www.patreon.com/GoogleDev"
+    }
+  ],
   "scripts": {
     "build": "npm run task -- build",
-    "postbuild": "exit 0",
+    "postbuild": "shx cp package.json dist",
     "_publish": "exit 0",
     "prepublishOnly": "exit 0",
     "prerelease": "shx mkdir -p dist && shx cp package.json dist",
@@ -38,27 +59,6 @@
     "declarations": "npx -p typescript tsc config/**/*.js --declaration --allowJs --emitDeclarationOnly --esModuleInterop"
   },
   "main": "./dist/server/express.js",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/eng-dibo/dibo.git"
-  },
-  "homepage": "https://github.com/eng-dibo/dibo#readme",
-  "bugs": {
-    "url": "https://github.com/eng-dibo/dibo/issues",
-    "email": "sh.eldeeb.2010+github@gmail.com"
-  },
-  "license": "MIT",
-  "author": "Sherif Eldeeb <sh.eldeeb.2010+github@gmail.com> (https://github.com/eng-dibo)",
-  "funding": [
-    {
-      "type": "paypal",
-      "url": "https://paypal.me/group99001"
-    },
-    {
-      "type": "patreon",
-      "url": "https://www.patreon.com/GoogleDev"
-    }
-  ],
   "dependencies": {
     "@angular/animations": "^13.1.2",
     "@angular/cdk": "^13.1.2",

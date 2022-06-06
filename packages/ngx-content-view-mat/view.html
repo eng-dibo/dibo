@@ -9,93 +9,93 @@
     so we temporary stopped <share-buttons>
 -->
 <ng-container *ngIf="content">
-    <ng-container
-        *ngTemplateOutlet="type=='item'?itemBlock:options.layout=='list'?listBlock:gridBlock; context:{data:content}"
-    ></ng-container>
+  <ng-container
+    *ngTemplateOutlet="type=='item'?itemBlock:options.layout=='list'?listBlock:gridBlock; context:{data:content}"
+  ></ng-container>
 </ng-container>
 
 <mat-spinner
-    *ngIf="!content"
-    strokeWidth="10"
-    diameter="200"
-    style="margin: auto"
+  *ngIf="!content"
+  strokeWidth="10"
+  diameter="200"
+  style="margin: auto"
 ></mat-spinner>
 
 <ng-template let-item="data" #itemBlock>
-    <ngx-content-article
-        [data]="item"
-        type="item"
-        [options]="options"
-        infiniteScroll
-        (scrolled)="onScrollDown.emit()"
-        (scrolledUp)="onScrollUp.emit()"
-        [ngClass]="item.error?'alert alert-error':''"
-        style="display: block"
-    >
-        <!-- forward ng-content from the parent component to the grand child <ngx-content-article> -->
-        <ng-container header>
-            <ng-content select="[header]"></ng-content>
-        </ng-container>
-        <ng-container before-cover>
-            <ng-content select="[before-cover]"></ng-content>
-        </ng-container>
-        <ng-container before-content>
-            <ng-content select="[before-content]"></ng-content>
-        </ng-container>
-        <ng-container after-content>
-            <ng-content select="[after-content]"></ng-content>
-            <ng-container actions>
-                <ng-content select="[actions]"></ng-content>
-            </ng-container>
-        </ng-container>
-        <ng-container footer>
-            <ng-content select="[footer]"></ng-content>
-        </ng-container>
-        <ng-container>
-            <ng-content></ng-content>
-        </ng-container>
-    </ngx-content-article>
+  <ngx-content-article
+    [data]="item"
+    type="item"
+    [options]="options"
+    infiniteScroll
+    (scrolled)="onScrollDown.emit()"
+    (scrolledUp)="onScrollUp.emit()"
+    [ngClass]="item.error?'alert alert-error':''"
+    style="display: block"
+  >
+    <!-- forward ng-content from the parent component to the grand child <ngx-content-article> -->
+    <ng-container header>
+      <ng-content select="[header]"></ng-content>
+    </ng-container>
+    <ng-container before-cover>
+      <ng-content select="[before-cover]"></ng-content>
+    </ng-container>
+    <ng-container before-content>
+      <ng-content select="[before-content]"></ng-content>
+    </ng-container>
+    <ng-container after-content>
+      <ng-content select="[after-content]"></ng-content>
+      <ng-container actions>
+        <ng-content select="[actions]"></ng-content>
+      </ng-container>
+    </ng-container>
+    <ng-container footer>
+      <ng-content select="[footer]"></ng-content>
+    </ng-container>
+    <ng-container>
+      <ng-content></ng-content>
+    </ng-container>
+  </ngx-content-article>
 </ng-template>
 
 <ng-template #gridBlock let-data="data">
-    <div
-        class="masonry"
-        infiniteScroll
-        (scrolled)="onScrollDown.emit()"
-        (scrolledUp)="onScrollUp.emit()"
+  <div
+    class="masonry"
+    infiniteScroll
+    (scrolled)="onScrollDown.emit()"
+    (scrolledUp)="onScrollUp.emit()"
+  >
+    <ngx-content-article
+      class="masonry-item"
+      *ngFor="let item of data"
+      [data]="item"
+      type="list"
+      [options]="options"
     >
-        <ngx-content-article
-            class="masonry-item"
-            *ngFor="let item of data"
-            [data]="item"
-            type="list"
-            [options]="options"
-        >
-            <ng-container header>
-                <ng-content select="[header]"></ng-content>
-            </ng-container>
-            <ng-container before-cover>
-                <ng-content select="[before-cover]"></ng-content>
-            </ng-container>
-            <ng-container before-content>
-                <ng-content select="[before-content]"></ng-content>
-            </ng-container>
-            <ng-container after-content>
-                <ng-content select="[after-content]"></ng-content>
-                <ng-container actions>
-                    <ng-content select="[actions]"></ng-content>
-                </ng-container>
-            </ng-container>
-            <ng-container footer>
-                <ng-content select="[footer]"></ng-content>
-            </ng-container>
-            <ng-container>
-                <ng-content></ng-content>
-            </ng-container>
-        </ngx-content-article>
-    </div>
+      <ng-container header>
+        <ng-content select="[header]"></ng-content>
+      </ng-container>
+      <ng-container before-cover>
+        <ng-content select="[before-cover]"></ng-content>
+      </ng-container>
+      <ng-container before-content>
+        <ng-content select="[before-content]"></ng-content>
+      </ng-container>
+      <ng-container after-content>
+        <ng-content select="[after-content]"></ng-content>
+        <ng-container actions>
+          <ng-content select="[actions]"></ng-content>
+        </ng-container>
+      </ng-container>
+      <ng-container footer>
+        <ng-content select="[footer]"></ng-content>
+      </ng-container>
+      <ng-container>
+        <ng-content></ng-content>
+      </ng-container>
+    </ngx-content-article>
+  </div>
 
-    <!-- todo: *cdkVirtualFor not work, temporary remove cdk scroll
+  <!-- todo: *cdkVirtualFor not work, temporary remove cdk scroll
         <!-- todo: use the same scroll bar for cdk/scrolling and the browser scrollbar--
         <cdk-virtual-scroll-viewport itemSize="5" style="height:500vh">
         <div class="masonry">
@@ -108,23 +108,23 @@
 </ng-template>
 
 <ng-template #listBlock let-data="data">
-    <mat-list
-        infiniteScroll
-        (scrolled)="onScrollDown.emit()"
-        (scrolledUp)="onScrollUp.emit()"
-    >
-        <mat-list-item *ngFor="let item of data">
-            <h4 mat-line dir="auto">
-                <a href="{{item.link || '#'}}">{{item.title | length:200}}</a>
-            </h4>
-            <h6 mat-line dir="auto">{{item.subtitle | length:200}}</h6>
-            <!-- todo: use <ng-container> to reduce dom elements -->
-            <div
-                mat-line
-                [innerHtml]="item.content | html2text | length:500 | nl2br"
-                dir="auto"
-            ></div>
-            <!-- todo: add cancel btn -->
-        </mat-list-item>
-    </mat-list>
+  <mat-list
+    infiniteScroll
+    (scrolled)="onScrollDown.emit()"
+    (scrolledUp)="onScrollUp.emit()"
+  >
+    <mat-list-item *ngFor="let item of data">
+      <h4 mat-line dir="auto">
+        <a href="{{item.link || '#'}}">{{item.title | length:200}}</a>
+      </h4>
+      <h6 mat-line dir="auto">{{item.subtitle | length:200}}</h6>
+      <!-- todo: use <ng-container> to reduce dom elements -->
+      <div
+        mat-line
+        [innerHtml]="item.content | html2text | length:500 | nl2br"
+        dir="auto"
+      ></div>
+      <!-- todo: add cancel btn -->
+    </mat-list-item>
+  </mat-list>
 </ng-template>
