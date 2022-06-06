@@ -10,7 +10,7 @@
     "prepare": "husky install",
     "lint": "npm run lint:prettier && npm run lint:eslint",
     "lint:prettier": "prettier . --write --ignore-path=.gitignore --ignore-unknown",
-    "lint:eslint": "eslint \"**\" --fix --config=.eslintrc.js --ext=.* --ignore-path=.gitignore --quiet | shx grep eng-dibo",
+    "lint:eslint": "eslint \"**\" --fix --config=.eslintrc.js --ext=.* --ignore-path=.gitignore --quiet",
     "test": "jest --coverage --only-changed=false",
     "test:fails": "jest --coverage --only-changed=false --only-failures",
     "test:changed": "jest",
