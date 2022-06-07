@@ -296,6 +296,7 @@ module.exports = {
           ref: false,
           args: false,
           config: false,
+          params: false,
         },
       },
     ],

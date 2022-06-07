@@ -43,7 +43,7 @@ import { NgxLoadService } from '@engineers/ngx-utils/load-scripts.service';
 
 // todo: import module & interfaces from packages/content/ngx-content-view/index.ts
 
-export interface Parameters_ {
+export interface Params {
   type: string;
   postType?: string;
   category?: Category;
@@ -71,7 +71,7 @@ export interface Category {
 })
 export class ContentViewComponent implements OnInit, AfterViewInit {
   @ViewChild('quillView') quillView: any;
-  params!: Parameters_;
+  params!: Params;
   tags!: Meta;
   options!: ViewOptions;
   categories!: Array<Category>;
