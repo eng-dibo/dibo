@@ -1,3 +1,9 @@
+# [ngx-cms-v1.0.1](https://github.com/eng-dibo/dibo/compare/ngx-cms-v1.0.0...ngx-cms-v1.0.1) (2022-06-07)
+
+### Bug Fixes
+
+- **ngx-cms:** fix exported members ([319c8b2](https://github.com/eng-dibo/dibo/commit/319c8b251c9b36940daa477423c597b7fd82e738))
+
 # ngx-cms-v1.0.0 (2022-05-16)
 
 ### Bug Fixes
