@@ -51,13 +51,26 @@ test('write in non-existing dir', () => {
 });
 
 test('resolve', () => {
-  expect(resolve('/path', 'to/file.js')).toEqual('/path/to/file.js');
+  try {
+    expect(resolve('/path', 'to/file.js')).toEqual('/path/to/file.js');
+  } catch {
+    // for windows
+    expect(resolve('/path', 'to/file.js')).toContain('path\\to\\file.js');
+  }
 });
 
 test('parsePath', () => {
   expect(parsePath('/path/to/file.js')).toEqual({
     type: 'file',
     dir: '/path/to',
+    file: 'file',
+    extension: 'js',
+  });
+
+  // windows
+  expect(parsePath('\\path\\to\\file.js')).toEqual({
+    type: 'file',
+    dir: '\\path\\to',
     file: 'file',
     extension: 'js',
   });
@@ -212,10 +225,12 @@ describe('getEntries', () => {
       // all files in dir with full path
       [
         ...entries
-          .map((element) => `${dir}/${element}`)
+          .map((element) => resolve(`${dir}/${element}`))
           // all files in subdir
-          .concat(entries.map((element) => `${dir}/subdir/${element}`)),
-        dir + '/subdir',
+          .concat(
+            entries.map((element) => resolve(`${dir}/subdir/${element}`))
+          ),
+        resolve(`${dir}/subdir`),
       ].sort()
     );
   });
@@ -223,16 +238,16 @@ describe('getEntries', () => {
   test('filter by function', () => {
     // list all js files only
     expect(getEntries(dir, (element) => element.includes('.js'))).toEqual([
-      dir + '/file.js',
-      dir + '/subdir/file.js',
+      resolve(`${dir}/file.js`),
+      resolve(`${dir}/subdir/file.js`),
     ]);
   });
 
   test('filter by regex', () => {
     expect(getEntries(dir, /subdir/).sort()).toEqual(
       [
-        ...entries.map((element) => `${dir}/subdir/${element}`),
-        `${dir}/subdir`,
+        ...entries.map((element) => resolve(`${dir}/subdir/${element}`)),
+        resolve(`${dir}/subdir`),
       ].sort()
     );
   });
@@ -240,13 +255,13 @@ describe('getEntries', () => {
   test('filter by type: files', () => {
     expect(getEntries(dir, 'files').sort()).toEqual(
       entries
-        .map((element) => `${dir}/${element}`)
-        .concat(entries.map((element) => `${dir}/subdir/${element}`))
+        .map((element) => resolve(`${dir}/${element}`))
+        .concat(entries.map((element) => resolve(`${dir}/subdir/${element}`)))
         .sort()
     );
   });
   test('filter by type: dirs', () => {
-    expect(getEntries(dir, 'dirs')).toEqual([dir + '/subdir']);
+    expect(getEntries(dir, 'dirs')).toEqual([resolve(`${dir}/subdir`)]);
   });
 
   test('depth=0', () => {
@@ -255,7 +270,10 @@ describe('getEntries', () => {
     }
 
     expect(getEntries(dir, undefined, 0).sort()).toEqual(
-      [...entries.map((element) => `${dir}/${element}`), dir + '/subdir'].sort()
+      [
+        ...entries.map((element) => resolve(`${dir}/${element}`)),
+        resolve(`${dir}/subdir`),
+      ].sort()
     );
   });
 
@@ -266,11 +284,11 @@ describe('getEntries', () => {
 
     expect(getEntries(dir, undefined, 1).sort()).toEqual(
       [
-        ...entries.map((element) => `${dir}/${element}`),
-        dir + '/subdir',
-        dir + '/subdir/extra',
+        ...entries.map((element) => resolve(`${dir}/${element}`)),
+        resolve(`${dir}/subdir`),
+        resolve(`${dir}/subdir/extra`),
       ]
-        .concat(entries.map((element) => `${dir}/subdir/${element}`))
+        .concat(entries.map((element) => resolve(`${dir}/subdir/${element}`)))
         .sort()
     );
   });
@@ -282,12 +300,14 @@ describe('getEntries', () => {
 
     expect(getEntries(dir, undefined, 2).sort()).toEqual(
       [
-        ...entries.map((element) => `${dir}/${element}`),
-        dir + '/subdir',
-        dir + '/subdir/extra',
+        ...entries.map((element) => resolve(`${dir}/${element}`)),
+        resolve(`${dir}/subdir`),
+        resolve(`${dir}/subdir/extra`),
       ]
-        .concat(entries.map((element) => `${dir}/subdir/${element}`))
-        .concat(entries.map((element) => `${dir}/subdir/extra/${element}`))
+        .concat(entries.map((element) => resolve(`${dir}/subdir/${element}`)))
+        .concat(
+          entries.map((element) => resolve(`${dir}/subdir/extra/${element}`))
+        )
         .sort()
     );
   });
@@ -298,5 +318,3 @@ describe('getEntries', () => {
     );
   });
 });
-
-// kfnjngfjlngl

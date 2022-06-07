@@ -61,12 +61,14 @@ export function getSize(
     (_path, type) =>
       type === 'file'
         ? lstat(_path).then((stats: any) => stats.size / 1024 ** units[unit])
-        : undefined,
+        : // todo: for dirs, size = total sizes of its contents
+          undefined,
     filter
   ).then((sizes) => {
     let sum = (sizes: any) => {
       let total = 0;
-      for (let size of sizes) {
+      // remove undefined values
+      for (let size of sizes.filter(Boolean)) {
         total += Array.isArray(size) ? sum(size) : size;
       }
       return total;
@@ -168,6 +170,8 @@ export function copy(
   destination: string,
   filter: Filter = () => true
 ) {
+  source = resolve(source);
+  destination = resolve(destination);
   return recursive(
     source,
     (path, type) => {
@@ -278,6 +282,7 @@ export async function getEntries(
   filter?: ((entry: string) => boolean) | RegExp | 'files' | 'dirs' | '*',
   depth?: number
 ): Promise<Array<string>> {
+  dir = resolve(dir);
   let _filter: ((entry: string) => boolean) | undefined;
 
   switch (filter) {

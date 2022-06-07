@@ -61,11 +61,12 @@ export interface ParsePath {
  * @param path
  */
 export function parsePath(path: PathLike): ParsePath {
+  path = path.toString();
   let extension = getExtension(path);
   return {
     type: isDir(path) ? 'dir' : 'file',
-    dir: dirname(path.toString()),
-    file: basename(path.toString(), `.${extension}`),
+    dir: dirname(path),
+    file: basename(path, `.${extension}`),
     extension,
   };
 }
@@ -117,15 +118,17 @@ export function getSize(
  * @param path
  */
 export function isDir(path: PathLike): boolean {
+  path = resolve(path);
   return existsSync(path) && lstatSync(path).isDirectory();
 }
 
 /**
  *
  * @param file
+ * @param path
  */
-export function getModifiedTime(file: PathLike): number {
-  return lstatSync(file).mtimeMs;
+export function getModifiedTime(path: PathLike): number {
+  return lstatSync(resolve(path)).mtimeMs;
 }
 
 /**
@@ -241,6 +244,8 @@ export function copy(
   destination: string,
   filter: Filter = () => true
 ) {
+  source = resolve(source);
+  destination = resolve(destination);
   return recursive(source, (path, type) => {
     if (type === 'file' && filter(path)) {
       let destination_ = path.replace(source.toString(), destination);
@@ -303,6 +308,8 @@ export function read(
   path: PathLike,
   options?: ReadOptions | BufferEncoding
 ): Buffer | string | Array<any> | Obj {
+  path = resolve(path);
+
   let defaultOptions: ReadOptions = {
     encoding: null,
     flag: 'r',
@@ -390,6 +397,7 @@ export function getEntries(
   filter?: ((entry: string) => boolean) | RegExp | 'files' | 'dirs' | '*',
   depth?: number
 ): Array<string> {
+  dir = resolve(dir);
   let _filter: ((entry: string) => boolean) | undefined;
 
   switch (filter) {
@@ -436,7 +444,7 @@ export function getEntries(
         filter,
         depth !== undefined ? depth - 1 : undefined
       );
-      result = result.concat(subEntries);
+      result = [...result, ...subEntries];
     }
   }
 
