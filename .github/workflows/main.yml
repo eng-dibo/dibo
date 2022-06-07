@@ -30,3 +30,23 @@ jobs:
       - name: maintenance-tasks
         run: npm run task maintenance -- --user=${{github.actor}}
       - run: echo "💡 job status:${{ job.status }}."
+
+  platform-windows-x64:
+    runs-on: windows-latest
+    steps:
+      - name: Check out the repository code
+        uses: actions/checkout@v3
+      - name: install dependencies
+        run: npm ci
+      - name: run the tests
+        run: set NODE_OPTIONS="--max-old-space-size=8192" && npm t
+
+  platform-mac:
+    runs-on: macos-latest
+    steps:
+      - name: Check out the repository code
+        uses: actions/checkout@v3
+      - name: install dependencies
+        run: npm ci
+      - name: run the tests
+        run: export NODE_OPTIONS="--max-old-space-size=8192" npm t
