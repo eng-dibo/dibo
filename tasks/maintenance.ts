@@ -21,6 +21,8 @@ export default function maintenance(options: PushOptions) {
   // auto fix issues in the code base, such as code style, removing unused imports, checking package.dependencies
   // see .eslintrc.js for all linting tools
   execSync('npm run lint');
+  // update all dependencies (minor) and re-run tests
+  execSync('npm run update:all');
   // push the changed files into the main repo
   push(options);
 }
