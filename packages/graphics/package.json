@@ -35,7 +35,7 @@
   ],
   "dependencies": {
     "@engineers/nodejs": "1.0.0",
-    "sharp": "^0.30.4"
+    "sharp": "^0.30.6"
   },
   "scripts": {
     "build": "webpack",
@@ -51,6 +51,6 @@
     "postrelease:local": "npm run postrelease"
   },
   "devDependencies": {
-    "@types/sharp": "^0.30.2"
+    "@types/sharp": "^0.30.3"
   }
 }
