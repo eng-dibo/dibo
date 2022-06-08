@@ -10,11 +10,18 @@ module.exports = {
   peer: true,
   // update minor versions only
   target: "minor",
+  // don't include peerDependencies in updates
+  dep: "prod,dev,bundle,optional",
   reject: [
     // angular packages and their dependencies
     // use angular migration guide to update Angular
     "@angular/**",
     "typescript",
+    "webpack",
+    "@fortawesome/angular-fontawesome",
+    "@fortawesome/fontawesome-svg-core",
+    "@fortawesome/free-brands-svg-icons",
+    "@fortawesome/free-solid-svg-icons",
     // has breaking change, remove from `reject` after fully migrating the project into esm
     "strip-json-comments",
     // has issue with semantic-release-monorepo

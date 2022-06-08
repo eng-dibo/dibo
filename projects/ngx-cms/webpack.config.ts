@@ -4,6 +4,8 @@ import baseConfig from '~~webpack.config';
 import { resolve } from 'node:path';
 import { getEntries, read } from '@engineers/nodejs/fs-sync';
 
+/*
+// by default add all project's files to entry{}
 let tsConfig = read(resolve(__dirname, 'tsconfig.json')) as {
   [key: string]: any;
 };
@@ -20,3 +22,6 @@ export default webpackMerge(baseConfig, {
     path: resolve(__dirname, tsConfig.compilerOptions.outDir),
   },
 });
+*/
+
+export default baseConfig;

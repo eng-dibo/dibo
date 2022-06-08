@@ -35,7 +35,13 @@
     "material design"
   ],
   "dependencies": {
-    "@fortawesome/angular-fontawesome": "^0.11.0",
+    "@engineers/javascript": "1.0.0",
+    "@engineers/lazy-load": "1.0.0",
+    "@engineers/ngx-content-core": "1.0.0",
+    "@engineers/ngx-utils": "1.0.0",
+    "@engineers/nodejs": "1.0.0",
+    "@engineers/rxjs": "1.0.0",
+    "@fortawesome/angular-fontawesome": "^0.10.2",
     "@fortawesome/fontawesome-svg-core": "^6.1.1",
     "@fortawesome/free-brands-svg-icons": "^6.1.1",
     "@fortawesome/free-solid-svg-icons": "^6.1.1",
@@ -43,13 +49,7 @@
     "ngx-infinite-scroll": "^10.0.1",
     "ngx-quill": "^16.2.1",
     "ngx-sharebuttons": "^9.0.0",
-    "rxjs": "^7.5.5",
-    "@engineers/javascript": "1.0.0",
-    "@engineers/ngx-content-core": "1.0.0",
-    "@engineers/ngx-utils": "1.0.0",
-    "@engineers/lazy-load": "1.0.0",
-    "@engineers/rxjs": "1.0.0",
-    "@engineers/nodejs": "1.0.0"
+    "rxjs": "^7.5.5"
   },
   "peerDependencies": {
     "@angular/cdk": "^13.1.2",
