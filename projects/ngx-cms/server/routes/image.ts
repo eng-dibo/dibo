@@ -42,7 +42,7 @@ export default (request: Request, res: Response): any => {
     encoding: undefined,
   })
     .then((data) => {
-      if (request.query.size === 0) {
+      if (!request.query.size) {
         return data;
       }
 

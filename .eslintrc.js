@@ -318,7 +318,8 @@ module.exports = {
     // https://github.com/sindresorhus/eslint-plugin-unicorn/blob/v42.0.0/docs/rules/no-null.md#why
     "unicorn/no-null": "warn",
     "unicorn/consistent-destructuring": "warn",
-    "unicorn/explicit-length-check": "warn",
+    // issue: https://github.com/sindresorhus/eslint-plugin-unicorn/issues/1840
+    "unicorn/explicit-length-check": "off",
     "no-useless-escape": "warn",
     "no-empty": "warn",
     // todo: VS n/no-extraneous-import
