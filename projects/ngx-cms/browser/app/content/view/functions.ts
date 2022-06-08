@@ -120,6 +120,9 @@ export function transformData(
   if (!data) {
     throw new Error('[transformData] no data');
   }
+
+  let dataTransformed: Payload = data;
+
   if (typeof data === 'string') {
     // ex: the url fetched via a ServiceWorker
     data = JSON.parse(data);
@@ -132,7 +135,7 @@ export function transformData(
   }
 
   if (Array.isArray(data)) {
-    data = data
+    dataTransformed = data
       .map((item: Article) =>
         adjustArticle(item, parameters, categories, 'list')
       )
@@ -141,10 +144,10 @@ export function transformData(
   } else if (!data.error && data.content) {
     // data may be doesn't 'content' property
     // for example article_categories
-    data = adjustArticle(data, parameters, categories, 'item');
+    dataTransformed = adjustArticle(data, parameters, categories, 'item');
   }
 
-  return data;
+  return dataTransformed;
 }
 
 /**
@@ -215,9 +218,6 @@ export function adjustArticle(
   categories?: Array<Category>,
   type: 'item' | 'list' = 'item'
 ): Article {
-  item.id = item._id;
-  item.summary = item.content ? summary(item.content) : item.title;
-
   // todo: param.category || item.categories[0] || config.general
   let category;
   if (
@@ -227,11 +227,21 @@ export function adjustArticle(
   ) {
     category = categories.find((element) => element._id === item.categories[0]);
   }
-  item.slug = category ? category.slug || slug(category.title!) : 'general';
-  item.slug += '/' + slug(item.title || '');
-  item.link = `/${parameters.type}/${item.slug}~${item.id}`;
 
-  if (item.cover) {
+  let adjustedItem = Object.assign(
+    {
+      id: item._id,
+      summary: item.content ? summary(item.content) : item.title,
+      slug: `${
+        category ? category.slug || slug(category.title!) : 'general'
+      }/${slug(item.title || '')}`,
+
+      link: `/${parameters.type}/${item.slug}~${item._id}`,
+    },
+    item
+  );
+
+  if (adjustedItem.cover) {
     // if the layout changed, change the attribute sizes, for example if a side menu added.
     // todo: i<originalSize/250
     let source = `/api/v1/image/${parameters.type}-cover-${item._id}/${item.slug}.webp`,
@@ -245,7 +255,7 @@ export function adjustArticle(
       srcset += `${source}?size=${n} ${n}w, `;
     }
 
-    item.cover = {
+    adjustedItem.cover = {
       src: source,
       srcset,
       sizes,
@@ -253,14 +263,13 @@ export function adjustArticle(
   }
 
   if (type === 'item' && parameters.type === 'jobs') {
-    item.content += `<div id='contacts'>${item.contacts}</div>`;
+    adjustedItem.content += `<div id='contacts'>${item.contacts}</div>`;
   }
 
   if (type === 'list') {
-    item.content = item.summary;
+    adjustedItem.content = item.summary;
   }
-
-  return item;
+  return adjustedItem;
 }
 
 /**

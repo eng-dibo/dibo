@@ -206,7 +206,11 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
         // console.log({ data, categories, defaultTags });
 
         try {
-          data = transformData(data as Payload, this.params, categories);
+          let dataTransformed = transformData(
+            data as Payload,
+            this.params,
+            categories
+          );
 
           // get category details from category.slug in url
           // if category._id couldn't be get due to an invalid category.slug is used in the url
@@ -214,12 +218,16 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
           // use category._id for loadMore()
           if (categories) {
             this.categories = categories;
-            if (!Array.isArray(data) && Array.isArray(data.categories)) {
+            if (
+              !Array.isArray(dataTransformed) &&
+              Array.isArray(dataTransformed.categories)
+            ) {
               this.itemCategories = categories
                 .filter(
                   (element: Category) =>
-                    (data as Article).categories.includes(element._id) &&
-                    !element.parent
+                    (dataTransformed as Article).categories.includes(
+                      element._id
+                    ) && !element.parent
                 )
                 .map((element: Category) => ({
                   ...element,
@@ -244,7 +252,7 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
           let baseUrl = defaultTags.baseUrl || this.document.location.origin;
 
           this.tags = getMetaTags(
-            data,
+            dataTransformed,
             this.params,
             Object.assign({ baseUrl }, defaultTags)
           );
@@ -252,12 +260,12 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
           if (environment.mode === 'development') {
             console.info('[content/view]', {
               params: this.params,
-              data,
+              dataTransformed,
               defaultTags,
               tags: this.tags,
             });
           }
-          this.data = data;
+          this.data = dataTransformed;
         } catch (error) {
           this.data = { error };
           throw error;
