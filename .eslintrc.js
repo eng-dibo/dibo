@@ -285,7 +285,7 @@ module.exports = {
     "jsdoc/require-param-type": "off",
     "unicorn/consistent-function-scoping": "warn",
     "unicorn/prevent-abbreviations": [
-      "warn",
+      "off",
       {
         replacements: {
           pkg: false,
