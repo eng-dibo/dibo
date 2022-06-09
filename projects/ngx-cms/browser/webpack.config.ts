@@ -31,5 +31,5 @@ if (tsLoader) {
   tsLoader.options!.configFile = resolve(__dirname, './tsconfig.json');
 }
 
-delete config.module!.rules;
+delete config.target;
 export default config;
