@@ -1,3 +1,9 @@
+# [ngx-cms-v1.0.2](https://github.com/eng-dibo/dibo/compare/ngx-cms-v1.0.1...ngx-cms-v1.0.2) (2022-06-14)
+
+### Bug Fixes
+
+- **ngx-cms:** loadMore() ([34b5379](https://github.com/eng-dibo/dibo/commit/34b53798a9cb0f6c5bdf0ed7a6e71083959faf5f))
+
 # [ngx-cms-v1.0.1](https://github.com/eng-dibo/dibo/compare/ngx-cms-v1.0.0...ngx-cms-v1.0.1) (2022-06-07)
 
 ### Bug Fixes
