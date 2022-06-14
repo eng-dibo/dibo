@@ -345,7 +345,7 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
         })
       )
       .subscribe((data) => {
-        if (data && Array.isArray(data)) {
+        if (data && Array.isArray(data) && data.length > 0) {
           this.moreData.push(
             ...(transformData(
               data as unknown as Article[],
