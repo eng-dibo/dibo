@@ -37,7 +37,7 @@ export function getData(
   let { operation, database, collection, portions, params } = queryObject;
 
   if (!prod) {
-    console.log('[server/routes]', { queryObject });
+    console.log('[server/routes]', { queryUrl, queryObject });
   }
 
   if (!supportedCollections.includes(collection)) {
@@ -49,12 +49,12 @@ export function getData(
   }
 
   // stringify queryUrl to use it as cache name
+  // todo: implement queryObjectToUrl() or stringify()
   if (typeof queryUrl !== 'string') {
     let temporaryQuery = '';
     for (let key in params) {
       temporaryQuery += `${key}=${params[key]}`;
     }
-    queryObject = queryUrl;
     queryUrl = `${operation}:${database ? database + '.' : ''}${collection}/${(
       portions || []
     ).join('/')}${params ? '?' + temporaryQuery : ''}`;
@@ -67,7 +67,7 @@ export function getData(
     () =>
       // @ts-ignore: error TS2349: This expression is not callable.
       // Each member of the union type ... has signatures, but none of those signatures are compatible with each other.
-      connect().then(() => {
+      connect().then(async () => {
         // get articles from a category by its slug instead of its _id
         // prefix slug name with '^'
         // example: 'articles/@category=^$slug-name'
@@ -77,16 +77,20 @@ export function getData(
           // example: 'status=approved,category=^slug,key=value' => 'slug'
           let slug = params.filter.split('category=^').pop().split(',')[0];
 
-          return query(`${collection}_categories/:1~_id@slug=${slug}`).then(
-            (category: any) =>
-              category.length > 0
-                ? query(`${collection}/@categories=${category[0]._id}`)
-                : Promise.reject(`[server] category ${slug} not found`)
+          let category = await query(
+            `${collection}_categories/:1~_id@slug=${slug}`
           );
-        } else {
-          return query(queryObject);
+          if (category?.length > 0) {
+            params!.filter = params!.filter.replace(
+              `category=^${slug}`,
+              `categories=${category[0]._id}`
+            );
+          } else {
+            Promise.reject(`[server] category ${slug} not found`);
+          }
         }
 
+        return query(queryObject);
         /*
           // todo:
           if(collection.indexOf('_categories)){
