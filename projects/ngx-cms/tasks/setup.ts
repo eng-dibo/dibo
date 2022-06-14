@@ -33,6 +33,14 @@ export function gcloudSetup(): void {
     `echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list`
   );
 
+  // to fix the issue for 'apt-get install apt-transport-https'
+  // https://unix.stackexchange.com/a/338918
+  // https://appuals.com/fix-could-not-open-lock-file-var-lib-dpkg-lock
+  try {
+    execSync('sudo rm /var/lib/dpkg/lock && sudo rm /var/lib/apt/lists/lock');
+  } catch {}
+  // execSync('sudo apt-get update && apt-get upgrade');
+
   // confirm that apt-transport-https installed
   // use '--yes' to suppress the confirmation message
   execSync(
