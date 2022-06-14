@@ -39,7 +39,7 @@
     "serve:ts": "ts-node -r dotenv/config  ./dist/server/main.js --start dotenv_config_path=./dist/config/server/.env -- --inspect",
     "serve:dev": "cross-env NODE_ENV=development npm run serve",
     "serve:ng": "ng serve",
-    "postbuild": "shx cp package.json dist",
+    "postbuild": "exit 0",
     "deploy": "npm run deploy --prefix=./dist",
     "build:deploy": "npm run build && npm run deploy",
     "_publish": "exit 0",
