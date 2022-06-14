@@ -38,8 +38,8 @@ export function gcloudSetup(): void {
   // https://appuals.com/fix-could-not-open-lock-file-var-lib-dpkg-lock
   try {
     execSync('sudo rm /var/lib/dpkg/lock && sudo rm /var/lib/apt/lists/lock');
+    execSync('sudo apt-get update && apt-get upgrade');
   } catch {}
-  // execSync('sudo apt-get update && apt-get upgrade');
 
   // confirm that apt-transport-https installed
   // use '--yes' to suppress the confirmation message
