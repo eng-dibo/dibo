@@ -2,7 +2,7 @@ import querystring from 'node:querystring';
 import _request from '@engineers/nodejs/https';
 import cache from '@engineers/nodejs/cache-fs';
 import { TEMP } from './routes';
-import { query as databaseQuery } from '~server/database';
+import { query as databaseQuery } from '~~projects/ngx-cms/server/database';
 /**
  * make http request to graph.facebook
  *

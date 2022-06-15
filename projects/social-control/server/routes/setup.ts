@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { stringToObject } from '@engineers/javascript/string';
 import { TEMP } from '.';
 import { existsSync, unlinkSync } from 'node:fs';
-import { query as databaseQuery } from '~server/database';
+import { query as databaseQuery } from '~~projects/ngx-cms/server/database';
 import { getConfig, handleMessage, request } from '~server/functions';
 /**
  * adds the app to a new page

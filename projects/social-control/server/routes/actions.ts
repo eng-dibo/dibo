@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { stringToObject } from '@engineers/javascript/string';
-import { query as databaseQuery } from '~server/database';
+import { query as databaseQuery } from '~~projects/ngx-cms/server/database';
 /**
  * add/modify blocks
  * a block is a set of services (message, subscription to a json api or rss, ...)

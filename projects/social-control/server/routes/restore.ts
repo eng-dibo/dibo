@@ -4,7 +4,7 @@ import { existsSync, readdirSync } from 'node:fs';
 import { extname, resolve } from 'node:path';
 import { toRegExp } from '@engineers/javascript/regex';
 import { restore } from '@engineers/mongoose';
-import { connect } from '~server/database';
+import { connect } from '~~projects/ngx-cms/server/database';
 import { supportedCollections } from './supported-collections';
 import { read as readFS } from '@engineers/nodejs/fs';
 import { Request, Response } from 'express';

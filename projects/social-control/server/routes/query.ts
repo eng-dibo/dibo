@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import { stringToObject } from '@engineers/javascript/string';
-import { query as databaseQuery } from '~server/database';
 import { request } from '~server/functions';
 /**
  * make arbitrary queries

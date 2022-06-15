@@ -1,6 +1,6 @@
 import { resolve } from 'node:path';
 import { replaceAll } from '@engineers/javascript/string';
-import { connect } from '~server/database';
+import { connect } from '~~projects/ngx-cms/server/database';
 import { supportedCollections } from './supported-collections';
 import { backup } from '@engineers/mongoose';
 import { write as writeFs } from '@engineers/nodejs/fs';

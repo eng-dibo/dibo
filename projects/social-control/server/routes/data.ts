@@ -1,6 +1,6 @@
 import { Operation, parse } from '@engineers/databases/operations';
 import { timer } from '@engineers/javascript/time';
-import { connect, query } from '~server/database';
+import { connect, query } from '~~projects/ngx-cms/server/database';
 import cache from '@engineers/nodejs/cache-fs';
 import { prod } from '~config/server';
 import { supportedCollections } from './supported-collections';
