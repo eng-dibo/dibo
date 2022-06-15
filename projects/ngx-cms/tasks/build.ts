@@ -26,6 +26,10 @@ export type Mode = 'production' | 'development' | 'test';
 export interface BuildOptions {
   targets?: string | Array<string>;
   mode?: Mode;
+  project?: string;
+  distribution?: string;
+  projectPath?: string;
+  rootPath?: string;
 }
 
 /**
@@ -39,6 +43,10 @@ export default function (options?: BuildOptions): void {
         targets:
           process.env.BUILD_TARGETS || 'browser,server,config,package,optimize',
         mode: process.env.NODE_ENV || 'production',
+        project: 'ngx-cms',
+        distribution,
+        projectPath,
+        rootPath,
       },
       options || {}
     );
@@ -52,21 +60,21 @@ export default function (options?: BuildOptions): void {
 
     let targets = options_.targets.split(',');
     if (targets.includes('browser')) {
-      buildBrowser(options_.mode);
+      buildBrowser(options_);
     }
 
     if (targets.includes('server')) {
-      buildServer(options_.mode);
+      buildServer(options_);
     }
     if (targets.includes('config')) {
-      buildConfig();
+      buildConfig(options_);
     }
     if (targets.includes('package')) {
-      buildPackage();
+      buildPackage(options_);
     }
 
     if (targets.includes('optimize')) {
-      optimize();
+      optimize(options_);
     }
   } catch {
     console.log('>> failed');
@@ -77,57 +85,72 @@ export default function (options?: BuildOptions): void {
 /**
  *
  * @param mode
+ * @param distribution
+ * @param options
  */
-export function buildBrowser(mode: Mode = 'production'): void {
+export function buildBrowser(options: any): void {
   let cmd = `ng build --aot ${
-    mode === 'production' ? '--configuration=production' : ''
+    options.mode === 'production' ? '--configuration=production' : ''
   }`;
 
   console.log(`> build browser: ${cmd}`);
 
   execSync(cmd);
-  write(`${distribution}/browser/info.json`, { mode, time });
+  write(`${options.distribution}/browser/info.json`, {
+    mode: options.mode,
+    time,
+  });
 }
 
 /**
  *
  * @param mode
+ * @param project
+ * @param distribution
+ * @param options
  */
-export function buildServer(mode: Mode = 'production'): void {
-  let cmd = `ng run ngx-cms:server${
-    mode === 'production' ? ':production' : ''
+export function buildServer(options: any): void {
+  let cmd = `ng run ${options.project}:server${
+    options.mode === 'production' ? ':production' : ''
   } `;
 
   console.log(`> build server: ${cmd}`);
 
   execSync(cmd);
-  write(`${distribution}/server/info.json`, { mode, time });
+  write(`${options.distribution}/server/info.json`, {
+    mode: options.mode,
+    time,
+  });
 }
 
 /**
  *
+ * @param distribution
+ * @param options
  */
-export function buildConfig(): void {
+export function buildConfig(options: any): void {
   console.log(`> build config`);
 
   for (let target of ['browser', 'server']) {
-    mkdir([`${distribution}/config/${target}`]);
+    mkdir([`${options.distribution}/config/${target}`]);
 
-    for (let element of readdirSync(`${projectPath}/config/${target}`))
+    for (let element of readdirSync(`${options.projectPath}/config/${target}`))
       copyFileSync(
-        `${projectPath}/config/${target}/${element}`,
-        `${distribution}/config/${target}/${basename(element).replace(
+        `${options.projectPath}/config/${target}/${element}`,
+        `${options.distribution}/config/${target}/${basename(element).replace(
           '!!',
           ''
         )}`
       );
 
     // userFiles override original config files
-    if (existsSync(`${projectPath}/config!!/${target}`)) {
-      for (let element of readdirSync(`${projectPath}/config!!/${target}`))
+    if (existsSync(`${options.projectPath}/config!!/${target}`)) {
+      for (let element of readdirSync(
+        `${options.projectPath}/config!!/${target}`
+      ))
         copyFileSync(
-          `${projectPath}/config!!/${target}/${element}`,
-          `${distribution}/config/${target}/${basename(element).replace(
+          `${options.projectPath}/config!!/${target}/${element}`,
+          `${options.distribution}/config/${target}/${basename(element).replace(
             '!!',
             ''
           )}`
@@ -136,13 +159,13 @@ export function buildConfig(): void {
   }
 
   // generating VAPID keys for push notifications (should be generated only once)
-  let gcloudConfig = require(`${distribution}/config/server/gcloud`);
+  let gcloudConfig = require(`${options.distribution}/config/server/gcloud`);
   let GCM = gcloudConfig.GCM,
-    vapidPath = resolve(`${distribution}/config/server/vapid.json`);
+    vapidPath = resolve(`${options.distribution}/config/server/vapid.json`);
   if (GCM && GCM.id && !existsSync(vapidPath)) {
     console.log('> generating VAPID keys');
     // set .env to be used by config/server/*.js (.env is created in buildConfig())
-    dotEnv.config({ path: `${distribution}/config/server/.env` });
+    dotEnv.config({ path: `${options.distribution}/config/server/.env` });
     let vapidKeys = webPush.generateVAPIDKeys();
     write(vapidPath, vapidKeys);
   }
@@ -150,15 +173,19 @@ export function buildConfig(): void {
 
 /**
  *
+ * @param distribution
+ * @param options
  */
-export function buildPackage(): void {
+export function buildPackage(options: any): void {
   console.log(`> build package`);
   // copy files for deployment: Dockerfile, package.json, root/package-lock.json
   // & adjust package.json/scripts{start,deploy}, remove properties used for build
-  let rootPackage = read(`${projectPath}/package.json`) as {
+  let rootPackage = read(`${options.projectPath}/package.json`) as {
     [key: string]: any;
   };
-  let graphicsPackage = read(`${rootPath}/packages/graphics/package.json`) as {
+  let graphicsPackage = read(
+    `${options.rootPath}/packages/graphics/package.json`
+  ) as {
     [key: string]: any;
   };
   let package_ = {
@@ -190,14 +217,14 @@ export function buildPackage(): void {
     homepage: rootPackage.homepage,
     funding: rootPackage.funding,
   };
-  write(`${distribution}/package.json`, package_);
+  write(`${options.distribution}/package.json`, package_);
 
   // copy the required files to build the container image
   for (let file of [
-    `${projectPath}/Dockerfile`,
-    `${rootPath}/package-lock.json`,
+    `${options.projectPath}/Dockerfile`,
+    `${options.rootPath}/package-lock.json`,
   ])
-    copyFileSync(file, `${distribution}/${basename(file)}`);
+    copyFileSync(file, `${options.distribution}/${basename(file)}`);
   // todo: compile ./deploy to $dist by webpack
   // change $projectPath/package.scripts.deploy to execute $dist/package.scripts.deploy
 
@@ -207,7 +234,7 @@ export function buildPackage(): void {
         deploy: resolve(__dirname, './deploy.ts'),
       },
       output: {
-        path: `${distribution}/tasks`,
+        path: `${options.distribution}/tasks`,
         libraryTarget: 'commonjs',
         clean: false,
       },
@@ -232,7 +259,7 @@ export function buildPackage(): void {
       // call the default function, i.e deploy()
       // todo: pass options from cli (see ./index.ts -> runTask())
       appendFileSync(
-        `${distribution}/tasks/deploy.js`,
+        `${options.distribution}/tasks/deploy.js`,
         '\n\nmodule.exports.default();'
       );
     }
@@ -244,14 +271,17 @@ export function buildPackage(): void {
  *  - minify js files
  *  - transform index.html
  *  - rebuild ngsw-config with the new hashes
+ *
+ * @param distribution
+ * @param options
  */
 //todo: options.optimize = minify(default in prod),index,pwa
-export function optimize() {
+export function optimize(options: any) {
   console.log(`> build: optimizing`);
 
   // transform index.html (lazy-load resources, and move them after 'load' event)
   // DOMParser() is not available in nodejs, so we use `jsdom`
-  let browserPath = `${distribution}/browser`,
+  let browserPath = `${options.distribution}/browser`,
     indexPath = `${browserPath}/index.html`,
     content = read(indexPath) as string;
 
@@ -339,10 +369,10 @@ export function optimize() {
 
   //  minify js files using terser
   for (let dir of ['browser', 'server'])
-    for (let element of readdirSync(`${distribution}/${dir}`).filter(
+    for (let element of readdirSync(`${options.distribution}/${dir}`).filter(
       (element_) => element_.endsWith('.js')
     )) {
-      let path = `${distribution}/${dir}/${element}`;
+      let path = `${options.distribution}/${dir}/${element}`;
       console.log(`> minifying: ${dir}/${element}`);
       execSync(
         `terser ${path} --output ${path} --compress --mangle --keep-fnames`
