@@ -1,3 +1,9 @@
+# [social-control-v1.0.1](https://github.com/eng-dibo/dibo/compare/social-control-v1.0.0...social-control-v1.0.1) (2022-06-15)
+
+### Bug Fixes
+
+- **social-control:** update browserlist ([8f02771](https://github.com/eng-dibo/dibo/commit/8f0277114151f119c6a5bdecc09f4303d055c9ee))
+
 # social-control-v1.0.0 (2022-05-16)
 
 ### Bug Fixes
