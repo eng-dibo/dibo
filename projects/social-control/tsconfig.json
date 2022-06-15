@@ -5,7 +5,7 @@
     "outDir": "dist",
     "allowJs": false,
     "paths": {
-      "~*": ["./*"],
+      "~*": ["./*", "../ngx-cms/*"],
       "~~*": ["../../*"],
       "@engineers/*": ["../../packages/*"]
     }

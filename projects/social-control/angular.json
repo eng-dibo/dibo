@@ -36,7 +36,10 @@
             ],
             "scripts": [],
             "serviceWorker": true,
-            "ngswConfigPath": "browser/ngsw-config.json"
+            "ngswConfigPath": "browser/ngsw-config.json",
+            "namedChunks": true,
+            "optimization": false,
+            "statsJson": true
           },
           "configurations": {
             "production": {
@@ -46,10 +49,16 @@
                   "with": "./browser/env.prod.ts"
                 }
               ],
-              "optimization": true,
+              "optimization": {
+                "fonts": false,
+                "scripts": true,
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": false
+                }
+              },
               "outputHashing": "all",
               "sourceMap": false,
-              "namedChunks": false,
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true,
@@ -74,9 +83,12 @@
             "customWebpackConfig": {
               "path": "server/webpack.config.ts"
             },
-            "outputPath": "./dist/core/server",
+            "outputPath": "./dist/server",
             "main": "server/express.ts",
-            "tsConfig": "server/tsconfig.json"
+            "tsConfig": "server/tsconfig.json",
+            "optimization": false,
+            "namedChunks": true,
+            "statsJson": true
           },
           "configurations": {
             "production": {
@@ -91,8 +103,7 @@
               "sourceMap": false,
               "extractLicenses": true
             }
-          },
-          "defaultConfiguration": "production"
+          }
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
