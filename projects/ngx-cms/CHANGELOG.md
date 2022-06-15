@@ -1,3 +1,13 @@
+# [ngx-cms-v1.0.2](https://github.com/eng-dibo/dibo/compare/ngx-cms-v1.0.1...ngx-cms-v1.0.2) (2022-06-15)
+
+### Bug Fixes
+
+- **ngx-cms:** loadMore() ([34b5379](https://github.com/eng-dibo/dibo/commit/34b53798a9cb0f6c5bdf0ed7a6e71083959faf5f))
+- **ngx-cms:** package.json ([e93e817](https://github.com/eng-dibo/dibo/commit/e93e817ba5e488e45164bb8b79a361ed95002853))
+- **ngx-cms:** server/routes/data: params.filter ([1cf532b](https://github.com/eng-dibo/dibo/commit/1cf532bf0bbdad55f766af2ab284b122aba62f0e))
+- **ngx-cms:** tasks/setup ([20400ee](https://github.com/eng-dibo/dibo/commit/20400ee61d26059d5d8e27b66531db326d81ab22))
+- **ngx-cms:** tasks/setup fix installing gcloud ([0c2e2ac](https://github.com/eng-dibo/dibo/commit/0c2e2acdbd4eeff6d80171ce2d9d683922dfd2f4))
+
 # [ngx-cms-v1.0.1](https://github.com/eng-dibo/dibo/compare/ngx-cms-v1.0.0...ngx-cms-v1.0.1) (2022-06-07)
 
 ### Bug Fixes
