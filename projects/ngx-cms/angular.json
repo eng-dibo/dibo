@@ -83,7 +83,7 @@
             "customWebpackConfig": {
               "path": "server/webpack.config.ts"
             },
-            "outputPath": "./dist/core/server",
+            "outputPath": "./dist/server",
             "main": "server/express.ts",
             "tsConfig": "server/tsconfig.json",
             "optimization": false,
