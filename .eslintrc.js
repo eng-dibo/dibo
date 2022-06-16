@@ -297,6 +297,8 @@ module.exports = {
           args: false,
           config: false,
           params: false,
+          dist: false,
+          temp: false,
         },
       },
     ],
