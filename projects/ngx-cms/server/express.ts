@@ -8,38 +8,49 @@ import cors from 'cors';
 import routes, { apiVersion } from './routes';
 import redirect from '@engineers/express-redirect-middleware';
 import { resolve } from 'node:path';
-
-import { APP_BASE_HREF } from '@angular/common';
-import { NextFunction, Request, RequestHandler, Response } from 'express';
-import cache from '@engineers/nodejs/cache-fs';
+import { NextFunction, Request, Response, Router } from 'express';
 import sitemapRoute from './routes/sitemap';
+import angularRoute from './routes/angular';
 
-let mode = process.env.NODE_ENV || 'production';
-export const TEMP = resolve(__dirname, '../temp');
-
-// The Express app is exported so that it can be used by serverless Functions.
-/**
- *
- */
-export function server(): ReturnType<typeof expressServer> {
-  // todo: move to expressServer.msg
-  console.info(`the server is working in ${mode} mode`);
-
+export interface AppOptions {
   // relative to dist/ngx-cms/server
   // this may be have different values for different compilation scenarios
   // for instance, with `ts-node server/express.ts`, __dirname = '/server'
   // also `jest` transpiles .ts files on the fly, but doesn't output to 'dist' folder
-  let distributionFolder = resolve(__dirname, '..'),
-    browserDir = distributionFolder + '/browser',
-    tempDir = distributionFolder + '/temp',
-    configDir = distributionFolder + '/config/browser';
+  distPath?: string;
+  apiVersion?: number;
+  mode?: string;
+  routes?: Router;
+}
+
+/**
+ *
+ * @param options
+ */
+// this function could be used by other projects that have the similar server structure
+// so we exported it to be reusable
+export function createApp(
+  options: AppOptions = {}
+): ReturnType<typeof expressServer> {
+  let opts = Object.assign(
+    {
+      distPath: resolve(__dirname, '..'),
+      apiVersion,
+      mode: process.env.NODE_ENV || 'production',
+    },
+    options
+  );
+
+  console.info(`the server is working in ${opts.mode} mode`);
 
   let app = expressServer({
-    browserDir,
+    browserDir: `${opts.distPath}/browser`,
     serverModule: AppServerModule,
-    // TEMP: cache files, created at runtime
-    // todo: use system.temp
-    staticDirs: [browserDir, tempDir, configDir],
+    staticDirs: [
+      `${opts.distPath}/browser`,
+      `${opts.distPath}/temp`,
+      `${opts.distPath}/config/browser`,
+    ],
   });
 
   // to use req.protocol in case of using a proxy in between (ex: cloudflare, heroku, ..),
@@ -63,7 +74,7 @@ export function server(): ReturnType<typeof expressServer> {
       protocol: 'https',
       subdomain: 'www',
       cb: (oldUrl, newUrl, parts) => {
-        if (mode !== 'production') {
+        if (opts.mode !== 'production') {
           console.info(`[server] redirecting ${oldUrl} -> ${newUrl}`, {
             parts,
           });
@@ -74,7 +85,7 @@ export function server(): ReturnType<typeof expressServer> {
 
   // log info about the request
   app.use((request: Request, res: Response, next: NextFunction) => {
-    if (mode === 'development') {
+    if (opts.mode === 'development') {
       console.info(`[server] ${request.method} ${request.originalUrl}`);
     }
     next();
@@ -85,63 +96,47 @@ export function server(): ReturnType<typeof expressServer> {
   // access the server API from client-side (i.e: Angular)
   app.use(cors());
 
-  // invalid or deprecated api version
-  app.use(
-    '/api/:version',
-    (request: Request, res: Response, next: NextFunction) => {
-      if (request.params.version !== `v${apiVersion.toString()}`) {
-        next(
-          `${request.originalUrl} is an invalid or deprecated request, use /api/v${apiVersion}`
-        );
-      } else {
-        next();
+  if (opts.routes && opts.apiVersion) {
+    // invalid or deprecated api version
+    app.use(
+      '/api/:version',
+      (request: Request, res: Response, next: NextFunction) => {
+        if (request.params.version !== `v${opts.apiVersion.toString()}`) {
+          next(
+            `${request.originalUrl} is an invalid or deprecated request, use /api/v${opts.apiVersion}`
+          );
+        } else {
+          next();
+        }
       }
-    }
-  );
-  app.use(`/api/v${apiVersion}`, routes);
-  app.get('/sitemap.xml', sitemapRoute);
+    );
 
+    app.use(`/api/v${opts.apiVersion}`, routes);
+  }
+
+  return app;
+}
+
+// The Express app is exported so that it can be used by serverless Functions.
+/**
+ *
+ */
+export function server() {
+  // todo: use opts from createApp()
+  let options: AppOptions = {
+    distPath: resolve(__dirname, '..'),
+    apiVersion,
+    mode: process.env.NODE_ENV || 'production',
+  };
+  let app = createApp({ routes });
+  app.get('/sitemap.xml', sitemapRoute);
   // prevent non-existing static files from reaching the regular route, i.e app.get('*')
   app.use('*.*', (request: Request, res: Response) => {
     throw new Error(`static file ${request.originalUrl} not found`);
   });
 
   // All regular routes use the Universal engine, must be after all other routes
-  app.get('*', (request: Request, res: Response): void => {
-    // todo: remove `slug` to shorten cache file name
-    let temporary = `${TEMP}${
-      request.path === '/'
-        ? '/index'
-        : request.path.indexOf('~')
-        ? request.path.slice(Math.max(0, request.path.lastIndexOf('~') + 1))
-        : request.path
-    }.html`;
-
-    cache(
-      temporary,
-      () =>
-        new Promise((resolve, reject) => {
-          res.render(
-            'index.html',
-            {
-              req: request,
-              providers: [
-                { provide: APP_BASE_HREF, useValue: request.baseUrl },
-              ],
-            },
-            (error: any, content: string) => {
-              error ? reject(error) : resolve(content);
-            }
-          );
-        }),
-      { age: 24 * 30 }
-    )
-      .then((content) => res.send(content))
-      .catch((error) => {
-        console.error('[server] render', error);
-        res.json({ error });
-      });
-  });
+  app.get('*', angularRoute(options));
 
   return app;
 }
