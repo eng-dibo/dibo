@@ -3,10 +3,9 @@
 import { queryToObject } from '@engineers/javascript/url';
 
 export interface Operation {
-  operation: string;
+  operation?: string;
   database?: string;
   collection: string;
-  item?: string;
   portions?: Array<any>;
   params?: { [key: string]: any };
 }
@@ -134,4 +133,38 @@ export function parse(url: string): Operation {
   }
 
   throw new Error(`[operations.parse()] invalid url ${url}`);
+}
+
+/**
+ * converts queryObject to queryUrl as string
+ * use cases:
+ *   - send queryUrl as string via APIs
+ *   - save cache file name as queryUrl
+ *
+ * @param queryObject
+ * @returns {string} queryUrl
+ */
+export function toQueryUrl(queryObject: Operation): string {
+  // todo: validate queryObject, example queryObject.operation shouldn't contain ':' or '/'
+  // todo: add spec
+  let url = '';
+  if (queryObject.operation) {
+    url += `${queryObject.operation}:`;
+  }
+
+  if (queryObject.database) {
+    url += `${queryObject.database}.`;
+  }
+
+  url += `${queryObject.collection}`;
+
+  if (queryObject.portions) {
+    url += `/${queryObject.portions.join('/')}`;
+  }
+
+  if (queryObject.params) {
+    url += `?${JSON.stringify(queryObject.params)}`;
+  }
+
+  return url;
 }
