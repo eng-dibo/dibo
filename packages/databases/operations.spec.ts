@@ -1,6 +1,6 @@
 /* eslint-disable sort-keys */
 import { expect, test } from '@jest/globals';
-import { parse } from './operations';
+import { parse, toQueryUrl } from './operations';
 
 let operations = {
   'find:users/1?x=1&y=2': {
@@ -127,3 +127,38 @@ for (let key in operations) {
     });
   }
 }
+
+test('toQueryUrl', () => {
+  expect(toQueryUrl({ collection: 'users' } as any)).toEqual('users');
+  expect(
+    toQueryUrl({ collection: 'users', database: 'mydatabase' } as any)
+  ).toEqual('mydatabase.users');
+  expect(
+    toQueryUrl({
+      collection: 'users',
+      database: 'mydatabase',
+      operation: 'find',
+    })
+  ).toEqual('find:mydatabase.users');
+
+  expect(
+    toQueryUrl({
+      collection: 'users',
+      database: 'mydatabase',
+      operation: 'find',
+      portions: ['id=1', 'name="user"'],
+    })
+  ).toEqual('find:mydatabase.users/id=1/name="user"');
+
+  expect(
+    toQueryUrl({ collection: 'users', params: { x: 1, y: 2 } } as any)
+  ).toEqual('users?{"x":1,"y":2}');
+
+  expect(
+    toQueryUrl({
+      collection: 'users',
+      params: { x: 1, y: 2 },
+      portions: ['id=1'],
+    } as any)
+  ).toEqual('users/id=1?{"x":1,"y":2}');
+});
