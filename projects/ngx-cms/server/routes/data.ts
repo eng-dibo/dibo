@@ -1,4 +1,4 @@
-import { Operation, parse } from '@engineers/databases/operations';
+import { Operation, parse, toQueryUrl } from '@engineers/databases/operations';
 import { timer } from '@engineers/javascript/time';
 import { connect, query } from '~server/database';
 import cache from '@engineers/nodejs/cache-fs';
@@ -51,13 +51,7 @@ export function getData(
   // stringify queryUrl to use it as cache name
   // todo: implement queryObjectToUrl() or stringify()
   if (typeof queryUrl !== 'string') {
-    let temporaryQuery = '';
-    for (let key in params) {
-      temporaryQuery += `${key}=${params[key]}`;
-    }
-    queryUrl = `${operation}:${database ? database + '.' : ''}${collection}/${(
-      portions || []
-    ).join('/')}${params ? '?' + temporaryQuery : ''}`;
+    queryUrl = toQueryUrl(queryUrl);
   }
 
   let temporary = `${TEMP}/${queryUrl.replace(/^\/?find.*:/, '')}.json`;
@@ -90,7 +84,15 @@ export function getData(
           }
         }
 
-        return query(queryObject);
+        return query(queryObject).then((payload) => {
+          let queryObjectNext = Object.assign(
+            { params: { limit: 10 } },
+            queryObject
+          );
+          queryObjectNext.params!.skip += queryObjectNext.params.limit;
+          let next = toQueryUrl(queryObjectNext);
+          return { payload, next };
+        });
         /*
           // todo:
           if(collection.indexOf('_categories)){
@@ -134,8 +136,8 @@ export default (request: Request, res: Response): void => {
 
   // todo: ?refresh=AUTH_TOKEN
   getData(request.path, request.query.refresh ? -1 : 3)
-    .then((payload: any) => {
-      res.json(payload);
+    .then((data: any) => {
+      res.json(data);
       if (!prod) {
         console.log(
           `[server/api] getData: +${timer(`get ${request.url}`, true)}sec`

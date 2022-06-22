@@ -121,18 +121,12 @@ export function transformData(
     throw new Error('[transformData] no data');
   }
 
-  let dataTransformed: Payload = data;
-
   if (typeof data === 'string') {
-    // ex: the url fetched via a ServiceWorker
+    // for example: when the url fetched via a ServiceWorker
     data = JSON.parse(data);
-  } else if (!Array.isArray(data) && data.error) {
-    // todo: cause
-    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error/Error#rethrowing_an_error_with_a_cause
-    throw new Error(
-      '[view] error while fetching data' /*, {cause:data.error}*/
-    );
   }
+
+  let dataTransformed: Payload;
 
   if (Array.isArray(data)) {
     dataTransformed = data
@@ -141,10 +135,12 @@ export function transformData(
       )
       // randomize (shuffle) data[]
       .sort(() => 0.5 - Math.random());
-  } else if (!data.error && data.content) {
-    // data may be doesn't 'content' property
+  } else if (data.content) {
+    // data may not contain 'content' property
     // for example article_categories
     dataTransformed = adjustArticle(data, parameters, categories, 'item');
+  } else {
+    dataTransformed = data;
   }
 
   return dataTransformed;
@@ -244,7 +240,7 @@ export function adjustArticle(
   if (adjustedItem.cover) {
     // if the layout changed, change the attribute sizes, for example if a side menu added.
     // todo: i<originalSize/250
-    let source = `/api/v1/image/${parameters.type}-cover-${item._id}/${item.slug}.webp`,
+    let source = `/api/v1/image/${parameters.type}-cover-${adjustedItem.id}/${adjustedItem.slug}.webp`,
       srcset = '',
       // for type=item: image width = 100% of the viewport width
       // for type=list: each column is adjusted to be ~250px (by css media queries)
@@ -263,12 +259,13 @@ export function adjustArticle(
   }
 
   if (type === 'item' && parameters.type === 'jobs') {
-    adjustedItem.content += `<div id='contacts'>${item.contacts}</div>`;
+    adjustedItem.content += `<div id='contacts'>${adjustedItem.contacts}</div>`;
   }
 
   if (type === 'list') {
-    adjustedItem.content = item.summary;
+    adjustedItem.content = adjustedItem.summary;
   }
+
   return adjustedItem;
 }
 

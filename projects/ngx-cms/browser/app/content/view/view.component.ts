@@ -54,6 +54,11 @@ export interface Params {
   refresh?: string;
 }
 
+export interface PayloadData {
+  payload: Payload;
+  next: string;
+}
+
 export interface PayloadError {
   error: string;
 }
@@ -186,7 +191,7 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
     // instead of Array<Payload | undefined, Category[], meta>
 
     concat(
-      this.httpService.get<Payload | PayloadError>(url),
+      this.httpService.get<PayloadData | PayloadError>(url),
       this.httpService.get<Array<Category>>(`${this.params.type}_categories`),
       // todo: import(~config/..)
       this.httpService.get<Meta>('config/browser/meta')
@@ -199,73 +204,80 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
         // todo: fix: https://stackoverflow.com/questions/71730120/type-definition-for-rxjs-concat
         // https://stackblitz.com/edit/rxjs-dqg3jk?devtoolsheight=60&file=index.ts
         let [data, categories, defaultTags]: [
-          Payload | PayloadError,
+          PayloadData | PayloadError,
           Array<Category>,
           Meta
         ] = result;
-        // console.log({ data, categories, defaultTags });
+        //  console.log({ data, categories, defaultTags });
 
         try {
-          let dataTransformed = transformData(
-            data as Payload,
-            this.params,
-            categories
-          );
+          if ((data as PayloadData).payload) {
+            let dataTransformed = transformData(
+              (data as PayloadData).payload,
+              this.params,
+              categories
+            );
 
-          // get category details from category.slug in url
-          // if category._id couldn't be get due to an invalid category.slug is used in the url
-          // for item mode, consider using item.categories[0] as category
-          // use category._id for loadMore()
-          if (categories) {
-            this.categories = categories;
-            if (
-              !Array.isArray(dataTransformed) &&
-              Array.isArray(dataTransformed.categories)
-            ) {
-              this.itemCategories = categories
-                .filter(
+            // get category details from category.slug in url
+            // if category._id couldn't be get due to an invalid category.slug is used in the url
+            // for item mode, consider using item.categories[0] as category
+            // use category._id for loadMore()
+            if (categories) {
+              this.categories = categories;
+              if (
+                !Array.isArray(dataTransformed) &&
+                Array.isArray(dataTransformed.categories)
+              ) {
+                this.itemCategories = categories
+                  .filter(
+                    (element: Category) =>
+                      (dataTransformed as Article).categories.includes(
+                        element._id
+                      ) && !element.parent
+                  )
+                  .map((element: Category) => ({
+                    ...element,
+                    link: `/${this.params.type}/${element.slug}`,
+                  }));
+              } else if (this.params.category?.slug) {
+                let category = categories.find(
                   (element: Category) =>
-                    (dataTransformed as Article).categories.includes(
-                      element._id
-                    ) && !element.parent
-                )
-                .map((element: Category) => ({
-                  ...element,
-                  link: `/${this.params.type}/${element.slug}`,
-                }));
-            } else if (this.params.category?.slug) {
-              let category = categories.find(
-                (element: Category) =>
-                  element.slug === this.params.category!.slug
-              );
-              if (category) {
-                this.itemCategories = [
-                  {
-                    ...category,
-                    link: `/${this.params.type}/${category.slug}`,
-                  },
-                ];
+                    element.slug === this.params.category!.slug
+                );
+                if (category) {
+                  this.itemCategories = [
+                    {
+                      ...category,
+                      link: `/${this.params.type}/${category.slug}`,
+                    },
+                  ];
+                }
               }
             }
-          }
 
-          let baseUrl = defaultTags.baseUrl || this.document.location.origin;
+            let baseUrl = defaultTags.baseUrl || this.document.location.origin;
 
-          this.tags = getMetaTags(
-            dataTransformed,
-            this.params,
-            Object.assign({ baseUrl }, defaultTags)
-          );
-
-          if (environment.mode === 'development') {
-            console.info('[content/view]', {
-              params: this.params,
+            this.tags = getMetaTags(
               dataTransformed,
-              defaultTags,
-              tags: this.tags,
-            });
+              this.params,
+              Object.assign({ baseUrl }, defaultTags)
+            );
+
+            if (
+              environment.mode === 'development' &&
+              this.platform.isBrowser()
+            ) {
+              console.info('[content/view]', {
+                params: this.params,
+                dataTransformed,
+                defaultTags,
+                tags: this.tags,
+              });
+            }
+            this.data = dataTransformed;
+          } else {
+            throw (data as PayloadError).error;
           }
-          this.data = dataTransformed;
         } catch (error) {
           this.data = { error };
           throw error;
@@ -279,13 +291,12 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
   /**
    * display a dialog to the user to install the PWA app
    *
-   * @param ev
-   * @param event_
+   * @param event
    */
-  showInstallDialog(event_: any) {
+  showInstallDialog(event: any) {
     window.addEventListener('load', () => {
       setTimeout(
-        () => this.dialog.open(AppInstallDialogComponent, { data: event_ }),
+        () => this.dialog.open(AppInstallDialogComponent, { data: event }),
         10_000
       );
     });
