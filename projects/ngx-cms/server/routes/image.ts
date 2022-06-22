@@ -2,7 +2,7 @@ import { timer } from '@engineers/javascript/time';
 import { TEMP } from '.';
 import cache from '@engineers/nodejs/cache-fs';
 import { read } from '~server/storage';
-import { Size, resize } from '@engineers/graphics';
+// import { Size, resize } from '@engineers/graphics';
 import { prod } from '~config/server';
 import { Request, Response } from 'express';
 
@@ -42,7 +42,8 @@ export default (request: Request, res: Response): any => {
     encoding: undefined,
   })
     .then((data) => {
-      if (!request.query.size) {
+      return data;
+      /* if (!request.query.size) {
         return data;
       }
 
@@ -62,7 +63,7 @@ export default (request: Request, res: Response): any => {
             //   - allowBiggerFileSize: false,
           }),
         { age: 24 * 30, encoding: undefined }
-      );
+      );*/
     })
     .then((data: any) => {
       // todo: set cache header

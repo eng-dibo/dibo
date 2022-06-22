@@ -1,7 +1,7 @@
 // todo: typescript: add files[] to `req` definition
 // todo: cover= only one img -> upload.single()
 
-import { resize } from '@engineers/graphics';
+// import { resize as _resize } from '@engineers/graphics';
 import { timer } from '@engineers/javascript/time';
 import { slug } from '@engineers/ngx-content-core/pipes-functions';
 import { prod } from '~config/server';
@@ -14,6 +14,15 @@ import { existsSync, unlink } from 'node:fs';
 import shortId from 'shortid';
 import { TEMP } from '.';
 import { Request, Response } from 'express';
+
+/**
+ *
+ * @param {...any} arg
+ * @param {...any} args
+ */
+function resize(...args: any[]) {
+  return args[0];
+}
 
 // todo: change to /api/v1/collection/itemType[/id]
 export default (request: Request, res: Response): any => {
@@ -98,7 +107,7 @@ export default (request: Request, res: Response): any => {
           writeFs(`${TEMP}/media/${data._id}/${fileName}.webp`, img);
           console.log(`[server/api] uploaded: ${fileName}`);
         })
-        .catch((error) => {
+        .catch((error: any) => {
           console.error('imgData', { error, imgData });
           throw new Error(`error in handling the encoded images ${error}`);
         });
