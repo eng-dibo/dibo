@@ -1,6 +1,7 @@
 /* eslint-disable unicorn/better-regex */
 /* eslint-disable sort-keys */
 import { queryToObject } from '@engineers/javascript/url';
+import { isEmpty } from '@engineers/javascript/objects';
 
 export interface Operation {
   operation: string;
@@ -49,7 +50,8 @@ export function parse(url: string): Operation {
         \/([^?]+)          -> portions (example: item id), 
                              some operation supports multiple portions (update/selector/data)
                              may contain '/'
-        (?:\?(.+)?)?           -> params, the part after '?'
+        (?:\?(.+)?)?           -> params, the part after '?', may be a JSON.stringify or queryParams string
+                                  examples: ?x=1&y=2 or {"x":1, "y":2} 
 
     */
   let pattern =
@@ -68,8 +70,12 @@ export function parse(url: string): Operation {
     ] = match;
 
     let portions = _portions ? _portions.split('/') : [];
-    // convert query to object
-    let parameters = queryToObject(_parameters || '');
+    let parameters: { [key: string]: any } = {};
+    if (_parameters) {
+      parameters = _parameters.startsWith('{')
+        ? JSON.parse(_parameters)
+        : queryToObject(_parameters || '');
+    }
 
     // parse portions and add known portions syntax to params
     // find/skip:limit~fields@conditions
@@ -158,12 +164,35 @@ export function toQueryUrl(queryObject: Operation): string {
 
   url += `${queryObject.collection}`;
 
+  let params = queryObject.params;
+  // put known params in the first portion
+  if (params) {
+    if (params.skip || params.limit || params.fields || params.filter) {
+      url += '/';
+    }
+
+    if (params.skip || params.limit) {
+      url += `${params.skip || ''}:${params.limit || ''}`;
+      delete params.skip;
+      delete params.limit;
+    }
+
+    if (params.fields) {
+      url += `~${params.fields}`;
+      delete params.fields;
+    }
+    if (params.filter) {
+      url += `@${params.filter}`;
+      delete params.filter;
+    }
+  }
+
   if (queryObject.portions) {
     url += `/${queryObject.portions.join('/')}`;
   }
 
-  if (queryObject.params) {
-    // convert object to querystring instead of Json.stringify
+  if (params && !isEmpty(params)) {
+    // json format is better than queryParams format for nested objects and arrays
     url += `?${JSON.stringify(queryObject.params)}`;
   }
 

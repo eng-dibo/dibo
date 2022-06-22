@@ -1,5 +1,5 @@
 /* eslint-disable sort-keys */
-import { expect, test } from '@jest/globals';
+import { describe, expect, test } from '@jest/globals';
 import { parse, toQueryUrl } from './operations';
 
 let operations = {
@@ -128,37 +128,78 @@ for (let key in operations) {
   }
 }
 
-test('toQueryUrl', () => {
-  expect(toQueryUrl({ collection: 'users' } as any)).toEqual('users');
-  expect(
-    toQueryUrl({ collection: 'users', database: 'mydatabase' } as any)
-  ).toEqual('mydatabase.users');
-  expect(
-    toQueryUrl({
-      collection: 'users',
-      database: 'mydatabase',
-      operation: 'find',
-    })
-  ).toEqual('find:mydatabase.users');
+describe('toQueryUrl', () => {
+  test('full', () => {
+    expect(
+      toQueryUrl({
+        collection: 'users',
+        params: {
+          skip: 20,
+          limit: 10,
+          filter: 'age>20',
+          fields: 'id,name',
+          x: 1,
+          y: 2,
+        },
+      } as any)
+    ).toEqual('users/20:10~id,name@age>20?{"x":1,"y":2}');
+  });
 
-  expect(
-    toQueryUrl({
-      collection: 'users',
-      database: 'mydatabase',
-      operation: 'find',
-      portions: ['id=1', 'name="user"'],
-    })
-  ).toEqual('find:mydatabase.users/id=1/name="user"');
+  test('with limit, without skip', () => {
+    expect(
+      toQueryUrl({
+        collection: 'users',
+        params: {
+          limit: 10,
+        },
+      } as any)
+    ).toEqual('users/:10');
+  });
 
-  expect(
-    toQueryUrl({ collection: 'users', params: { x: 1, y: 2 } } as any)
-  ).toEqual('users?{"x":1,"y":2}');
+  test('collection only', () => {
+    expect(toQueryUrl({ collection: 'users' } as any)).toEqual('users');
+  });
 
-  expect(
-    toQueryUrl({
-      collection: 'users',
-      params: { x: 1, y: 2 },
-      portions: ['id=1'],
-    } as any)
-  ).toEqual('users/id=1?{"x":1,"y":2}');
+  test('database.collection', () => {
+    expect(
+      toQueryUrl({ collection: 'users', database: 'mydatabase' } as any)
+    ).toEqual('mydatabase.users');
+  });
+
+  test('operation:database.collection', () => {
+    expect(
+      toQueryUrl({
+        collection: 'users',
+        database: 'mydatabase',
+        operation: 'find',
+      })
+    ).toEqual('find:mydatabase.users');
+  });
+
+  test('portions', () => {
+    expect(
+      toQueryUrl({
+        collection: 'users',
+        database: 'mydatabase',
+        operation: 'find',
+        portions: ['id=1', 'name="user"'],
+      })
+    ).toEqual('find:mydatabase.users/id=1/name="user"');
+  });
+
+  test('params', () => {
+    expect(
+      toQueryUrl({ collection: 'users', params: { x: 1, y: 2 } } as any)
+    ).toEqual('users?{"x":1,"y":2}');
+  });
+
+  test('portions & params', () => {
+    expect(
+      toQueryUrl({
+        collection: 'users',
+        params: { x: 1, y: 2 },
+        portions: ['id=1'],
+      } as any)
+    ).toEqual('users/id=1?{"x":1,"y":2}');
+  });
 });
