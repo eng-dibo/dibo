@@ -327,6 +327,7 @@ module.exports = {
     // todo: VS n/no-extraneous-import
     "import/no-unresolved": "off",
     "prefer-rest-params": "warn",
+    "unicorn/prefer-ternary": "warn",
   },
 
   // todo: fix: "Unexpected top-level property ignorePath"
