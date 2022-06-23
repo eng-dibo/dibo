@@ -278,12 +278,11 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
           } else if ((data as PayloadError).error) {
             throw (data as PayloadError).error;
           } else {
-            // !data.payload
             throw new Error('The requested article is not found');
           }
         } catch (error) {
           this.data = { error };
-          throw error;
+          // throw error;
         }
       });
   }
