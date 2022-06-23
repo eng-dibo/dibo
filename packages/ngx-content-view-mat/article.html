@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<mat-card>
+<mat-card attr.data-error="{{!!data.error}}">
   <mat-card-header>
     <img
       *ngIf="data.author && data.author.image"

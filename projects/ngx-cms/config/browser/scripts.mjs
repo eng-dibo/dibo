@@ -31,13 +31,16 @@ window.addEventListener("load", () => {
     // adsense
     if (
       (values.adsense || "").trim() !== "" &&
-      document.querySelector("mat-card")
+      // if there is at least one non-error article
+      document.querySelector('mat-card[data-error="false"]')
     ) {
       load("//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js", {
         "data-ad-client": values.adsense,
       })
         .then((element) => console.log(`adsense loaded ${values.adsense}`))
         .catch((error) => console.error("adsense failed to load", error));
+    } else {
+      console.warn("adsense not loaded");
     }
   });
 });
