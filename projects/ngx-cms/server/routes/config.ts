@@ -5,6 +5,8 @@ import { Request, Response } from 'express';
 // add '~config' to browser/webpack -> 'ESM ../config/*'
 // in this case, config/*  must be added to express.static()
 export default (request: Request, res: Response): void => {
+  // todo: not working in windows: `Cannot find module ...`
+  // https://stackoverflow.com/questions/72730470/webpack-native-require-doesnt-work-in-windows
   let nativeRequire = require('@engineers/webpack/native-require');
   let file = request.params[0];
   let filePath = resolve(__dirname, `../config/${file}`);
