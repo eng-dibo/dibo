@@ -164,7 +164,7 @@ export default (request: Request, res: Response): any => {
                 getParentRecursive(temporary[entry]);
               }
             };
-          categories.forEach((element: any) => {
+          categories.payload.forEach((element: any) => {
             temporary[element._id] = element.parent;
           });
 
@@ -174,7 +174,7 @@ export default (request: Request, res: Response): any => {
         }
 
         // filter the first category in data.categories[] that has no parent
-        let mainCategory = categories.find((element: any) => {
+        let mainCategory = categories.payload.find((element: any) => {
           return !element.parent && data.categories.includes(element._id);
         });
 

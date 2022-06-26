@@ -62,8 +62,8 @@ export default (request: Request, res: Response): void => {
           // - add item.link=categories[0]/slug/..
           data.map((item: any) => {
             let category;
-            if (item.categories && item.categories.length > 0 && categories) {
-              category = categories.find(
+            if (item.categories?.length > 0) {
+              category = categories?.payload.find(
                 (element: any) => element._id === item.categories[0]
               );
             }

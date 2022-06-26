@@ -205,7 +205,7 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
         // https://stackblitz.com/edit/rxjs-dqg3jk?devtoolsheight=60&file=index.ts
         let [data, categories, defaultTags]: [
           PayloadData | PayloadError,
-          Array<Category>,
+          { payload: Array<Category> },
           Meta
         ] = result;
         //  console.log({ data, categories, defaultTags });
@@ -215,7 +215,7 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
             let dataTransformed = transformData(
               (data as PayloadData).payload,
               this.params,
-              categories
+              categories.payload
             );
 
             // get category details from category.slug in url
@@ -223,12 +223,12 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
             // for item mode, consider using item.categories[0] as category
             // use category._id for loadMore()
             if (categories) {
-              this.categories = categories;
+              this.categories = categories.payload;
               if (
                 !Array.isArray(dataTransformed) &&
                 Array.isArray(dataTransformed.categories)
               ) {
-                this.itemCategories = categories
+                this.itemCategories = categories.payload
                   .filter(
                     (element: Category) =>
                       (dataTransformed as Article).categories.includes(
@@ -240,7 +240,7 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
                     link: `/${this.params.type}/${element.slug}`,
                   }));
               } else if (this.params.category?.slug) {
-                let category = categories.find(
+                let category = categories.payload.find(
                   (element: Category) =>
                     element.slug === this.params.category!.slug
                 );
@@ -275,12 +275,14 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
               });
             }
             this.data = dataTransformed;
-          } else {
+          } else if ((data as PayloadError).error) {
             throw (data as PayloadError).error;
+          } else {
+            throw new Error('The requested article is not found');
           }
         } catch (error) {
           this.data = { error };
-          throw error;
+          // throw error;
         }
       });
   }
