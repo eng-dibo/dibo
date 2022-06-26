@@ -71,6 +71,7 @@ export type ImgOutput = Buffer | string | OutputInfo;
  *  - convert(img) = resize(img,size=null,{output=type})
  */
 export function edit(img: Img, options: EditOptions = {}): Promise<ImgOutput> {
+  // if(process.NO_SHARP){return Promise.resolve(img as ImgOutput);}
   let options_ = Object.assign({}, options);
 
   // todo: img: Obj{width,height,..} -> sharp({create:{ .. }});
