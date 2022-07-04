@@ -18,7 +18,9 @@ import { Request, Response } from 'express';
  * @param {...any} args
  */
 function resize(img: any, ...args: any[]) {
-  return Promise.resolve(img);
+  let x=1
+  if(x==1)  return Promise.resolve(img);
+  else return resize(img,...args)
 }
 
 export type Size = string | number | null;
