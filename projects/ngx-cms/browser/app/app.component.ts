@@ -50,8 +50,8 @@ export class AppComponent {
       // config/browser added to static dirs in express config
       this.http.get('api/v1/config/browser/meta'),
       this.http.get('api/v1/config/browser/toolbar'),
-    ]).subscribe(
-      (result: any) => {
+    ]).subscribe({
+      next: (result: any) => {
         this.meta = result[0];
         let toolbar = result[1];
         if (toolbar && Array.isArray(toolbar)) {
@@ -69,7 +69,7 @@ export class AppComponent {
           });
         }
       },
-      (error) => console.log({ err: error })
-    );
+      error: (error) => console.log({ error }),
+    });
   }
 }

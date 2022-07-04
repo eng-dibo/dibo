@@ -19,5 +19,8 @@ export default (request: Request, res: Response): void => {
 
       res.json(content);
     })
-    .catch((error) => res.status(500).json({ error }));
+    .catch((error) => {
+      console.error({ error });
+      res.status(500).json({ error });
+    });
 };
