@@ -48,6 +48,13 @@ let config: Configuration = {
   module: {
     // see packages/webpack/native-require.js
     noParse: /\/native-require.js$/,
+    parser: {
+      javascript: {
+        // Enable magic comments support for CommonJS.
+        // https://github.com/webpack/webpack/issues/15975#issuecomment-1166609374
+        commonjsMagicComments: true,
+      },
+    },
     rules: [
       {
         test: /\.tsx?$/,

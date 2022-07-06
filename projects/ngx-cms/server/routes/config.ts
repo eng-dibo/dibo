@@ -7,20 +7,24 @@ import { Request, Response } from 'express';
 export default (request: Request, res: Response): void => {
   let file = request.params[0];
   let filePath = resolve(__dirname, `../config/${file}`);
-  import(/* webpackIgnore: true */ filePath)
-    .then((content) => {
-      if (file === 'server/vapid' && content) {
-        // only send the publicKey
-        content = content.publicKey;
-      } else if (file.startsWith('server/')) {
-        // todo: use auth for sensitive data (specially for config/server/*)
-        throw new Error('unauthorized permission');
-      }
 
-      res.json(content);
-    })
-    .catch((error) => {
-      console.error({ error });
-      res.status(500).json({ error });
-    });
+  // let nativeRequire = require('@engineers/webpack/native-require');
+  // let content = nativeRequire(filePath);
+
+  // todo: use import().then()
+  let content = require(filePath);
+  try {
+    if (file === 'server/vapid' && content) {
+      // only send the publicKey
+      content = content.publicKey;
+    } else if (file.startsWith('server/')) {
+      // todo: use auth for sensitive data (specially for config/server/*)
+      throw new Error('unauthorized permission');
+    }
+
+    res.json(content);
+  } catch (error) {
+    console.error({ error });
+    res.status(500).json({ error });
+  }
 };
