@@ -1,9 +1,3 @@
-import { timer } from './time';
-
-const development = process.env.NODE_ENV === 'development',
-  logger = console;
-// todo: allow the consumer to change `logger`, ex: logger= Winston
-
 /**
  * replaces all `replace` parts in a string.
  * String.replace() only replaces the first occurrence
@@ -76,7 +70,6 @@ export function replaceAsync(
   regex: RegExp,
   replacer: (...matched: any[]) => Promise<string>
 ): Promise<string> {
-  timer('replaceAsync');
   let matched = element.match(regex);
   if (!matched) {
     return Promise.resolve(element);
@@ -113,15 +106,7 @@ export function replaceAsync(
       index_++;
     }
     result[index_] = element.slice(index);
-    return Promise.all(callbacks).then(() => {
-      if (development) {
-        logger.debug(`[replaceAsync()] +${timer('replaceAsync')}s`, {
-          element,
-          regex,
-        });
-      }
-      return result.join('');
-    });
+    return Promise.all(callbacks).then(() => result.join(''));
   }
 }
 
