@@ -45,9 +45,7 @@ let shareButtonsConfig: ShareButtonsConfig = {
   ],
   imports: [
     CommonModule,
-    // todo: temporary disable routes
-    // see app.module 'load ContentViewComponent non-lazily'
-    RouterModule.forChild([] /*routes*/),
+    RouterModule.forChild(routes),
     NgxContentViewModule,
     MatDialogModule,
     MatIconModule,
@@ -61,14 +59,10 @@ let shareButtonsConfig: ShareButtonsConfig = {
     ShareButtonsModule.withConfig(shareButtonsConfig),
   ],
   providers: [
+    // todo: this provider is already defined in AppModule
     {
       provide: HTTP_INTERCEPTORS,
       useClass: ApiInterceptor,
-      multi: true,
-    },
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: UniversalInterceptor,
       multi: true,
     },
   ],

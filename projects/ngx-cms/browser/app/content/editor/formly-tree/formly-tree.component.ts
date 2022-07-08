@@ -3,19 +3,10 @@
  * use case: select nested categories
  */
 import { NestedTreeControl } from '@angular/cdk/tree';
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatTreeNestedDataSource } from '@angular/material/tree';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl } from '@angular/forms';
 import { FieldType } from '@ngx-formly/material';
-
-/**
- * Food data with nested structure.
- * Each node has a name and an optional list of children.
- */
-interface FoodNode {
-  name: string;
-  children?: FoodNode[];
-}
 
 /**
  * @title Tree with nested nodes
@@ -26,16 +17,20 @@ interface FoodNode {
   styleUrls: ['./formly-tree.component.scss'],
 })
 export class FormlyTreeComponent extends FieldType implements OnInit {
-  treeControl = new NestedTreeControl<any>((node) =>
-    this.to.data.filter((element: any) => element.parent === node._id)
-  );
-  dataSource = new MatTreeNestedDataSource<any>();
   formControl: FormControl;
+  dataSource = new MatTreeNestedDataSource<any>();
+  treeControl: NestedTreeControl<any>;
 
   ngOnInit() {
-    this.dataSource.data = this.to.data.filter(
-      (element: any) => !element.parent
-    );
+    if (this.to.data) {
+      this.treeControl = new NestedTreeControl<any>((node) =>
+        this.to.data.filter((element: any) => element.parent === node._id)
+      );
+
+      this.dataSource.data = this.to.data.filter(
+        (element: any) => !element.parent
+      );
+    }
   }
 
   hasChildren = (index: number, node: any) => {

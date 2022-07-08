@@ -2,8 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ContentEditorComponent } from './editor.component';
 import { RouterModule, Routes } from '@angular/router';
-import { MetaService } from '@engineers/ngx-utils/meta.service';
-import { NgxLoadService } from '@engineers/ngx-utils/load-scripts.service';
 import { FormlyFieldConfig, FormlyModule } from '@ngx-formly/core';
 import { FormlyMaterialModule } from '@ngx-formly/material';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -23,7 +21,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatDialogModule } from '@angular/material/dialog';
-import { PlatformService } from '@engineers/ngx-utils/platform';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 const routes: Routes = [
@@ -108,6 +105,6 @@ const routes: Routes = [
     QuillModule.forRoot(),
     MatSnackBarModule,
   ],
-  providers: [MetaService, NgxLoadService, PlatformService],
+  providers: [],
 })
 export class ContentEditorModule {}

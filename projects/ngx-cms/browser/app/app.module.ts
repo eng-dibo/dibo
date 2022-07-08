@@ -1,8 +1,14 @@
+// no need to add providers[] and imports[] that already added to the root module (AppModule) to child lazy-loaded modules
+// to make providers[] available in lazy-loaded modules mark services as {providedIn: 'root' or 'any'}
+// https://angular.io/guide/providers#limiting-provider-scope-by-lazy-loading-modules
+// https://github.com/angular/angular/issues/37441#issuecomment-639737971
+// if httpClient.get() doesn't run in server side, be sure that HttpClientModule doesn't added to imports[] in any lazy loaded module
+// https://github.com/angular/angular/issues/45453
+
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { ContentModule } from './content/content.module';
 import { ErrorComponent } from './error/error.component';
 import { InitialNavigation, RouterModule, Routes } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -12,9 +18,6 @@ import { ApiInterceptor } from './http.interceptor';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { TransferHttpCacheModule } from '@nguniversal/common';
-import environment from '../env';
-import { ContentViewModule } from './content/view/view.module';
-import { ContentViewComponent } from './content/view/view.component';
 
 /*
 routes are loaded in the following order:
@@ -27,28 +30,12 @@ routes are loaded in the following order:
     then endRoutes in the last (because it contains '**')
  -> @NgModule processes before RouterModule.forRoot()
  https://blogs.msmvps.com/deborahk/angular-route-ordering/
- */
-const routes: Routes = [
+
   // to lazy-load a module, use loadChildren
   // https://angular.io/guide/lazy-loading-ngmodules
-  // to make providers[] available in lazy-loaded modules mark services as {providedIn: 'root' or 'any'}
-  // https://angular.io/guide/providers#limiting-provider-scope-by-lazy-loading-modules
-  // https://github.com/angular/angular/issues/37441#issuecomment-639737971
-
-  {
-    // todo: a temporary workaround for https://github.com/angular/angular/issues/45453
-    // load ContentViewComponent non-lazily
-    // add ContentViewModule to modules, remove it's routes
-    // match / and 'articles|jobs/*' but not 'articles|jobs/editor|manage/*'
-    matcher: (segments: any, group: any, route: any) =>
-      segments.length === 0 ||
-      (['articles', 'jobs'].includes(segments[0].path) &&
-        (segments.length === 1 ||
-          !['editor', 'manage'].includes(segments[1].path)))
-        ? { consumed: segments }
-        : null,
-    component: ContentViewComponent,
-  },
+ 
+ */
+const routes: Routes = [
   {
     matcher: (segments: any, group: any, route: any) =>
       segments.length === 0 || ['articles', 'jobs'].includes(segments[0].path)
@@ -63,11 +50,9 @@ const routes: Routes = [
         (modules) => modules.ContentModule
       ),
   },
-  // default routes, if no other route matched
+  // the default route, if no other route matched
   { path: '**', component: ErrorComponent },
 ];
-
-const enableTracing = false; // env.mode === 'development';
 
 @NgModule({
   declarations: [AppComponent, ErrorComponent],
@@ -83,14 +68,13 @@ const enableTracing = false; // env.mode === 'development';
       // or after 30 seconds (whichever comes first).
       registrationStrategy: 'registerWhenStable:30000',
     }),
-    ContentViewModule,
     // https://andremonteiro.pt/caching-server-side-requests-ng-universal
     TransferHttpCacheModule,
     // keep router module after all other feature modules,
     // so the default routes doesn't override other routes defined by feature modules
     RouterModule.forRoot(routes, {
       initialNavigation: 'enabled' as InitialNavigation,
-      enableTracing,
+      enableTracing: false,
     }),
   ],
   providers: [

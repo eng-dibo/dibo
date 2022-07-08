@@ -1,5 +1,5 @@
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Observable, forkJoin, of } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -12,12 +12,8 @@ import Quill from 'quill';
 // @ts-ignore: Could not find a declaration file
 import QuillMarkdown from 'quilljs-markdown';
 import dompurify from 'dompurify';
-
-export interface Parameters_ {
-  type: string;
-  id: string | null;
-  postType?: string;
-}
+import { getParams } from '~browser/app/content/view/functions';
+import { Params } from '~browser/app/content/view/view.component';
 
 export interface Progress {
   loaded: number;
@@ -37,7 +33,7 @@ export interface Response {
   styleUrls: ['./editor.component.scss'],
 })
 export class ContentEditorComponent implements OnInit {
-  params!: Parameters_;
+  params!: Params;
   formGroup = new FormGroup({});
   fields: FormlyFieldConfig[];
   // holds arbitrary data
@@ -45,38 +41,38 @@ export class ContentEditorComponent implements OnInit {
   response: Response = { status: undefined };
   cache: { [key: string]: any } = {};
 
-  // file-upload vars:
+  // file-upload variables:
   // access #file DOM element
   @ViewChild('file') file: any;
-  // Set<File> = new Set();
+  // todo: Set<File> = new Set();
   files = [];
   progress!: Progress;
   @ViewChild('buttons') buttonsTemplate: TemplateRef<any>;
 
   // todo: hide this route (/editor) from search engines
+  // todo: use client-side rendering, no need for SSR here
 
   constructor(
-    private route: ActivatedRoute,
+    private router: Router,
     private httpService: HttpClient,
     private snackBar: MatSnackBar
   ) {
-    // todo: use snapshot
-    this.route.paramMap.subscribe((parameters) => {
-      let type = parameters.get('type') || 'articles';
-      this.params = {
-        id: parameters.get('item'),
-        type,
-        // convert articles to article, jobs to job
-        postType: type.slice(-1) === 's' ? type.slice(0, -1) : type,
-      };
-    });
+    let parameters = getParams(this.router.url.trim());
+    this.params = {
+      ...parameters,
+      postType:
+        parameters.type.slice(-1) === 's'
+          ? parameters.type.slice(0, -1)
+          : parameters.type,
+      category: parameters.category || {},
+    };
   }
 
   ngOnInit(): void {
     this.response.status = 'loading';
     forkJoin([this.getData<Article>(), this.getCategories()]).subscribe(
       ([data, categories]) => {
-        this.model = data;
+        this.model = data.payload;
 
         this.fields = [
           {
@@ -100,7 +96,7 @@ export class ContentEditorComponent implements OnInit {
                     type: 'categories',
                     // formControl: new FormControl([]),
                     templateOptions: {
-                      data: categories,
+                      data: categories.payload || [],
                       color: 'primary',
                     },
                   },
@@ -159,16 +155,18 @@ export class ContentEditorComponent implements OnInit {
   getData<T>(): Observable<T> {
     return this.getCache<T>(
       'data',
-      this.params.id
-        ? this.httpService.get<T>(`/${this.params.type}/${this.params.id}`)
+      this.params.item
+        ? this.httpService.get<T>(`/${this.params.type}/${this.params.item}`)
         : of({})
     );
   }
 
-  getCategories(): Observable<any> {
+  getCategories(): Observable<{ payload: Array<any>; next: string }> {
     return this.getCache<any>(
       'categories',
-      this.httpService.get<any>('/articles_categories')
+      this.httpService.get<any>(
+        `/${this.params.type === 'jobs' ? 'jobs' : 'articles'}_categories`
+      )
     );
   }
 
@@ -180,7 +178,7 @@ export class ContentEditorComponent implements OnInit {
       if (this.params.type === 'jobs') {
         /*
     //delete cover image since jobs.layout=="list" not grid
-    //dont use delete article.fields(...)
+    //don't use delete article.fields(...)
     articleForm.splice(
       articleForm.findIndex(el => el.type == "file"),
       1
@@ -283,7 +281,7 @@ export class ContentEditorComponent implements OnInit {
     }
 
     let data = this.formGroup.value;
-    data._id = this.params.id;
+    data._id = this.params.item;
     // DOMPurify sanitizes HTML and prevents XSS attacks
     // also remove unwanted attributes and values
     // example: <div class="unwanted" unwanted="">

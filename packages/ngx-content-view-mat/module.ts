@@ -8,7 +8,6 @@
    - we use `ngx-quill`  for <quill-view>
 */
 
-import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgxContentViewComponent } from './view';
@@ -60,7 +59,6 @@ import { MetaService } from '@engineers/ngx-utils/meta.service';
     HighlightModule,
     QuillModule.forRoot(),
     FontAwesomeModule,
-    HttpClientModule,
     NgxContentCoreModule,
     MatProgressSpinnerModule,
     ScrollingModule,
