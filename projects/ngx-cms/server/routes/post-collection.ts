@@ -8,12 +8,12 @@ import { prod } from '~config/server';
 import { supportedCollections } from './supported-collections';
 import { write } from '~server/storage';
 import { remove, write as writeFs } from '@engineers/nodejs/fs';
-import { connect, getModel, query } from '~server/database';
-import cache from '@engineers/nodejs/cache-fs';
+import { connect, getModel } from '~server/database';
 import { existsSync, unlink } from 'node:fs';
 import shortId from 'shortid';
 import { TEMP } from '.';
 import { Request, Response } from 'express';
+import { getData } from '~server/routes/data';
 
 // todo: change to /api/v1/collection/itemType[/id]
 export default (request: Request, res: Response): any => {
@@ -40,7 +40,7 @@ export default (request: Request, res: Response): any => {
     date = new Date(),
     update: boolean;
 
-  if (!data._id) {
+  if (!data._id || data._id === 'undefined') {
     data._id = shortId.generate();
     update = false;
   } else {
@@ -108,6 +108,7 @@ export default (request: Request, res: Response): any => {
   );
 
   // upload cover
+  delete data.cover;
   if (request.file && request.file.buffer) {
     if (!prod) {
       console.log('[server/api] uploading cover ...');
@@ -126,50 +127,57 @@ export default (request: Request, res: Response): any => {
   }
 
   connect()
-    .then(() =>
-      cache(`${TEMP}/articles_categories/index.json`, () =>
-        query('/articles_categories')
-      ).then((categories) => {
-        if (!data.categories || data.categories.length === 0) {
-          // default category: general topics
-          // todo: get default category from config or leave it blank
-          data.categories = ['dPdoPD6UEp'];
-        } else {
-          // add parents recursively
+    // use getData() instead of query() to guarantee a unique data structure, i.e: {payload, next}
+    // if the cache file created by another request
+    .then(() => getData(`${collection}_categories`))
+    .then((categories) => {
+      if (!data.categories || data.categories.length === 0) {
+        // default category: general topics
+        // todo: get default category from config or leave it blank
+        // data.categories = [collection==='articles'?dPdoPD6UEp':''];
+        data.categories = [];
+      } else {
+        // add parents recursively
 
-          if (typeof data.categories === 'string') {
-            // Angular httpClient.post() converts arrays with one element into string
-            data.categories = [data.categories];
-          }
-          // convert to {_id:parent}
-          let temporary: any = {},
-            getParentRecursive = (entry: string) => {
-              if (temporary[entry]) {
-                data.categories.push(temporary[entry]);
-                getParentRecursive(temporary[entry]);
-              }
-            };
-          categories.payload.forEach((element: any) => {
-            temporary[element._id] = element.parent;
-          });
-
-          data.categories.forEach((element: string) =>
-            getParentRecursive(element)
-          );
+        if (typeof data.categories === 'string') {
+          // Angular httpClient.post() converts arrays with one element into string
+          data.categories = [data.categories];
         }
-
-        // filter the first category in data.categories[] that has no parent
-        let mainCategory = categories.payload.find((element: any) => {
-          return !element.parent && data.categories.includes(element._id);
+        // convert to {_id:parent}
+        let temporary: any = {},
+          getParentRecursive = (entry: string) => {
+            if (temporary[entry]) {
+              data.categories.push(temporary[entry]);
+              getParentRecursive(temporary[entry]);
+            }
+          };
+        categories.payload.forEach((element: any) => {
+          temporary[element._id] = element.parent;
         });
 
-        data.slug = `${slug(mainCategory.title, {
-          length: 200,
-          allowedChars: ':ar',
-          encode: false,
-        })}/${titleSlug}`;
-      })
-    )
+        data.categories.forEach((element: string) =>
+          getParentRecursive(element)
+        );
+      }
+
+      // filter the first category in data.categories[] that has no parent
+      let mainCategory = categories.payload.find((element: any) => {
+        return !element.parent && data.categories.includes(element._id);
+      });
+
+      console.log({
+        mainCategory,
+        categories: categories.payload,
+        dataCategories: data.categories,
+      });
+
+      // todo: get 'general' title from configs {[collection]:'general'}
+      data.slug = `${slug(mainCategory?.title || 'general', {
+        length: 200,
+        allowedChars: ':ar',
+        encode: false,
+      })}/${titleSlug}`;
+    })
     // @ts-ignore: error TS2349: This expression is not callable.
     // Each member of the union type ... has signatures, but none of those signatures are compatible with each other.
     .then(() => {

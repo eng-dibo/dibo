@@ -281,7 +281,9 @@ export class ContentEditorComponent implements OnInit {
     }
 
     let data = this.formGroup.value;
-    data._id = this.params.item;
+    if (this.params.item) {
+      data._id = this.params.item;
+    }
     // DOMPurify sanitizes HTML and prevents XSS attacks
     // also remove unwanted attributes and values
     // example: <div class="unwanted" unwanted="">

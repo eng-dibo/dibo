@@ -54,7 +54,11 @@ export function getData(
     queryUrl = toQueryUrl(queryUrl);
   }
 
-  let temporary = `${TEMP}/${encodeURIComponent(queryUrl.replace(/^\/?find.*:/, ''))}.json`;
+  // remove the optional starter '/' from queryUrl to guarantee all similar queries stored in the same file
+  // also remove the default operation `find`
+  let temporary = `${TEMP}/${encodeURIComponent(
+    queryUrl.replace(/^\//, '').replace(/^find.*:/, '')
+  )}.json`;
 
   return cache(
     temporary,
