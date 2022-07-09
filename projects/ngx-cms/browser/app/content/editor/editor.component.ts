@@ -229,7 +229,8 @@ export class ContentEditorComponent implements OnInit {
           }
 
           if (this.params.type === 'articles' && element.key === 'content') {
-            Quill.register({ 'modules/QuillMarkdown': QuillMarkdown }, true);
+            //  todo: this causes `document not defined` error even when wrapping it with `if(platform.isBrowser())`
+            //  Quill.register({ 'modules/QuillMarkdown': QuillMarkdown }, true);
 
             element.type = 'quill';
             element.templateOptions.modules = {
