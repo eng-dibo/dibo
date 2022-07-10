@@ -32,7 +32,7 @@ export interface Response {
   templateUrl: './editor.component.html',
   styleUrls: ['./editor.component.scss'],
 })
-export class ContentEditorComponent implements OnInit {
+export class ContentEditorComponent {
   params!: Params;
   formGroup = new FormGroup({});
   fields: FormlyFieldConfig[];
@@ -68,7 +68,10 @@ export class ContentEditorComponent implements OnInit {
     };
   }
 
-  ngOnInit(): void {
+  // a temporary workaround about the issue: `ViewChild` not available in `ngOnInit`
+  // makes buttonsTemplate=undefined so, 'next' and 'previous' buttons don't displayed in the stepper component
+  // https://github.com/ngx-formly/ngx-formly/issues/3375
+  ngAfterViewInit(): void {
     this.response.status = 'loading';
     forkJoin([this.getData<Article>(), this.getCategories()]).subscribe(
       ([data, categories]) => {
