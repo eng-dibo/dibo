@@ -117,6 +117,7 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
     }
 
     if (this.platform.isBrowser()) {
+      // todo: only once per day for each visitor
       this.showNotificationsDialog();
 
       // install the app

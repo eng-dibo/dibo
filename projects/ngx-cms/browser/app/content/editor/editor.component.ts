@@ -179,6 +179,7 @@ export class ContentEditorComponent {
         basicArticleFields
       );
       if (this.params.type === 'jobs') {
+        // todo: replace 'content' with 'Advantages', 'conditions'
         /*
     //delete cover image since jobs.layout=="list" not grid
     //don't use delete article.fields(...)
