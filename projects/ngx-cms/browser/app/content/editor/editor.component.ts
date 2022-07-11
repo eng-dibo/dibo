@@ -70,47 +70,49 @@ export class ContentEditorComponent {
 
   // a temporary workaround about the issue: `ViewChild` not available in `ngOnInit`
   // makes buttonsTemplate=undefined so, 'next' and 'previous' buttons don't displayed in the stepper component
-  // https://github.com/ngx-formly/ngx-formly/issues/3375
+  // https://github.com/ngx-formly/ngx-formly/issues/3375#issuecomment-1179796654
   ngAfterViewInit(): void {
-    this.response.status = 'loading';
-    forkJoin([this.getData<Article>(), this.getCategories()]).subscribe(
-      ([data, categories]) => {
-        this.model = data.payload;
+    Promise.resolve().then(() => {
+      this.response.status = 'loading';
+      forkJoin([this.getData<Article>(), this.getCategories()]).subscribe(
+        ([data, categories]) => {
+          this.model = data.payload;
 
-        this.fields = [
-          {
-            type: 'stepper',
-            templateOptions: {
-              buttonsTemplate: this.buttonsTemplate,
-            },
-            fieldGroup: [
-              {
-                templateOptions: {
-                  label: `${this.params.postType} content`,
-                },
-                fieldGroup: this.getArticleFields(),
+          this.fields = [
+            {
+              type: 'stepper',
+              templateOptions: {
+                buttonsTemplate: this.buttonsTemplate,
               },
-              {
-                templateOptions: { label: `categories` },
-                fieldGroup: [
-                  {
-                    key: 'categories',
-                    // todo: create type `categories` that creates checkbox inputs tree to select categories
-                    type: 'categories',
-                    // formControl: new FormControl([]),
-                    templateOptions: {
-                      data: categories.payload || [],
-                      color: 'primary',
-                    },
+              fieldGroup: [
+                {
+                  templateOptions: {
+                    label: `${this.params.postType} content`,
                   },
-                ],
-              },
-            ],
-          },
-        ];
-        this.response.status = undefined;
-      }
-    );
+                  fieldGroup: this.getArticleFields(),
+                },
+                {
+                  templateOptions: { label: `categories` },
+                  fieldGroup: [
+                    {
+                      key: 'categories',
+                      // todo: create type `categories` that creates checkbox inputs tree to select categories
+                      type: 'categories',
+                      // formControl: new FormControl([]),
+                      templateOptions: {
+                        data: categories.payload || [],
+                        color: 'primary',
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+          ];
+          this.response.status = undefined;
+        }
+      );
+    });
   }
 
   move(direction: 'next' | 'previous', stepper: any) {
@@ -234,6 +236,7 @@ export class ContentEditorComponent {
 
           if (this.params.type === 'articles' && element.key === 'content') {
             //  todo: this causes `document not defined` error even when wrapping it with `if(platform.isBrowser())`
+            // https://github.com/cloverhearts/quilljs-markdown/issues/65?notification_referrer_id=NT_kwDOA2p1c7MzOTY2NjY3NDA2OjU3MzA4NTMx#issuecomment-1180349650
             //  Quill.register({ 'modules/QuillMarkdown': QuillMarkdown }, true);
 
             element.type = 'quill';
@@ -252,7 +255,7 @@ export class ContentEditorComponent {
                 ['clean'],
               ],
               // todo: `#` -> h2 (instead of h1)
-              QuillMarkdown: {},
+              // QuillMarkdown: {},
               // ,syntax: true //->install highlight.js or ngx-highlight
             };
             // todo: html description
