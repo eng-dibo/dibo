@@ -351,14 +351,17 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
 
     this.offset += this.limit;
     this.httpService
-      .get<Article[] | PayloadError>(
+      .get<{ payload: Article[]; next: string } | PayloadError>(
         // remove params.item to fetch articles by category
         getUrl(Object.assign({}, this.params, { item: undefined }), {
           offset: this.offset,
           limit: this.limit,
         })
       )
+
       .subscribe((data) => {
+        // @ts-ignore
+        data = data.payload || data;
         if (data && Array.isArray(data) && data.length > 0) {
           this.moreData.push(
             ...(transformData(
