@@ -7,13 +7,13 @@ import { slug } from '@engineers/ngx-content-core/pipes-functions';
 import { prod } from '~config/server';
 import { supportedCollections } from './supported-collections';
 import { write } from '~server/storage';
-import { remove, write as writeFs } from '@engineers/nodejs/fs';
+import { recursive, remove, write as writeFs } from '@engineers/nodejs/fs';
 import { connect, getModel } from '~server/database';
-import { existsSync, unlink } from 'node:fs';
 import shortId from 'shortid';
 import { TEMP } from '.';
 import { Request, Response } from 'express';
 import { getData } from '~server/routes/data';
+import { resolve } from 'node:path';
 
 // todo: change to /api/v1/collection/itemType[/id]
 export default (request: Request, res: Response): any => {
@@ -200,23 +200,14 @@ export default (request: Request, res: Response): any => {
     })
     .then((_data: any) => {
       res.json(_data);
-      // purge the cache
-      /**
-       *
-       * @param path
-       */
-      function purge(path: string): void {
-        if (existsSync(`${TEMP}/${path}`)) {
-          unlink(`${TEMP}/${path}`, () => {});
-        }
-      }
 
-      // todo: also purge the rendered .html file from cache (collection/category/slug-~id.html)
-      // also index files, such as $collection/0:10**
-      purge(`${collection}/${_data._id}.json`);
-      purge(`${collection}/${_data._id}.html`);
-      purge(`${collection}/index.html`);
-      remove(`${TEMP}/${collection}/images/${_data._id}`);
+      // purge the cache, remove all files and directories that starts with $collection name
+      recursive(TEMP, (path) => {
+        if (path.startsWith(resolve(`${TEMP}/${collection}`))) {
+          if (!prod) console.log(`> purging ${path}`);
+          remove(path);
+        }
+      });
 
       if (!prod) {
         console.log(
