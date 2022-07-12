@@ -133,7 +133,8 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
           );
           link = url.href;
 
-          return `${titleText}\n${link}`;
+          // add two line breaks at the end to create a blank line before the next item in the jobs list
+          return `${titleText}\n${link}\n\n`;
         }
         return;
       },
