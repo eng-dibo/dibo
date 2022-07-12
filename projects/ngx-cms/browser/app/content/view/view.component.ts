@@ -116,29 +116,6 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
       throw new Error(`[content/view] path not allowed: /${this.params.type}`);
     }
 
-    if (this.platform.isBrowser()) {
-      // todo: only once per day for each visitor
-      this.showNotificationsDialog();
-
-      // install the app
-      // todo: if notifications dialog is open, wait until it closed
-      // listen to Notification.permission change
-      // when the notification.permission is not granted, a notificationsDialog may be opened
-      if (!Notification || Notification.permission === 'granted') {
-        window.addEventListener('beforeinstallprompt', (event_) => {
-          this.showInstallDialog(event_);
-        });
-      }
-
-      // check if app already installed
-      // if (window.matchMedia('(display-mode: standalone)').matches) { }
-
-      // this event is fired when the user install the app
-      // window.addEventListener('appinstalled', (evt) => { });
-
-      // todo: listen to app uninstall event, encourage the user to reinstall it again
-    }
-
     this.options = {
       layout: 'grid',
       copyAction: (card: any): string | undefined => {
@@ -286,6 +263,39 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
           // throw error;
         }
       });
+
+    if (this.platform.isBrowser() && localStorage) {
+      let notificationDialogTime = localStorage.getItem(
+          'notificationDialogTime'
+        ),
+        now = Date.now();
+
+      if (
+        !notificationDialogTime ||
+        +notificationDialogTime + 24 * 60 * 60 * 1000 < now
+      ) {
+        this.showNotificationsDialog();
+
+        // install the app
+        // todo: if notifications dialog is open, wait until it closed
+        // listen to Notification.permission change
+        // when the notification.permission is not granted, a notificationsDialog may be opened
+        if (!Notification || Notification.permission === 'granted') {
+          window.addEventListener('beforeinstallprompt', (event_) => {
+            this.showInstallDialog(event_);
+          });
+        }
+
+        // check if app already installed
+        // if (window.matchMedia('(display-mode: standalone)').matches) { }
+
+        // this event is fired when the user install the app
+        // window.addEventListener('appinstalled', (evt) => { });
+
+        // todo: listen to app uninstall event, encourage the user to reinstall it again
+        localStorage.setItem('notificationDialogTime', now.toString());
+      }
+    }
   }
   ngAfterViewInit(): void {
     // todo: use HighlightJS for `<code>..</code>`

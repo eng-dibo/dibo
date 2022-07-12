@@ -25,8 +25,15 @@ export class NotificationsDialogComponent {
                 device: localStorage.getItem('device'),
               })
               .subscribe(
-                (push: any) => console.log({ push }),
-                (error: any) => console.error({ err: error })
+                (push: any) => {
+                  localStorage.setItem(
+                    'PushSubscriptionKey',
+                    // subscription.getKey('p256dh') returns ArrayBuffer
+                    subscription.toJSON().keys!.p256dh
+                  );
+                  console.log({ push });
+                },
+                (error: any) => console.error({ error })
               )
           )
           .catch((error) =>
