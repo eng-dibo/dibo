@@ -50,6 +50,14 @@ const routes: Routes = [
         (modules) => modules.ContentModule
       ),
   },
+  {
+    matcher: (segments: any) =>
+      segments.length > 0 && segments[0].path === 'legal'
+        ? { consumed: [segments[0]] }
+        : null,
+    loadChildren: () =>
+      import('./legal/legal.module').then((modules) => modules.LegalModule),
+  },
   // the default route, if no other route matched
   { path: '**', component: ErrorComponent },
 ];
