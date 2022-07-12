@@ -14,6 +14,7 @@ import QuillMarkdown from 'quilljs-markdown';
 import dompurify from 'dompurify';
 import { getParams } from '~browser/app/content/view/functions';
 import { Params } from '~browser/app/content/view/view.component';
+import { Title } from '@angular/platform-browser';
 
 export interface Progress {
   loaded: number;
@@ -55,7 +56,8 @@ export class ContentEditorComponent {
   constructor(
     private router: Router,
     private httpService: HttpClient,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private titleService: Title
   ) {
     let parameters = getParams(this.router.url.trim());
     this.params = {
@@ -66,6 +68,8 @@ export class ContentEditorComponent {
           : parameters.type,
       category: parameters.category || {},
     };
+
+    this.titleService.setTitle(`${this.params.postType} editor`);
   }
 
   // a temporary workaround about the issue: `ViewChild` not available in `ngOnInit`
