@@ -49,5 +49,12 @@
 </mat-toolbar>
 
 <div class="page" role="main">
+  <div id="app-messages-board">
+    <div
+      *ngFor="let message of messages"
+      class="alert alert-{{ message.type }}"
+      [innerHTML]="message.payload"
+    ></div>
+  </div>
   <router-outlet></router-outlet>
 </div>

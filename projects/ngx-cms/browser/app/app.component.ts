@@ -12,6 +12,7 @@ import { PlatformService } from '@engineers/ngx-utils/platform';
 export class AppComponent {
   meta: Meta;
   toolbar: any;
+  messages: Array<{ type: 'ok' | 'error' | 'warn'; payload: string }> = [];
 
   /*
   to get the toolbar content (as html) from ~config/toolbar.html
@@ -30,17 +31,23 @@ export class AppComponent {
   */
 
   constructor(private http: HttpClient, private platform: PlatformService) {
-    if (
-      platform.isBrowser() &&
-      localStorage && // set the device id, use it:
-      // - as a security check, if a logingin trial from a strange device add an additional step
-      // - instead of userid if no loggedin user
-      // - to set preferences per device
-
-      !localStorage.getItem('device')
-    ) {
-      // todo: try to get 'device' from cookies or subScription.object.publicKey
-      localStorage.setItem('device', Date.now().toString());
+    if (platform.isBrowser()) {
+      if (!localStorage) {
+        this.messages = [
+          {
+            type: 'error',
+            payload:
+              'you are using an unsupported browser, use <a href="https://www.google.com/chrome/" target="_blank">Google chrome</a> to continue',
+          },
+        ];
+      } else if (!localStorage.getItem('device')) {
+        // set the device id, use it:
+        // - as a security check, if a login trial from a strange device add an additional step
+        // - instead of userId if no logged-in user
+        // - to set preferences per device
+        // todo: try to get 'device' from cookies or subScription.object.publicKey
+        localStorage.setItem('device', Date.now().toString());
+      }
     }
   }
 
