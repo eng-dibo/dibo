@@ -254,6 +254,15 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
               });
             }
             this.data = dataTransformed;
+
+            // make an initial loadMore() without scrolling if the page has low content
+            if (
+              this.platform.isBrowser() &&
+              this.params.type === 'jobs' &&
+              this.params.item
+            ) {
+              this.loadMore();
+            }
           } else if ((data as PayloadError).error) {
             throw (data as PayloadError).error;
           } else {
