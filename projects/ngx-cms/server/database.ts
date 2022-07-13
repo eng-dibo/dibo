@@ -76,12 +76,13 @@ export function _delete() {}
  * @function getModel
  * @param  collection
  * @param schemaObject
- * @param  schemaObj
+ * @param schemaOptions
  * @returns
  */
 export function getModel(
   collection: string,
-  schemaObject?: Obj
+  schemaObject?: Obj,
+  schemaOptions?: Obj
 ): ReturnType<typeof model> {
   // console.log("model: " +{ type, models: mongoose.models, modelNames: mongoose.modelNames() });
 
@@ -98,9 +99,16 @@ export function getModel(
   }
 
   return schemaObject
-    ? model(collection, schemaObject)
+    ? model(collection, schemaObject, schemaOptions)
     : // disable validation for non existing schemas
-      model(collection, {}, { strict: false, validateBeforeSave: false });
+      model(
+        collection,
+        {},
+        Object.assign(
+          { strict: false, validateBeforeSave: false },
+          schemaOptions || {}
+        )
+      );
 }
 
 /*

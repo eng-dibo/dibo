@@ -12,7 +12,7 @@ import { Request, Response } from 'express';
 // add/remove data or drop a database
 export default (request: Request, res: Response): any => {
   let hosts = request.params.hosts;
-  let existingHosts = readdirSync(resolve(__dirname, `../temp/db-backup`));
+  let existingHosts = readdirSync(resolve(__dirname, `../backup/db`));
 
   if (!hosts) {
     return res.json({
@@ -23,8 +23,7 @@ export default (request: Request, res: Response): any => {
         available hosts:
         ${existingHosts.map(
           (element) =>
-            element.replace(resolve(__dirname, '../temp/db-backup'), '') +
-            '\r\n'
+            element.replace(resolve(__dirname, '../backup/db'), '') + '\r\n'
         )}
         `,
     });
@@ -38,7 +37,7 @@ export default (request: Request, res: Response): any => {
           .map((host) => {
             console.log(`> restoring from ${host}`);
 
-            let hostPath = resolve(__dirname, `../temp/db-backup/${host}`);
+            let hostPath = resolve(__dirname, `../backup/db/${host}`);
             if (!existsSync) {
               throw `the host ${host} not existing`;
             }
