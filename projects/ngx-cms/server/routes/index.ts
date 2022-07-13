@@ -13,6 +13,7 @@ import rssRoute from './rss';
 import sitemapRoute from './sitemap';
 import sequenceRoute, { register as sequenceRegisterRoute } from './sequence';
 import updateRoute from './update';
+import moveRoute from './move';
 
 // api version, increased every time there is a breaking change
 // todo: add auth token & validate the requests
@@ -36,6 +37,7 @@ app.get(/^\/sitemap(\/.+)?/, sitemapRoute);
 app.get(/^\/sequence\/([^/]+)\/(.+)/, sequenceRegisterRoute);
 app.get(/^\/sequence\/([^/]+)/, sequenceRoute);
 app.get(/update/, updateRoute);
+app.get('/move/:category', moveRoute);
 
 // keep this after all routes
 app.get('*', dataRoute);
