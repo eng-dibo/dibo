@@ -2,14 +2,7 @@ import dotEnv from 'dotenv';
 
 import { execSync } from '@engineers/nodejs/process';
 import { mkdir, read, write } from '@engineers/nodejs/fs-sync';
-import {
-  appendFileSync,
-  copyFileSync,
-  existsSync,
-  lstatSync,
-  readdirSync,
-  writeFileSync,
-} from 'node:fs';
+import { appendFileSync, copyFileSync, existsSync, readdirSync } from 'node:fs';
 import { basename, resolve } from 'node:path';
 import { dist as distribution, projectPath, rootPath } from './index';
 import webpack from 'webpack';
@@ -105,8 +98,6 @@ export function buildBrowser(options: any): void {
 /**
  *
  * @param mode
- * @param project
- * @param distribution
  * @param options
  */
 export function buildServer(options: any): void {
@@ -117,6 +108,11 @@ export function buildServer(options: any): void {
   console.log(`> build server: ${cmd}`);
 
   execSync(cmd);
+  copyFileSync(
+    resolve(options.projectPath, 'server/robots.txt'),
+    resolve(options.distribution, 'server/robots.txt')
+  );
+
   write(`${options.distribution}/server/info.json`, {
     mode: options.mode,
     time,
