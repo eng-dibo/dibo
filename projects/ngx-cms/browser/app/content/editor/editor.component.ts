@@ -59,14 +59,12 @@ export class ContentEditorComponent {
     private snackBar: MatSnackBar,
     private titleService: Title
   ) {
-    let parameters = getParams(this.router.url.trim());
+    let match = this.router.url.trim().match(/([^/]+)\/editor\/(.+)?/);
     this.params = {
-      ...parameters,
+      type: match![1],
+      item: match![2],
       postType:
-        parameters.type.slice(-1) === 's'
-          ? parameters.type.slice(0, -1)
-          : parameters.type,
-      category: parameters.category || {},
+        match![1].slice(-1) === 's' ? match![1].slice(0, -1) : match![1],
     };
 
     this.titleService.setTitle(`${this.params.postType} editor`);
