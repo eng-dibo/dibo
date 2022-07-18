@@ -1,0 +1,39 @@
+<div
+  *ngIf="response"
+  class="alert"
+  [ngClass]="
+    response.class ||
+    'alert-' + (response.status === 'loading' ? 'warning' : response.status) ||
+    ''
+  "
+  [innerHTML]="response.message"
+></div>
+
+<form
+  #formElement
+  [formGroup]="formGroup"
+  method="post"
+  enctype="multipart/form-data"
+>
+  <formly-form [form]="formGroup" [fields]="fields"> </formly-form>
+  <button
+    *ngIf="this.step === 'init'"
+    mat-raised-button
+    color="primary"
+    type="button"
+    (click)="onNext()"
+  >
+    <mat-icon>arrow_right</mat-icon> Next
+  </button>
+
+  <button
+    *ngIf="this.step === 'login'"
+    mat-raised-button
+    color="primary"
+    type="button"
+    [disabled]="!formGroup?.valid"
+    (click)="onSubmit()"
+  >
+    <mat-icon>person</mat-icon> {{ step }}
+  </button>
+</form>

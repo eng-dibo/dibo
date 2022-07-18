@@ -27,6 +27,7 @@
     }
   ],
   "scripts": {
+    "tmp": "npm run build:browser:dev && npm run serve:dev",
     "start": "npm run build && npm run serve",
     "start:dev": "npm run build:dev && npm run serve:dev",
     "build": "npm run task -- build",
