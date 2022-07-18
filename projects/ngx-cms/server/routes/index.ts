@@ -14,7 +14,7 @@ import sitemapRoute from './sitemap';
 import sequenceRoute, { register as sequenceRegisterRoute } from './sequence';
 import updateRoute from './update';
 import moveRoute from './move';
-import authRoute from './auth';
+import authRoute, { authMiddleware } from './auth';
 
 // api version, increased every time there is a breaking change
 // todo: add auth token & validate the requests
@@ -40,6 +40,7 @@ app.get(/^\/sequence\/([^/]+)/, sequenceRoute);
 app.get(/update/, updateRoute);
 app.get('/move/:category', moveRoute);
 app.post('/auth/:action', authRoute);
+app.use(authMiddleware);
 
 // keep this after all routes
 app.get('*', dataRoute);

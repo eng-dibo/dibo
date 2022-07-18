@@ -131,8 +131,8 @@ export function server() {
   let app = createApp(options);
   app.get('/sitemap.xml', sitemapRoute);
   app.get('/robots.txt', (request: Request, res: Response): void => {
-    res.sendFile(resolve(__dirname,'./robots.txt'))
-});
+    res.sendFile(resolve(__dirname, './robots.txt'));
+  });
   // prevent non-existing static files from reaching the regular route, i.e app.get('*')
   app.use('*.*', (request: Request, res: Response) => {
     throw new Error(`static file ${request.originalUrl} not found`);

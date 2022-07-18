@@ -1,4 +1,4 @@
-import { Request, Response, query } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import cache from '@engineers/nodejs/cache-fs';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
@@ -37,4 +37,29 @@ export default (req: Request, res: Response): void => {
   } else {
     // error
   }
+};
+
+export let authMiddleware = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void => {
+  let authToken =
+    req.body.authToken ||
+    req.query.authToken ||
+    req.headers['x-access-token'] ||
+    req.headers['auth-token'];
+
+  if (!authToken) {
+    res.status(403).send('A token is required for authentication');
+    return;
+  }
+  /* try {
+    let decoded = jwt.verify(authToken, 'randomTokenKey');
+    req.user = decoded;
+  } catch {
+    res.status(401).send('Invalid Token');
+    return;
+  } */
+  return next();
 };
