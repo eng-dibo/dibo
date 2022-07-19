@@ -33,7 +33,7 @@ a:hover {
   color: #125699;
 }
 
-/* bootstrap-like alerts, todo: add dismess btn */
+/* bootstrap-like alerts */
 .alert {
   position: relative;
   padding: 0.75rem 1.25rem;
@@ -41,25 +41,34 @@ a:hover {
   border: 1px solid transparent;
   border-radius: 0.25rem;
   text-align: center;
-}
 
-.alert a {
-  font-weight: 700;
-}
+  a {
+    font-weight: 700;
+  }
 
-.alert-error {
-  color: #721c24;
-  background-color: #f8d7da;
-  border-color: #721c24;
+  // todo: add a close button
+  .dismiss {
+  }
 }
 
 .alert-ok {
+  @extend .alert;
   color: #155724;
   background-color: #d4edda;
   border-color: #155724;
 }
 
+.alert-error {
+  // use @extend so you don't have to add .alert to class list
+  // <div class="alert alert-ok">  ->  <div class="alert-ok">
+  @extend .alert;
+  color: #721c24;
+  background-color: #f8d7da;
+  border-color: #721c24;
+}
+
 .alert-warning {
+  @extend .alert;
   color: #8a6d3b;
   background-color: #fcf8e3;
   border-color: #8a6d3b;

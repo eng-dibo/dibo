@@ -1,27 +1,52 @@
 mat-toolbar {
   position: fixed;
   z-index: 100;
-}
 
-mat-toolbar .logo {
-  padding: 0 10px;
-  background-color: black;
-  border-radius: 7px;
-}
+  .logo {
+    padding: 0 10px;
+    background-color: black;
+    border-radius: 7px;
 
-mat-toolbar .logo:hover {
-  border: solid thin brown;
-  color: red;
-}
+    &:hover {
+      border: solid thin brown;
+      color: red;
+    }
 
-mat-toolbar .logo img:hover {
-  opacity: 0.9;
-}
+    img:hover {
+      opacity: 0.9;
+    }
 
-mat-toolbar .logo span {
-  /*make the text beside the img, but go beneath it @(max-width: 395px)*/
-  display: inline-block;
-  margin-left: 5px;
+    span {
+      /*make the text beside the img, but go beneath it @(max-width: 395px)*/
+      display: inline-block;
+      margin-left: 5px;
+    }
+  }
+
+  .spacer {
+    flex: 0.95;
+  }
+
+  @media (max-width: 550px) {
+    font-size: smaller;
+
+    .logo {
+      padding: 0 5px;
+    }
+
+    a {
+      margin: 5px;
+    }
+  }
+
+  @media (max-width: 304px) {
+    .logo {
+      background-color: unset;
+    }
+    .logo span {
+      display: none;
+    }
+  }
 }
 
 mat-toolbar a,
@@ -29,33 +54,6 @@ footer a {
   text-decoration: none;
   color: white;
   margin: 10px;
-}
-
-mat-toolbar .spacer {
-  flex: 0.95;
-}
-
-@media (max-width: 550px) {
-  mat-toolbar {
-    font-size: smaller;
-  }
-
-  mat-toolbar.logo {
-    padding: 0 5px;
-  }
-
-  mat-toolbar a {
-    margin: 5px;
-  }
-}
-
-@media (max-width: 304px) {
-  mat-toolbar .logo {
-    background-color: unset;
-  }
-  mat-toolbar .logo span {
-    display: none;
-  }
 }
 
 .page {
