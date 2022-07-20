@@ -23,7 +23,7 @@ let rootPath = resolve(__dirname, '..'),
   defaultScripts = {
     build: 'webpack',
     postbuild: 'shx cp package.json dist',
-    _publish: 'npm run build && npm publish --access=public',
+    _publish: 'npm publish --access=public',
     // build the package just before it is about to be published and released
     // no need to build all packages before running `npm run release`
     prepublishOnly: 'npm run build',
@@ -42,48 +42,71 @@ let rootPath = resolve(__dirname, '..'),
   };
 
 export interface GenerateOptions {
-  // if name provided, create a new package, or update a specific package
-  // else update all packages
+  // the entry name including the target, i.e $target/$name
+  // $target is projects|packages
+  // multiple names may be provided, as an array or comma-separated string
+  // if an entry already exists it will be updated
   name?: string;
-  target?: 'packages' | 'projects';
+  // override the existing package.scripts with default scripts (for updatePackages())
+  overrideScripts?: boolean;
   // other properties of package.json
   [key: string]: any;
 }
 
 /**
- * generates build files such as package.json, README.md, etc.
+ * generates the build files such as package.json, README.md, ...
  *
- * @param name
- * @param options
+ * @param entries
+ * @param options package properties
  */
-export default function generate(
-  name: string,
+export default async function generate(
+  // todo: accept regex or glob patterns, example: projects/*
+  entries?: string | string[],
   options: GenerateOptions = {}
 ): Promise<(void | void[])[]> {
-  if (arguments.length === 2) {
-    let { target = 'packages', ...pkg } = options;
-    let path = `${rootPath}/${target}/${name}`;
-    return updatePackages([path], pkg).then(() =>
-      Promise.all([
-        updateReadMe([path]),
-        addTsconfig([path]),
-        addWebpackConfig([path]),
-        // addJestConfig([path]),
-        addSemanticReleaseConfig([path]),
-        write(`${path}/index.ts`, ''),
-      ])
-    );
-  } else {
-    return updatePackages().then(() =>
-      Promise.all([
-        updateReadMe(),
-        addTsconfig(),
-        addWebpackConfig(),
-        // addJestConfig(),
-        addSemanticReleaseConfig(),
-      ])
-    );
+  // todo: fix cli parsing,
+  // if no argument passed to the command, then arguments=[{}]
+  if (arguments.length < 2) {
+    options = arguments[0];
+    entries = undefined;
   }
+
+  let { overrideScripts, ...packageObject } = options;
+
+  if (typeof entries === 'string') {
+    entries = entries.split(',');
+  }
+
+  if (!entries) {
+    entries = await getDirs();
+    // set entry format to $target/name instead of full path
+    entries = entries.map((el) => `${basename(dirname(el))}/${basename(el)}`);
+  }
+
+  if (entries) {
+    // validate entries, it must be in form of `$target/$name`, where $target = projects | packages
+    let invalidEntry = entries.find(
+      (el) => !/^projects|packages\/[^/]+$/.test(el)
+    );
+    if (invalidEntry) {
+      throw new Error(
+        `invalid entry ${invalidEntry}, entry must be in form of $target/$name where target is projects or packages`
+      );
+    }
+
+    entries = entries.map((el) => el.trim());
+  }
+
+  return updatePackages(entries, packageObject, overrideScripts).then(() =>
+    Promise.all([
+      updateReadMe(entries as string[]),
+      addTsconfig(entries as string[]),
+      addWebpackConfig(entries as string[]),
+      // addJestConfig(entries as string[]),
+      addSemanticReleaseConfig(entries as string[]),
+      // todo: create an empty index.ts in each entry dir
+    ])
+  );
 }
 
 /**
@@ -93,41 +116,49 @@ export default function generate(
  *
  * paths are relative to cwd()
  *
- * @param dirs packages where to update it's readme.md file
- * @param pkgObj additional package properties provided by cli, takes precedence over the existing properties
- * @param directories
+ * @param directories packages where to update it's readme.md file
+ * @param packageObject additional package properties provided by cli, takes precedence over the existing properties
+ * @param entries
+ * @param overrideScripts override the existing scripts
+ * @returns Promise<void>
  */
 export function updatePackages(
-  directories?: string[] | Promise<string[]>,
-  packageObject: { [key: string]: any } = {}
+  entries?: string[] | Promise<string[]>,
+  packageObject: { [key: string]: any } = {},
+  overrideScripts = false
 ): Promise<void> {
-  return Promise.resolve(directories || getDirs())
+  return Promise.resolve(entries || getDirs())
     .then((entries: Array<string>) =>
       Promise.all(
         entries.map((entry: string) => {
+          let packagePath = resolve(rootPath, `${entry}/package.json`);
+
           return (
-            read(`${entry}/package.json`)
+            read(packagePath)
               // if file not exists create a new one
               .catch(() => ({}))
               .then((content) => {
+                // todo: make deep merging to merge properties like `scripts`
                 let pkg = Object.assign(
+                  // the default package's properties
                   defaultPackage(entry),
+                  // properties from root package.json
                   rootData,
+                  // the existing package properties
                   content,
+                  // user provided properties
                   packageObject
                 );
 
-                pkg.scripts = Object.assign(
-                  {},
-                  defaultScripts,
-                  pkg.scripts || {},
-                  { postbuild: 'shx cp package.json dist' }
-                );
+                pkg.scripts = overrideScripts
+                  ? // in force mode, default scripts overrides existing scripts
+                    Object.assign({}, pkg.scripts || {}, defaultScripts)
+                  : Object.assign({}, defaultScripts, pkg.scripts || {});
 
                 return pkg;
               })
               // file will be linted on commit
-              .then((content) => write(`${entry}/package.json`, content))
+              .then((content) => write(packagePath, content))
           );
         })
       )
@@ -168,7 +199,12 @@ export function updateReadMe(directories?: string[]): Promise<void> {
               let content = ejs.renderFile('./tasks/README.tmpl.md', {
                 details,
                 pkg,
-                entries,
+                // format: $target/$name instead of full path
+                // compatible with different OS
+                entries: entries
+                  // filter only entries that has package.json
+                  .filter((el) => existsSync(`${el}/package.json`))
+                  .map((el) => `${basename(dirname(el))}/${basename(el)}`),
               });
 
               return content;
