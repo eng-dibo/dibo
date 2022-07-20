@@ -4,7 +4,7 @@ import { replaceAll } from '@engineers/javascript/string';
 import { connect } from '~server/database';
 import { supportedCollections } from './supported-collections';
 import { backup } from '@engineers/mongoose';
-import { write as writeFs } from '@engineers/nodejs/fs';
+import { copy, write as writeFs } from '@engineers/nodejs/fs';
 import { Request, Response } from 'express';
 import { storage } from '~server/storage';
 
@@ -57,10 +57,17 @@ export default (request: Request, res: Response): any => {
           undefined,
           (file: string) => !existsSync(`${temporary}/storage/${file}`)
         ),
+
+    request.query.configs === 'false'
+      ? null
+      : copy(resolve(__dirname, '../config'), `${temporary}/config`).then(
+          // to be shown in result{}
+          () => true
+        ),
   ])
     .then((result) => {
       console.log('[backup] Done');
-      res.json({ db: result[0], storage: result[1] });
+      res.json({ db: result[0], storage: result[1], config: result[2] });
     })
     .catch((error: any) => {
       console.error(error);
