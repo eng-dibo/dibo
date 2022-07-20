@@ -61,14 +61,14 @@
   "scripts": {
     "build": "webpack",
     "postbuild": "shx cp package.json dist",
-    "_publish": "npm run build && npm publish --access=public",
+    "_publish": "npm publish --access=public",
     "prepublishOnly": "npm run build",
     "prerelease": "shx mkdir -p dist && shx cp package.json dist",
     "prerelease:local": "npm run prerelease",
     "release": "semantic-release",
     "release:local": "semantic-release --no-ci",
     "postversion": "shx cp package.json ..",
-    "postrelease": "shx rm -r dist",
+    "postrelease": "shx rm -r dist && shx rm -r tarball!!",
     "postrelease:local": "npm run postrelease"
   }
 }
