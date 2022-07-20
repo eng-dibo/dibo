@@ -1,3 +1,16 @@
+# [@engineers/ngx-content-view-mat-v1.1.0](https://github.com/eng-dibo/dibo/compare/@engineers/ngx-content-view-mat-v1.0.0...@engineers/ngx-content-view-mat-v1.1.0) (2022-07-20)
+
+### Bug Fixes
+
+- fix html files ([8378bbc](https://github.com/eng-dibo/dibo/commit/8378bbccfcde0fc300d40c55a755946b36aa4c6a))
+- scss styles ([a207acc](https://github.com/eng-dibo/dibo/commit/a207acc7b37571d4c7103ae1098bfe01d21c4237))
+
+### Features
+
+- **ngx-cms:** add data-error ([0229820](https://github.com/eng-dibo/dibo/commit/02298204793b482ebc5dcf43e5516c4cb6682fe5))
+- **ngx-cms:** lazy-load modules ([23eddbd](https://github.com/eng-dibo/dibo/commit/23eddbd64d4b51a8314cb7c66c2f20d21f498944))
+- upgrade angular to v14 ([5243120](https://github.com/eng-dibo/dibo/commit/524312070c3a4813e1e2927e4199db6d8d1af608))
+
 # @engineers/ngx-content-view-mat-v1.0.0 (2022-05-16)
 
 ### Bug Fixes
