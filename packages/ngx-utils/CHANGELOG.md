@@ -1,3 +1,9 @@
+# [@engineers/ngx-utils-v1.1.0](https://github.com/eng-dibo/dibo/compare/@engineers/ngx-utils-v1.0.0...@engineers/ngx-utils-v1.1.0) (2022-07-20)
+
+### Features
+
+- upgrade angular to v14 ([5243120](https://github.com/eng-dibo/dibo/commit/524312070c3a4813e1e2927e4199db6d8d1af608))
+
 # @engineers/ngx-utils-v1.0.0 (2022-05-16)
 
 ### Bug Fixes
