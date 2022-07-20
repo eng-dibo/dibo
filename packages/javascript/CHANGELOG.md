@@ -1,3 +1,13 @@
+# [@engineers/javascript-v1.1.0](https://github.com/eng-dibo/dibo/compare/@engineers/javascript-v1.0.0...@engineers/javascript-v1.1.0) (2022-07-20)
+
+### Bug Fixes
+
+- **javascript:** remove nodejs-specific stuff ([bc8f850](https://github.com/eng-dibo/dibo/commit/bc8f850e81f041c7ae797eb73db675185ea735d9))
+
+### Features
+
+- **javascript:** url.objectToQueryParams() ([7d9b32e](https://github.com/eng-dibo/dibo/commit/7d9b32e19dce815d56de084ae8fa05a4883b3193))
+
 # @engineers/javascript-v1.0.0 (2022-05-16)
 
 ### Bug Fixes
