@@ -184,5 +184,8 @@
       }
     }
   },
-  "defaultProject": "ngx-cms"
+  "defaultProject": "ngx-cms",
+  "cli": {
+    "analytics": false
+  }
 }

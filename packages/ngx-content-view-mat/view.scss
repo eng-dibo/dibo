@@ -1,8 +1,3 @@
-// todo: '~' is deprecated, the loader resolves as a relative path, then searches in node_modules
-// https://github.com/webpack-contrib/sass-loader#resolving-import-at-rules
-@use "ngx-sharebuttons/themes/default";
-@use "quill/dist/quill.snow";
-
 mat-card-title h1,
 h3 {
   font-size: unset;

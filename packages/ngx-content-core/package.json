@@ -28,9 +28,9 @@
   ],
   "description": "tools for managing the content in Angular.",
   "peerDependencies": {
-    "@angular/core": "^13.1.2",
-    "@angular/platform-browser": "^13.1.2",
-    "@angular/router": "^13.1.2"
+    "@angular/core": "^14.0.6",
+    "@angular/platform-browser": "^14.0.6",
+    "@angular/router": "^14.0.6"
   },
   "keywords": [
     "angular",
