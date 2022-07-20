@@ -41,9 +41,17 @@ let config: Configuration = {
   output: {
     path: resolve(__dirname, './dist'),
     filename: '[name].js',
-    library: undefined,
-    libraryTarget: 'commonjs2',
+    library: {
+      // todo: 'module'
+      // replaces output.libraryTarget
+      type: 'commonjs2',
+    },
+    // chunkFormat: 'module',
+    // module: true,
     clean: true,
+  },
+  experiments: {
+    outputModule: true,
   },
   module: {
     // see packages/webpack/native-require.js

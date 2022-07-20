@@ -187,6 +187,9 @@ export function buildPackage(options: any): void {
   let package_ = {
     name: rootPackage.name,
     version: rootPackage.version,
+    // todo: fix ~~webpack.config
+    // https://github.com/angular/angular/issues/45062
+    //  "type": "module",
     main: './server/main.js',
     scripts: {
       // use regex with global flag to replace all occurrences

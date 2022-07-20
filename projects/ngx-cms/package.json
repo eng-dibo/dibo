@@ -30,7 +30,7 @@
     "start": "npm run build && npm run serve",
     "start:dev": "npm run build:dev && npm run serve:dev",
     "build": "npm run task -- build",
-    "build:dev": "npm run task -- build --mode=development --targets=browser,server,config",
+    "build:dev": "npm run task -- build --mode=development --targets=browser,server,config,package",
     "build:browser": "npm run task -- build --mode=production --targets=browser",
     "build:browser:dev": "npm run task -- build --mode=development --targets=browser",
     "build:server": "npm run task -- build --mode=production --targets=server",
