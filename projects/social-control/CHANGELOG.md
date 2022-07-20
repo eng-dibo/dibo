@@ -1,3 +1,13 @@
+# [social-control-v1.1.0](https://github.com/eng-dibo/dibo/compare/social-control-v1.0.1...social-control-v1.1.0) (2022-07-20)
+
+### Bug Fixes
+
+- **social-control:** models ([c07ffc4](https://github.com/eng-dibo/dibo/commit/c07ffc41f4c1d94df95354cfff57a6df80691dd4))
+
+### Features
+
+- upgrade angular to v14 ([5243120](https://github.com/eng-dibo/dibo/commit/524312070c3a4813e1e2927e4199db6d8d1af608))
+
 # [social-control-v1.0.1](https://github.com/eng-dibo/dibo/compare/social-control-v1.0.0...social-control-v1.0.1) (2022-06-15)
 
 ### Bug Fixes
