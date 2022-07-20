@@ -35,10 +35,10 @@
     "jest-preset-angular": "11.1.2"
   },
   "peerDependencies": {
-    "@angular/common": "^13.1.2",
-    "@angular/core": "^13.1.2",
-    "@angular/platform-browser": "^13.1.2",
-    "@angular/router": "^13.1.2"
+    "@angular/common": "^14.0.6",
+    "@angular/core": "^14.0.6",
+    "@angular/platform-browser": "^14.0.6",
+    "@angular/router": "^14.0.6"
   },
   "keywords": [
     "angular",

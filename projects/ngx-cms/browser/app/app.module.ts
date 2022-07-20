@@ -81,7 +81,8 @@ const routes: Routes = [
     // keep router module after all other feature modules,
     // so the default routes doesn't override other routes defined by feature modules
     RouterModule.forRoot(routes, {
-      initialNavigation: 'enabled' as InitialNavigation,
+      // required for SSR
+      initialNavigation: 'enabledBlocking' as InitialNavigation,
       enableTracing: false,
     }),
   ],

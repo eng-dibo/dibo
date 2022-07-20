@@ -35,7 +35,9 @@ export interface Response {
 })
 export class ContentEditorComponent {
   params!: Params;
-  formGroup = new FormGroup({});
+  // todo: FormGroup<ArticleFormControls>
+  // crate ArticleFormControls from ArticleForm
+  formGroup = new FormGroup<any>({});
   fields: FormlyFieldConfig[];
   // holds arbitrary data
   model: { [key: string]: any } = {};

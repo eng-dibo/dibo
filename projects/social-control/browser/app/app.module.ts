@@ -13,7 +13,7 @@ const enableTracing = false;
     BrowserModule.withServerTransition({ appId: 'serverApp' }),
     BrowserAnimationsModule,
     RouterModule.forRoot(routes, {
-      initialNavigation: 'enabled' as InitialNavigation,
+      initialNavigation: 'enabledBlocking' as InitialNavigation,
       enableTracing,
     }),
   ],
