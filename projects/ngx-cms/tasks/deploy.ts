@@ -4,6 +4,8 @@ import { execSync } from '@engineers/nodejs/process';
 import { execSync as _execSync } from 'node:child_process';
 import setup from './setup';
 import https from 'node:https';
+import { remove } from '@engineers/nodejs/fs-sync';
+import { resolve } from 'node:path';
 
 /**
  * build a docker image and deploy it to gcloud run
@@ -29,6 +31,10 @@ export default function (cloudRunOptions: any /* todo: CloudRun */ = {}): void {
   let image = `gcr.io/${projectId}/${
     cloudRun.image || cloudRun.name || 'ngx-cms'
   }`;
+
+  console.log('> removing cache files');
+  // path is relative to dist/tasks/deploy.js
+  remove(resolve(__dirname, '../temp'));
 
   console.log(`> building the image ${image} ...`);
   execSync(`docker build . -t ${image}`);

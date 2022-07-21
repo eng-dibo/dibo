@@ -32,7 +32,7 @@
         mat-raised-button
         color="primary"
         [disabled]="
-          stepper.selectedIndex === 0 || response?.status === 'loading'
+          stepper.selectedIndex === 0 || response.status === 'loading'
         "
         type="button"
         (click)="move('previous', stepper)"
@@ -44,7 +44,7 @@
         mat-raised-button
         color="primary"
         type="button"
-        [disabled]="!isValid(step) || last || response?.status === 'loading'"
+        [disabled]="!isValid(step) || last || response.status === 'loading'"
         (click)="move('next', stepper)"
       >
         Next <mat-icon>arrow_right</mat-icon>
@@ -60,9 +60,9 @@
         color="primary"
         [disabled]="
           !last ||
-          !formGroup?.valid ||
-          formGroup?.pristine ||
-          response?.status === 'loading'
+          !formGroup.valid ||
+          formGroup.pristine ||
+          response.status === 'loading'
         "
         (click)="onSubmit(stepper)"
       >

@@ -84,7 +84,11 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
   data!: Payload;
   // data that fetched by loadMore()
   moreData: Article[] = [];
-  limit = 10;
+  // articles count limit to be fetched
+  // increase the initial limit for adsense
+  limit? = 50;
+  // same as this.limit but works in loadMore()
+  loadMoreLimit = 10;
   offset = 0;
   // stop infiniteScroll when no more data (it already stops when the scrollbar reached the end)
   infiniteScroll = true;
@@ -369,13 +373,15 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    this.offset += this.limit;
+    // use this.limit at the first loading only, then this.loadMoreLimit
+    this.offset += this.limit || this.loadMoreLimit;
+    this.limit = undefined;
     this.httpService
       .get<{ payload: Article[]; next: string } | PayloadError>(
         // remove params.item to fetch articles by category
         getUrl(Object.assign({}, this.params, { item: undefined }), {
           offset: this.offset,
-          limit: this.limit,
+          limit: this.loadMoreLimit,
         })
       )
 

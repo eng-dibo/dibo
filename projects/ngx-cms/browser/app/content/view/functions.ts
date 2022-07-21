@@ -252,7 +252,7 @@ export function adjustArticle(
     }
 
     adjustedItem.cover = {
-      src: source,
+      src: '//via.placeholder.com/1000x500/.webp?text=loading...',
       srcset,
       sizes,
     };

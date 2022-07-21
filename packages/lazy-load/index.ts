@@ -14,6 +14,12 @@ export interface Options {
   threshold: number | Array<number>;
 }
 
+/**
+ * a directive to lazy-load elements using `IntersectionObserver`
+ * when an element is loaded, its attribute `data-lazy` is set to `isIntersecting`
+ * a place holder can be used (i.e src) and it will be replaced with data-srcset or data-src
+ * works in browser only, to prevent SSR from preloading the lazy loading element
+ */
 @Directive({
   selector: '[data-src],[data-srcset],[data-lazy]',
 })

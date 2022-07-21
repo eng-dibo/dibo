@@ -64,7 +64,7 @@
       mat-card-image
       [attr.width]="data.cover.width"
       [attr.height]="data.cover.height"
-      src="{{data.placeholder || null}}"
+      [src]="data.cover.src"
       [data-src]="data.cover.src"
       [data-srcset]="data.cover.srcset"
       [sizes]="data.cover.sizes"

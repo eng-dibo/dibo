@@ -6,7 +6,9 @@ import externals, { node } from '@engineers/webpack/externals';
 import { getEntries, read } from '@engineers/nodejs/fs-sync';
 
 let entry = {};
-let tsConfig = read(resolve(__dirname, 'tsconfig.json'));
+let tsConfig = read(resolve(__dirname, 'tsconfig.json')) as {
+  [key: string]: any;
+};
 
 /*
 // see externals(~server)

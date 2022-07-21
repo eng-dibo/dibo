@@ -42,16 +42,18 @@ let config: Configuration = {
     path: resolve(__dirname, './dist'),
     filename: '[name].js',
     library: {
-      // todo: 'module'
+      // todo: esm `type: 'module'`
       // replaces output.libraryTarget
       type: 'commonjs2',
     },
+    // todo: esm
     // chunkFormat: 'module',
     // module: true,
     clean: true,
   },
   experiments: {
-    outputModule: true,
+    // todo: esm
+    // outputModule: true,
   },
   module: {
     // see packages/webpack/native-require.js
