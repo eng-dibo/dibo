@@ -29,10 +29,11 @@ export function toRegExp(
   flags?: string,
   escapeString = true
 ): RegExp {
+  let escapedValue: string | RegExp;
   if (typeof value === 'string') {
-    value = escapeString ? escape(value) : value;
+    escapedValue = escapeString ? escape(value) : value;
   } else if (Array.isArray(value)) {
-    value = value
+    escapedValue = value
       .map((element) => {
         if (element instanceof RegExp) {
           // we don't need to escape a RegExp pattern, only escape strings
@@ -41,8 +42,14 @@ export function toRegExp(
         return escapeString ? escape(element) : element;
       })
       .join('|');
+  } else if (value instanceof RegExp) {
+    escapedValue = value;
+  } else {
+    throw new TypeError(`value ${value} must be of type Pattern`);
   }
-  return typeof value === 'string' ? new RegExp(value, flags) : value;
+  return typeof escapedValue === 'string'
+    ? new RegExp(escapedValue, flags)
+    : escapedValue;
 }
 
 /**

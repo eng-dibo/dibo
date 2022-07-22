@@ -1,3 +1,5 @@
+import { toRegExp } from './regex';
+
 /**
  * replaces all `replace` parts in a string.
  * String.replace() only replaces the first occurrence
@@ -33,8 +35,12 @@ export function replaceAll(
   }
 
   if (typeof replace === 'string') {
-    replace = new RegExp(replace, 'g');
+    // replace must be escaped,
+    // to prevent replaceAll(value,'.','replaceWith') from replacing everything
+    // instead of replacing '.' only
+    replace = toRegExp(replace, 'g');
   }
+
   return element.replace(replace, replaceWith.toString());
   // faster than element.split(replace).join(replaceWith)
   // https://jsperf.com/replace-all-vs-split-join
