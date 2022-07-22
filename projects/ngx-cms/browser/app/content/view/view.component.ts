@@ -194,7 +194,6 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
         //  console.log({ data, categories, defaultTags });
 
         try {
-          let cover;
           if ((data as PayloadData).payload) {
             let dataTransformed = transformData(
               (data as PayloadData).payload,

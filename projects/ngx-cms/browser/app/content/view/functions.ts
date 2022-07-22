@@ -234,6 +234,9 @@ export function adjustArticle(
     category = categories.find((element) => element._id === item.categories[0]);
   }
 
+  // override the stored slug as it wrong, previously it was without the category part
+  // todo: update the database with the correct slug
+  delete item.slug;
   let adjustedItem = Object.assign(
     {
       id: item._id,
@@ -241,11 +244,16 @@ export function adjustArticle(
       slug: `${
         category ? category.slug || slug(category.title!) : 'general'
       }/${slug(item.title || '')}`,
-
-      link: `/${parameters.type}/${item.slug}~${item._id}`,
     },
     item
   );
+
+  // remove '.' from the link to prevent the server from dealing with it as a static file
+  adjustedItem.link = replaceAll(
+    `/${parameters.type}/${adjustedItem.slug}~${item._id}`,
+    '.',
+    ''
+  ) as string;
 
   if (adjustedItem.cover) {
     // if the layout changed, change the attribute sizes, for example if a side menu added.
