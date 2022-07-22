@@ -61,7 +61,8 @@ export class ContentEditorComponent {
     private snackBar: MatSnackBar,
     private titleService: Title
   ) {
-    let match = this.router.url.trim().match(/([^/]+)\/editor\/(.+)?/);
+    // matches $type/editor[/$item]
+    let match = this.router.url.trim().match(/([^/]+)\/editor(?:\/(.+))?/);
     this.params = {
       type: match![1],
       item: match![2],
