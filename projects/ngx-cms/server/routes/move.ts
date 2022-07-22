@@ -29,14 +29,25 @@ export default (request: Request, res: Response): any => {
     });
   }
 
+  /*
+   * todo:
+   * 1- get category and subCategories recursively, save to childCategories[] set
+   * 2- get all data where category in childCategories[]
+   * 3- remove category from childCategories[]
+   * 4- forEach childCategory if(el.parent===categoryId)delete el.parent
+   * 5- forEach data (el.categories||[]).filter(el!==categoryId)
+   */
+
   connect().then(() =>
     Promise.all([
-      // todo: also move topics from sub categories
+      // todo: also move topics from childCategories
       query(`${fromCollection}/@categories=${categoryId}`),
       query(`${fromCollection}_categories/${categoryId}`),
+      // todo: get childCategories recursively
+      query(`${fromCollection}_categories/@parent=${categoryId}`),
     ])
-      .then(([data, category]) => {
-        console.log({ data, category });
+      .then(([data, category, subCategories]) => {
+        console.log({ data, category, subCategories });
         // todo: toCollection = query.to || category.title
         let toCollection = request.query.to || category.title;
 
