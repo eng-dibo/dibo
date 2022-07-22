@@ -194,6 +194,7 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
         //  console.log({ data, categories, defaultTags });
 
         try {
+          let cover;
           if ((data as PayloadData).payload) {
             let dataTransformed = transformData(
               (data as PayloadData).payload,
@@ -240,6 +241,7 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
 
             let baseUrl = defaultTags.baseUrl || this.document.location.origin;
 
+            this.data = dataTransformed;
             this.tags = getMetaTags(
               dataTransformed,
               this.params,
@@ -257,14 +259,9 @@ export class ContentViewComponent implements OnInit, AfterViewInit {
                 tags: this.tags,
               });
             }
-            this.data = dataTransformed;
 
             // make an initial loadMore() without scrolling if the page has low content
-            if (
-              this.platform.isBrowser() &&
-              this.params.type === 'jobs' &&
-              this.params.item
-            ) {
+            if (this.params.type === 'jobs' && this.params.item) {
               this.loadMore();
             }
           } else if ((data as PayloadError).error) {

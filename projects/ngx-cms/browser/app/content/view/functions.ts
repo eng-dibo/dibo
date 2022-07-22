@@ -180,6 +180,13 @@ export function getMetaTags(
       // todo: pass twitter:creator, twitter:creator:id
       // todo: expires
     };
+
+    // use data.image to override data.cover.src
+    // data.cover.src may be just a placeholder
+    // see adjustArticle()
+    if (data.image) {
+      metaTags.image.src = data.image;
+    }
   }
   // todo: category link, title
   else {
@@ -240,7 +247,7 @@ export function adjustArticle(
   if (adjustedItem.cover) {
     // if the layout changed, change the attribute sizes, for example if a side menu added.
     // todo: i<originalSize/250
-    let source = `/api/v1/image/${parameters.type}-cover-${adjustedItem.id}/${adjustedItem.slug}.webp`,
+    let src = `/api/v1/image/${parameters.type}-cover-${adjustedItem.id}/${adjustedItem.slug}.webp`,
       srcset = '',
       // for type=item: image width = 100% of the viewport width
       // for type=list: each column is adjusted to be ~250px (by css media queries)
@@ -248,14 +255,21 @@ export function adjustArticle(
       sizes = type === 'item' ? '100vw' : '250px';
     for (let index = 1; index < 10; index++) {
       let n = index * 250;
-      srcset += `${source}?size=${n} ${n}w, `;
+      srcset += `${src}?size=${n} ${n}w, `;
     }
 
     adjustedItem.cover = {
       src: '//via.placeholder.com/1000x500/.webp?text=loading...',
+      // use cover.src to set og:image meta tag
+      // after setting meta tags, replace cover.src with cover.placeholder then delete cover.placeholder
+      // because <ngx-content-viw-mat> doesn't use cover.placeholder
       srcset,
       sizes,
     };
+
+    // a temporary property for 'ogg:image' meta tag
+    // to override the placeholder adjustedItem.cover.src
+    adjustedItem.image = src;
   }
 
   if (type === 'item' && parameters.type === 'jobs') {
