@@ -162,21 +162,24 @@ export function getMetaTags(
     return defaultMetaTags;
   }
   let metaTags: Meta;
+
   if (!Array.isArray(data)) {
-    if (data.keywords && defaultMetaTags.baseUrl) {
-      data.keywords = adjustKeywords(data.keywords, defaultMetaTags);
+    // prevent data from mutating
+    let _data = Object.assign({}, data);
+    if (_data.keywords && defaultMetaTags.baseUrl) {
+      _data.keywords = adjustKeywords(_data.keywords, defaultMetaTags);
     }
 
     metaTags = {
       ...defaultMetaTags,
       // todo: change data.link to data.url
-      url: data.link,
-      title: data.title,
-      author: data?.author?.name,
-      description: data.content
-        ? summary(data.content, { lineBreak: '\n', length: 500 })
-        : data.title,
-      image: data?.cover || defaultMetaTags?.image,
+      url: _data.link,
+      title: _data.title,
+      author: _data?.author?.name,
+      description: _data.content
+        ? summary(_data.content, { lineBreak: '\n', length: 500 })
+        : _data.title,
+      image: _data?.cover || defaultMetaTags?.image,
       // todo: pass twitter:creator, twitter:creator:id
       // todo: expires
     };
@@ -184,8 +187,8 @@ export function getMetaTags(
     // use data.image to override data.cover.src
     // data.cover.src may be just a placeholder
     // see adjustArticle()
-    if (data.image) {
-      metaTags.image.src = data.image;
+    if (_data.image) {
+      metaTags.image.src = _data.image;
     }
   }
   // todo: category link, title
