@@ -15,7 +15,7 @@ import { toRegExp } from './regex';
  */
 export function replaceAll(
   element: string | Array<string>,
-  replace: string | RegExp | Array<RegExp>,
+  replace: string | RegExp | Array<string | RegExp>,
   replaceWith: string
 ): string | Array<any> {
   if (Array.isArray(element)) {

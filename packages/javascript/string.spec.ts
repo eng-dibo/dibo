@@ -6,14 +6,14 @@ describe('replaceAll', () => {
     let string_ = 'abxycdxy';
     expect(replaceAll(string_, 'x', 'Z')).toEqual('abZycdZy');
     expect(replaceAll(string_, ['x', 'y'], 'Z')).toEqual('abZZcdZZ');
-    expect(replaceAll(string_, 'x', 1)).toEqual('ab1ycd1y');
+    expect(replaceAll(string_, 'x', '1')).toEqual('ab1ycd1y');
   });
 
   test('array', () => {
     let array = ['abxycdxy', 'xyz'];
     expect(replaceAll(array, 'x', 'Z')).toEqual(['abZycdZy', 'Zyz']);
     expect(replaceAll(array, ['x', 'y'], 'Z')).toEqual(['abZZcdZZ', 'ZZz']);
-    expect(replaceAll(array, 'x', 1)).toEqual(['ab1ycd1y', '1yz']);
+    expect(replaceAll(array, 'x', '1')).toEqual(['ab1ycd1y', '1yz']);
   });
 });
 
