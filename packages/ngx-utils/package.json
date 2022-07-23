@@ -28,11 +28,11 @@
   ],
   "description": "tools for Angular",
   "dependencies": {
-    "rxjs": "^7.5.5",
-    "@engineers/nodejs": "1.0.0"
+    "@engineers/nodejs": "1.0.0",
+    "rxjs": "^7.5.6"
   },
   "devDependencies": {
-    "jest-preset-angular": "11.1.2"
+    "jest-preset-angular": "^12.2.0"
   },
   "peerDependencies": {
     "@angular/common": "^14.0.6",

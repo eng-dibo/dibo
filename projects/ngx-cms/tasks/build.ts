@@ -1,7 +1,7 @@
 import dotEnv from 'dotenv';
 
 import { execSync } from '@engineers/nodejs/process';
-import { mkdir, read, write } from '@engineers/nodejs/fs-sync';
+import { copy, mkdir, read, write } from '@engineers/nodejs/fs-sync';
 import { appendFileSync, copyFileSync, existsSync, readdirSync } from 'node:fs';
 import { basename, resolve } from 'node:path';
 import { dist as distribution, projectPath, rootPath } from './index';
@@ -69,8 +69,8 @@ export default function (options?: BuildOptions): void {
     if (targets.includes('optimize')) {
       optimize(options_);
     }
-  } catch {
-    console.log('>> failed');
+  } catch (error) {
+    console.log('>> failed', error);
     return;
   }
 }
@@ -131,12 +131,9 @@ export function buildConfig(options: any): void {
     mkdir([`${options.distribution}/config/${target}`]);
 
     for (let element of readdirSync(`${options.projectPath}/config/${target}`))
-      copyFileSync(
+      copy(
         `${options.projectPath}/config/${target}/${element}`,
-        `${options.distribution}/config/${target}/${basename(element).replace(
-          '!!',
-          ''
-        )}`
+        `${options.distribution}/config/${target}/${element}`
       );
 
     // userFiles override original config files
@@ -144,12 +141,9 @@ export function buildConfig(options: any): void {
       for (let element of readdirSync(
         `${options.projectPath}/config!!/${target}`
       ))
-        copyFileSync(
+        copy(
           `${options.projectPath}/config!!/${target}/${element}`,
-          `${options.distribution}/config/${target}/${basename(element).replace(
-            '!!',
-            ''
-          )}`
+          `${options.distribution}/config/${target}/${element}`
         );
     }
   }

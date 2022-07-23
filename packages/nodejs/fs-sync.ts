@@ -52,7 +52,7 @@ export function resolve(...paths: PathLike[]): string {
 export interface ParsePath {
   type: 'dir' | 'file';
   dir: string;
-  file: string;
+  name: string;
   extension: string | undefined;
 }
 /**
@@ -65,8 +65,10 @@ export function parsePath(path: PathLike): ParsePath {
   let extension = getExtension(path);
   return {
     type: isDir(path) ? 'dir' : 'file',
+    // path of the containing dir
     dir: dirname(path),
-    file: basename(path, `.${extension}`),
+    // basename (file or folder name) without extension
+    name: basename(path, `.${extension}`),
     extension,
   };
 }

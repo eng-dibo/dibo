@@ -28,7 +28,7 @@
   ],
   "description": "rxjs utils",
   "dependencies": {
-    "rxjs": "^7.5.5",
+    "rxjs": "^7.5.6",
     "@engineers/nodejs": "1.0.0"
   },
   "keywords": [
