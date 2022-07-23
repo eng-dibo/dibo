@@ -35,10 +35,10 @@
     "material design"
   ],
   "dependencies": {
-    "@engineers/javascript": "1.0.0",
-    "@engineers/lazy-load": "1.0.0",
-    "@engineers/ngx-content-core": "1.0.0",
-    "@engineers/ngx-utils": "1.0.0",
+    "@engineers/javascript": "1.1.0",
+    "@engineers/lazy-load": "1.1.0",
+    "@engineers/ngx-content-core": "1.1.0",
+    "@engineers/ngx-utils": "1.1.0",
     "@engineers/nodejs": "1.0.0",
     "@engineers/rxjs": "1.0.0",
     "@fortawesome/angular-fontawesome": "^0.10.2",

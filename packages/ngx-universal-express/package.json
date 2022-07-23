@@ -32,7 +32,7 @@
     "express": "^4.18.1",
     "rxjs": "^7.5.5",
     "zone.js": "~0.11.5",
-    "@engineers/ngx-utils": "1.0.0",
+    "@engineers/ngx-utils": "1.1.0",
     "@engineers/nodejs": "1.0.0"
   },
   "peerDependencies": {

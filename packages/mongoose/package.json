@@ -37,8 +37,8 @@
     "mongodb": "^4.7.0",
     "mongoose": "^6.3.5",
     "shortid": "^2.2.16",
-    "@engineers/javascript": "1.0.0",
-    "@engineers/databases": "1.0.1",
+    "@engineers/javascript": "1.1.0",
+    "@engineers/databases": "1.1.0",
     "@engineers/nodejs": "1.0.0"
   },
   "scripts": {
