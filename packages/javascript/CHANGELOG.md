@@ -1,3 +1,9 @@
+# [@engineers/javascript-v1.1.1](https://github.com/eng-dibo/dibo/compare/@engineers/javascript-v1.1.0...@engineers/javascript-v1.1.1) (2022-07-23)
+
+### Bug Fixes
+
+- **javascript:** replaceAll() escape regex ([1f0debf](https://github.com/eng-dibo/dibo/commit/1f0debfb3c9a6b0cf1803190187030550ef8d739))
+
 # [@engineers/javascript-v1.1.0](https://github.com/eng-dibo/dibo/compare/@engineers/javascript-v1.0.0...@engineers/javascript-v1.1.0) (2022-07-20)
 
 ### Bug Fixes
