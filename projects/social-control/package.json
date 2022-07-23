@@ -74,7 +74,7 @@
     "tslib": "^2.4.0",
     "zone.js": "^0.11.5",
     "@engineers/ngx-utils": "1.1.0",
-    "@engineers/ngx-universal-express": "1.0.0",
+    "@engineers/ngx-universal-express": "1.1.0",
     "@engineers/javascript": "1.1.0",
     "@engineers/nodejs": "1.0.0",
     "@engineers/mongoose": "1.0.0",
