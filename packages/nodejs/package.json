@@ -35,7 +35,7 @@
   "dependencies": {
     "content-type": "^1.0.4",
     "strip-json-comments": "^3.1.1",
-    "@engineers/cache": "1.1.4",
+    "@engineers/cache": "1.0.6",
     "@engineers/javascript": "1.1.1",
     "@engineers/nodejs": "1.0.0"
   },
@@ -52,7 +52,7 @@
     "release": "semantic-release",
     "release:local": "semantic-release --no-ci",
     "postversion": "shx cp package.json ..",
-    "postrelease": "shx rm -r dist && shx rm -r tarball!!",
+    "postrelease": "shx rm -fr dist && shx rm -fr tarball!!",
     "postrelease:local": "npm run postrelease"
   }
 }

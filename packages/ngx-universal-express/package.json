@@ -48,7 +48,7 @@
     "release": "semantic-release",
     "release:local": "semantic-release --no-ci",
     "postversion": "shx cp package.json ..",
-    "postrelease": "shx rm -r dist && shx rm -r tarball!!",
+    "postrelease": "shx rm -fr dist && shx rm -fr tarball!!",
     "postrelease:local": "npm run postrelease"
   }
 }
