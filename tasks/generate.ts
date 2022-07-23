@@ -5,6 +5,7 @@ import { Obj, filterObjectByKeys } from '@engineers/javascript/objects';
 import { basename, dirname, resolve } from 'node:path';
 import { existsSync, writeFileSync } from 'node:fs';
 import ejs from 'ejs';
+import linkLocalDependencies from './link-local-dependencies';
 
 let rootPath = resolve(__dirname, '..'),
   rootPackage = readSync(`${rootPath}/package.json`),
@@ -105,6 +106,7 @@ export default async function generate(
       // addJestConfig(entries as string[]),
       addSemanticReleaseConfig(entries as string[]),
       // todo: create an empty index.ts in each entry dir
+      linkLocalDependencies(),
     ])
   );
 }
