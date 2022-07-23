@@ -45,6 +45,53 @@
 - **ngx-cms:** routes/sitemap ([772b15a](https://github.com/eng-dibo/dibo/commit/772b15a4d3acdcc798b0aab9b37b0cbe8fddbfd7))
 - upgrade angular to v14 ([5243120](https://github.com/eng-dibo/dibo/commit/524312070c3a4813e1e2927e4199db6d8d1af608))
 
+# [ngx-cms-v1.1.0](https://github.com/eng-dibo/dibo/compare/ngx-cms-v1.0.1...ngx-cms-v1.1.0) (2022-07-23)
+
+### Bug Fixes
+
+- **cms:** post ([50c0770](https://github.com/eng-dibo/dibo/commit/50c0770c0df40658004d06f8bb43437b3e285430))
+- fix html files ([8378bbc](https://github.com/eng-dibo/dibo/commit/8378bbccfcde0fc300d40c55a755946b36aa4c6a))
+- **ngx-cms:** article link ([8506f71](https://github.com/eng-dibo/dibo/commit/8506f719d0d7aa85fc0f0d9c74665babd596b372))
+- **ngx-cms:** cache path ([d2402a2](https://github.com/eng-dibo/dibo/commit/d2402a29513d07a1fa80ee5285de780472893838))
+- **ngx-cms:** content/editor fix buttonsTemplate ([35c6f9c](https://github.com/eng-dibo/dibo/commit/35c6f9c59c5582d824f7d033fa0135249af5855a))
+- **ngx-cms:** editor ([817ba67](https://github.com/eng-dibo/dibo/commit/817ba67c2a307f7175a5c6ae2909f22423d5824e))
+- **ngx-cms:** editor ([4f5c172](https://github.com/eng-dibo/dibo/commit/4f5c17231a1279704fa423d1ecdd9d09d7123733))
+- **ngx-cms:** editor this.params ([4bbaad0](https://github.com/eng-dibo/dibo/commit/4bbaad0e4641604f0b610df9e4de42cb51c71e86))
+- **ngx-cms:** editor this.params ([c27b584](https://github.com/eng-dibo/dibo/commit/c27b584b9c564c1f8f8a5332890e4931eb936efb))
+- **ngx-cms:** fix copy button ([02f4380](https://github.com/eng-dibo/dibo/commit/02f43800c4f3b1e8659ff6b6d4f4d664b59eb84a))
+- **ngx-cms:** fix data structure ([4385744](https://github.com/eng-dibo/dibo/commit/4385744bd23edd1435bff138a43f5c96f2a49c4f))
+- **ngx-cms:** getMetaTags() mutates data ([5f4c280](https://github.com/eng-dibo/dibo/commit/5f4c280447e61d7f50d6cfb8c49db8a6db4c7631))
+- **ngx-cms:** loadMore ([c9b2ec2](https://github.com/eng-dibo/dibo/commit/c9b2ec25e4e6508e5be67b4efe904989ade2880b))
+- **ngx-cms:** loadMore() ([34b5379](https://github.com/eng-dibo/dibo/commit/34b53798a9cb0f6c5bdf0ed7a6e71083959faf5f))
+- **ngx-cms:** meta tags, og:image ([f49a885](https://github.com/eng-dibo/dibo/commit/f49a88580760df9efe8015a16d566120bbedd6f8))
+- **ngx-cms:** nativeRequire is deprecated ([6ba3fc8](https://github.com/eng-dibo/dibo/commit/6ba3fc84a2fdfeb6e7d2d00e412ac5fd69092058))
+- **ngx-cms:** package.json ([e93e817](https://github.com/eng-dibo/dibo/commit/e93e817ba5e488e45164bb8b79a361ed95002853))
+- **ngx-cms:** server/routes/config ([7241faa](https://github.com/eng-dibo/dibo/commit/7241faa19d6c498fbd3c948d7ac4201507a0d049))
+- **ngx-cms:** server/routes/data: params.filter ([1cf532b](https://github.com/eng-dibo/dibo/commit/1cf532bf0bbdad55f766af2ab284b122aba62f0e))
+- **ngx-cms:** show notification dialog once/day ([519be80](https://github.com/eng-dibo/dibo/commit/519be80a6317ef9d201303a43df08ede58fa8ed8))
+- **ngx-cms:** tasks/setup ([20400ee](https://github.com/eng-dibo/dibo/commit/20400ee61d26059d5d8e27b66531db326d81ab22))
+- **ngx-cms:** tasks/setup fix installing gcloud ([0c2e2ac](https://github.com/eng-dibo/dibo/commit/0c2e2acdbd4eeff6d80171ce2d9d683922dfd2f4))
+- scss styles ([a207acc](https://github.com/eng-dibo/dibo/commit/a207acc7b37571d4c7103ae1098bfe01d21c4237))
+
+### Features
+
+- **ngx-cms:** accounts: manage social accounts ([5f7f543](https://github.com/eng-dibo/dibo/commit/5f7f5430381adaa8b58124730067ef3b60fb7979))
+- **ngx-cms:** add data-error ([0229820](https://github.com/eng-dibo/dibo/commit/02298204793b482ebc5dcf43e5516c4cb6682fe5))
+- **ngx-cms:** backup config ([73ae2c1](https://github.com/eng-dibo/dibo/commit/73ae2c12d01c617c426da542267249e045f44002))
+- **ngx-cms:** data structure ([6771635](https://github.com/eng-dibo/dibo/commit/67716352eba52da47d75622d467c7a34be4f0998))
+- **ngx-cms:** editor title ([f7640dc](https://github.com/eng-dibo/dibo/commit/f7640dce8f5547d00da54518d2a9ab860d829c4d))
+- **ngx-cms:** getModel() ([7af76bb](https://github.com/eng-dibo/dibo/commit/7af76bb1cf9666140febcc876ecd5d743bfec534))
+- **ngx-cms:** initial loadMore() ([45e914b](https://github.com/eng-dibo/dibo/commit/45e914bc89219590753b3607eb6ce64d80c80c6f))
+- **ngx-cms:** lazy-load modules ([23eddbd](https://github.com/eng-dibo/dibo/commit/23eddbd64d4b51a8314cb7c66c2f20d21f498944))
+- **ngx-cms:** legal pages ([bad0997](https://github.com/eng-dibo/dibo/commit/bad0997f3469eb2bd01796a648c8a2f5551c98b2))
+- **ngx-cms:** make server functions reusable ([8957342](https://github.com/eng-dibo/dibo/commit/8957342a9d23e29a8af105fa0a8e5c728bf66f31))
+- **ngx-cms:** messages board ([8747f4e](https://github.com/eng-dibo/dibo/commit/8747f4ef12daea3a9b1fea8712d7a1f22e16c6a0))
+- **ngx-cms:** remove cache after posting ([08586f8](https://github.com/eng-dibo/dibo/commit/08586f8aaf4e6b6010b451c834a5aaf351bb22b7))
+- **ngx-cms:** robots.txt ([8267112](https://github.com/eng-dibo/dibo/commit/8267112dd29254913a4d6a8007e1dca48e17c9e3))
+- **ngx-cms:** routes/move ([c897013](https://github.com/eng-dibo/dibo/commit/c897013d4506ff023608a7ab7ef412685f14c859))
+- **ngx-cms:** routes/sitemap ([772b15a](https://github.com/eng-dibo/dibo/commit/772b15a4d3acdcc798b0aab9b37b0cbe8fddbfd7))
+- upgrade angular to v14 ([5243120](https://github.com/eng-dibo/dibo/commit/524312070c3a4813e1e2927e4199db6d8d1af608))
+
 # [ngx-cms-v1.1.0](https://github.com/eng-dibo/dibo/compare/ngx-cms-v1.0.1...ngx-cms-v1.1.0) (2022-07-20)
 
 ### Bug Fixes
