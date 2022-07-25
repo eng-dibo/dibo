@@ -1,3 +1,9 @@
+# [@engineers/graphics-v1.0.1](https://github.com/eng-dibo/dibo/compare/@engineers/graphics-v1.0.0...@engineers/graphics-v1.0.1) (2022-07-25)
+
+### Bug Fixes
+
+- **ngx-cms:** fix ts ([6b6f81e](https://github.com/eng-dibo/dibo/commit/6b6f81ee014f31a752a0411e289873b2facf626f))
+
 # @engineers/graphics-v1.0.0 (2022-05-16)
 
 ### Bug Fixes
