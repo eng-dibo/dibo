@@ -145,7 +145,7 @@ export function edit(img: Img, options: EditOptions = {}): Promise<ImgOutput> {
         // and info.format instead of parts.extension
         // https://github.com/lovell/sharp/issues/2812
         let parts = parsePath(inputImage);
-        options_.output = `${parts.dir}/${parts.file}`;
+        options_.output = `${parts.dir}/${parts.name}`;
         if (options_.size[0]) {
           options_.output += `_${options_.size[0]}${
             options_.size[1] ? `X ${options_.size[1]}` : ''
