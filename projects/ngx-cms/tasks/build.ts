@@ -33,8 +33,6 @@ export default function (options?: BuildOptions): void {
   try {
     let options_ = Object.assign(
       {
-        targets:
-          process.env.BUILD_TARGETS || 'browser,server,config,package,optimize',
         mode: process.env.NODE_ENV || 'production',
         project: 'ngx-cms',
         distribution,
@@ -44,6 +42,12 @@ export default function (options?: BuildOptions): void {
       options || {}
     );
 
+    options_.targets =
+      options_.targets ||
+      process.env.BUILD_TARGETS ||
+      options_.mode === 'production'
+        ? 'browser,server,config,package,optimize'
+        : 'browser,server,config,package';
     // set process.env.NODE_ENV for building tools such as webpack
     if (!process.env.NODE_ENV) {
       process.env.NODE_ENV = options_.mode;
