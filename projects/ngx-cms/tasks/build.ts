@@ -45,9 +45,9 @@ export default function (options?: BuildOptions): void {
     options_.targets =
       options_.targets ||
       process.env.BUILD_TARGETS ||
-      options_.mode === 'production'
+      (options_.mode === 'production'
         ? 'browser,server,config,package,optimize'
-        : 'browser,server,config,package';
+        : 'browser,server,config,package');
     // set process.env.NODE_ENV for building tools such as webpack
     if (!process.env.NODE_ENV) {
       process.env.NODE_ENV = options_.mode;
@@ -55,7 +55,9 @@ export default function (options?: BuildOptions): void {
 
     let progress: Promise<any> = Promise.resolve();
 
-    let targets = options_.targets.split(',');
+    let targets = Array.isArray(options_.targets)
+      ? options_.targets
+      : options_.targets.split(',');
     if (targets.includes('browser')) {
       buildBrowser(options_);
     }
