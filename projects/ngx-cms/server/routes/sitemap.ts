@@ -22,7 +22,7 @@ export default (request: Request, res: Response): void => {
     temporary,
     () =>
       getData(queryUrl, request.query.refresh ? -1 : 3).then((data) => {
-        data=data.payload
+        data = data.payload;
         if (!Array.isArray(data)) {
           Promise.reject({ error: { message: 'data error' } });
         }

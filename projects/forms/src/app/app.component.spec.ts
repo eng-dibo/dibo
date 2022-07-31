@@ -4,28 +4,28 @@ import { AppComponent } from './app.component';
 describe('AppComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
-        AppComponent
-      ],
+      declarations: [AppComponent],
     }).compileComponents();
   });
 
   it('should create the app', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
+    let fixture = TestBed.createComponent(AppComponent);
+    let app = fixture.componentInstance;
     expect(app).toBeTruthy();
   });
 
   it(`should have as title 'forms'`, () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
+    let fixture = TestBed.createComponent(AppComponent);
+    let app = fixture.componentInstance;
     expect(app.title).toEqual('forms');
   });
 
   it('should render title', () => {
-    const fixture = TestBed.createComponent(AppComponent);
+    let fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.content span')?.textContent).toContain('forms app is running!');
+    let compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('.content span')?.textContent).toContain(
+      'forms app is running!'
+    );
   });
 });
