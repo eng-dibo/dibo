@@ -1,6 +1,7 @@
 {
   "name": "forms",
   "version": "0.0.0",
+  "description": "dynamically create and manage forms on the fly",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
