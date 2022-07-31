@@ -36,6 +36,8 @@ read our [contributing guide](https://github.com/eng-dibo/dibo/blob/main/CONTRIB
 
 ## apps by `@engineers`
 
+- [forms](https://github.com/eng-dibo/dibo/tree/main/projects/forms)
+
 - [ngx-cms](https://github.com/eng-dibo/dibo/tree/main/projects/ngx-cms)
 
 - [social-control](https://github.com/eng-dibo/dibo/tree/main/projects/social-control)

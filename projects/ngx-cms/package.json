@@ -75,7 +75,7 @@
     "@engineers/databases": "1.1.0",
     "@engineers/express-redirect-middleware": "1.0.0",
     "@engineers/gcloud-storage": "1.0.0",
-    "@engineers/graphics": "1.0.0",
+    "@engineers/graphics": "1.0.1",
     "@engineers/javascript": "1.1.1",
     "@engineers/mongoose": "1.0.0",
     "@engineers/ngx-content-core": "1.1.0",

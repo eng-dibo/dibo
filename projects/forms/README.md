@@ -1,27 +1,79 @@
-# Forms
+# forms
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 14.1.0.
+dynamically create and manage forms on the fly
 
-## Development server
+## install
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+install the package and it's peer dependencies:
 
-## Code scaffolding
+```
+npm i forms
+```
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+you can build this package and any of our packages yourself from [source](https://github.com/eng-dibo/dibo/tree/main/packages)
 
-## Build
+## contributing
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+contributing with us are very welcome.
 
-## Running unit tests
+read our [contributing guide](https://github.com/eng-dibo/dibo/blob/main/CONTRIBUTING.md)
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+## support us
 
-## Running end-to-end tests
+- [paypal](https://paypal.me/group99001)
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+- [patreon](https://www.patreon.com/GoogleDev)
 
-## Further help
+## apps by `@engineers`
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+- [forms](https://github.com/eng-dibo/dibo/tree/main/projects/forms)
+
+- [ngx-cms](https://github.com/eng-dibo/dibo/tree/main/projects/ngx-cms)
+
+- [social-control](https://github.com/eng-dibo/dibo/tree/main/projects/social-control)
+
+- [vscode](https://github.com/eng-dibo/dibo/tree/main/projects/vscode)
+
+## useful packages by `@engineers`
+
+- check out these useful packages that created by [@engineers organization](https://www.npmjs.com/org/engineers)
+
+- [cache](https://www.npmjs.com/package/@engineers/cache)
+
+- [databases](https://www.npmjs.com/package/@engineers/databases)
+
+- [dom](https://www.npmjs.com/package/@engineers/dom)
+
+- [express-redirect-middleware](https://www.npmjs.com/package/@engineers/express-redirect-middleware)
+
+- [firebase-admin](https://www.npmjs.com/package/@engineers/firebase-admin)
+
+- [gcloud-storage](https://www.npmjs.com/package/@engineers/gcloud-storage)
+
+- [graphics](https://www.npmjs.com/package/@engineers/graphics)
+
+- [hookable](https://www.npmjs.com/package/@engineers/hookable)
+
+- [javascript](https://www.npmjs.com/package/@engineers/javascript)
+
+- [lazy-load](https://www.npmjs.com/package/@engineers/lazy-load)
+
+- [mongoose](https://www.npmjs.com/package/@engineers/mongoose)
+
+- [ngx-content-core](https://www.npmjs.com/package/@engineers/ngx-content-core)
+
+- [ngx-content-view-mat](https://www.npmjs.com/package/@engineers/ngx-content-view-mat)
+
+- [ngx-universal-express](https://www.npmjs.com/package/@engineers/ngx-universal-express)
+
+- [ngx-utils](https://www.npmjs.com/package/@engineers/ngx-utils)
+
+- [nodejs](https://www.npmjs.com/package/@engineers/nodejs)
+
+- [rxjs](https://www.npmjs.com/package/@engineers/rxjs)
+
+- [tmpl](https://www.npmjs.com/package/@engineers/tmpl)
+
+- [updater](https://www.npmjs.com/package/@engineers/updater)
+
+- [webpack](https://www.npmjs.com/package/@engineers/webpack)
