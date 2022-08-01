@@ -77,7 +77,9 @@ export default async function generate(
   if (!options.entries) {
     options.entries = await getDirs();
     // set entry format to $target/name instead of full path
-    options.entries = options.entries.map((el) => `${basename(dirname(el))}/${basename(el)}`);
+    options.entries = options.entries.map(
+      (el) => `${basename(dirname(el))}/${basename(el)}`
+    );
   }
 
   if (options.entries) {
@@ -94,16 +96,17 @@ export default async function generate(
     options.entries = options.entries.map((el) => el.trim());
   }
 
-  return updatePackages(options.entries, packageObject, overrideScripts).then(() =>
-    Promise.all([
-      updateReadMe(options.entries as string[]),
-      addTsconfig(options.entries as string[]),
-      addWebpackConfig(options.entries as string[]),
-      // addJestConfig(entries as string[]),
-      addSemanticReleaseConfig(options.entries as string[]),
-      // todo: create an empty index.ts in each entry dir
-      linkLocalDependencies(),
-    ])
+  return updatePackages(options.entries, packageObject, overrideScripts).then(
+    () =>
+      Promise.all([
+        updateReadMe(options.entries as string[]),
+        addTsconfig(options.entries as string[]),
+        addWebpackConfig(options.entries as string[]),
+        // addJestConfig(entries as string[]),
+        addSemanticReleaseConfig(options.entries as string[]),
+        // todo: create an empty index.ts in each entry dir
+        linkLocalDependencies(),
+      ])
   );
 }
 
