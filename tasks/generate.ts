@@ -46,10 +46,11 @@ let rootPath = resolve(__dirname, '..'),
 
 export interface GenerateOptions {
   // the entry name including the target, i.e $target/$name
-  // $target is projects|packages|ng(Angular library)
+  // $target is projects|packages|ng (Angular library)
   // multiple names may be provided, as an array or comma-separated string
   // if an entry already exists it will be updated
-  name?: string;
+  // todo: accept regex or glob patterns, example: projects/*
+  entries?: string | string[];
   // override the existing package.scripts with default scripts (for updatePackages())
   overrideScripts?: boolean;
   // other properties of package.json
@@ -63,32 +64,25 @@ export interface GenerateOptions {
  * @param options package properties
  */
 export default async function generate(
-  // todo: accept regex or glob patterns, example: projects/*
-  entries?: string | string[],
   options: GenerateOptions = {}
 ): Promise<(void | void[])[]> {
-  // todo: fix cli parsing,
-  // if no argument passed to the command, then arguments=[{}]
-  if (arguments.length < 2) {
-    options = arguments[0];
-    entries = undefined;
-  }
+  console.log({ arguments });
 
   let { overrideScripts, ...packageObject } = options;
 
-  if (typeof entries === 'string') {
-    entries = entries.split(',');
+  if (typeof options.entries === 'string') {
+    options.entries = options.entries.split(',');
   }
 
-  if (!entries) {
-    entries = await getDirs();
+  if (!options.entries) {
+    options.entries = await getDirs();
     // set entry format to $target/name instead of full path
-    entries = entries.map((el) => `${basename(dirname(el))}/${basename(el)}`);
+    options.entries = options.entries.map((el) => `${basename(dirname(el))}/${basename(el)}`);
   }
 
-  if (entries) {
+  if (options.entries) {
     // validate entries, it must be in form of `$target/$name`, where $target = projects | packages
-    let invalidEntry = entries.find(
+    let invalidEntry = options.entries.find(
       (el) => !/^projects|packages|ng\/[^/]+$/.test(el)
     );
     if (invalidEntry) {
@@ -97,16 +91,16 @@ export default async function generate(
       );
     }
 
-    entries = entries.map((el) => el.trim());
+    options.entries = options.entries.map((el) => el.trim());
   }
 
-  return updatePackages(entries, packageObject, overrideScripts).then(() =>
+  return updatePackages(options.entries, packageObject, overrideScripts).then(() =>
     Promise.all([
-      updateReadMe(entries as string[]),
-      addTsconfig(entries as string[]),
-      addWebpackConfig(entries as string[]),
+      updateReadMe(options.entries as string[]),
+      addTsconfig(options.entries as string[]),
+      addWebpackConfig(options.entries as string[]),
       // addJestConfig(entries as string[]),
-      addSemanticReleaseConfig(entries as string[]),
+      addSemanticReleaseConfig(options.entries as string[]),
       // todo: create an empty index.ts in each entry dir
       linkLocalDependencies(),
     ])
