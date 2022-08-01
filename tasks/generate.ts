@@ -66,7 +66,6 @@ export interface GenerateOptions {
 export default async function generate(
   options: GenerateOptions = {}
 ): Promise<(void | void[])[]> {
-  console.log({ arguments });
 
   let { overrideScripts, ...packageObject } = options;
 
