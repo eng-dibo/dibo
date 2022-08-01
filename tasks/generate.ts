@@ -46,7 +46,7 @@ let rootPath = resolve(__dirname, '..'),
 
 export interface GenerateOptions {
   // the entry name including the target, i.e $target/$name
-  // $target is projects|packages
+  // $target is projects|packages|ng(Angular library)
   // multiple names may be provided, as an array or comma-separated string
   // if an entry already exists it will be updated
   name?: string;
@@ -89,7 +89,7 @@ export default async function generate(
   if (entries) {
     // validate entries, it must be in form of `$target/$name`, where $target = projects | packages
     let invalidEntry = entries.find(
-      (el) => !/^projects|packages\/[^/]+$/.test(el)
+      (el) => !/^projects|packages|ng\/[^/]+$/.test(el)
     );
     if (invalidEntry) {
       throw new Error(
@@ -135,6 +135,11 @@ export function updatePackages(
     .then((entries: Array<string>) =>
       Promise.all(
         entries.map((entry: string) => {
+          let isAngularLibrary = false;
+          if (entry.startsWith('ng/')) {
+            isAngularLibrary = true;
+            entry = entry.replace('ng/', 'packages/');
+          }
           let packagePath = resolve(rootPath, `${entry}/package.json`);
 
           return (
