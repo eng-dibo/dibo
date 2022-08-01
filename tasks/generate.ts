@@ -46,7 +46,7 @@ let rootPath = resolve(__dirname, '..'),
 
 export interface GenerateOptions {
   // the entry name including the target, i.e $target/$name
-  // $target is projects|packages|ng (Angular library)
+  // $target is projects|packages|ng (Angular)
   // multiple names may be provided, as an array or comma-separated string
   // if an entry already exists it will be updated
   // todo: accept regex or glob patterns, example: projects/*
@@ -66,7 +66,6 @@ export interface GenerateOptions {
 export default async function generate(
   options: GenerateOptions = {}
 ): Promise<(void | void[])[]> {
-
   let { overrideScripts, ...packageObject } = options;
 
   if (typeof options.entries === 'string') {
@@ -84,7 +83,7 @@ export default async function generate(
   if (options.entries) {
     // validate entries, it must be in form of `$target/$name`, where $target = projects | packages
     let invalidEntry = options.entries.find(
-      (el) => !/^projects|packages|ng\/[^/]+$/.test(el)
+      (el) => !/^projects|packages\/[^/]+$/.test(el)
     );
     if (invalidEntry) {
       throw new Error(
@@ -101,6 +100,8 @@ export default async function generate(
         updateReadMe(options.entries as string[]),
         addTsconfig(options.entries as string[]),
         addWebpackConfig(options.entries as string[]),
+        // todo: filter entries ng/$name to generate an angular library
+        angularLibrary(options.entries as string[]),
         // addJestConfig(entries as string[]),
         addSemanticReleaseConfig(options.entries as string[]),
         // todo: create an empty index.ts in each entry dir
